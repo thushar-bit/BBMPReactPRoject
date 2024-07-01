@@ -1,25 +1,15 @@
+// src/App.js
 import React from 'react';
-import BbmpForm from './BbmpForm';
-import Header from './Header';
-import Footer from './Footer';
-import { Container, Box } from '@mui/material';
+import AppRoutes from './Routes';
 import './i18n';
+import './App.css'; 
 
 function App() {
   return (
     <div className="App">
-      <Header />
-      <Box mt={4}>
-        <Container>
-          <BbmpForm />
-        </Container>
-      </Box>
-      <Footer />
+      <AppRoutes />
     </div>
   );
 }
-
-// Create a root and render the App component
-
 
 export default App;

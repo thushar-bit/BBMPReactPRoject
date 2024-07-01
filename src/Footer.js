@@ -1,11 +1,12 @@
+// src/Footer.js
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 
 const Footer = () => {
   return (
-    <Box mt={5} py={3} bgcolor="grey.200" textAlign="center">
-      <Typography variant="body1">
-        &copy; 2024 
+    <Box component="footer" sx={{ p: 2, backgroundColor: '#1976d2', color: 'white', mt: 'auto'}}>
+      <Typography variant="body1" align="center">
+        © 2024 BBMP
       </Typography>
     </Box>
   );

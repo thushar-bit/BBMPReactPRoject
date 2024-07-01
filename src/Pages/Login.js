@@ -1,53 +1,115 @@
-// src/pages/Login.js
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import { Button, TextField, Typography, Container, Box } from '@mui/material';
+import Sheet from '@mui/joy/Sheet';
+import CssBaseline from '@mui/joy/CssBaseline';
+import Typography from '@mui/joy/Typography';
+import FormControl from '@mui/joy/FormControl';
+import FormLabel from '@mui/joy/FormLabel';
+import Input from '@mui/joy/Input';
+import Button from '@mui/joy/Button';
+import Box from '@mui/joy/Box';
+import { useNavigate } from 'react-router-dom';
 
-const Login = () => {
-  const history = useHistory();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+function generateCaptcha() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let captcha = '';
+  for (let i = 0; i < 6; i++) {
+    captcha += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return captcha;
+}
 
-  const handleLogin = () => {
-    // Perform login logic (authentication)
-    // For simplicity, checking if username and password match
-    if (username === 'admin' && password === 'password') {
-      // Navigate to BbmpForm on successful login
-      history.push('/bbmp-form');
-    } else {
-      alert('Invalid username or password');
-    }
+
+
+export default function Login() {
+  const [captcha, setCaptcha] = useState(generateCaptcha());
+  const [captchaInput, setCaptchaInput] = useState('');
+  const navigate = useNavigate();
+  const regenerateCaptcha = () => {
+    setCaptcha(generateCaptcha());
+    setCaptchaInput('');
   };
-
+ const handleLogin = (e) =>{
+  navigate('/bbmp-form');
+ }
   return (
-    <Container maxWidth="sm">
-      <Box sx={{ marginTop: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <Typography variant="h4" gutterBottom>
-          Login
-        </Typography>
-        <TextField
-          label="Username"
-          variant="outlined"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          fullWidth
-          sx={{ marginBottom: 2 }}
-        />
-        <TextField
-          label="Password"
-          variant="outlined"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          fullWidth
-          sx={{ marginBottom: 2 }}
-        />
-        <Button variant="contained" color="primary" onClick={handleLogin}>
-          Login
-        </Button>
-      </Box>
-    </Container>
+    <main>
+      <CssBaseline />
+      <Sheet
+        sx={{
+          width: { xs: '90%', sm: 400, md: 500 },
+          mx: 'auto', // margin left & right
+          my: 6, // margin top & bottom
+          py: 6, // padding top & bottom
+          px: 6, // padding left & right
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2,
+          borderRadius: 'sm',
+          boxShadow: 'md',
+        }}
+        variant="outlined"
+      >
+        <div>
+          <Typography level="h4" component="h1">
+            <b>Welcome!</b>
+          </Typography>
+          <Typography level="body-md">Sign in to continue.</Typography>
+        </div>
+        <FormControl>
+          <FormLabel>Phone Number</FormLabel>
+          <Input
+            name="text"
+            type="text"
+            placeholder="+91-XXXXXXXXXX"
+          />
+        </FormControl>
+        <FormControl>
+          <FormLabel>Password</FormLabel>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Input
+              name="password"
+              type="password"
+              placeholder="password"
+              sx={{ flex: 1 }}
+            />
+            <Button variant="solid" color="primary">OTP</Button>
+          </Box>
+        </FormControl>
+        <FormControl>
+          <FormLabel>CAPTCHA</FormLabel>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '150px',
+                height: '50px',
+                backgroundColor: '#e0e0e0',
+                fontSize: '24px',
+                fontWeight: 'bold',
+                userSelect: 'none', // Prevent text selection
+              }}
+            >
+              {captcha.split('').map((char, index) => (
+                <span key={index} >
+                  {char}
+                </span>
+              ))}
+            </Box>
+            <Button variant="outlined" onClick={regenerateCaptcha}>Regenerate</Button>
+          </Box>
+          <Input
+            name="captcha"
+            type="text"
+            placeholder="Enter CAPTCHA"
+            value={captchaInput}
+            onChange={(e) => setCaptchaInput(e.target.value)}
+            sx={{ mt: 1 }}
+          />
+        </FormControl>
+        <Button sx={{ mt: 1 /* margin top */ }} onClick={handleLogin}>Log in</Button>
+      </Sheet>
+    </main>
   );
-};
-
-export default Login;
+}

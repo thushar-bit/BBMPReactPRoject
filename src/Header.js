@@ -1,27 +1,39 @@
 import React from 'react';
 import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const Header = () => {
   const { i18n } = useTranslation();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const changeLanguage = (lng) => {
-    i18n.changeLanguage(lng);
+  const handleLanguageChange = (lang) => {
+    i18n.changeLanguage(lang);
+  };
+
+  const handleLogout = () => {
+    navigate('/');
   };
 
   return (
-    <AppBar position="static">
+    <AppBar position="sticky">
       <Toolbar>
-        <Typography variant="h6" sx={{ flexGrow: 1 }}>
+        <Typography variant="h6" fontFamily="cursive" style={{ flexGrow: 1 }}>
           Citizen
         </Typography>
         <Box>
-          <Button color="inherit" onClick={() => changeLanguage('en')}>
+          <Button color="inherit" onClick={() => handleLanguageChange('en')}>
             English
           </Button>
-          <Button color="inherit" onClick={() => changeLanguage('kn')}>
+          <Button color="inherit" onClick={() => handleLanguageChange('kn')}>
             ಕನ್ನಡ
           </Button>
+          {location.pathname !== '/' && (
+            <Button color="inherit" onClick={handleLogout}>
+              Logout
+            </Button>
+          )}
         </Box>
       </Toolbar>
     </AppBar>

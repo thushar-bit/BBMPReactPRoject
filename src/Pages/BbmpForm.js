@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { TextField, Button, Grid, Box, Typography, CircularProgress ,Tooltip,IconButton } from '@mui/material';
+import { TextField, Button, Grid, Box,Container, Typography, CircularProgress ,Tooltip,IconButton } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import InfoIcon from '@mui/icons-material/Info';
 import { styled } from '@mui/material/styles';
@@ -34,7 +34,7 @@ const BbmpForm = () => {
     loginId: 'crc'
   });
   const [selectedFile, setSelectedFile] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [tablesdata,setTablesData] = useState([]);
   const fetchData = async () => {
     try {
@@ -171,7 +171,8 @@ setLoading(false);
   }
 
   return (
-    <Box sx={{ backgroundColor: '#f0f0f0', padding: 4, borderRadius: 2 }}>
+    <Container maxWidth="lg">
+      <Box sx={{ backgroundColor: '#f0f0f0', padding: 4, borderRadius: 2, mt: 8 }}>
       <ToastContainer />
       <form onSubmit={handleSubmit}>
         <Typography
@@ -180,8 +181,9 @@ setLoading(false);
           gutterBottom
           sx={{
             fontWeight: 'bold',
+            fontFamily:"sans-serif",
             marginBottom: 3,
-            color: '#1565c0',
+            color: '#',
             fontSize: {
               xs: '1.5rem',
               sm: '2rem',
@@ -340,6 +342,7 @@ setLoading(false);
           gutterBottom
           sx={{
             fontWeight: 'bold',
+            fontFamily:"sans-serif",
             marginBottom: 3,
             color: '#1565c0',
             fontSize: {
@@ -509,6 +512,7 @@ setLoading(false);
         </Grid>
       </form>
     </Box>
+    </Container>
   );
 };
 
