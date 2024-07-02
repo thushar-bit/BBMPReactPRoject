@@ -4,11 +4,10 @@ import { TextField, Button, Grid, Box,Container, Typography, CircularProgress ,T
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import InfoIcon from '@mui/icons-material/Info';
 import { styled } from '@mui/material/styles';
+import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
   clipPath: 'inset(50%)',
@@ -21,7 +20,7 @@ const VisuallyHiddenInput = styled('input')({
   width: 1,
 });
 
-const BbmpForm = () => {
+const ClassificationDocumentUploadPage = () => {
   const [formData, setFormData] = useState({
     propertyCode: '',
     streetid: '',
@@ -522,4 +521,4 @@ setLoading(false);
   );
 };
 
-export default BbmpForm;
+export default ClassificationDocumentUploadPage;
