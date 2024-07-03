@@ -20,7 +20,7 @@ const Header = () => {
     <AppBar position="sticky">
       <Toolbar>
         <Typography variant="h6" fontFamily="cursive" style={{ flexGrow: 1 }}>
-          Citizen
+          EAASTHI Citizen
         </Typography>
         <Box>
           <Button color="inherit" onClick={() => handleLanguageChange('en')}>
