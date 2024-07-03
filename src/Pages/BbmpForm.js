@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { TextField, Button, Grid, Box,Container, Typography, CircularProgress ,Tooltip,IconButton } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import InfoIcon from '@mui/icons-material/Info';
@@ -8,7 +7,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-
+import axiosInstance from '../components/Axios';
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
   clipPath: 'inset(50%)',
@@ -38,10 +37,10 @@ const BbmpForm = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [tablesdata,setTablesData] = useState([]);
-  const navigate = useNavigate();
+console.log(tablesdata)
   const fetchData = async () => {
     try {
-      const response = await axios.get('https://localhost:44368/v1/BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&propertyid=104931');
+      const response = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&propertyid=104931');
       const { Table, Table1, Table2, Table3, Table4, Table5, Table6, Table7 } = response.data;
       setTablesData({ Table, Table1, Table2, Table3, Table4, Table5, Table6, Table7 });
 
@@ -69,7 +68,7 @@ const BbmpForm = () => {
       console.error('There was an error!', error);
     }
   };
-
+  const navigate = useNavigate();
   useEffect(() => {
     fetchData();
   }, []);
@@ -101,7 +100,7 @@ const  handleSubmit = async (e) => {
          reader.onloadend = async () => {
            propertyphoto = reader.result.split(',')[1];
   reader.onloadend =  async () => {
-    const propertyphoto = reader.result.split(',')[1];
+  const   propertyphoto = reader.result.split(',')[1];
   }
     debugger
     const data = {
@@ -118,7 +117,7 @@ const  handleSubmit = async (e) => {
       loginId: 'crc'
     };
     try {
-     await  axios.post('https://localhost:44368/v1/BBMPCITZAPI/GET_PROPERTY_CTZ_PROPERTY', data
+     await  axiosInstance.post('BBMPCITZAPI/GET_PROPERTY_CTZ_PROPERTY', data
       )
       setSelectedFile(null);
      await toast.success("Details Saved Successfully", {
@@ -148,7 +147,10 @@ const  handleSubmit = async (e) => {
 setLoading(false);
 }
 
-
+const handleNavigation= () =>{
+  debugger
+  navigate('/AreaDimension')
+}
   function GradientCircularProgress() {
     return (
       <React.Fragment>
@@ -511,7 +513,7 @@ setLoading(false);
             {t("clear")}
               
             </Button>
-            <Button variant="contained" color="primary" onClick={navigate('/AreaDimension')}>
+            <Button variant="contained" color="primary" onClick={handleNavigation}>
             Next
             </Button>
           </Box>

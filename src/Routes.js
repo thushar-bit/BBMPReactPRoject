@@ -15,7 +15,7 @@ import TaxEventPage from './Pages/TaxEventPage';
 import ObjectionPage from './Pages/ObjectionPage';
 import Header from './Header';
 import Footer from './Footer';
-import Breadcrumbs from './components/Breadcrumbs';
+
 
 const AppRoutes = () => {
   
@@ -23,7 +23,6 @@ const AppRoutes = () => {
     <Router>
       <Header />
       <div className="App">
-        <Breadcrumbs />
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/bbmp-form" element={<BbmpForm />} />

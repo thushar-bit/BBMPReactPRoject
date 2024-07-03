@@ -22,6 +22,8 @@ const AreaDimension = () => {
     oddSite: 'no',
     propertyType: 'select'
   });
+  const [isEditable, setIsEditable] = useState(false);
+
   const navigate = useNavigate();
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,6 +34,19 @@ const AreaDimension = () => {
   };
 
  // const { t } = useTranslation();
+ const handleRadioChange = (e) => {
+  const { name, value } = e.target;
+  setFormData({
+    ...formData,
+    [name]: value,
+  });
+
+  if (name === 'modify' && value === 'yes') {
+    setIsEditable(true);
+  } else if (name === 'modify' && value === 'no') {
+    setIsEditable(false);
+  }
+};
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -86,6 +101,15 @@ const AreaDimension = () => {
           </FormControl>
           {formData.propertyType === 'flats' && (
             <Grid container spacing={3}>
+              
+              <Grid item xs={6} sm={3}>
+              <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
+            <RadioGroup row name="modify" value={formData.modify} onChange={handleRadioChange}>
+              <FormControlLabel value="yes" control={<Radio />} label="Modify" />
+              <FormControlLabel value="no" control={<Radio />} label="No Modifications" />
+            </RadioGroup>
+          </FormControl>
+              </Grid>
               <Grid item xs={6} sm={3}>
                 <TextField
                   fullWidth
@@ -95,7 +119,17 @@ const AreaDimension = () => {
                   value={formData.numFlats || ''}
                   onChange={handleChange}
                   type="number"
-                  variant="filled"
+                  variant={isEditable ? "standard" : "filled"}
+                  InputProps={{
+                    readOnly: !isEditable,
+                    endAdornment: (
+                      <Tooltip title="Calculated as N-S * E-W">
+                        <IconButton>
+                          <InfoIcon />
+                        </IconButton>
+                      </Tooltip>
+                    )
+                  }}
                 />
               </Grid>
               <Grid item xs={6} sm={3}>
@@ -107,7 +141,17 @@ Additional Area(in Sq.mts.)"
                   value={formData.numFlats || ''}
                   onChange={handleChange}
                   type="number"
-                  variant="filled"
+                  variant={isEditable ? "standard" : "filled"}
+                  InputProps={{
+                    readOnly: !isEditable,
+                    endAdornment: (
+                      <Tooltip title="Calculated as N-S * E-W">
+                        <IconButton>
+                          <InfoIcon />
+                        </IconButton>
+                      </Tooltip>
+                    )
+                  }}
                 />
               </Grid>
               <Grid item xs={6} sm={3}>
@@ -119,9 +163,20 @@ Super Built Area (in Sq.mts.)"
                   value={formData.numFlats || ''}
                   onChange={handleChange}
                   type="number"
-                  variant="filled"
+                  variant={isEditable ? "standard" : "filled"}
+                  InputProps={{
+                    readOnly: !isEditable,
+                    endAdornment: (
+                      <Tooltip title="Calculated as N-S * E-W">
+                        <IconButton>
+                          <InfoIcon />
+                        </IconButton>
+                      </Tooltip>
+                    )
+                  }}
                 />
               </Grid>
+              
             </Grid>
           )}
           {(formData.propertyType === 'vacant')  && (
@@ -130,7 +185,7 @@ Super Built Area (in Sq.mts.)"
             Schedule Of The Property
           </Typography>
           <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
-            <RadioGroup row name="modify" value={formData.modify} onChange={handleChange}>
+            <RadioGroup row name="modify" value={formData.modify} onChange={handleRadioChange}>
               <FormControlLabel value="yes" control={<Radio />} label="Modify" />
               <FormControlLabel value="no" control={<Radio />} label="No Modifications" />
             </RadioGroup>
@@ -143,7 +198,10 @@ Super Built Area (in Sq.mts.)"
                 name="east"
                 value={formData.east}
                 onChange={handleChange}
-                variant="filled"
+                variant={isEditable ? "standard" : "filled"}
+    InputProps={{
+    readOnly: !isEditable,
+  }}
               />
             </Grid>
             <Grid item xs={6} sm={3}>
@@ -153,7 +211,17 @@ Super Built Area (in Sq.mts.)"
                 name="west"
                 value={formData.west}
                 onChange={handleChange}
-                variant="filled"
+                variant={isEditable ? "standard" : "filled"}
+                InputProps={{
+                  readOnly: !isEditable,
+                  endAdornment: (
+                    <Tooltip title="Converted from Sq.ft">
+                      <IconButton>
+                        <InfoIcon />
+                      </IconButton>
+                    </Tooltip>
+                  )
+                }}
               />
             </Grid>
             <Grid item xs={6} sm={3}>
@@ -163,7 +231,17 @@ Super Built Area (in Sq.mts.)"
                 name="north"
                 value={formData.north}
                 onChange={handleChange}
-                variant="filled"
+                variant={isEditable ? "standard" : "filled"}
+                InputProps={{
+                  readOnly: !isEditable,
+                  endAdornment: (
+                    <Tooltip title="Converted from Sq.ft">
+                      <IconButton>
+                        <InfoIcon />
+                      </IconButton>
+                    </Tooltip>
+                  )
+                }}
               />
             </Grid>
             <Grid item xs={6} sm={3}>
@@ -173,7 +251,17 @@ Super Built Area (in Sq.mts.)"
                 name="south"
                 value={formData.south}
                 onChange={handleChange}
-                variant="filled"
+                variant={isEditable ? "standard" : "filled"}
+                InputProps={{
+                  readOnly: !isEditable,
+                  endAdornment: (
+                    <Tooltip title="Converted from Sq.ft">
+                      <IconButton>
+                        <InfoIcon />
+                      </IconButton>
+                    </Tooltip>
+                  )
+                }}
               />
             </Grid>
           </Grid>
@@ -193,12 +281,7 @@ Super Built Area (in Sq.mts.)"
           <Typography variant="h6" sx={{ fontWeight: 'bold',  }}>
           </Typography>
 
-          <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
-            <RadioGroup row name="modify" value={formData.modify} onChange={handleChange}>
-              <FormControlLabel value="yes" control={<Radio />} label="Modify" />
-              <FormControlLabel value="no" control={<Radio />} label="No Modifications" />
-            </RadioGroup>
-          </FormControl>
+         
           <Grid container spacing={3}>
             <Grid item xs={6} sm={3}>
               <TextField
@@ -208,7 +291,17 @@ Super Built Area (in Sq.mts.)"
                 value={formData.ns}
                 onChange={handleChange}
                 type="number"
-                variant="filled"
+                variant={isEditable ? "standard" : "filled"}
+                InputProps={{
+                  readOnly: !isEditable,
+                  endAdornment: (
+                    <Tooltip title="Converted from Sq.ft">
+                      <IconButton>
+                        <InfoIcon />
+                      </IconButton>
+                    </Tooltip>
+                  )
+                }}
               />
             </Grid>
             <Grid item xs={6} sm={3}>
@@ -219,7 +312,10 @@ Super Built Area (in Sq.mts.)"
                 value={formData.ew}
                 onChange={handleChange}
                 type="number"
-                variant="filled"
+                variant={isEditable ? "standard" : "filled"}
+                InputProps={{
+                  readOnly: !isEditable,
+                }}
               />
             </Grid>
             <Grid item xs={6} sm={3}>
@@ -230,9 +326,9 @@ Super Built Area (in Sq.mts.)"
                 value={formData.plotAreaSqFt}
                 onChange={handleChange}
                 type="number"
-                variant="filled"
+                variant={isEditable ? "standard" : "filled"}
                 InputProps={{
-                  readOnly: true,
+                  readOnly: !isEditable,
                   endAdornment: (
                     <Tooltip title="Calculated as N-S * E-W">
                       <IconButton>
@@ -251,9 +347,9 @@ Super Built Area (in Sq.mts.)"
                 value={formData.plotAreaSqMt}
                 onChange={handleChange}
                 type="number"
-                variant="filled"
+                variant={isEditable ? "standard" : "filled"}
                 InputProps={{
-                  readOnly: true,
+                  readOnly: !isEditable,
                   endAdornment: (
                     <Tooltip title="Converted from Sq.ft">
                       <IconButton>
@@ -275,7 +371,7 @@ Super Built Area (in Sq.mts.)"
               Schedule Of The Property
             </Typography>
             <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
-              <RadioGroup row name="modify" value={formData.modify} onChange={handleChange}>
+              <RadioGroup row name="modify" value={formData.modify} onChange={handleRadioChange}>
                 <FormControlLabel value="yes" control={<Radio />} label="Modify" />
                 <FormControlLabel value="no" control={<Radio />} label="No Modifications" />
               </RadioGroup>
@@ -288,7 +384,10 @@ Super Built Area (in Sq.mts.)"
                   name="east"
                   value={formData.east}
                   onChange={handleChange}
-                  variant="filled"
+                  variant={isEditable ? "standard" : "filled"}
+                  InputProps={{
+                    readOnly: !isEditable,
+                  }}
                 />
               </Grid>
               <Grid item xs={6} sm={3}>
@@ -298,7 +397,10 @@ Super Built Area (in Sq.mts.)"
                   name="west"
                   value={formData.west}
                   onChange={handleChange}
-                  variant="filled"
+                 variant={isEditable ? "standard" : "filled"}
+  InputProps={{
+    readOnly: !isEditable,
+  }}
                 />
               </Grid>
               <Grid item xs={6} sm={3}>
@@ -308,7 +410,10 @@ Super Built Area (in Sq.mts.)"
                   name="north"
                   value={formData.north}
                   onChange={handleChange}
-                  variant="filled"
+                 variant={isEditable ? "standard" : "filled"}
+  InputProps={{
+    readOnly: !isEditable,
+  }}
                 />
               </Grid>
               <Grid item xs={6} sm={3}>
@@ -318,7 +423,10 @@ Super Built Area (in Sq.mts.)"
                   name="south"
                   value={formData.south}
                   onChange={handleChange}
-                  variant="filled"
+                 variant={isEditable ? "standard" : "filled"}
+  InputProps={{
+    readOnly: !isEditable,
+  }}
                 />
               </Grid>
             </Grid>
@@ -338,12 +446,7 @@ Super Built Area (in Sq.mts.)"
             <Typography variant="h6" sx={{ fontWeight: 'bold',  }}>
             </Typography>
   
-            <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
-              <RadioGroup row name="modify" value={formData.modify} onChange={handleChange}>
-                <FormControlLabel value="yes" control={<Radio />} label="Modify" />
-                <FormControlLabel value="no" control={<Radio />} label="No Modifications" />
-              </RadioGroup>
-            </FormControl>
+           
             <Grid container spacing={3}>
               <Grid item xs={6} sm={3}>
                 <TextField
@@ -353,7 +456,10 @@ Super Built Area (in Sq.mts.)"
                   value={formData.ns}
                   onChange={handleChange}
                   type="number"
-                  variant="filled"
+                  variant={isEditable ? "standard" : "filled"}
+                  InputProps={{
+                    readOnly: !isEditable,
+                  }}
                 />
               </Grid>
               <Grid item xs={6} sm={3}>
@@ -364,7 +470,10 @@ Super Built Area (in Sq.mts.)"
                   value={formData.ew}
                   onChange={handleChange}
                   type="number"
-                  variant="filled"
+                  variant={isEditable ? "standard" : "filled"}
+                  InputProps={{
+                    readOnly: !isEditable,
+                  }}
                 />
               </Grid>
               <Grid item xs={6} sm={3}>
@@ -375,9 +484,9 @@ Super Built Area (in Sq.mts.)"
                   value={formData.plotAreaSqFt}
                   onChange={handleChange}
                   type="number"
-                  variant="filled"
+                  variant={isEditable ? "standard" : "filled"}
                   InputProps={{
-                    readOnly: true,
+                    readOnly: !isEditable,
                     endAdornment: (
                       <Tooltip title="Calculated as N-S * E-W">
                         <IconButton>
@@ -396,9 +505,9 @@ Super Built Area (in Sq.mts.)"
                   value={formData.plotAreaSqMt}
                   onChange={handleChange}
                   type="number"
-                  variant="filled"
+                  variant={isEditable ? "standard" : "filled"}
                   InputProps={{
-                    readOnly: true,
+                    readOnly: !isEditable,
                     endAdornment: (
                       <Tooltip title="Converted from Sq.ft">
                         <IconButton>
@@ -417,7 +526,10 @@ Super Built Area (in Sq.mts.)"
                   value={formData.builtUpAreaSqFt}
                   onChange={handleChange}
                   type="number"
-                  variant="filled"
+                  variant={isEditable ? "standard" : "filled"}
+                  InputProps={{
+                    readOnly: !isEditable,
+                  }}
                 />
               </Grid>
               <Grid item xs={6} sm={3}>
@@ -428,7 +540,10 @@ Super Built Area (in Sq.mts.)"
                   value={formData.builtUpAreaSqMt}
                   onChange={handleChange}
                   type="number"
-                  variant="filled"
+                  variant={isEditable ? "standard" : "filled"}
+                  InputProps={{
+                    readOnly: !isEditable,
+                  }}
                 />
               </Grid>
             </Grid>
