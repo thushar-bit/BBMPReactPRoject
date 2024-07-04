@@ -132,18 +132,7 @@ useEffect(() => {
         setIsOddSiteEnabled(false);
       }
     }
-    const [values, setValues] = useState({
-      cal1: '',
-      cal2: '',
-      cal3: '',
-      cal4: '',
-      cal5: '',
-      cal6: '',
-      cal7: '',
-      cal8: '',
-      areaFt: '',
-      areaMt: '',
-    });
+    
   console.log(formData.propertyType)
   return (
     
