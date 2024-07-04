@@ -8,7 +8,7 @@ import Input from '@mui/joy/Input';
 import Button from '@mui/joy/Button';
 import Box from '@mui/joy/Box';
 import { useNavigate } from 'react-router-dom';
-
+import axiosInstance from '../components/Axios';
 function generateCaptcha() {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let captcha = '';
@@ -28,7 +28,13 @@ export default function Login() {
     setCaptcha(generateCaptcha());
     setCaptchaInput('');
   };
- const handleLogin = (e) =>{
+ const handleLogin = async  (e) =>{
+  const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&propertyid=104931');
+  const response2 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&propertyid=104931');
+
+  // Store data in local storage
+  sessionStorage.setItem('BBD_DRAFT_API', JSON.stringify(response1));
+  sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response2));
   navigate('/bbmp-form');
  }
   return (
