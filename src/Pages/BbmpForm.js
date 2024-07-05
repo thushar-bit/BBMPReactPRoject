@@ -186,7 +186,7 @@ setLoading(false);
 }
 
 const handleNavigation= () =>{
-  navigate('/AreaDimension')
+  navigate('/AreaDimension/select')
 }
   function GradientCircularProgress() {
     return (

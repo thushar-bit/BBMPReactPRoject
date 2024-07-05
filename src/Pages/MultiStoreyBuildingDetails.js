@@ -48,7 +48,7 @@ const MultiStoreyBuildingDetails = () => {
   };
 
   const back = () => {
-    navigate('/AreaDimension');
+    navigate('/AreaDimension/flats');
   };
 
   const handleNavigation = () => {

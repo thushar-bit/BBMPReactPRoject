@@ -5,8 +5,10 @@ import {
 } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 //import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useParams  } from 'react-router-dom';
+
 const AreaDimension = () => {
+  const { DropdownValue } = useParams();
   const [formData, setFormData] = useState({
     east: '',
     west: '',
@@ -20,7 +22,7 @@ const AreaDimension = () => {
     builtUpAreaSqMt: 0,
     modify: 'no',
     oddSite: 'no',
-    propertyType: 'select',
+    propertyType: DropdownValue,
     ApartCarpetArea:0,
     ApartAddtionalArea:0,
     ApartSuperBuiltArea:0,
@@ -37,18 +39,62 @@ const AreaDimension = () => {
   });
   const [isEditable, setIsEditable] = useState(false);
   const navigate = useNavigate();
+ 
   const [tablesdata,setTablesData1] = useState([]);
   const [tablesdata2,setTablesData2] = useState([]);
   const [isOddSiteEnabled, setIsOddSiteEnabled] = useState(false);
   const handleChange = (e) => {
+    debugger
     const { name, value } = e.target;
+    const updatedValue = parseFloat(value) || 0;
+   
+    if (name === 'ns' || name === 'ew') {
+      const nsValue = name === 'ns' ? updatedValue : formData.ns;
+      const ewValue = name === 'ew' ? updatedValue : formData.ew;
+      const plotAreaSqFt = Math.round((nsValue > 0 ? nsValue : 1) * (ewValue > 0 ? ewValue : 1) * 100) / 100;
+      const plotAreaSqMt = Math.round(plotAreaSqFt * 0.092903 * 100) / 100;
+      formData.plotAreaSqFt = plotAreaSqFt;
+      formData.plotAreaSqMt = plotAreaSqMt;
+      setFormData({
+        ...formData,
+        [name]: value
+      });
+    }
+    if (name.startsWith('cal')) {
+      debugger
+      const { cal1, cal2, cal3, cal4, cal5, cal6, cal7, cal8 } = {
+        ...formData,
+        [name]: value
+      };
+      const areaFt = Math.round((
+        (parseFloat(cal1) || 1) *
+        (parseFloat(cal2) || 1) *
+        (parseFloat(cal3) || 1) /
+        (parseFloat(cal4) || 1)
+      ) *
+      (
+        (parseFloat(cal5) || 1) *
+        (parseFloat(cal6) || 1) *
+        (parseFloat(cal7) || 1) /
+        (parseFloat(cal8) || 1)
+      ) * 100) / 100;
+
+      const areaMt = areaFt > 0 ? Math.round(areaFt * 0.092903 * 100) / 100 : 0;
+      formData.sqFt = areaFt;
+      formData.sqMt = areaMt;
+      setFormData(prevData => ({
+        ...prevData,
+        sqFt: areaFt.toString(),
+        sqMt: areaMt.toString()
+      }));
+    }
     setFormData({
       ...formData,
       [name]: value
     });
-   
   };
-
+ 
+console.log(DropdownValue)
  // const { t } = useTranslation();
  const handleRadioChange = (e) => {
   const { name, value } = e.target;
@@ -113,8 +159,10 @@ useEffect(() => {
         navigate('/BuildingDetails')
       }
     else if(formData.propertyType === "flats"){
+ 
       navigate('/MultiStoreyBuildingDetails')
     }else {
+     
       alert("Please Select the property type");
     }
   }
@@ -126,9 +174,9 @@ useEffect(() => {
         ...formData,
         [name]: value,
       });
-      if (name === 'oddSite' && value === 'yes') {
+      if (name === 'oddSite' && value === 'yes' ) {
         setIsOddSiteEnabled(true);
-      } else if (name === 'oddSite' && value === 'no') {
+      } else if (name === 'oddSite' && value === 'no' ) {
         setIsOddSiteEnabled(false);
       }
     }
@@ -265,6 +313,13 @@ useEffect(() => {
                 variant={isEditable ? "standard" : "filled"}
     InputProps={{
     readOnly: !isEditable,
+    endAdornment: (
+      <Tooltip title="Converted from Sq.ft">
+        <IconButton>
+          <InfoIcon />
+        </IconButton>
+      </Tooltip>
+    )
   }}
               />
             </Grid>
@@ -679,7 +734,7 @@ useEffect(() => {
             </div>
                 
           )}
-          {isOddSiteEnabled && (
+        {isOddSiteEnabled && formData.propertyType !== "flats" && formData.propertyType !== "select" && (
  <Grid container spacing={3} alignItems="center" justifyContent="center">
  <Grid item>
    <Grid container spacing={1} alignItems="center" justifyContent="center">

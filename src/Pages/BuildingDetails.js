@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import {
   TextField, Button, Grid, Box, Container, Typography, Tooltip, IconButton,
   FormControl, MenuItem, Select, InputLabel,
@@ -7,44 +7,85 @@ import {
 import InfoIcon from '@mui/icons-material/Info';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../components/Axios';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 const BuildingDetails = () => {
   const [formData, setFormData] = useState({
-    east: '',
-    west: '',
-    north: '',
-    south: '',
-    ns: 0,
-    ew: 0,
-    plotAreaSqFt: 1,
-    plotAreaSqMt: 0.09,
-    builtUpAreaSqFt: 0,
-    builtUpAreaSqMt: 0,
-    modify: 'no',
-    oddSite: 'no',
-    propertyType: 'select'
+    BuildingNumber: '',
+  BuildingName: '',
+  floornumber: '',
+  features: '',
+  Typeofuse: '',
+  yearOfConstruction: '',
+  SelfuseArea: '',
+  RentedArea: '',
+  TotalArea: '',
+  BesomCustomerID: '',
+  BWSSBMeterNumber: ''
   });
   const [tableData, setTableData] = useState([
-    { id: 1, column1: 'Data 1', column2: 'Data 2', column3: 'Data 3' },
-    { id: 2, column1: 'Data A', column2: 'Data B', column3: 'Data C' },
-    // Add more rows as needed
   ]);
   const navigate = useNavigate();
-  const handleChange = (e) => {
+  const [tablesdata,setTablesData] = useState([]);
+  const [tablesdata2,setTablesData2] = useState([]);
+  const [tablesdata3,setTablesData3] = useState([]);
+  const [tablesdata4,setTablesData4] = useState([]);
+  const handleChange =  async (e) => {
     const { name, value } = e.target;
+    debugger
+      if (name === "features") {
+        try {
+          const response = await axiosInstance.get(`BBMPCITZAPI/GetNPMMasterTable?FeaturesHeadID=${value}`);
+          if (response.data.Table.length > 0) {
+            setTablesData3(response.data.Table);
+          }
+        } catch (error) {
+          console.error('Error fetching data:', error);
+         
+        }
+      }
+      if (name === 'SelfuseArea' || name === 'RentedArea') {
+        const selfuseAreaValue = name === 'SelfuseArea' ? value : formData.SelfuseArea;
+        const RentedAreaValue = name === 'RentedArea' ? value : formData.RentedArea;
+        const totalArea = Math.round(parseInt(selfuseAreaValue) + parseInt(RentedAreaValue));
+        formData.TotalArea = totalArea;
+    }
+    if(name === "yearOfConstruction")
+      {
+        if (/^\d{0,4}$/.test(value)) {
+          setFormData(prevFormData => ({
+            ...prevFormData,
+            [name]: value
+          }));
+        }
+        return
+      }
     setFormData({
       ...formData,
       [name]: value
     });
   };
-
+console.log()
   const { t } = useTranslation();
-
+  const fetchData = async () => {
+    const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
+    const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
+    const {  Table15,Table16   } = response1.data;
+        const {  Table14   } = response2.data;
+        const table1Item = Table14.length > 0 ? Table14 : {};
+        const table16Item = Table16.length > 0 ? Table16 : {};
+        const table15Item = Table15.length > 0 ? Table15 : {};
+        setTableData(table1Item);
+        setTablesData2(table16Item);
+        setTablesData4(table15Item)
+  }
   const handleSubmit = (e) => {
     e.preventDefault();
     // Submit form data logic here
   };
   const back = () => {
-    navigate('/AreaDimension')
+    navigate('/AreaDimension/building')
   }
   const handleNavigation= () =>{
     debugger
@@ -61,6 +102,31 @@ const BuildingDetails = () => {
     }
     
   }
+  const handleDelete = (id) => {
+    debugger
+    setTableData((prevTableData) => prevTableData.filter(row => row.id !== id));
+  };
+
+  const handleEdit = (row) => {
+    setFormData({
+      BuildingNumber: row.BUILDINGBLOCKID || '',
+      BuildingName: row.BUILDINGBLOCKNAME || '',
+      floornumber: row.FLOORID|| '',
+      features: row.FEATUREHEADID || '',
+      Typeofuse: row.FEATUREID || '',
+      yearOfConstruction: row.BUILTYEAR || '',
+      SelfuseArea: row.AREA || '',
+      RentedArea: row.RENTEDAREA || '',
+      TotalArea: row.TOTALAREA || '',
+      BesomCustomerID: row.ACCOUNTID|| '',
+      BWSSBMeterNumber: row.RRNO|| ''
+    });
+  };
+  React.useEffect(() => {
+    
+    fetchData();
+        
+  }, []);
   console.log(formData.propertyType)
   return (
     <Container maxWidth="xl">
@@ -90,8 +156,8 @@ const BuildingDetails = () => {
             <TextField
               fullWidth
               label="Building Number:"
-              name="propertyEID"
-              value={formData.propertyEID}
+              name="BuildingNumber"
+              value={formData.BuildingNumber}
               onChange={handleChange}
               InputProps={{
                 endAdornment: (
@@ -108,7 +174,6 @@ const BuildingDetails = () => {
             <TextField
               fullWidth
                 InputProps={{
-                readOnly: true,
                 endAdornment: (
                   <Tooltip title={t("cityInfo")}>
                      <IconButton color="primary">
@@ -118,8 +183,8 @@ const BuildingDetails = () => {
                 )
               }}
               label={"Building Name :"}
-              name="ulbname"
-              value={formData.ulbname}
+              name="BuildingName"
+              value={formData.BuildingName}
               onChange={handleChange}
               
             />
@@ -128,56 +193,65 @@ const BuildingDetails = () => {
           <FormControl fullWidth sx={{ marginBottom: 3 }}>
             <InputLabel>Floor Number :</InputLabel>
             <Select
-              name="propertyType"
-              value={formData.propertyType}
+              name="floornumber"
+              value={formData.floornumber}
               onChange={handleChange}
             >
-              <MenuItem value="select">Select</MenuItem>
-              <MenuItem value="vacant">First Floor</MenuItem>
-              <MenuItem value="building">Second Floor</MenuItem>
-              <MenuItem value="flats">Third Floor</MenuItem>
+              <MenuItem value="">--Select--</MenuItem>
+          {tablesdata4.map((item) => (
+            <MenuItem key={item.FLOORID} value={item.FLOORNUMBER_EN}>
+              {item.FLOORNUMBER_EN}
+            </MenuItem>
+          ))}
             </Select>
           </FormControl>
           </Grid>
           <Grid item xs={12} sm={4}>
           <FormControl fullWidth sx={{ marginBottom: 3 }}>
-            <InputLabel>Usage Category:</InputLabel>
-            <Select
-              name="propertyType"
-              value={formData.propertyType}
-              onChange={handleChange}
-            >
-              <MenuItem value="select">Select</MenuItem>
-              <MenuItem value="vacant">Vacant Site</MenuItem>
-              <MenuItem value="building">Site with Building</MenuItem>
-              <MenuItem value="flats">Multistorey Flats</MenuItem>
-            </Select>
-          </FormControl>
+        <InputLabel>Features :</InputLabel>
+        <Select
+          name="features"
+          value={formData.features}
+          onChange={handleChange}
+        >
+          <MenuItem value="">--Select--</MenuItem>
+          {tablesdata2.map((item) => (
+            <MenuItem key={item.FEATUREHEADID} value={item.FEATUREHEADID}>
+              {item.FEATUREHEADNAME_EN}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
           </Grid>
           <Grid item xs={12} sm={4}>
           <FormControl fullWidth sx={{ marginBottom: 3 }}>
-            <InputLabel>Type of Use(Sub Category):</InputLabel>
-            <Select
-              name="propertyType"
-              value={formData.propertyType}
-              onChange={handleChange}
-            >
-              <MenuItem value="select">Select</MenuItem>
-              <MenuItem value="vacant">Vacant Site</MenuItem>
-              <MenuItem value="building">Site with Building</MenuItem>
-              <MenuItem value="flats">Multistorey Flats</MenuItem>
-            </Select>
-          </FormControl>
+    <InputLabel>Type of use(Sub Category) :</InputLabel>
+   <Select
+    name="Typeofuse"
+    value={formData.Typeofuse}
+    onChange={handleChange}
+  >
+    <MenuItem value="">--Select--</MenuItem>
+    {tablesdata3.map((item) => (
+      <MenuItem key={item.FEATUREID} value={item.FEATUREID}>
+        {item.FEATURENAME_EN}
+      </MenuItem>
+    ))}
+  </Select>
+</FormControl>
           </Grid>
           <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
               type="number"
               label={"Year Of Construction/Usage Started :"}
-              name="DoorPlotNo"
-              value={formData.DoorPlotNo}
+              placeholder='yyyy'
+              
+              name="yearOfConstruction"
+              value={formData.yearOfConstruction}
               onChange={handleChange}
               InputProps={{
+                maxLength: 4 ,
                 endAdornment: (
                   <Tooltip title={t("doorPlotNoInfo")}>
                      <IconButton color="primary">
@@ -197,8 +271,9 @@ const BuildingDetails = () => {
             <TextField
               fullWidth
               label={"Self Use Area:"}
-              name="BuildingLandName"
-              value={formData.BuildingLandName}
+              name="SelfuseArea"
+                  type="number"
+              value={formData.SelfuseArea}
               onChange={handleChange}
               InputProps={{
                 endAdornment: (
@@ -215,8 +290,9 @@ const BuildingDetails = () => {
             <TextField
               fullWidth
               label={"Rented Area:"}
-              name="Street"
-              value={formData.Street}
+              name="RentedArea"
+                  type="number"
+              value={formData.RentedArea}
               onChange={handleChange}
               InputProps={{
                 endAdornment: (
@@ -234,8 +310,8 @@ const BuildingDetails = () => {
               fullWidth
               variant='filled'
               label={"Total Area"}
-              name="NearestLandmark"
-              value={formData.NearestLandmark}
+              name="TotalArea"
+              value={formData.TotalArea}
               onChange={handleChange}
               InputProps={{
                 readOnly:true,
@@ -253,9 +329,8 @@ const BuildingDetails = () => {
             <TextField
               fullWidth
               label={"BESCOM Customer ID :"}
-              name="Pincode"
-              type="number"
-              value={formData.Pincode}
+              name="BesomCustomerID"
+              value={formData.BesomCustomerID}
               onChange={handleChange}
               InputProps={{
                 endAdornment: (
@@ -272,8 +347,8 @@ const BuildingDetails = () => {
             <TextField
               fullWidth
               label={"BWSSB Meter Number :"}
-              name="AreaLocality"
-              value={formData.AreaLocality}
+              name="BWSSBMeterNumber"
+              value={formData.BWSSBMeterNumber}
               onChange={handleChange}
               InputProps={{
                 endAdornment: (
@@ -294,18 +369,19 @@ const BuildingDetails = () => {
   <Table>
     <TableHead>
       <TableRow>
-        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>ID</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>Building Number</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>Building Name</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>Floor Number</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>Usage Category</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>Type of use(Sub Category)</TableCell>
-        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>Type of use(Sub Category)</TableCell>
+        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>Year of Construction</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>Self Use Area</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>Rented Area</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>Total Area</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>BESCOM Customer ID :</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>ಬಿ ಡಬ್ಲ್ಯೂ ಎಸ್ ಎಸ್ ಬಿ ಮೀಟರ್ ಸಂಖ್ಯೆ :</TableCell>
+        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Edit</TableCell>
+        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Delete</TableCell>
       </TableRow>
     </TableHead>
     <TableBody>
@@ -318,18 +394,31 @@ const BuildingDetails = () => {
       ) : (
         tableData.map((row) => (
           <TableRow key={row.id}>
-            <TableCell>{row.id}</TableCell>
-            <TableCell>{row.column1}</TableCell>
-            <TableCell>{row.column2}</TableCell>
-            <TableCell>{row.column3}</TableCell>
-            <TableCell>{row.column1}</TableCell>
-            <TableCell>{row.column2}</TableCell>
-            <TableCell>{row.column3}</TableCell>
-            <TableCell>{row.column1}</TableCell>
-            <TableCell>{row.column2}</TableCell>
-            <TableCell>{row.column3}</TableCell>
-            <TableCell>{row.column1}</TableCell>
-            <TableCell>{row.column1}</TableCell>
+            <TableCell>{row.BUILDINGBLOCKID}</TableCell>
+            <TableCell>{row.BUILDINGBLOCKNAME}</TableCell>
+            <TableCell>{row.FLOORNUMBER}</TableCell>
+            <TableCell>{row.FEATUREHEADNAME}</TableCell>
+            <TableCell>{row.FEATURENAME}</TableCell>
+            <TableCell>{row.BUILTYEAR}</TableCell>
+            <TableCell>{row.AREA}</TableCell>
+            <TableCell>{row.RENTEDAREA}</TableCell>
+            <TableCell>{row.TOTALAREA}</TableCell>
+            <TableCell>{row.ACCOUNTID}</TableCell>
+            <TableCell>{row.RRNO}</TableCell>
+            <TableCell>
+                  <Tooltip title="Edit">
+                    <IconButton color="primary" onClick={() => handleEdit(row)}>
+                      <EditIcon />
+                    </IconButton>
+                  </Tooltip>
+                </TableCell>
+                <TableCell>
+                  <Tooltip title="Delete">
+                    <IconButton color="secondary" onClick={() => handleDelete(row)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
+                </TableCell>
           </TableRow>
         ))
       )}
