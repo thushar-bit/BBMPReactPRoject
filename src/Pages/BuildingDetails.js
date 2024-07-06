@@ -10,6 +10,8 @@ import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../components/Axios';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const BuildingDetails = () => {
   const [formData, setFormData] = useState({
     BuildingNumber: '',
@@ -27,6 +29,7 @@ const BuildingDetails = () => {
   const [tableData, setTableData] = useState([
   ]);
   const navigate = useNavigate();
+  const [loading,setLoading] = useState([]);
   const [tablesdata2,setTablesData2] = useState([]);
   const [tablesdata3,setTablesData3] = useState([]);
   const [tablesdata4,setTablesData4] = useState([]);
@@ -79,9 +82,68 @@ console.log()
         setTablesData2(table16Item);
         setTablesData4(table15Item)
   }
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Submit form data logic here
+    debugger
+    var BUILDINGUSAGETYPEID= 0;
+    if (formData.RentedArea == "0")
+      {
+          BUILDINGUSAGETYPEID = 4;
+      }
+      else if (formData.SelfuseArea == "0")
+      {
+          BUILDINGUSAGETYPEID = 5;
+      }
+      else if (formData.SelfuseArea != "0" && formData.SelfuseArea != "0")
+      {
+          BUILDINGUSAGETYPEID = 6;
+      }
+    const data = {
+      propertyCode: 104931,
+      floornumberid: formData.floornumberid,
+      createdby: "crc",
+      buildingusagetypeid: BUILDINGUSAGETYPEID,
+      ulbcode: 555,
+      featureheadid: formData.features,
+      featureid: formData.Typeofuse,
+      builtyear: formData.yearOfConstruction,
+      rrno: formData.BesomCustomerID,
+      watermeterno: formData.BWSSBMeterNumber,
+      buildingnumberid: formData.buildingnumberid ? "" :1,
+      buildingblockname: formData.buildingblockname,
+      ownUseArea: formData.selfuseAreaValue,
+      rentedArea: formData.RentedArea,
+}
+debugger
+try {
+  await  axiosInstance.post(' BBMPCITZAPI/DEL_INS_SEL_NCL_PROP_BUILDING_TEMP?ULBCODE=555', data
+   )
+  
+   const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&propertyid=104931');
+   sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
+  await toast.success("Details Saved Successfully", {
+     position: "top-right",
+     autoClose: 5000,
+     hideProgressBar: false,
+     closeOnClick: true,
+     pauseOnHover: true,
+     draggable: true,
+     progress: undefined,
+   });
+   setLoading(false);
+ 
+ } catch (error) {
+await   toast.error("Error saving data!" + error, {
+     position: "top-right",
+     autoClose: 5000,
+     hideProgressBar: false,
+     closeOnClick: true,
+     pauseOnHover: true,
+     draggable: true,
+     progress: undefined,
+   });
+ }
+
   };
   const back = () => {
     navigate('/AreaDimension/building')
@@ -119,8 +181,8 @@ console.log()
   console.log(formData.propertyType)
   return (
     <Container maxWidth="xl">
+        <ToastContainer/>
       <Box sx={{ backgroundColor: '#f0f0f0', padding: 4, borderRadius: 2, mt: 8 }}>
-     
       <form onSubmit={handleSubmit}>
         <Typography
           variant="h3"

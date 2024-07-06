@@ -6,6 +6,8 @@ import {
 //import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../components/Axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const SiteDetails = () => {
   const [formData, setFormData] = useState({
     features:"",
@@ -15,6 +17,7 @@ const SiteDetails = () => {
   const navigate = useNavigate();
   const [tablesdata2,setTablesData2] = useState([]);
   const [tablesdata3,setTablesData3] = useState([]);
+  const [loading,setLoading] = useState([]);
   const handleChange = async (e) => {
     const { name, value } = e.target;
   debugger
@@ -29,6 +32,16 @@ const SiteDetails = () => {
        
       }
     }
+    if(name === "yearOfConstruction")
+      {
+        if (/^\d{0,4}$/.test(value)) {
+          setFormData(prevFormData => ({
+            ...prevFormData,
+            [name]: value
+          }));
+        }
+        return
+      }
   
     setFormData({
       ...formData,
@@ -39,9 +52,45 @@ const SiteDetails = () => {
 
  // const { t } = useTranslation();
 
-  const handleSubmit = (e) => {
+  const handleSubmit =  async (e) => {
     e.preventDefault();
-    // Submit form data logic here
+    const data = {
+      propertyCode: 104931,
+      featureheadid: formData.features,
+      featureid: formData.Typeofuse,
+      builtyear: formData.yearOfConstruction,
+loginId: "crc"
+
+}
+debugger
+try {
+  await  axiosInstance.post('BBMPCITZAPI/UPD_NCL_PROPERTY_SITE_TEMP_USAGE', data
+   )
+  
+   const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&propertyid=104931');
+   sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
+  await toast.success("Details Saved Successfully", {
+     position: "top-right",
+     autoClose: 5000,
+     hideProgressBar: false,
+     closeOnClick: true,
+     pauseOnHover: true,
+     draggable: true,
+     progress: undefined,
+   });
+   setLoading(false);
+ 
+ } catch (error) {
+await   toast.error("Error saving data!" + error, {
+     position: "top-right",
+     autoClose: 5000,
+     hideProgressBar: false,
+     closeOnClick: true,
+     pauseOnHover: true,
+     draggable: true,
+     progress: undefined,
+   });
+ }
   };
   const back = () => {
     navigate('/AreaDimension/vacant')
@@ -83,6 +132,7 @@ const SiteDetails = () => {
  
   return (
     <Container maxWidth="lg">
+      <ToastContainer/>
       <Box sx={{ backgroundColor: '#f0f0f0', padding: 4, borderRadius: 2, mt: 8 }}>
         <form onSubmit={handleSubmit}>
           <Typography
