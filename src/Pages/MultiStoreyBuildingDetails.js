@@ -7,41 +7,113 @@ import {
 import InfoIcon from '@mui/icons-material/Info';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../components/Axios';
 
 const MultiStoreyBuildingDetails = () => {
   const [formData, setFormData] = useState({
-    east: '',
-    west: '',
-    north: '',
-    south: '',
-    ns: 0,
-    ew: 0,
-    plotAreaSqFt: 1,
-    plotAreaSqMt: 0.09,
-    builtUpAreaSqFt: 0,
-    builtUpAreaSqMt: 0,
-    modify: 'no',
-    oddSite: 'no',
-    propertyType: 'select'
+   
+      BlockName: '',
+      FlatNo: '',
+      floornumber: '',
+      features: '',
+      Typeofuse: '',
+      yearOfConstruction: '',
+      Totalnumberofparkingunits: '',
+      TotalParkingArea: '',
+      Occupancy: '',
+      BesomCustomerID: '',
+      SelectOwnerShareType: '',
+      OwnersSharePercent: '',
+      ParkingFacility: '',
+   
+    
   });
 
   const [tableData, setTableData] = useState([
-    { id: 1, column1: 'Data 1', column2: 'Data 2', column3: 'Data 3' },
-    { id: 2, column1: 'Data A', column2: 'Data B', column3: 'Data C' },
-    // Add more rows as needed
   ]);
 
   const navigate = useNavigate();
+  const [isEditable, setIsEditable] = useState(false);
+  const [tablesdata2,setTablesData2] = useState([]);
+  const [tablesdata3,setTablesData3] = useState([]);
+  const [tablesdata4,setTablesData4] = useState([]);
+  const [tablesdata6,setTablesData6] = useState([]);
+
   const { t } = useTranslation();
 
-  const handleChange = (e) => {
+  const handleChange = async (e) => {
     const { name, value } = e.target;
+    if (name === 'ParkingFacility' && value === 'yes') {
+      setIsEditable(true);
+    } else if (name === 'ParkingFacility' && value === 'no') {
+      setIsEditable(false);
+    }
+    if (name === "features") {
+      try {
+        const response = await axiosInstance.get(`BBMPCITZAPI/GetNPMMasterTable?FeaturesHeadID=${value}`);
+        if (response.data.Table.length > 0) {
+          setTablesData3(response.data.Table);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+       
+      }
+    }
+    if(name === "yearOfConstruction")
+      {
+        if (/^\d{0,4}$/.test(value)) {
+          setFormData(prevFormData => ({
+            ...prevFormData,
+            [name]: value
+          }));
+        }
+        return
+      }
     setFormData({
       ...formData,
       [name]: value
     });
+    
   };
+  
+  const fetchData = async () => {
+    const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
+    const response2 = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
+    const response3 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
+        const {  Table15,Table16 ,Table17  } = response1.data;
+        const {  Table7   } = response2.data;
+        const {Table13} = response3.data;
+        const table1Item = Table7.length > 0 ? Table7 : [];
+        const table13Item = Table13.length > 0 ? Table13[0] : [];
+        const table16Item = Table16.length > 0 ? Table16 : [];
+        const table15Item = Table15.length > 0 ? Table15 : [];
+        const table17Item = Table17.length > 0 ? Table17 : [];
 
+        setTableData(table1Item);
+        setTablesData2(table16Item);
+        setTablesData4(table15Item);
+        setTablesData6(table17Item);
+        setFormData({
+          BlockName: table13Item.BLOCKNUMBER,
+          FlatNo: table13Item.FLATNO,
+          floornumber: table13Item.FLOORNUMBERID,
+          features: table13Item.FEATUREHEADID,
+          Typeofuse: table13Item.FEATUREID,
+          yearOfConstruction: table13Item.BUILTYEAR,
+          Totalnumberofparkingunits: table13Item.PARKINGUNITS,
+          TotalParkingArea: table13Item.PARKINGAREA,
+          Occupancy: table13Item.BUILDINGUSAGETYPEID,
+          BesomCustomerID: table13Item.RRNO,
+          SelectOwnerShareType: table13Item.BUILDINGUSAGETYPEID,
+          OwnersSharePercent: table13Item.PLOTAREAOWNERSHARE_AREA,
+          ParkingFacility: table13Item.PARKINGAVAILABLE,
+        });
+  }
+  React.useEffect(() => {
+    
+    fetchData();
+        
+  }, []);
   const handleSubmit = (e) => {
     e.preventDefault();
     // Submit form data logic here
@@ -52,15 +124,9 @@ const MultiStoreyBuildingDetails = () => {
   };
 
   const handleNavigation = () => {
-    if (formData.propertyType === "vacant") {
-      navigate('/SiteDetails');
-    } else if (formData.propertyType === "building") {
-      navigate('/BuildingDetails');
-    } else if (formData.propertyType === "flats") {
-      navigate('/MultiStoreyBuildingDetails');
-    } else {
-      alert("Please Select the property type");
-    }
+   
+      navigate('/OwnerDetails');
+  
   };
 
   console.log(formData.propertyType);
@@ -92,8 +158,8 @@ const MultiStoreyBuildingDetails = () => {
               <TextField
                 fullWidth
                 label="Block Name"
-                name="propertyEID"
-                value={formData.propertyEID}
+                name="BlockName"
+                value={formData.BlockName}
                 onChange={handleChange}
                 InputProps={{
                   endAdornment: (
@@ -120,63 +186,69 @@ const MultiStoreyBuildingDetails = () => {
                   )
                 }}
                 label={"Flat No"}
-                name="ulbname"
-                value={formData.ulbname}
+                name="FlatNo"
+                value={formData.FlatNo}
                 onChange={handleChange}
               />
             </Grid>
             <Grid item xs={12} sm={4}>
-              <FormControl fullWidth sx={{ marginBottom: 3 }}>
-                <InputLabel>Floor Number :</InputLabel>
-                <Select
-                  name="propertyType"
-                  value={formData.propertyType}
-                  onChange={handleChange}
-                >
-                  <MenuItem value="select">Select</MenuItem>
-                  <MenuItem value="vacant">First Floor</MenuItem>
-                  <MenuItem value="building">Second Floor</MenuItem>
-                  <MenuItem value="flats">Third Floor</MenuItem>
-                </Select>
-              </FormControl>
+            <FormControl fullWidth sx={{ marginBottom: 3 }}>
+            <InputLabel>Floor Number :</InputLabel>
+            <Select
+              name="floornumber"
+              value={formData.floornumber}
+              onChange={handleChange}
+            >
+              <MenuItem value="">--Select--</MenuItem>
+          {tablesdata4.map((item) => (
+            <MenuItem key={item.FLOORID} value={item.FLOORNUMBER_EN}>
+              {item.FLOORNUMBER_EN}
+            </MenuItem>
+          ))}
+            </Select>
+          </FormControl>
             </Grid>
             <Grid item xs={12} sm={4}>
-              <FormControl fullWidth sx={{ marginBottom: 3 }}>
-                <InputLabel>Usage Category:</InputLabel>
-                <Select
-                  name="propertyType"
-                  value={formData.propertyType}
-                  onChange={handleChange}
-                >
-                  <MenuItem value="select">Select</MenuItem>
-                  <MenuItem value="vacant">Vacant Site</MenuItem>
-                  <MenuItem value="building">Site with Building</MenuItem>
-                  <MenuItem value="flats">Multistorey Flats</MenuItem>
-                </Select>
-              </FormControl>
+            <FormControl fullWidth sx={{ marginBottom: 3 }}>
+        <InputLabel>Usage Category :</InputLabel>
+        <Select
+          name="features"
+          value={formData.features}
+          onChange={handleChange}
+        >
+          <MenuItem value="">--Select--</MenuItem>
+          {tablesdata2.map((item) => (
+            <MenuItem key={item.FEATUREHEADID} value={item.FEATUREHEADID}>
+              {item.FEATUREHEADNAME_EN}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
             </Grid>
             <Grid item xs={12} sm={4}>
-              <FormControl fullWidth sx={{ marginBottom: 3 }}>
-                <InputLabel>Type of Use(Sub Category):</InputLabel>
-                <Select
-                  name="propertyType"
-                  value={formData.propertyType}
-                  onChange={handleChange}
-                >
-                  <MenuItem value="select">Select</MenuItem>
-                  <MenuItem value="vacant">Vacant Site</MenuItem>
-                  <MenuItem value="building">Site with Building</MenuItem>
-                  <MenuItem value="flats">Multistorey Flats</MenuItem>
-                </Select>
-              </FormControl>
+            <FormControl fullWidth sx={{ marginBottom: 3 }}>
+    <InputLabel>Type of use(Sub Category) :</InputLabel>
+   <Select
+    name="Typeofuse"
+    value={formData.Typeofuse}
+    onChange={handleChange}
+  >
+    <MenuItem value="">--Select--</MenuItem>
+    {tablesdata3.map((item) => (
+      <MenuItem key={item.FEATUREID} value={item.FEATUREID}>
+        {item.FEATURENAME_EN}
+      </MenuItem>
+    ))}
+  </Select>
+</FormControl>
             </Grid>
             <Grid item xs={12} sm={4}>
               <TextField
                 fullWidth
                 type="number"
                 label={"Year Of Construction/Usage Started :"}
-                name="DoorPlotNo"
-                value={formData.DoorPlotNo}
+                name="yearOfConstruction"
+                value={formData.yearOfConstruction}
                 onChange={handleChange}
                 InputProps={{
                   endAdornment: (
@@ -195,13 +267,13 @@ const MultiStoreyBuildingDetails = () => {
             <Grid item xs={12} sm={4}>
               <TextField
                 fullWidth
-                variant='filled'
+                variant={isEditable ? "standard" : "filled"}
                 label={"Total number of parking units : "}
-                name="BuildingLandName"
-                value={formData.BuildingLandName}
+                name="Totalnumberofparkingunits"
+                value={formData.Totalnumberofparkingunits}
                 onChange={handleChange}
                 InputProps={{
-                  readOnly: true,
+                  readOnly: isEditable,
                   endAdornment: (
                     <Tooltip title={t("buildingLandNameInfo")}>
                       <IconButton color="primary">
@@ -215,13 +287,13 @@ const MultiStoreyBuildingDetails = () => {
             <Grid item xs={12} sm={4}>
               <TextField
                 fullWidth
-                variant='filled'
+                variant={isEditable ? "standard" : "filled"}
                 label={"Total Parking Area(in Sq. mts.)"}
-                name="Street"
-                value={formData.Street}
+                name="TotalParkingArea"
+                value={formData.TotalParkingArea}
                 onChange={handleChange}
                 InputProps={{
-                  readOnly: true,
+                  readOnly: isEditable,
                   endAdornment: (
                     <Tooltip title={t("streetInfo")}>
                       <IconButton color="primary">
@@ -236,14 +308,16 @@ const MultiStoreyBuildingDetails = () => {
               <FormControl fullWidth sx={{ marginBottom: 3 }}>
                 <InputLabel>Occupancy :</InputLabel>
                 <Select
-                  name="propertyType"
-                  value={formData.propertyType}
+                  name="Occupancy"
+                  value={formData.Occupancy}
                   onChange={handleChange}
                 >
-                  <MenuItem value="select">Select</MenuItem>
-                  <MenuItem value="vacant">Vacant Site</MenuItem>
-                  <MenuItem value="building">Site with Building</MenuItem>
-                  <MenuItem value="flats">Multistorey Flats</MenuItem>
+                  <MenuItem value="">--Select--</MenuItem>
+    {tablesdata6.map((item) => (
+      <MenuItem key={item.BUILDINGUSAGETYPEID} value={item.BUILDINGUSAGETYPEID}>
+        {item.BUILDINGUSAGETYPE_EN}
+      </MenuItem>
+    ))}
                 </Select>
               </FormControl>
             </Grid>
@@ -251,9 +325,9 @@ const MultiStoreyBuildingDetails = () => {
               <TextField
                 fullWidth
                 label={"BESCOM Customer ID :"}
-                name="Pincode"
+                name="BesomCustomerID"
                 type="number"
-                value={formData.Pincode}
+                value={formData.BesomCustomerID}
                 onChange={handleChange}
                 InputProps={{
                   endAdornment: (
@@ -268,16 +342,16 @@ const MultiStoreyBuildingDetails = () => {
             </Grid>
             <Grid item xs={12} sm={4}>
               <FormControl fullWidth sx={{ marginBottom: 3 }}>
-                <InputLabel>Occupancy :</InputLabel>
+                <InputLabel>Select Owner Share Type :</InputLabel>
                 <Select
-                  name="propertyType"
-                  value={formData.propertyType}
+                  name="SelectOwnerShareType"
+                  value={formData.SelectOwnerShareType}
                   onChange={handleChange}
                 >
-                  <MenuItem value="select">Select</MenuItem>
-                  <MenuItem value="vacant">Vacant Site</MenuItem>
-                  <MenuItem value="building">Site with Building</MenuItem>
-                  <MenuItem value="flats">Multistorey Flats</MenuItem>
+   <MenuItem value="0">Select</MenuItem>
+                  <MenuItem value="1">ಮಾಲೀಕರ ಹಕ್ಕಿನ ವಿಸ್ತೀರ್ಣ / Owner Share Area</MenuItem>
+                  <MenuItem value="2">ಮಾಲೀಕರ ಹಕ್ಕಿನ ಶೇಕಡವಾರು / Owner Share Percent</MenuItem>
+                  <MenuItem value="3">ಮಾಲೀಕರ ಹಕ್ಕಿನ ಪ್ರಮಾಣಪತ್ರಗಳ ಸಂಖ್ಯೆ / Owner Share Number</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -285,9 +359,10 @@ const MultiStoreyBuildingDetails = () => {
               <TextField
                 fullWidth
                 label={"Owners Share Percent (in Percentile) :"}
-                name="AreaLocality"
-                value={formData.AreaLocality}
+                name="OwnersSharePercent"
+                value={formData.OwnersSharePercent}
                 onChange={handleChange}
+                type='number'
                 InputProps={{
                   endAdornment: (
                     <Tooltip title={t("areaLocalityInfo")}>
@@ -303,8 +378,8 @@ const MultiStoreyBuildingDetails = () => {
               <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
                 Parking Facility
               </Typography>
-              <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
-                <RadioGroup row name="modify" value={formData.modify} onChange={handleChange}>
+              <FormControl component="ParkingFacility" sx={{ marginBottom: 3 }}>
+                <RadioGroup row name="ParkingFacility" value={formData.ParkingFacility} onChange={handleChange}>
                   <FormControlLabel value="yes" control={<Radio />} label="Yes" />
                   <FormControlLabel value="no" control={<Radio />} label="No" />
                 </RadioGroup>
@@ -318,7 +393,7 @@ const MultiStoreyBuildingDetails = () => {
             <Table>
               <TableHead>
                 <TableRow>
-                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>ID</TableCell>
+               
                   <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold',color:'#FFFFFF' }}>BLOCK NO</TableCell>
                   <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold',color:'#FFFFFF' }}>FLOOR NO</TableCell>
                   <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>FLATNO</TableCell>
@@ -341,17 +416,16 @@ const MultiStoreyBuildingDetails = () => {
       ) : (
         tableData.map((row) => (
           <TableRow key={row.id}>
-            <TableCell>{row.id}</TableCell>
-            <TableCell>{row.column1}</TableCell>
-            <TableCell>{row.column2}</TableCell>
-            <TableCell>{row.column3}</TableCell>
-            <TableCell>{row.column1}</TableCell>
-            <TableCell>{row.column2}</TableCell>
-            <TableCell>{row.column3}</TableCell>
-            <TableCell>{row.column1}</TableCell>
-            <TableCell>{row.column2}</TableCell>
-            <TableCell>{row.column3}</TableCell>
-            <TableCell>{row.column1}</TableCell>
+            <TableCell>{row.BLOCKNUMBER}</TableCell>
+            <TableCell>{row.FLOORNUMBERID}</TableCell>
+            <TableCell>{row.FLATNO}</TableCell>
+            <TableCell>{row.CARPETAREA}</TableCell>
+            <TableCell>{row.ADDITIONALAREA}</TableCell>
+            <TableCell>{row.SUPERBUILTUPAREA}</TableCell>
+            <TableCell>{row.PARKINGAVAILABLE}</TableCell>
+            <TableCell>{row.PARKINGAREA}</TableCell>
+            <TableCell>{row.SHARETYPE}</TableCell>
+            <TableCell>{row.SHARETYPEVALUE}</TableCell>
           </TableRow>
         ))
       )}

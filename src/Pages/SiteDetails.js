@@ -13,7 +13,6 @@ const SiteDetails = () => {
     yearOfConstruction:""
   });
   const navigate = useNavigate();
-  const [tablesdata,setTablesData] = useState([]);
   const [tablesdata2,setTablesData2] = useState([]);
   const [tablesdata3,setTablesData3] = useState([]);
   const handleChange = async (e) => {
@@ -57,7 +56,6 @@ const SiteDetails = () => {
     const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
     const {  Table16   } = response1.data;
         const {  Table2   } = response2.data;
-        setTablesData({ Table2});
         const table1Item = Table2.length > 0 ? Table2[0] : {};
         const table16Item = Table16.length > 0 ? Table16 : {};
        setTablesData2(table16Item);

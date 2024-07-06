@@ -27,7 +27,6 @@ const BuildingDetails = () => {
   const [tableData, setTableData] = useState([
   ]);
   const navigate = useNavigate();
-  const [tablesdata,setTablesData] = useState([]);
   const [tablesdata2,setTablesData2] = useState([]);
   const [tablesdata3,setTablesData3] = useState([]);
   const [tablesdata4,setTablesData4] = useState([]);
@@ -89,17 +88,7 @@ console.log()
   }
   const handleNavigation= () =>{
     debugger
-    if(formData.propertyType === "vacant"){
-      navigate('/SiteDetails')
-    }else if(formData.propertyType === "building")
-      {
-        navigate('/BuildingDetails')
-      }
-    else if(formData.propertyType === "flats"){
-      navigate('/MultiStoreyBuildingDetails')
-    }else {
-      alert("Please Select the property type");
-    }
+    navigate('/OwnerDetails');
     
   }
   const handleDelete = (id) => {
@@ -122,7 +111,7 @@ console.log()
       BWSSBMeterNumber: row.RRNO|| ''
     });
   };
-  React.useEffect(() => {
+  useEffect(() => {
     
     fetchData();
         

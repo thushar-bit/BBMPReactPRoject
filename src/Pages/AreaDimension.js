@@ -6,7 +6,9 @@ import {
 import InfoIcon from '@mui/icons-material/Info';
 //import { useTranslation } from 'react-i18next';
 import { useNavigate,useParams  } from 'react-router-dom';
-
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import axiosInstance from '../components/Axios';
 const AreaDimension = () => {
   const { DropdownValue } = useParams();
   const [formData, setFormData] = useState({
@@ -14,34 +16,34 @@ const AreaDimension = () => {
     west: '',
     north: '',
     south: '',
-    ns: 0,
-    ew: 0,
+    ns: "",
+    ew: "",
     plotAreaSqFt: 0,
     plotAreaSqMt: 0,
     builtUpAreaSqFt: 0,
     builtUpAreaSqMt: 0,
     modify: 'no',
-    oddSite: 'no',
+    modifycheckbandi:'no',
+    oddSite: 'EVEN',
     propertyType: DropdownValue,
     ApartCarpetArea:0,
     ApartAddtionalArea:0,
     ApartSuperBuiltArea:0,
-    cal1: '',
-    cal2: '',
-    cal3: '',
-    cal4: '',
-    cal5: '',
-    cal6: '',
-    cal7: '',
-    cal8: '',
-    sqFt: '',
-    sqMt: ''
+    cal1: 0,
+    cal2: 0,
+    cal3: 0,
+    cal4: 0,
+    cal5: 0,
+    cal6: 0,
+    cal7: 0,
+    cal8: 0,
+    sqFt: 0,
+    sqMt: 0
   });
   const [isEditable, setIsEditable] = useState(false);
+  const [isEditablecheckbandhi, setIsEditablecheckbandi] = useState(false);
   const navigate = useNavigate();
- 
-  const [tablesdata,setTablesData1] = useState([]);
-  const [tablesdata2,setTablesData2] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [isOddSiteEnabled, setIsOddSiteEnabled] = useState(false);
   const handleChange = (e) => {
     debugger
@@ -55,10 +57,7 @@ const AreaDimension = () => {
       const plotAreaSqMt = Math.round(plotAreaSqFt * 0.092903 * 100) / 100;
       formData.plotAreaSqFt = plotAreaSqFt;
       formData.plotAreaSqMt = plotAreaSqMt;
-      setFormData({
-        ...formData,
-        [name]: value
-      });
+     
     }
     if (name.startsWith('cal')) {
       debugger
@@ -88,29 +87,23 @@ const AreaDimension = () => {
         sqMt: areaMt.toString()
       }));
     }
+    if (name === 'modify' && value === 'yes') {
+      setIsEditable(true);
+    } else if (name === 'modify' && value === 'no') {
+      setIsEditable(false);
+    }
+    if (name === 'modifycheckbandi' && value === 'yes') {
+      setIsEditablecheckbandi(true);
+    } else if (name === 'modifycheckbandi' && value === 'no') {
+      setIsEditablecheckbandi(false);
+    }
     setFormData({
       ...formData,
       [name]: value
     });
   };
  
-console.log(DropdownValue)
  // const { t } = useTranslation();
- const handleRadioChange = (e) => {
-  const { name, value } = e.target;
-  setFormData({
-    ...formData,
-    [name]: value,
-  });
-
-  if (name === 'modify' && value === 'yes') {
-    setIsEditable(true);
-  } else if (name === 'modify' && value === 'no') {
-    setIsEditable(false);
-  }
-};
-console.log(tablesdata)
-console.log(tablesdata2)
 useEffect(() => {
   debugger
   const response = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
@@ -118,8 +111,7 @@ useEffect(() => {
       
       const {  Table1,  Table2,Table3, Table5 ,Table7  } = response.data;
       const {  Table17   } = response2.data;
-      setTablesData1({ Table1,Table2,Table3,Table5,Table7 });
-      setTablesData2({ Table17 });
+     
       const table1Item = Table1.length > 0 ? Table1[0] : {};
       const table2Item = Table2.length > 0 ? Table2[0] : {};
       const table3Item = Table3.length > 0 ? Table3[0] : {};
@@ -143,9 +135,151 @@ useEffect(() => {
     }));
   }
 }, []);
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
+    debugger
+    if(isEditablecheckbandhi === true && formData.propertyType !== "flats" && formData.propertyType !== "select") //only checkbandhi data
+      {
+        const checkbandhidata = {
+          propertyCode: 104931,
+  checkbandI_NORTH: formData.east,
+  checkbandI_SOUTH: formData.south,
+  checkbandI_EAST: formData.east,
+  checkbandI_WEST: formData.west,
+  loginId: "crc"
+}
+      debugger
+      try {
+        await  axiosInstance.post('BBMPCITZAPI/UPD_NCL_PROPERTY_MAIN_TEMP_CHECKBANDI', checkbandhidata
+         )
+        
+         const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&propertyid=104931');
+         sessionStorage.setItem('BBD_DRAFT_API', JSON.stringify(response1));
+        await toast.success("Details Saved Successfully", {
+           position: "top-right",
+           autoClose: 5000,
+           hideProgressBar: false,
+           closeOnClick: true,
+           pauseOnHover: true,
+           draggable: true,
+           progress: undefined,
+         });
+         setLoading(false);
+       
+       } catch (error) {
+      await   toast.error("Error saving data!" + error, {
+           position: "top-right",
+           autoClose: 5000,
+           hideProgressBar: false,
+           closeOnClick: true,
+           pauseOnHover: true,
+           draggable: true,
+           progress: undefined,
+         });
+       }
+      }
+ if((formData.propertyType === "vacant" || formData.propertyType === "building") && isEditablecheckbandhi === false && formData.propertyType !== "select" &&  (isEditable) 
+    //only below data
+  ){
+  const data = {
+        propertyCode: 104931,
+    siteorbuilding: formData.propertyType,
+    evenoroddsite: formData.oddSite,
+    sitearea: formData.plotAreaSqMt,
+    siteareaft: formData.plotAreaSqFt,
+    buildingarea: formData.builtUpAreaSqMt,
+    buildingareaft: formData.builtUpAreaSqFt,
+    eastwest: formData.ew.toString(),
+    northsouth: formData.ns.toString(),
+    ewoddsitE1FT: formData.cal1,
+    ewoddsitE2FT: formData.cal2,
+    ewoddsitE3FT: formData.cal3,
+    ewoddsitE4FT: formData.cal4,
+    nsoddsitE1FT: formData.cal5,
+    nsoddsitE2FT: formData.cal6,
+    nsoddsitE3FT: formData.cal7,
+    nsoddsitE4FT: formData.cal8,
+    loginId: "crc"
+       };
+    debugger
+    try {
+      await  axiosInstance.post('BBMPCITZAPI/UPD_NCL_PROPERTY_SITE_DIMENSION_TEMP', data
+       )
+      
+       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&propertyid=104931');
+       sessionStorage.setItem('BBD_DRAFT_API', JSON.stringify(response1));
+      await toast.success("Details Saved Successfully", {
+         position: "top-right",
+         autoClose: 5000,
+         hideProgressBar: false,
+         closeOnClick: true,
+         pauseOnHover: true,
+         draggable: true,
+         progress: undefined,
+       });
+       setLoading(false);
+     
+     } catch (error) {
+    await   toast.error("Error saving data!" + error, {
+         position: "top-right",
+         autoClose: 5000,
+         hideProgressBar: false,
+         closeOnClick: true,
+         pauseOnHover: true,
+         draggable: true,
+         progress: undefined,
+       });
+     }
+    }
+    else if(formData.propertyType === "flats"  && formData.propertyType !== "select" && isEditable === true) //only flats
+      {
+        const data = {
+          propertyCode: 104931,
+  carpetarea: formData.ApartCarpetArea,
+  additionalarea: formData.ApartAddtionalArea,
+  superbuiltuparea: formData.ApartSuperBuiltArea,
+      loginId: "crc"
+         };
+      debugger
+      try {
+        await  axiosInstance.post('BBMPCITZAPI/UPD_NCL_PROPERTY_APARTMENT_TEMP_AREA', data
+         )
+         const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&propertyid=104931');
+         sessionStorage.setItem('BBD_DRAFT_API', JSON.stringify(response1));
+        await toast.success("Details Saved Successfully", {
+           position: "top-right",
+           autoClose: 5000,
+           hideProgressBar: false,
+           closeOnClick: true,
+           pauseOnHover: true,
+           draggable: true,
+           progress: undefined,
+         });
+         setLoading(false);
+       
+       } catch (error) {
+      await   toast.error("Error saving data!" + error, {
+           position: "top-right",
+           autoClose: 5000,
+           hideProgressBar: false,
+           closeOnClick: true,
+           pauseOnHover: true,
+           draggable: true,
+           progress: undefined,
+         });
+       }
+    }
+    else if((isEditable === false) && (isEditablecheckbandhi === false)){
+      await toast.warning("There is no changes to save!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
   };
   const back = () => {
     navigate('/bbmp-form')
@@ -174,18 +308,18 @@ useEffect(() => {
         ...formData,
         [name]: value,
       });
-      if (name === 'oddSite' && value === 'yes' ) {
+      if (name === 'oddSite' && value === 'ODD' ) {
         setIsOddSiteEnabled(true);
-      } else if (name === 'oddSite' && value === 'no' ) {
+      } else if (name === 'oddSite' && value === 'EVEN' ) {
         setIsOddSiteEnabled(false);
       }
     }
-    
-  console.log(formData.propertyType)
+
   return (
     
     <Container maxWidth="lg">
       <Box sx={{ backgroundColor: '#f0f0f0', padding: 4, borderRadius: 2, mt: 8 }}>
+      <ToastContainer />
         <form onSubmit={handleSubmit}>
           <Typography
             variant="h5"
@@ -216,7 +350,7 @@ useEffect(() => {
               
               <Grid item xs={6} sm={3}>
               <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
-            <RadioGroup row name="modify" value={formData.modify} onChange={handleRadioChange}>
+            <RadioGroup row name="modify" value={formData.modify} onChange={handleChange}>
               <FormControlLabel value="yes" control={<Radio />} label="Modify" />
               <FormControlLabel value="no" control={<Radio />} label="No Modifications" />
             </RadioGroup>
@@ -227,7 +361,7 @@ useEffect(() => {
                   fullWidth
                   label="
                         Carpet Area (in Sq.mts.)"
-                  name="numFlats"
+                  name="ApartCarpetArea"
                   value={formData.ApartCarpetArea}
                   onChange={handleChange}
                   type="number"
@@ -249,7 +383,7 @@ useEffect(() => {
                   fullWidth
                   label="
                   Additional Area(in Sq.mts.)"
-                  name="numFlats"
+                  name="ApartAddtionalArea"
                   value={formData.ApartAddtionalArea}
                   onChange={handleChange}
                   type="number"
@@ -271,7 +405,7 @@ useEffect(() => {
                   fullWidth
                   label="
                     Super Built Area (in Sq.mts.)"
-                  name="numFlats"
+                  name="ApartSuperBuiltArea"
                   value={formData.ApartSuperBuiltArea}
                   onChange={handleChange}
                   type="number"
@@ -297,7 +431,7 @@ useEffect(() => {
             Schedule Of The Property
           </Typography>
           <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
-            <RadioGroup row name="modify" value={formData.modify} onChange={handleRadioChange}>
+            <RadioGroup row name="modifycheckbandi" value={formData.modifycheckbandi} onChange={handleChange}>
               <FormControlLabel value="yes" control={<Radio />} label="Modify" />
               <FormControlLabel value="no" control={<Radio />} label="No Modifications" />
             </RadioGroup>
@@ -310,9 +444,9 @@ useEffect(() => {
                 name="east"
                 value={formData.east}
                 onChange={handleChange}
-                variant={isEditable ? "standard" : "filled"}
+                variant={isEditablecheckbandhi ? "standard" : "filled"}
     InputProps={{
-    readOnly: !isEditable,
+    readOnly: !isEditablecheckbandhi,
     endAdornment: (
       <Tooltip title="Converted from Sq.ft">
         <IconButton>
@@ -330,9 +464,9 @@ useEffect(() => {
                 name="west"
                 value={formData.west}
                 onChange={handleChange}
-                variant={isEditable ? "standard" : "filled"}
+                variant={isEditablecheckbandhi ? "standard" : "filled"}
                 InputProps={{
-                  readOnly: !isEditable,
+                  readOnly: !isEditablecheckbandhi,
                   endAdornment: (
                     <Tooltip title="Converted from Sq.ft">
                       <IconButton>
@@ -350,9 +484,9 @@ useEffect(() => {
                 name="north"
                 value={formData.north}
                 onChange={handleChange}
-                variant={isEditable ? "standard" : "filled"}
+                variant={isEditablecheckbandhi ? "standard" : "filled"}
                 InputProps={{
-                  readOnly: !isEditable,
+                  readOnly: !isEditablecheckbandhi,
                   endAdornment: (
                     <Tooltip title="Converted from Sq.ft">
                       <IconButton>
@@ -370,9 +504,9 @@ useEffect(() => {
                 name="south"
                 value={formData.south}
                 onChange={handleChange}
-                variant={isEditable ? "standard" : "filled"}
+                variant={isEditablecheckbandhi ? "standard" : "filled"}
                 InputProps={{
-                  readOnly: !isEditable,
+                  readOnly: !isEditablecheckbandhi,
                   endAdornment: (
                     <Tooltip title="Converted from Sq.ft">
                       <IconButton>
@@ -387,14 +521,19 @@ useEffect(() => {
           <Typography variant="h6" sx={{ fontWeight: 'bold', marginY: 2 }}>
             Additional Details
           </Typography>
-         
+          <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
+            <RadioGroup row name="modify" value={formData.modify} onChange={handleChange}>
+              <FormControlLabel value="yes" control={<Radio />} label="Modify" />
+              <FormControlLabel value="no" control={<Radio />} label="No Modifications" />
+            </RadioGroup>
+          </FormControl>
           <Typography variant="h6" sx={{ fontWeight: 'bold', marginY: 2 }}>
             Odd Site
           </Typography>
           <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
-            <RadioGroup row name="oddSite" value={formData.oddSite} onChange={handleOddSiteChange}>
-              <FormControlLabel value="yes" control={<Radio />} label="Yes" />
-              <FormControlLabel value="no" control={<Radio />} label="No" />
+            <RadioGroup row name="oddSite" value={formData.oddSite}  onChange={handleOddSiteChange}>
+              <FormControlLabel value="ODD"  control={<Radio disabled={!isEditable} />}  label="Yes" />
+              <FormControlLabel value="EVEN"  control={<Radio disabled={!isEditable} />}  label="No" />
             </RadioGroup>
           </FormControl>
           <Typography variant="h6" sx={{ fontWeight: 'bold',  }}>
@@ -498,7 +637,7 @@ useEffect(() => {
               Schedule Of The Property
             </Typography>
             <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
-              <RadioGroup row name="modify" value={formData.modify} onChange={handleRadioChange}>
+              <RadioGroup row name="modifycheckbandi" value={formData.modifycheckbandi} onChange={handleChange}>
                 <FormControlLabel value="yes" control={<Radio />} label="Modify" />
                 <FormControlLabel value="no" control={<Radio />} label="No Modifications" />
               </RadioGroup>
@@ -511,9 +650,9 @@ useEffect(() => {
                   name="east"
                   value={formData.east}
                   onChange={handleChange}
-                  variant={isEditable ? "standard" : "filled"}
+                  variant={isEditablecheckbandhi ? "standard" : "filled"}
                   InputProps={{
-                    readOnly: !isEditable,
+                    readOnly: !isEditablecheckbandhi,
                     endAdornment: (
                       <Tooltip title="Converted from Sq.ft">
                         <IconButton>
@@ -531,9 +670,9 @@ useEffect(() => {
                   name="west"
                   value={formData.west}
                   onChange={handleChange}
-                 variant={isEditable ? "standard" : "filled"}
+                 variant={isEditablecheckbandhi ? "standard" : "filled"}
   InputProps={{
-    readOnly: !isEditable,
+    readOnly: !isEditablecheckbandhi,
     endAdornment: (
       <Tooltip title="Converted from Sq.ft">
         <IconButton>
@@ -551,9 +690,9 @@ useEffect(() => {
                   name="north"
                   value={formData.north}
                   onChange={handleChange}
-                 variant={isEditable ? "standard" : "filled"}
+                 variant={isEditablecheckbandhi ? "standard" : "filled"}
   InputProps={{
-    readOnly: !isEditable,
+    readOnly: !isEditablecheckbandhi,
     endAdornment: (
       <Tooltip title="Converted from Sq.ft">
         <IconButton>
@@ -571,9 +710,9 @@ useEffect(() => {
                   name="south"
                   value={formData.south}
                   onChange={handleChange}
-                 variant={isEditable ? "standard" : "filled"}
+                 variant={isEditablecheckbandhi ? "standard" : "filled"}
   InputProps={{
-    readOnly: !isEditable,
+    readOnly: !isEditablecheckbandhi,
     endAdornment: (
       <Tooltip title="Converted from Sq.ft">
         <IconButton>
@@ -588,14 +727,19 @@ useEffect(() => {
             <Typography variant="h6" sx={{ fontWeight: 'bold', marginY: 2 }}>
               Additional Details
             </Typography>
-           
+            <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
+            <RadioGroup row name="modify" value={formData.modify} onChange={handleChange}>
+              <FormControlLabel value="yes" control={<Radio />} label="Modify" />
+              <FormControlLabel value="no" control={<Radio />} label="No Modifications" />
+            </RadioGroup>
+          </FormControl>
             <Typography variant="h6" sx={{ fontWeight: 'bold', marginY: 2 }}>
               Odd Site
             </Typography>
             <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
               <RadioGroup row name="oddSite" value={formData.oddSite} onChange={handleOddSiteChange}>
-                <FormControlLabel value="yes" control={<Radio />} label="Yes" />
-                <FormControlLabel value="no" control={<Radio />} label="No" />
+                <FormControlLabel value="ODD" control={<Radio />} label="Yes" />
+                <FormControlLabel value="EVEN" control={<Radio />} label="No" />
               </RadioGroup>
             </FormControl>
             <Typography variant="h6" sx={{ fontWeight: 'bold',  }}>
