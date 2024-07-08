@@ -68,7 +68,7 @@ const BuildingDetails = () => {
       [name]: value
     });
   };
-console.log()
+
   const { t } = useTranslation();
   const fetchData = async () => {
     const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
@@ -86,15 +86,15 @@ console.log()
     e.preventDefault();
     debugger
     var BUILDINGUSAGETYPEID= 0;
-    if (formData.RentedArea == "0")
+    if (formData.RentedArea === "0")
       {
           BUILDINGUSAGETYPEID = 4;
       }
-      else if (formData.SelfuseArea == "0")
+      else if (formData.SelfuseArea === "0")
       {
           BUILDINGUSAGETYPEID = 5;
       }
-      else if (formData.SelfuseArea != "0" && formData.SelfuseArea != "0")
+      else if (formData.SelfuseArea !== "0" && formData.SelfuseArea !== "0")
       {
           BUILDINGUSAGETYPEID = 6;
       }

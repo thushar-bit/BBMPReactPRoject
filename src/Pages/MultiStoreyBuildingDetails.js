@@ -8,12 +8,14 @@ import InfoIcon from '@mui/icons-material/Info';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../components/Axios';
-
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const MultiStoreyBuildingDetails = () => {
+  const [ownersharetype,setOwnerSharetype] = useState("Owner Share Area(in Sq.mts.) :")
   const [formData, setFormData] = useState({
    
       BlockName: '',
-      FlatNo: '',
+      FlatNos: '',
       floornumber: '',
       features: '',
       Typeofuse: '',
@@ -22,8 +24,8 @@ const MultiStoreyBuildingDetails = () => {
       TotalParkingArea: '',
       Occupancy: '',
       BesomCustomerID: '',
-      SelectOwnerShareType: '',
-      OwnersSharePercent: '',
+      SelectOwnerShareType: '0',
+      OwnersShareAreaSqmts: "",
       ParkingFacility: '',
    
     
@@ -38,16 +40,36 @@ const MultiStoreyBuildingDetails = () => {
   const [tablesdata3,setTablesData3] = useState([]);
   const [tablesdata4,setTablesData4] = useState([]);
   const [tablesdata6,setTablesData6] = useState([]);
+  const [loading,setLoading] = useState(false);
 
   const { t } = useTranslation();
 
   const handleChange = async (e) => {
+    debugger
     const { name, value } = e.target;
-    if (name === 'ParkingFacility' && value === 'yes') {
+    if (name === 'ParkingFacility' && value === 'Y') {
       setIsEditable(true);
-    } else if (name === 'ParkingFacility' && value === 'no') {
+    } else if (name === 'ParkingFacility' && value === 'N') {
       setIsEditable(false);
     }
+    if(name === "SelectOwnerShareType" && value !== '0')
+      {
+    if(name === "SelectOwnerShareType" && value === '1')
+      {
+        setOwnerSharetype("Owner Share Area(in Sq.mts.) :")
+      
+      }
+      else if(name === "SelectOwnerShareType" && value === '2')
+      {
+        setOwnerSharetype("Owners Share Percent (in Percentile) : ")
+        
+      }
+      else if(name === "SelectOwnerShareType" && value === '3')
+      {
+        setOwnerSharetype("Owner Share Number : ")
+         
+      }
+      }
     if (name === "features") {
       try {
         const response = await axiosInstance.get(`BBMPCITZAPI/GetNPMMasterTable?FeaturesHeadID=${value}`);
@@ -95,7 +117,7 @@ const MultiStoreyBuildingDetails = () => {
         setTablesData6(table17Item);
         setFormData({
           BlockName: table13Item.BLOCKNUMBER,
-          FlatNo: table13Item.FLATNO,
+          FlatNos: table13Item.FLATNO,
           floornumber: table13Item.FLOORNUMBERID,
           features: table13Item.FEATUREHEADID,
           Typeofuse: table13Item.FEATUREID,
@@ -104,8 +126,8 @@ const MultiStoreyBuildingDetails = () => {
           TotalParkingArea: table13Item.PARKINGAREA,
           Occupancy: table13Item.BUILDINGUSAGETYPEID,
           BesomCustomerID: table13Item.RRNO,
-          SelectOwnerShareType: table13Item.BUILDINGUSAGETYPEID,
-          OwnersSharePercent: table13Item.PLOTAREAOWNERSHARE_AREA,
+          SelectOwnerShareType: "0",
+          OwnersShareAreaSqmts: table13Item.PLOTAREAOWNERSHARE_AREA,
           ParkingFacility: table13Item.PARKINGAVAILABLE,
         });
   }
@@ -114,11 +136,55 @@ const MultiStoreyBuildingDetails = () => {
     fetchData();
         
   }, []);
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Submit form data logic here
+ debugger
+    const data = {
+      propertyCode: 104931,
+  plotareaownersharE_AREA: formData.SelectOwnerShareType === "1"? formData.OwnersShareAreaSqmts : 0,
+  plotareaownersharE_NOS: formData.SelectOwnerShareType === "2"? formData.OwnersShareAreaSqmts : 0,
+  plotareaownersharE_FRACTION: formData.SelectOwnerShareType === "3"? formData.OwnersShareAreaSqmts : 0,
+  parkingavailable: formData.ParkingFacility,
+  parkingunits: formData.ParkingFacility === "Y"? formData.Totalnumberofparkingunits : 0,
+  blocknumber: formData.BlockName,
+  flatno: formData.FlatNos,
+  parkingarea: formData.ParkingFacility === "Y"? formData.TotalParkingArea : "0",
+  buildingusagetypeid: formData.Occupancy,
+  ulbcode: 555,
+  rrno: formData.BesomCustomerID,
+  yearofconstruction: formData.yearOfConstruction,
+  floornumberid: formData.floornumber,
   };
-
+  debugger
+try {
+  await  axiosInstance.post('BBMPCITZAPI/INS_UPD_NCL_PROPERTY_APARTMENT_TEMP1?ULBCODE=555' , data
+   )
+  
+   const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&propertyid=104931');
+   sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
+  await toast.success("Details Saved Successfully", {
+     position: "top-right",
+     autoClose: 5000,
+     hideProgressBar: false,
+     closeOnClick: true,
+     pauseOnHover: true,
+     draggable: true,
+     progress: undefined,
+   });
+   setLoading(false);
+ 
+ } catch (error) {
+await   toast.error("Error saving data!" + error, {
+     position: "top-right",
+     autoClose: 5000,
+     hideProgressBar: false,
+     closeOnClick: true,
+     pauseOnHover: true,
+     draggable: true,
+     progress: undefined,
+   });
+ }
+  }
   const back = () => {
     navigate('/AreaDimension/flats');
   };
@@ -133,6 +199,7 @@ const MultiStoreyBuildingDetails = () => {
 
   return (
     <Container maxWidth="xl">
+      <ToastContainer/>
       <Box sx={{ backgroundColor: '#f0f0f0', padding: 4, borderRadius: 2, mt: 8 }}>
         <form onSubmit={handleSubmit}>
           <Typography
@@ -175,20 +242,19 @@ const MultiStoreyBuildingDetails = () => {
             <Grid item xs={12} sm={4}>
               <TextField
                 fullWidth
+                label="Flat No"
+                name="FlatNos"
+                value={formData.FlatNos}
+                onChange={handleChange}
                 InputProps={{
-                  readOnly: true,
                   endAdornment: (
-                    <Tooltip title={t("cityInfo")}>
+                    <Tooltip title={t("propertyEIDInfo")}>
                       <IconButton color="primary">
                         <InfoIcon />
                       </IconButton>
                     </Tooltip>
                   )
                 }}
-                label={"Flat No"}
-                name="FlatNo"
-                value={formData.FlatNo}
-                onChange={handleChange}
               />
             </Grid>
             <Grid item xs={12} sm={4}>
@@ -201,7 +267,7 @@ const MultiStoreyBuildingDetails = () => {
             >
               <MenuItem value="">--Select--</MenuItem>
           {tablesdata4.map((item) => (
-            <MenuItem key={item.FLOORID} value={item.FLOORNUMBER_EN}>
+            <MenuItem key={item.FLOORNUMBERID} value={item.FLOORNUMBERID}>
               {item.FLOORNUMBER_EN}
             </MenuItem>
           ))}
@@ -273,7 +339,7 @@ const MultiStoreyBuildingDetails = () => {
                 value={formData.Totalnumberofparkingunits}
                 onChange={handleChange}
                 InputProps={{
-                  readOnly: isEditable,
+                  readOnly: !isEditable,
                   endAdornment: (
                     <Tooltip title={t("buildingLandNameInfo")}>
                       <IconButton color="primary">
@@ -293,7 +359,7 @@ const MultiStoreyBuildingDetails = () => {
                 value={formData.TotalParkingArea}
                 onChange={handleChange}
                 InputProps={{
-                  readOnly: isEditable,
+                  readOnly: !isEditable,
                   endAdornment: (
                     <Tooltip title={t("streetInfo")}>
                       <IconButton color="primary">
@@ -358,9 +424,9 @@ const MultiStoreyBuildingDetails = () => {
             <Grid item xs={12} sm={4}>
               <TextField
                 fullWidth
-                label={"Owners Share Percent (in Percentile) :"}
-                name="OwnersSharePercent"
-                value={formData.OwnersSharePercent}
+                label={ownersharetype}
+                name="OwnersShareAreaSqmts"
+                value={formData.OwnersShareAreaSqmts}
                 onChange={handleChange}
                 type='number'
                 InputProps={{
@@ -380,8 +446,8 @@ const MultiStoreyBuildingDetails = () => {
               </Typography>
               <FormControl component="ParkingFacility" sx={{ marginBottom: 3 }}>
                 <RadioGroup row name="ParkingFacility" value={formData.ParkingFacility} onChange={handleChange}>
-                  <FormControlLabel value="yes" control={<Radio />} label="Yes" />
-                  <FormControlLabel value="no" control={<Radio />} label="No" />
+                  <FormControlLabel value="Y" control={<Radio />} label="Yes" />
+                  <FormControlLabel value="N" control={<Radio />} label="No" />
                 </RadioGroup>
               </FormControl>
             </Grid>
