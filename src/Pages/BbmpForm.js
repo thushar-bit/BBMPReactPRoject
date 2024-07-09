@@ -38,12 +38,9 @@ const BbmpForm = () => {
   const navigate = useNavigate();
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [tablesdata,setTablesData1] = useState([]);
-  const [tablesdata2,setTablesData2] = useState([]);
   const [isEditable, setIsEditable] = useState(false);
 
-console.log(tablesdata)
-console.log(tablesdata2)
+
   const fetchData = async () => {
     setLoading(true)
     try {
@@ -52,8 +49,7 @@ console.log(tablesdata2)
       
       const {  Table1,   Table5,   } = response.data;
       const {  Table17   } = response2.data;
-      setTablesData1({ Table1, Table5 });
-      setTablesData2({ Table17 });
+    
       const table1Item = Table1.length > 0 ? Table1[0] : {};
       const table5Item = Table5.length > 0 ? Table5[0] : {};
       const table17Item = Table17.length > 0 ? Table17[0] : {};
@@ -96,6 +92,7 @@ console.log(tablesdata2)
   const { t } = useTranslation();
   const [previewUrl, setPreviewUrl] = useState('');
   const handleFileChange = (e) => {
+    if (!isEditable) return;
     setSelectedFile(e.target.files[0]);
     const file = e.target.files[0];
     if (file) {
@@ -125,20 +122,40 @@ console.log(tablesdata2)
       setIsEditable(false);
     }
   };
+  const getPropertyphoto = (selectedFile) => {
+    return new Promise((resolve, reject) => {
+      if (!selectedFile) {
+        resolve(''); // Return an empty string if no file is selected
+        return;
+      }
+  
+      const reader = new FileReader();
+      reader.readAsDataURL(selectedFile);
+  
+      reader.onloadend = () => {
+        const propertyphoto = reader.result.split(',')[1];
+        resolve(propertyphoto);
+      };
+  
+      reader.onerror = (error) => {
+        reject(error);
+      };
+    });
+  };
 
 const  handleSubmit = async (e) => {
+ 
   e.preventDefault();
-  let propertyphoto = '';
-  setLoading(true);
-       if (selectedFile) {
-         const reader = new FileReader();
-         reader.readAsDataURL(selectedFile);
-         reader.onloadend = async () => {
-           propertyphoto = reader.result.split(',')[1];
-  reader.onloadend =  async () => {
-     propertyphoto = reader.result.split(',')[1];
-  }
+  var propertyphoto2 = "";
+  debugger
+  if(isEditable){
+  if(selectedFile)
+    {
+      propertyphoto2 = await getPropertyphoto(selectedFile);
+    }
+
     debugger
+   
     const data = {
       propertyCode: formData.propertyNumber,
       streetid: formData.streetid, 
@@ -147,18 +164,19 @@ const  handleSubmit = async (e) => {
       areaorlocality: formData.AreaLocality,
       landmark: formData.NearestLandmark,
       pincode: formData.Pincode,
-      propertyphoto:propertyphoto,
+      propertyphoto:propertyphoto2,
       categoryId: 2,
       puidNo: 's23', 
-      loginId: 'crc'
+      loginId:"crc"
     };
     try {
      await  axiosInstance.post('BBMPCITZAPI/GET_PROPERTY_CTZ_PROPERTY', data
       )
       setSelectedFile(null);
-      const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&propertyid=104931');
-      sessionStorage.setItem('BBD_DRAFT_API', JSON.stringify(response1));
-     await toast.success("Details Saved Successfully", {
+     const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&propertyid=104931');
+      sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
+     
+      await toast.success("Details Saved Successfully", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -167,7 +185,7 @@ const  handleSubmit = async (e) => {
         draggable: true,
         progress: undefined,
       });
-      setLoading(false);
+     
     
     } catch (error) {
    await   toast.error("Error saving data", {
@@ -180,10 +198,21 @@ const  handleSubmit = async (e) => {
         progress: undefined,
       });
     }
+  }else {
+    await   toast.warning("No changes to save", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
   }
-} 
-setLoading(false);
-}
+  setLoading(false);
+  }
+
+
 
 const handleNavigation= () =>{
   navigate('/AreaDimension/select')
@@ -529,6 +558,7 @@ const handleNavigation= () =>{
                 variant="contained"
                 startIcon={<CloudUploadIcon />}
                 sx={{ ml: 2 }}
+                disabled={!isEditable}
               >
                 {t("Uploadfile")}
                 <VisuallyHiddenInput type="file" accept=".jpg,.jpeg,.png" onChange={handleFileChange} />
@@ -539,10 +569,10 @@ const handleNavigation= () =>{
         <div style={{ marginLeft: '10px', position: 'relative' }}>
           <img
             src={previewUrl}
-            alt="Selected"
+            alt="No Images Found"
             style={{
-              maxWidth: '100%', // Ensure the image fits within its container
-              maxHeight: '200px', // Limit the maximum height to maintain aspect ratio
+              maxWidth: '100%', 
+              maxHeight: '200px', 
               width: 'auto', // Allow the width to adjust responsively
               height: 'auto', // Allow the height to adjust responsively
             }}

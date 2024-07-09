@@ -109,31 +109,49 @@ useEffect(() => {
   const response = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
       const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
       
-      const {  Table1,  Table2,Table3, Table5 ,Table7  } = response.data;
-      const {  Table17   } = response2.data;
-     
-      const table1Item = Table1.length > 0 ? Table1[0] : {};
-      const table2Item = Table2.length > 0 ? Table2[0] : {};
-      const table3Item = Table3.length > 0 ? Table3[0] : {};
-      const table7Item = Table7.length > 0 ? Table7[0] : {};
-  if (table1Item) {
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      east: table1Item.CHECKBANDI_EAST || '',
-      west: table1Item.CHECKBANDI_WEST || '',
-      north: table1Item.CHECKBANDI_NORTH || '',
-      south: table1Item.CHECKBANDI_SOUTH || '',
-      ns: table3Item.NORTHSOUTH || 0,
-      ew: table3Item.EASTWEST || 0,
-      plotAreaSqFt: table2Item.SITEAREAFT || 0,
-      plotAreaSqMt: table2Item.SITEAREA || 0,
-      builtUpAreaSqFt: table2Item.BUILDINGAREAFT || 0,
-      builtUpAreaSqMt: table2Item.BUILDINGAREA || 0,
-      ApartCarpetArea:table7Item.CARPETAREA || 0,
-      ApartAddtionalArea:table7Item.ADDITIONALAREA || 0,
-      ApartSuperBuiltArea:table7Item.SUPERBUILTUPAREA || 0,
-    }));
-  }
+      const {
+        Table1: Table1Data,
+        Table2: Table2Data,
+        Table3: Table3Data,
+        Table7: Table7Data
+      } = response.data;
+      const {
+        Table1: NCLTable1Data,
+        Table2: NCLTable2Data,
+        Table5: NCLTable5Data,
+        Table13: NCLTable13Data
+      } = response2.data;
+     //BBD Tables
+      
+      
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          east: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_EAST || '': Table1Data.length > 0 ? Table1Data.CHECKBANDI_EAST|| "":'',
+          west: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_WEST || '': Table1Data.length > 0 ? Table1Data.CHECKBANDI_WEST|| "":'',
+          north: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_NORTH || '': Table1Data.length > 0 ? Table1Data.CHECKBANDI_NORTH|| "":'',
+          south: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_SOUTH || '': Table1Data.length > 0 ? Table1Data.CHECKBANDI_SOUTH|| "":'',
+          ns: NCLTable5Data.length > 0 ? NCLTable5Data[0].NORTHSOUTH || 0: Table3Data.length > 0 ? Table3Data[0].NORTHSOUTH|| "":0,
+          ew: NCLTable5Data.length > 0 ? NCLTable5Data[0].EASTWEST || 0: Table3Data.length > 0 ? Table3Data[0].EASTWEST|| "":0,
+          plotAreaSqFt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREAFT || 0: Table2Data.length > 0 ? Table2Data[0].SITEAREAFT|| "":0,
+          plotAreaSqMt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREA || 0: Table2Data.length > 0 ? Table2Data[0].SITEAREA|| "":0,
+          builtUpAreaSqFt: NCLTable2Data.length > 0 ? NCLTable2Data[0].BUILDINGAREAFT || 0: Table2Data.length > 0 ? Table2Data[0].BUILDINGAREAFT|| "":0,
+          builtUpAreaSqMt: NCLTable2Data.length > 0 ? NCLTable2Data[0].BUILDINGAREA || 0: Table2Data.length > 0 ? Table2Data[0].BUILDINGAREA|| "":0,
+          ApartCarpetArea:NCLTable13Data.length > 0 ? NCLTable13Data[0].CARPETAREA || 0: Table7Data.length > 0 ? Table7Data[0].CARPETAREA|| "":0,
+          ApartAddtionalArea:NCLTable13Data.length > 0 ? NCLTable13Data[0].ADDITIONALAREA || 0: Table7Data.length > 0 ? Table7Data[0].ADDITIONALAREA|| "":0,
+          ApartSuperBuiltArea:NCLTable13Data.length > 0 ? NCLTable13Data[0].SUPERBUILTUPAREA || 0: Table7Data.length > 0 ? Table7Data[0].SUPERBUILTUPAREA|| "":0,
+          cal1: NCLTable5Data.length > 0 ? NCLTable5Data[0].EWODDSITE1FT || 0: Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT|| "":0,
+          cal2: NCLTable5Data.length > 0 ? NCLTable5Data[0].EWODDSITE2FT || 0: Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT|| "":0,
+          cal3: NCLTable5Data.length > 0 ? NCLTable5Data[0].EWODDSITE3FT || 0: Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT|| "":0,
+          cal4: NCLTable5Data.length > 0 ? NCLTable5Data[0].EWODDSITE4FT || 0: Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT|| "":0,
+          cal5: NCLTable5Data.length > 0 ? NCLTable5Data[0].NSODDSITE1FT || 0: Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT|| "":0,
+          cal6: NCLTable5Data.length > 0 ? NCLTable5Data[0].NSODDSITE2FT || 0: Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT|| "":0,
+          cal7: NCLTable5Data.length > 0 ? NCLTable5Data[0].NSODDSITE3FT || 0: Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT|| "":0,
+          cal8: NCLTable5Data.length > 0 ? NCLTable5Data[0].NSODDSITE4FT || 0: Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT|| "":0,
+        }));
+ 
+   
+    
+  
 }, []);
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -153,8 +171,8 @@ useEffect(() => {
         await  axiosInstance.post('BBMPCITZAPI/UPD_NCL_PROPERTY_MAIN_TEMP_CHECKBANDI', checkbandhidata
          )
         
-         const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&propertyid=104931');
-         sessionStorage.setItem('BBD_DRAFT_API', JSON.stringify(response1));
+         const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&propertyid=104931');
+         sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
         await toast.success("Details Saved Successfully", {
            position: "top-right",
            autoClose: 5000,
@@ -206,8 +224,8 @@ useEffect(() => {
       await  axiosInstance.post('BBMPCITZAPI/UPD_NCL_PROPERTY_SITE_DIMENSION_TEMP', data
        )
       
-       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&propertyid=104931');
-       sessionStorage.setItem('BBD_DRAFT_API', JSON.stringify(response1));
+       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&propertyid=104931');
+       sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
       await toast.success("Details Saved Successfully", {
          position: "top-right",
          autoClose: 5000,
@@ -244,8 +262,8 @@ useEffect(() => {
       try {
         await  axiosInstance.post('BBMPCITZAPI/UPD_NCL_PROPERTY_APARTMENT_TEMP_AREA', data
          )
-         const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&propertyid=104931');
-         sessionStorage.setItem('BBD_DRAFT_API', JSON.stringify(response1));
+         const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&propertyid=104931');
+         sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
         await toast.success("Details Saved Successfully", {
            position: "top-right",
            autoClose: 5000,
@@ -884,12 +902,15 @@ useEffect(() => {
    <Grid container spacing={1} alignItems="center" justifyContent="center">
      <Grid item>
        <TextField
-         variant="outlined"
+         variant={isEditable ? "standard" : "filled"}
          size="small"
          name="cal1"
          value={formData.cal1}
          onChange={handleChange}
          sx={{ width: '100px', borderColor: '#016767' }}
+         InputProps={{
+          readOnly: !isEditable,
+         }}
        />
      </Grid>
      <Grid item>
@@ -897,12 +918,15 @@ useEffect(() => {
      </Grid>
      <Grid item>
        <TextField
-         variant="outlined"
+          variant={isEditable ? "standard" : "filled"}
          size="small"
          name="cal2"
          value={formData.cal2}
          onChange={handleChange}
-         sx={{ width: '100px', borderColor: '#016767' }}
+          sx={{ width: '100px', borderColor: '#016767' }}
+         InputProps={{
+          readOnly: !isEditable,
+         }}
        />
      </Grid>
      <Grid item>
@@ -910,12 +934,15 @@ useEffect(() => {
      </Grid>
      <Grid item>
        <TextField
-         variant="outlined"
+          variant={isEditable ? "standard" : "filled"}
          size="small"
          name="cal3"
          value={formData.cal3}
          onChange={handleChange}
-         sx={{ width: '100px', borderColor: '#016767' }}
+          sx={{ width: '100px', borderColor: '#016767' }}
+         InputProps={{
+          readOnly: !isEditable,
+         }}
        />
      </Grid>
      <Grid item>
@@ -923,12 +950,15 @@ useEffect(() => {
      </Grid>
      <Grid item>
        <TextField
-         variant="outlined"
+          variant={isEditable ? "standard" : "filled"}
          size="small"
          name="cal4"
          value={formData.cal4}
          onChange={handleChange}
-         sx={{ width: '100px', borderColor: '#016767' }}
+          sx={{ width: '100px', borderColor: '#016767' }}
+         InputProps={{
+          readOnly: !isEditable,
+         }}
        />
      </Grid>
      <Grid item>
@@ -936,12 +966,15 @@ useEffect(() => {
      </Grid>
      <Grid item>
        <TextField
-         variant="outlined"
+          variant={isEditable ? "standard" : "filled"}
          size="small"
          name="cal5"
          value={formData.cal5}
          onChange={handleChange}
-         sx={{ width: '100px', borderColor: '#016767' }}
+          sx={{ width: '100px', borderColor: '#016767' }}
+         InputProps={{
+          readOnly: !isEditable,
+         }}
        />
      </Grid>
      <Grid item>
@@ -949,12 +982,15 @@ useEffect(() => {
      </Grid>
      <Grid item>
        <TextField
-         variant="outlined"
+          variant={isEditable ? "standard" : "filled"}
          size="small"
          name="cal6"
          value={formData.cal6}
          onChange={handleChange}
-         sx={{ width: '100px', borderColor: '#016767' }}
+          sx={{ width: '100px', borderColor: '#016767' }}
+         InputProps={{
+          readOnly: !isEditable,
+         }}
        />
      </Grid>
 
@@ -965,12 +1001,15 @@ useEffect(() => {
       </Grid>
      <Grid item>
        <TextField
-         variant="outlined"
+          variant={isEditable ? "standard" : "filled"}
          size="small"
          name="cal7"
          value={formData.cal7}
          onChange={handleChange}
-         sx={{ width: '100px', borderColor: '#016767' }}
+          sx={{ width: '100px', borderColor: '#016767' }}
+         InputProps={{
+          readOnly: !isEditable,
+         }}
        />
      </Grid>
      <Grid item marginX={14}>
@@ -982,12 +1021,15 @@ useEffect(() => {
      </Grid>
      <Grid item>
        <TextField
-         variant="outlined"
+          variant={isEditable ? "standard" : "filled"}
          size="small"
          name="cal8"
          value={formData.cal8}
          onChange={handleChange}
-         sx={{ width: '100px', borderColor: '#016767' }}
+          sx={{ width: '100px', borderColor: '#016767' }}
+         InputProps={{
+          readOnly: !isEditable,
+         }}
        />
      </Grid>
      <Grid item>
@@ -1007,7 +1049,10 @@ useEffect(() => {
          name="sqFt"
          value={formData.sqFt}
          onChange={handleChange}
-         sx={{ width: '100px', borderColor: '#016767' }}
+          sx={{ width: '100px', borderColor: '#016767' }}
+         InputProps={{
+          readOnly: true,
+         }}
        />
      </Grid>
      <Grid item>
@@ -1023,8 +1068,9 @@ useEffect(() => {
          name="sqMt"
          value={formData.sqMt}
          onChange={handleChange}
-        
-
+         InputProps={{
+          readOnly: true,
+         }}
          sx={{ width: '100px', borderColor: '#016767' }}
        />
      </Grid>

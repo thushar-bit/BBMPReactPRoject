@@ -115,20 +115,49 @@ const MultiStoreyBuildingDetails = () => {
         setTablesData2(table16Item);
         setTablesData4(table15Item);
         setTablesData6(table17Item);
+        var sharetype = "0";
+        var ownersharetypeValue = "";
+        if (table13Item.PLOTAREAOWNERSHARE_AREA != "0")
+          {
+            ownersharetypeValue = table13Item.PLOTAREAOWNERSHARE_AREA
+            sharetype = "1";
+          }
+          else if (table13Item.PLOTAREAOWNERSHARE_FRACTION != "0")
+          {
+            ownersharetypeValue = table13Item.PLOTAREAOWNERSHARE_FRACTION
+            sharetype = "2";
+          }
+          else if (table13Item.PLOTAREAOWNERSHARE_NOS != "0")
+          {
+            ownersharetypeValue =  table13Item.PLOTAREAOWNERSHARE_NOS
+            sharetype = "3";
+          }
+          else
+          {
+            ownersharetypeValue =  ""
+            sharetype = "0";
+          }
+          if(table13Item.FEATUREHEADID !== null && table13Item.FEATUREHEADID !== ""){
+            debugger
+           const response3 =  await axiosInstance.get(`BBMPCITZAPI/GetNPMMasterTable?FeaturesHeadID=${table13Item.FEATUREHEADID}`);
+           if (response3.data.Table.length > 0) {
+            setTablesData3(response3.data.Table);
+          }
+           }
         setFormData({
-          BlockName: table13Item.BLOCKNUMBER,
-          FlatNos: table13Item.FLATNO,
-          floornumber: table13Item.FLOORNUMBERID,
-          features: table13Item.FEATUREHEADID,
-          Typeofuse: table13Item.FEATUREID,
-          yearOfConstruction: table13Item.BUILTYEAR,
-          Totalnumberofparkingunits: table13Item.PARKINGUNITS,
-          TotalParkingArea: table13Item.PARKINGAREA,
-          Occupancy: table13Item.BUILDINGUSAGETYPEID,
-          BesomCustomerID: table13Item.RRNO,
-          SelectOwnerShareType: "0",
-          OwnersShareAreaSqmts: table13Item.PLOTAREAOWNERSHARE_AREA,
-          ParkingFacility: table13Item.PARKINGAVAILABLE,
+          BlockName: table13Item.BLOCKNUMBER || '',
+          FlatNos: table13Item.FLATNO || '',
+          floornumber: table13Item.FLOORNUMBERID || '',
+          features: table13Item.FEATUREHEADID || '',
+          Typeofuse: table13Item.FEATUREID || '',
+          yearOfConstruction: table13Item.BUILTYEAR || '',
+          Totalnumberofparkingunits: table13Item.PARKINGUNITS || '',
+          TotalParkingArea: table13Item.PARKINGAREA || '',
+          Occupancy: table13Item.BUILDINGUSAGETYPEID || '',
+          BesomCustomerID: table13Item.RRNO || '',
+          SelectOwnerShareType: sharetype || '',
+          OwnersShareAreaSqmts: ownersharetypeValue || '',
+          ParkingFacility: table13Item.PARKINGAVAILABLE || '',
         });
   }
   React.useEffect(() => {
@@ -154,6 +183,8 @@ const MultiStoreyBuildingDetails = () => {
   rrno: formData.BesomCustomerID,
   yearofconstruction: formData.yearOfConstruction,
   floornumberid: formData.floornumber,
+  featureid:formData.features,
+  featureheadid:formData.Typeofuse
   };
   debugger
 try {

@@ -16,12 +16,12 @@ const BuildingDetails = () => {
   const [formData, setFormData] = useState({
     BuildingNumber: '',
   BuildingName: '',
-  floornumber: '',
+  floornumber: "",
   features: '',
   Typeofuse: '',
   yearOfConstruction: '',
-  SelfuseArea: '',
-  RentedArea: '',
+  SelfuseArea: 0,
+  RentedArea: 0,
   TotalArea: '',
   BesomCustomerID: '',
   BWSSBMeterNumber: ''
@@ -29,7 +29,7 @@ const BuildingDetails = () => {
   const [tableData, setTableData] = useState([
   ]);
   const navigate = useNavigate();
-  const [loading,setLoading] = useState([]);
+ // const [loading,setLoading] = useState([]);
   const [tablesdata2,setTablesData2] = useState([]);
   const [tablesdata3,setTablesData3] = useState([]);
   const [tablesdata4,setTablesData4] = useState([]);
@@ -74,10 +74,11 @@ const BuildingDetails = () => {
     const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
     const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
     const {  Table15,Table16   } = response1.data;
+    debugger
         const {  Table14   } = response2.data;
-        const table1Item = Table14.length > 0 ? Table14 : {};
-        const table16Item = Table16.length > 0 ? Table16 : {};
-        const table15Item = Table15.length > 0 ? Table15 : {};
+        const table1Item = Table14.length > 0 ? Table14 : [];
+        const table16Item = Table16.length > 0 ? Table16 : [];
+        const table15Item = Table15.length > 0 ? Table15 : [];
         setTableData(table1Item);
         setTablesData2(table16Item);
         setTablesData4(table15Item)
@@ -86,21 +87,21 @@ const BuildingDetails = () => {
     e.preventDefault();
     debugger
     var BUILDINGUSAGETYPEID= 0;
-    if (formData.RentedArea === "0")
+    if (formData.RentedArea === 0)
       {
           BUILDINGUSAGETYPEID = 4;
       }
-      else if (formData.SelfuseArea === "0")
+      else if (formData.SelfuseArea === 0)
       {
           BUILDINGUSAGETYPEID = 5;
       }
-      else if (formData.SelfuseArea !== "0" && formData.SelfuseArea !== "0")
+      else if (formData.SelfuseArea !== 0 && formData.SelfuseArea !== 0)
       {
           BUILDINGUSAGETYPEID = 6;
       }
     const data = {
       propertyCode: 104931,
-      floornumberid: formData.floornumberid,
+      floornumberid: 23,
       createdby: "crc",
       buildingusagetypeid: BUILDINGUSAGETYPEID,
       ulbcode: 555,
@@ -110,13 +111,13 @@ const BuildingDetails = () => {
       rrno: formData.BesomCustomerID,
       watermeterno: formData.BWSSBMeterNumber,
       buildingnumberid: formData.buildingnumberid ? "" :1,
-      buildingblockname: formData.buildingblockname,
-      ownUseArea: formData.selfuseAreaValue,
+      buildingblockname: formData.BuildingName,
+      ownUseArea: formData.SelfuseArea,
       rentedArea: formData.RentedArea,
 }
 debugger
 try {
-  await  axiosInstance.post(' BBMPCITZAPI/DEL_INS_SEL_NCL_PROP_BUILDING_TEMP?ULBCODE=555', data
+  await  axiosInstance.post('BBMPCITZAPI/DEL_INS_SEL_NCL_PROP_BUILDING_TEMP?ULBCODE=555', data
    )
   
    const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&propertyid=104931');
@@ -130,7 +131,7 @@ try {
      draggable: true,
      progress: undefined,
    });
-   setLoading(false);
+   //setLoading(false);
  
  } catch (error) {
 await   toast.error("Error saving data!" + error, {
@@ -153,24 +154,62 @@ await   toast.error("Error saving data!" + error, {
     navigate('/OwnerDetails');
     
   }
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     debugger
-    setTableData((prevTableData) => prevTableData.filter(row => row.id !== id));
+    const data = {
+      propertyCode: 104931,
+      buildingnumberid: id.BUILDINGBLOCKID,
+      floornumberid: id.FLOORNUMBERID,
+    }
+    try {
+     await  axiosInstance.post('BBMPCITZAPI/DEL_SEL_NCL_PROP_BUILDING_TEMP?ULBCODE=555', data
+       )
+       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&propertyid=104931');
+       sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
+      await toast.success("Details Delete Successfully", {
+         position: "top-right",
+         autoClose: 5000,
+         hideProgressBar: false,
+         closeOnClick: true,
+         pauseOnHover: true,
+         draggable: true,
+         progress: undefined,
+       });
+       //setLoading(false);
+     
+     } catch (error) {
+    await   toast.error("Error Deleting data!" + error, {
+         position: "top-right",
+         autoClose: 5000,
+         hideProgressBar: false,
+         closeOnClick: true,
+         pauseOnHover: true,
+         draggable: true,
+         progress: undefined,
+       });
+     }
   };
 
-  const handleEdit = (row) => {
+  const handleEdit = async (row) => {
+    if(row.FEATUREHEADID !== null && row.FEATUREHEADID !== ""){
+      debugger
+     const response3 =  await axiosInstance.get(`BBMPCITZAPI/GetNPMMasterTable?FeaturesHeadID=${row.FEATUREHEADID}`);
+     if (response3.data.Table.length > 0) {
+      setTablesData3(response3.data.Table);
+    }
+     }
     setFormData({
       BuildingNumber: row.BUILDINGBLOCKID || '',
       BuildingName: row.BUILDINGBLOCKNAME || '',
-      floornumber: row.FLOORID|| '',
+      floornumber: row.FLOORNUMBERID|| '',
       features: row.FEATUREHEADID || '',
       Typeofuse: row.FEATUREID || '',
       yearOfConstruction: row.BUILTYEAR || '',
-      SelfuseArea: row.AREA || '',
-      RentedArea: row.RENTEDAREA || '',
+      SelfuseArea: row.AREA || 0,
+      RentedArea: row.RENTEDAREA || 0,
       TotalArea: row.TOTALAREA || '',
-      BesomCustomerID: row.ACCOUNTID|| '',
-      BWSSBMeterNumber: row.RRNO|| ''
+      BesomCustomerID: row.RRNO|| '',
+      BWSSBMeterNumber: row.WATERMETERNO|| ''
     });
   };
   useEffect(() => {
@@ -250,7 +289,7 @@ await   toast.error("Error saving data!" + error, {
             >
               <MenuItem value="">--Select--</MenuItem>
           {tablesdata4.map((item) => (
-            <MenuItem key={item.FLOORID} value={item.FLOORNUMBER_EN}>
+            <MenuItem key={item.FLOORNUMBERID} value={item.FLOORNUMBERID}>
               {item.FLOORNUMBER_EN}
             </MenuItem>
           ))}
@@ -432,7 +471,7 @@ await   toast.error("Error saving data!" + error, {
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>BESCOM Customer ID :</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>ಬಿ ಡಬ್ಲ್ಯೂ ಎಸ್ ಎಸ್ ಬಿ ಮೀಟರ್ ಸಂಖ್ಯೆ :</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Edit</TableCell>
-        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Delete</TableCell>
+         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Delete</TableCell> 
       </TableRow>
     </TableHead>
     <TableBody>
@@ -454,8 +493,8 @@ await   toast.error("Error saving data!" + error, {
             <TableCell>{row.AREA}</TableCell>
             <TableCell>{row.RENTEDAREA}</TableCell>
             <TableCell>{row.TOTALAREA}</TableCell>
-            <TableCell>{row.ACCOUNTID}</TableCell>
             <TableCell>{row.RRNO}</TableCell>
+            <TableCell>{row.RRNO} {row.WATERMETERNO}</TableCell>
             <TableCell>
                   <Tooltip title="Edit">
                     <IconButton color="primary" onClick={() => handleEdit(row)}>

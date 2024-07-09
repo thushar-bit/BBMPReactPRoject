@@ -105,22 +105,22 @@ await   toast.error("Error saving data!" + error, {
     const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
     const {  Table16   } = response1.data;
         const {  Table2   } = response2.data;
-        const table1Item = Table2.length > 0 ? Table2[0] : {};
+        const table2Item = Table2.length > 0 ? Table2[0] : {};
         const table16Item = Table16.length > 0 ? Table16 : {};
        setTablesData2(table16Item);
-       if(table1Item.FEATUREID !== null || table1Item.FEATUREID !== ""){
+       if(table2Item.FEATUREHEADID !== null && table2Item.FEATUREHEADID !== ""){
         debugger
-       const response3 = await axiosInstance.get(`BBMPCITZAPI/GetNPMMasterTable?FeaturesHeadID=${table1Item.FEATUREID}`);
+       const response3 = await axiosInstance.get(`BBMPCITZAPI/GetNPMMasterTable?FeaturesHeadID=${table2Item.FEATUREHEADID}`);
        if (response3.data.Table.length > 0) {
         setTablesData3(response3.data.Table);
       }
        }
-    if (table1Item) {
+    if (table2Item) {
       setFormData((prevFormData) => ({
         ...prevFormData,
-        features:table1Item.FEATUREHEADID || "",
-        Typeofuse:table1Item.FEATUREID || "",
-         yearOfConstruction: table1Item.BUILTYEAR || '',
+        features:table2Item.FEATUREHEADID || "",
+        Typeofuse:table2Item.FEATUREID || "",
+         yearOfConstruction: table2Item.BUILTYEAR || '',
       }));
     }
   }
