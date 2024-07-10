@@ -33,43 +33,18 @@ const OwnerDetails = () => {
   ]);
 
   const navigate = useNavigate();
-  const [isEditable, setIsEditable] = useState(false);
-  const [tablesdata2,setTablesData2] = useState([]);
-  const [tablesdata3,setTablesData3] = useState([]);
-  const [tablesdata4,setTablesData4] = useState([]);
-  const [tablesdata6,setTablesData6] = useState([]);
+  // const [isEditable, setIsEditable] = useState(false);
+  const [tablesdata9,setTablesData9] = useState([]);
+  // const [tablesdata3,setTablesData3] = useState([]);
+  // const [tablesdata4,setTablesData4] = useState([]);
+  // const [tablesdata6,setTablesData6] = useState([]);
 
   const { t } = useTranslation();
 
   
   const handleChange = async (e) => {
     const { name, value } = e.target;
-    if (name === 'ParkingFacility' && value === 'yes') {
-      setIsEditable(true);
-    } else if (name === 'ParkingFacility' && value === 'no') {
-      setIsEditable(false);
-    }
-    if (name === "features") {
-      try {
-        const response = await axiosInstance.get(`BBMPCITZAPI/GetNPMMasterTable?FeaturesHeadID=${value}`);
-        if (response.data.Table.length > 0) {
-          setTablesData3(response.data.Table);
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-       
-      }
-    }
-    if(name === "yearOfConstruction")
-      {
-        if (/^\d{0,4}$/.test(value)) {
-          setFormData(prevFormData => ({
-            ...prevFormData,
-            [name]: value
-          }));
-        }
-        return
-      }
+   
     setFormData({
       ...formData,
       [name]: value
@@ -83,32 +58,32 @@ const OwnerDetails = () => {
     const response3 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
         const {  Table15,Table16 ,Table17  } = response1.data;
         const {  Table5   } = response2.data;
-        const {Table13} = response3.data;
+        const {Table9:NCLTABLE9} = response3.data;
         const table1Item = Table5.length > 0 ? Table5 : [];
-        const table13Item = Table13.length > 0 ? Table13[0] : [];
+        const table9Item = NCLTABLE9.length > 0 ? NCLTABLE9 : [];
         const table16Item = Table16.length > 0 ? Table16 : [];
         const table15Item = Table15.length > 0 ? Table15 : [];
         const table17Item = Table17.length > 0 ? Table17 : [];
 
         setTableData(table1Item);
-        setTablesData2(table16Item);
-        setTablesData4(table15Item);
-        setTablesData6(table17Item);
-        setFormData({
-          BlockName: table13Item.BLOCKNUMBER,
-          FlatNo: table13Item.FLATNO,
-          floornumber: table13Item.FLOORNUMBERID,
-          features: table13Item.FEATUREHEADID,
-          Typeofuse: table13Item.FEATUREID,
-          yearOfConstruction: table13Item.BUILTYEAR,
-          Totalnumberofparkingunits: table13Item.PARKINGUNITS,
-          TotalParkingArea: table13Item.PARKINGAREA,
-          Occupancy: table13Item.BUILDINGUSAGETYPEID,
-          BesomCustomerID: table13Item.RRNO,
-          SelectOwnerShareType: table13Item.BUILDINGUSAGETYPEID,
-          OwnersSharePercent: table13Item.PLOTAREAOWNERSHARE_AREA,
-          ParkingFacility: table13Item.PARKINGAVAILABLE,
-        });
+        setTablesData9(table9Item);
+        // setTablesData4(table15Item);
+        // setTablesData6(table17Item);
+        // setFormData({
+        //   BlockName: table13Item.BLOCKNUMBER,
+        //   FlatNo: table13Item.FLATNO,
+        //   floornumber: table13Item.FLOORNUMBERID,
+        //   features: table13Item.FEATUREHEADID,
+        //   Typeofuse: table13Item.FEATUREID,
+        //   yearOfConstruction: table13Item.BUILTYEAR,
+        //   Totalnumberofparkingunits: table13Item.PARKINGUNITS,
+        //   TotalParkingArea: table13Item.PARKINGAREA,
+        //   Occupancy: table13Item.BUILDINGUSAGETYPEID,
+        //   BesomCustomerID: table13Item.RRNO,
+        //   SelectOwnerShareType: table13Item.BUILDINGUSAGETYPEID,
+        //   OwnersSharePercent: table13Item.PLOTAREAOWNERSHARE_AREA,
+        //   ParkingFacility: table13Item.PARKINGAVAILABLE,
+        // });
   }
   React.useEffect(() => {
     
@@ -128,7 +103,7 @@ const OwnerDetails = () => {
   };
   const handleNavigation = () => {
    
-      navigate('/OwnerDetails');
+      navigate('/PropertyRights');
   
   };
 
@@ -204,7 +179,51 @@ const OwnerDetails = () => {
     </TableBody>
   </Table>
 </TableContainer>
-
+<TableContainer component={Paper} sx={{ mt: 4 }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+               
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold',color:'#FFFFFF' }}>Owner No.</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold',color:'#FFFFFF' }}>Owner Name</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>Father/ Mother/ Husband/ Spouse Name</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold',color:'#FFFFFF' }}>Address</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold',color:'#FFFFFF' }}>Name of the Company</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold',color:'#FFFFFF' }}>Does a Company own this property?</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold',color:'#FFFFFF' }}>ID Document Number</TableCell>
+                  {/* <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold',color:'#FFFFFF' }}>Owner Photograph</TableCell> */}
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold',color:'#FFFFFF' }}>Mobile Verification</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold',color:'#FFFFFF' }}>E-KYC</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold',color:'#FFFFFF' }}>NAME MATCH STATUS</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+              {tablesdata9.length === 0 ? (
+        <TableRow>
+          <TableCell colSpan={12} align="center">
+            No data available
+          </TableCell>
+        </TableRow>
+      ) : (
+        tablesdata9.map((row) => (
+          <TableRow key={row.id}>
+            <TableCell>{row.OWNERNUMBER}</TableCell>
+            <TableCell>{row.OWNERNAME}</TableCell>
+            <TableCell>{row.IDENTIFIERNAME} {row.IDENTIFIERTYPE}</TableCell>
+            <TableCell>{row.OWNERADDRESS} {row.MOBILENUMBER}</TableCell>
+            <TableCell>{row.COMPANYNAME}</TableCell>
+            <TableCell>{row.ISCOMPANY}</TableCell>
+            <TableCell>{row.IDENTITYTYPEDESCRIPTION} {row.OWNERIDENTITYSLNO}</TableCell>
+            {/* <TableCell>{row.ISCOMPANY}</TableCell> need image here */}
+            <TableCell>{row.MOBILEVERIFY}</TableCell>
+            <TableCell>{row.APIRETURNRESPONSE}</TableCell>
+            <TableCell>{row.NAMEMATCHSCORE}</TableCell>
+          </TableRow>
+        ))
+      )}
+    </TableBody>
+  </Table>
+</TableContainer>
           <Box display="flex" justifyContent="center" gap={2} mt={3}>
             <Button variant="contained" color="primary" onClick={back}>
               Previous

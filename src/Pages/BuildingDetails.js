@@ -81,7 +81,7 @@ const BuildingDetails = () => {
         const table15Item = Table15.length > 0 ? Table15 : [];
         setTableData(table1Item);
         setTablesData2(table16Item);
-        setTablesData4(table15Item)
+        setTablesData4(table15Item);
   }
   const handleSubmit = async (e) => {
     e.preventDefault();
