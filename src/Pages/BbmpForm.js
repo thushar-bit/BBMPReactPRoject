@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../components/Axios';
+
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
   clipPath: 'inset(50%)',
@@ -34,19 +35,26 @@ const BbmpForm = () => {
     puidNo: '',
     loginId: 'crc'
   });
+  const navigate = useNavigate();
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [tablesdata,setTablesData] = useState([]);
-console.log(tablesdata)
-  const fetchData = async () => {
-    try {
-      const response = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&propertyid=104931');
-      const { Table, Table1, Table2, Table3, Table4, Table5, Table6, Table7 } = response.data;
-      setTablesData({ Table, Table1, Table2, Table3, Table4, Table5, Table6, Table7 });
+  const [isEditable, setIsEditable] = useState(false);
 
+
+  const fetchData = async () => {
+    setLoading(true)
+    try {
+      const response = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
+      const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
+      
+      const {  Table1,   Table5,   } = response.data;
+      const {  Table17   } = response2.data;
+    
       const table1Item = Table1.length > 0 ? Table1[0] : {};
       const table5Item = Table5.length > 0 ? Table5[0] : {};
-
+      const table17Item = Table17.length > 0 ? Table17[0] : {};
+      setPreviewUrl(`data:image1/png;base64,${table17Item.PROPERTYPHOTO}`); 
+      
       setFormData({
         propertyEID: table1Item.PROPERTYID || '',
         address: table1Item.ADDRESS || '',
@@ -56,19 +64,19 @@ console.log(tablesdata)
         ulbname: table1Item.ULBNAME || '',
         ownerName: table5Item.OWNERNAME || '',
         streetName: table1Item.STREETNAME_EN || '',
-        DoorPlotNo: '',
-        BuildingLandName: '',
-        Street: '',
-        NearestLandmark: '',
-        Pincode: '',
-        AreaLocality: ''
+        DoorPlotNo: table17Item.DOORNO || '',
+        BuildingLandName: table17Item.BUILDINGNAME||'',
+        Street: table17Item.STREET ||'',
+        NearestLandmark: table17Item.LANDMARK ||'',
+        Pincode: table17Item.PINCODE ||'',
+        AreaLocality: table17Item.AREAORLOCALITY ||'',
       });
       setLoading(false);
     } catch (error) {
       console.error('There was an error!', error);
     }
   };
-  const navigate = useNavigate();
+ 
   useEffect(() => {
     fetchData();
   }, []);
@@ -80,29 +88,74 @@ console.log(tablesdata)
       [name]: value
     });
   };
+  
   const { t } = useTranslation();
+  const [previewUrl, setPreviewUrl] = useState('');
   const handleFileChange = (e) => {
+    if (!isEditable) return;
     setSelectedFile(e.target.files[0]);
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSelectedFile(file);
+        setPreviewUrl(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleFileDelete = () => {
     setSelectedFile(null);
+    setPreviewUrl(null);
+  };
+  const handleAddressEdit = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  
+    if (isEditable === false) {
+      setIsEditable(true);
+    } else  {
+      setIsEditable(false);
+    }
+  };
+  const getPropertyphoto = (selectedFile) => {
+    return new Promise((resolve, reject) => {
+      if (!selectedFile) {
+        resolve(''); // Return an empty string if no file is selected
+        return;
+      }
+  
+      const reader = new FileReader();
+      reader.readAsDataURL(selectedFile);
+  
+      reader.onloadend = () => {
+        const propertyphoto = reader.result.split(',')[1];
+        resolve(propertyphoto);
+      };
+  
+      reader.onerror = (error) => {
+        reject(error);
+      };
+    });
   };
 
-
 const  handleSubmit = async (e) => {
+ 
   e.preventDefault();
-  let propertyphoto = '';
-  setLoading(true);
-       if (selectedFile) {
-         const reader = new FileReader();
-         reader.readAsDataURL(selectedFile);
-         reader.onloadend = async () => {
-           propertyphoto = reader.result.split(',')[1];
-  reader.onloadend =  async () => {
-  const   propertyphoto = reader.result.split(',')[1];
-  }
+  var propertyphoto2 = "";
+  debugger
+  if(isEditable){
+  if(selectedFile)
+    {
+      propertyphoto2 = await getPropertyphoto(selectedFile);
+    }
+
     debugger
+   
     const data = {
       propertyCode: formData.propertyNumber,
       streetid: formData.streetid, 
@@ -111,16 +164,19 @@ const  handleSubmit = async (e) => {
       areaorlocality: formData.AreaLocality,
       landmark: formData.NearestLandmark,
       pincode: formData.Pincode,
-      propertyphoto:propertyphoto,
+      propertyphoto:propertyphoto2,
       categoryId: 2,
       puidNo: 's23', 
-      loginId: 'crc'
+      loginId:"crc"
     };
     try {
      await  axiosInstance.post('BBMPCITZAPI/GET_PROPERTY_CTZ_PROPERTY', data
       )
       setSelectedFile(null);
-     await toast.success("Details Saved Successfully", {
+     const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&propertyid=104931');
+      sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
+     
+      await toast.success("Details Saved Successfully", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -129,7 +185,7 @@ const  handleSubmit = async (e) => {
         draggable: true,
         progress: undefined,
       });
-      setLoading(false);
+     
     
     } catch (error) {
    await   toast.error("Error saving data", {
@@ -142,14 +198,24 @@ const  handleSubmit = async (e) => {
         progress: undefined,
       });
     }
+  }else {
+    await   toast.warning("No changes to save", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
   }
-} 
-setLoading(false);
-}
+  setLoading(false);
+  }
+
+
 
 const handleNavigation= () =>{
-  debugger
-  navigate('/AreaDimension')
+  navigate('/AreaDimension/select')
 }
   function GradientCircularProgress() {
     return (
@@ -368,7 +434,9 @@ const handleNavigation= () =>{
               name="DoorPlotNo"
               value={formData.DoorPlotNo}
               onChange={handleChange}
+              variant={isEditable ? "standard" : "filled"}
               InputProps={{
+                readOnly: !isEditable,
                 endAdornment: (
                   <Tooltip title={t("doorPlotNoInfo")}>
                      <IconButton color="primary">
@@ -386,7 +454,9 @@ const handleNavigation= () =>{
               name="BuildingLandName"
               value={formData.BuildingLandName}
               onChange={handleChange}
+              variant={isEditable ? "standard" : "filled"}
               InputProps={{
+                readOnly: !isEditable,
                 endAdornment: (
                   <Tooltip title={t("buildingLandNameInfo")}>
                      <IconButton color="primary">
@@ -404,7 +474,9 @@ const handleNavigation= () =>{
               name="Street"
               value={formData.Street}
               onChange={handleChange}
+              variant={isEditable ? "standard" : "filled"}
               InputProps={{
+                readOnly: !isEditable,
                 endAdornment: (
                   <Tooltip title={t("streetInfo")}>
                      <IconButton color="primary">
@@ -422,7 +494,9 @@ const handleNavigation= () =>{
               name="NearestLandmark"
               value={formData.NearestLandmark}
               onChange={handleChange}
+              variant={isEditable ? "standard" : "filled"}
               InputProps={{
+                readOnly: !isEditable,
                 endAdornment: (
                   <Tooltip title={t("nearestLandmarkInfo")}>
                      <IconButton color="primary">
@@ -441,7 +515,9 @@ const handleNavigation= () =>{
               type="number"
               value={formData.Pincode}
               onChange={handleChange}
+              variant={isEditable ? "standard" : "filled"}
               InputProps={{
+                readOnly: !isEditable,
                 endAdornment: (
                   <Tooltip title={t("pincodeInfo")}>
                      <IconButton color="primary">
@@ -459,7 +535,9 @@ const handleNavigation= () =>{
               name="AreaLocality"
               value={formData.AreaLocality}
               onChange={handleChange}
+              variant={isEditable ? "standard" : "filled"}
               InputProps={{
+                readOnly: !isEditable,
                 endAdornment: (
                   <Tooltip title={t("areaLocalityInfo")}>
                      <IconButton color="primary">
@@ -480,11 +558,27 @@ const handleNavigation= () =>{
                 variant="contained"
                 startIcon={<CloudUploadIcon />}
                 sx={{ ml: 2 }}
+                disabled={!isEditable}
               >
                 {t("Uploadfile")}
                 <VisuallyHiddenInput type="file" accept=".jpg,.jpeg,.png" onChange={handleFileChange} />
               </Button>
+       
             </Box>
+            {previewUrl && (
+        <div style={{ marginLeft: '10px', position: 'relative' }}>
+          <img
+            src={previewUrl}
+            alt="No Images Found"
+            style={{
+              maxWidth: '100%', 
+              maxHeight: '200px', 
+              width: 'auto', // Allow the width to adjust responsively
+              height: 'auto', // Allow the height to adjust responsively
+            }}
+          />
+        </div>
+      )}
             {selectedFile && (
               <Box display="flex" alignItems="center" mt={2}>
                 <Typography variant="body1">{selectedFile.name}</Typography>
@@ -497,6 +591,9 @@ const handleNavigation= () =>{
         </Grid>
         <Grid item xs={12}>
           <Box display="flex" justifyContent="center" gap={2}>
+          <Button variant="contained" color="primary" onClick={handleAddressEdit}>
+            Edit Address
+            </Button>
             <Button variant="contained" color="success" type="submit">
             {t("save")}
             </Button>

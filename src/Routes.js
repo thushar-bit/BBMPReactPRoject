@@ -26,7 +26,7 @@ const AppRoutes = () => {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/bbmp-form" element={<BbmpForm />} />
-          <Route path="/AreaDimension" element={<AreaDimension />} />
+          <Route path="/AreaDimension/:DropdownValue" element={<AreaDimension />} />
           <Route path="/SiteDetails" element={<SiteDetails />} />
           <Route path="/BuildingDetails" element={<BuildingDetails />} />
           <Route path="/MultiStoreyBuildingDetails" element={<MultiStoreyBuildingDetails />} />
