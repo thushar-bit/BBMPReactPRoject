@@ -13,6 +13,11 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import 'dayjs/locale/en-gb';
+import dayjs from 'dayjs';
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
   clipPath: 'inset(50%)',
@@ -28,18 +33,12 @@ const VisuallyHiddenInput = styled('input')({
 const DocumentUploadPage = () => {
   
   const [formData, setFormData] = useState({
-    BuildingNumber: '',
-  BuildingName: '',
-  floornumber: "",
-  features: '',
-  Typeofuse: '',
-  yearOfConstruction: '',
-  SelfuseArea: 0,
-  RentedArea: 0,
-  TotalArea: '',
-  BesomCustomerID: '',
-  BWSSBMeterNumber: ''
+    DocumentType: '',
+    documentregistereddate: "",
+    DocumentDetails: '',
+    DocumentNumber: '',
   });
+  
   const [tableData, setTableData] = useState([
   ]);
   const navigate = useNavigate();
@@ -49,36 +48,13 @@ const DocumentUploadPage = () => {
   const [tablesdata3,setTablesData3] = useState([]);
   const [tablesdata4,setTablesData4] = useState([]);
   const [isEditable, setIsEditable] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const tomorrow = dayjs();
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+  };
   const handleChange =  async (e) => {
     const { name, value } = e.target;
-    debugger
-      if (name === "features") {
-        try {
-          const response = await axiosInstance.get(`BBMPCITZAPI/GetNPMMasterTable?FeaturesHeadID=${value}`);
-          if (response.data.Table.length > 0) {
-            setTablesData3(response.data.Table);
-          }
-        } catch (error) {
-          console.error('Error fetching data:', error);
-         
-        }
-      }
-      if (name === 'SelfuseArea' || name === 'RentedArea') {
-        const selfuseAreaValue = name === 'SelfuseArea' ? value : formData.SelfuseArea;
-        const RentedAreaValue = name === 'RentedArea' ? value : formData.RentedArea;
-        const totalArea = Math.round(parseInt(selfuseAreaValue) + parseInt(RentedAreaValue));
-        formData.TotalArea = totalArea;
-    }
-    if(name === "yearOfConstruction")
-      {
-        if (/^\d{0,4}$/.test(value)) {
-          setFormData(prevFormData => ({
-            ...prevFormData,
-            [name]: value
-          }));
-        }
-        return
-      }
     setFormData({
       ...formData,
       [name]: value
@@ -89,7 +65,6 @@ const DocumentUploadPage = () => {
   const fetchData = async () => {
     const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterDocByCategoryOrClaimType?ULBCODE=555&CATEGORYID=1');
     const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
-    debugger
         const {Table1} = response1.data;
         const {  Table15 :NCLTable15  } = response2.data;
         setTableData( NCLTable15.length > 0 ? NCLTable15 : []);
@@ -97,18 +72,27 @@ const DocumentUploadPage = () => {
        
   }
   const handleFileChange = (e) => {
-    if (!isEditable) return;
-    setSelectedFile(e.target.files[0]);
+    //setSelectedFile(e.target.files[0]);
+ 
     const file = e.target.files[0];
+    const maxSize = 5 * 1024 * 1024;
+    if (file && file.size > maxSize) {
+      toast.error('File size exceeds 5 MB limit');
+      e.target.value = null; // Clear the file input
+      setSelectedFile(null);
+      return;
+    }
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setSelectedFile(file);
-    //    setPreviewUrl(reader.result);
       };
       reader.readAsDataURL(file);
     }
   };
+  const handleFileDelete = () => {
+    setSelectedFile(null);
+  }
   const handleSubmit = async (e) => {
     e.preventDefault();
     debugger
@@ -216,34 +200,12 @@ await   toast.error("Error saving data!" + error, {
      }
   };
 
-  const handleEdit = async (row) => {
-    if(row.FEATUREHEADID !== null && row.FEATUREHEADID !== ""){
-      debugger
-     const response3 =  await axiosInstance.get(`BBMPCITZAPI/GetNPMMasterTable?FeaturesHeadID=${row.FEATUREHEADID}`);
-     if (response3.data.Table.length > 0) {
-      setTablesData3(response3.data.Table);
-    }
-     }
-    setFormData({
-      BuildingNumber: row.BUILDINGBLOCKID || '',
-      BuildingName: row.BUILDINGBLOCKNAME || '',
-      floornumber: row.FLOORNUMBERID|| '',
-      features: row.FEATUREHEADID || '',
-      Typeofuse: row.FEATUREID || '',
-      yearOfConstruction: row.BUILTYEAR || '',
-      SelfuseArea: row.AREA || 0,
-      RentedArea: row.RENTEDAREA || 0,
-      TotalArea: row.TOTALAREA || '',
-      BesomCustomerID: row.RRNO|| '',
-      BWSSBMeterNumber: row.WATERMETERNO|| ''
-    });
-  };
+  
   useEffect(() => {
     
     fetchData();
         
   }, []);
-  console.log(formData.propertyType)
   return (
     <Container maxWidth="xl">
         <ToastContainer/>
@@ -287,25 +249,19 @@ await   toast.error("Error saving data!" + error, {
         </Select>
       </FormControl>
           </Grid>
-          <Grid item xs={12} sm={4}>
-            <TextField
-              fullWidth
-              label={"Document Registered Date (dd-mm-yyyy)"}
-              placeholder='dd-mm-yyyy'
-              name="DocumentDetails"
-              value={formData.DocumentDetails}
-              onChange={handleChange}
-              InputProps={{
-                readOnly:true,
-                endAdornment: (
-                  <Tooltip title={t("doorPlotNoInfo")}>
-                     <IconButton color="primary">
-                      <InfoIcon />
-                    </IconButton>
-                  </Tooltip>
-                )
-              }}
-            />
+          <Grid item xs={12} sm={3.5}>
+ <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
+<DatePicker
+
+  label="Document Registered Date (dd-mm-yyyy)"
+  name='documentregistereddate'
+  placeholder='dd-mm-yyyy'
+  value={selectedDate}
+  onChange={date => handleDateChange(date)}
+  disableFuture
+  sx={{ width: '100%' }}
+/>
+</LocalizationProvider>
           </Grid>
          
           <Grid item xs={12} sm={4}>
@@ -341,8 +297,8 @@ await   toast.error("Error saving data!" + error, {
               fullWidth
             
               label={"Document Number :"}
-              name="TotalArea"
-              value={formData.TotalArea}
+              name="DocumentNumber"
+              value={formData.DocumentNumber}
               onChange={handleChange}
               InputProps={{
                
@@ -367,13 +323,24 @@ await   toast.error("Error saving data!" + error, {
                 variant="contained"
                 startIcon={<CloudUploadIcon />}
                 sx={{ ml: 2 }}
-                disabled={!isEditable}
+                
               >
                 {t("Uploadfile")}
-                <VisuallyHiddenInput type="file" accept=".jpg,.jpeg,.png" onChange={handleFileChange} />
+                <VisuallyHiddenInput type="file" accept=".jpg,.jpeg,.png,.pdf,.doc" onChange={handleFileChange} />
               </Button>
        
             </Box>
+            {selectedFile && (
+              <Box display="flex" alignItems="center" mt={2}>
+                <Typography variant="body1">{selectedFile.name}</Typography>
+                <Button color="error" onClick={handleFileDelete} sx={{ ml: 2 }}>
+                  Delete
+                </Button>
+              </Box>
+            )}
+             <Typography variant="body1" sx={{ ml: 1,color:'#df1414' }}>
+              Maximum File Size should not exceed 5 MB
+              </Typography>
           </Grid>
           </Grid>
           <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
