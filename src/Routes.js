@@ -13,6 +13,7 @@ import DocumentUploadPage from './Pages/DocumentUploadPage';
 import ClassificationDocumentUploadPage from './Pages/ClassificationDocumentUploadPage';
 import TaxEventPage from './Pages/TaxEventPage';
 import ObjectionPage from './Pages/ObjectionPage';
+import EKYCResponse from './Pages/EKYCResponse';
 import Header from './Header';
 import Footer from './Footer';
 
@@ -36,6 +37,7 @@ const AppRoutes = () => {
           <Route path="/ClassificationDocumentUploadPage" element={<ClassificationDocumentUploadPage />} />
           <Route path="/TaxEventPage" element={<TaxEventPage />} />
           <Route path="/ObjectionPage" element={<ObjectionPage />} />
+          <Route path="/EKYCResponse" element={<EKYCResponse />} />
         </Routes>
       </div>
       <Footer />

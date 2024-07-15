@@ -1,13 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { TextField, Button, Grid, Box,Container, Typography, CircularProgress ,Tooltip,IconButton } from '@mui/material';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import React, { useState,useEffect } from 'react';
+import {
+  TextField, Button, Grid, Box, Container, Typography, Tooltip, IconButton,
+  FormControl, MenuItem, Select, InputLabel,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
+} from '@mui/material';
+import GetAppIcon from '@mui/icons-material/GetApp';
 import InfoIcon from '@mui/icons-material/Info';
-import { styled } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../components/Axios';
+import { styled } from '@mui/material/styles';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useTranslation } from 'react-i18next';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import 'dayjs/locale/en-gb';
+import DisclaimerDialog from '../components/Disclamer';
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
   clipPath: 'inset(50%)',
@@ -21,161 +32,249 @@ const VisuallyHiddenInput = styled('input')({
 });
 
 const ClassificationDocumentUploadPage = () => {
+  
   const [formData, setFormData] = useState({
-    propertyCode: '',
-    streetid: '',
-    doorno: '',
-    buildingname: '',
-    areaorlocality: '',
-    landmark: '',
-    pincode: '',
-    propertyphoto: '',
-    categoryId: 2,
-    puidNo: '',
-    loginId: 'crc'
+    DocumentType: '',
+    documentregistereddate: "",
+    DocumentDetails: '',
+    DocumentNumber: '',
   });
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [tablesdata,setTablesData] = useState([]);
+  
+  const [tableData, setTableData] = useState([
+  ]);
   const navigate = useNavigate();
-  const fetchData = async () => {
-    try {
-      const response = await axios.get('https://localhost:44368/v1/BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&propertyid=104931');
-      const { Table, Table1, Table2, Table3, Table4, Table5, Table6, Table7 } = response.data;
-      setTablesData({ Table, Table1, Table2, Table3, Table4, Table5, Table6, Table7 });
-
-      const table1Item = Table1.length > 0 ? Table1[0] : {};
-      const table5Item = Table5.length > 0 ? Table5[0] : {};
-
-      setFormData({
-        propertyEID: table1Item.PROPERTYID || '',
-        address: table1Item.ADDRESS || '',
-        district: table1Item.DISTRICTNAME || '',
-        wardNumber: table1Item.WARDNUMBER || '',
-        propertyNumber: table1Item.PROPERTYCODE || '',
-        ulbname: table1Item.ULBNAME || '',
-        ownerName: table5Item.OWNERNAME || '',
-        streetName: table1Item.STREETNAME_EN || '',
-        DoorPlotNo: '',
-        BuildingLandName: '',
-        Street: '',
-        NearestLandmark: '',
-        Pincode: '',
-        AreaLocality: ''
-      });
-      setLoading(false);
-    } catch (error) {
-      console.error('There was an error!', error);
-    }
+ // const [loading,setLoading] = useState([]);
+  const [tablesdata2,setTablesData2] = useState([]);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [fileExtension,setfileExtension] = useState([]);
+  const [isEditable, setIsEditable] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
   };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const handleChange = (e) => {
+  const getPropertyphoto = (selectedFile) => {
+    return new Promise((resolve, reject) => {
+      if (!selectedFile) {
+        resolve(''); // Return an empty string if no file is selected
+        return;
+      }
+      const reader = new FileReader();
+      reader.readAsDataURL(selectedFile);
+      reader.onloadend = () => {
+        const propertyphoto = reader.result.split(',')[1];
+        resolve(propertyphoto);
+      };
+      reader.onerror = (error) => {
+        reject(error);
+      };
+    });
+  };
+  const handleChange =  async (e) => {
+    debugger
     const { name, value } = e.target;
+    if(name === "DocumentType"){
+      if(value === 26){
+        setIsEditable(true);
+      }else {
+        setIsEditable(false);
+      }
+    }
     setFormData({
       ...formData,
       [name]: value
     });
   };
-  const { t } = useTranslation();
-  const handleFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
-  };
 
+  const { t } = useTranslation();
+  const fetchData = async () => {
+    const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterDocByCategoryOrClaimType?ULBCODE=555&CATEGORYID=1');
+    const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
+        const {Table1} = response1.data;
+        const {  Table15 :NCLTable15  } = response2.data;
+        setTableData( NCLTable15.length > 0 ? NCLTable15 : []);
+        setTablesData2(Table1.length > 0 ? Table1 : []);
+       
+  }
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    const maxSize = 5 * 1024 * 1024;
+    if (file && file.size > maxSize) {
+      toast.error('File size exceeds 5 MB limit');
+      e.target.value = null; 
+      setSelectedFile(null);
+      return;
+    }
+    const fileName = file.name;
+    const fileExtension = fileName.split('.').pop().toLowerCase(); 
+    setfileExtension(fileExtension);
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSelectedFile(file);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
   const handleFileDelete = () => {
     setSelectedFile(null);
-  };
-
-
-const  handleSubmit = async (e) => {
-  e.preventDefault();
-  let propertyphoto = '';
-  setLoading(true);
-       if (selectedFile) {
-         const reader = new FileReader();
-         reader.readAsDataURL(selectedFile);
-         reader.onloadend = async () => {
-           propertyphoto = reader.result.split(',')[1];
-  reader.onloadend =  async () => {
-    const propertyphoto = reader.result.split(',')[1];
   }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    var propertyphoto2 = "";
+    debugger
+    if(selectedFile)
+      {
+        propertyphoto2 = await getPropertyphoto(selectedFile);
+      }
+    const data = {
+        ordernumber: formData.DocumentNumber,
+        createdby: "crc",
+        documentextension: fileExtension,
+        propertycode: 104931,
+        documentdetails: formData.DocumentDetails,
+        scanneddocument: propertyphoto2, //bytes
+     
+        orderdate: selectedDate,
+        documenttypeid: formData.DocumentType,
+        ulbcode: 555,
+       
+      //  createdip: string
+      
+}
+debugger
+try {
+  await  axiosInstance.post('BBMPCITZAPI/NCL_PROPERTY_ID_TEMP_INS?ID_BASIC_PROPERTY=0', data
+   )
+  
+   const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&propertyid=104931');
+   sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
+  await toast.success("Details Saved Successfully", {
+     position: "top-right",
+     autoClose: 5000,
+     hideProgressBar: false,
+     closeOnClick: true,
+     pauseOnHover: true,
+     draggable: true,
+     progress: undefined,
+   });
+ 
+ } catch (error) {
+await   toast.error("Error saving data!" + error, {
+     position: "top-right",
+     autoClose: 5000,
+     hideProgressBar: false,
+     closeOnClick: true,
+     pauseOnHover: true,
+     draggable: true,
+     progress: undefined,
+   });
+ }
+
+  };
+  const back = () => {
+    navigate('/AreaDimension/building')
+  }
+  const handleNavigation= () =>{
+    debugger
+  //  navigate('/ClassificationDocumentUploadPage');
+    
+  }
+  const handleDownload = (base64Data, fileExtension,documentdescription) => {
+    const filename = `${documentdescription}.${fileExtension.toLowerCase()}`;
+ 
+    const mimeTypes = {
+      jpg: 'image/jpeg',
+      jpeg: 'image/jpeg',
+      png: 'image/png',
+      pdf: 'application/pdf',
+      doc: 'application/msword',
+      docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    };
+  
+    const mimeType = mimeTypes[fileExtension.toLowerCase()] || 'application/octet-stream';
+  
+  
+    const byteCharacters = atob(base64Data);
+    const byteNumbers = new Array(byteCharacters.length).fill().map((_, i) => byteCharacters.charCodeAt(i));
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: mimeType });
+  
+   
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    link.click();
+  
+   
+    URL.revokeObjectURL(link.href);
+  };
+  const handleDelete = async (row) => {
     debugger
     const data = {
-      propertyCode: formData.propertyNumber,
-      streetid: formData.streetid, 
-      doorno: formData.DoorPlotNo,
-      buildingname: formData.BuildingLandName,
-      areaorlocality: formData.AreaLocality,
-      landmark: formData.NearestLandmark,
-      pincode: formData.Pincode,
-      propertyphoto:propertyphoto,
-      categoryId: 2,
-      puidNo: 's23', 
-      loginId: 'crc'
-    };
-    try {
-     await  axios.post('https://localhost:44368/v1/BBMPCITZAPI/GET_PROPERTY_CTZ_PROPERTY', data
-      )
-      setSelectedFile(null);
-     await toast.success("Details Saved Successfully", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-      setLoading(false);
-    
-    } catch (error) {
-   await   toast.error("Error saving data", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      propertyCode: 104931,
+      documentid: row.DOCUMENTID,
+      ulbcode: 555,
     }
-  }
-} 
-setLoading(false);
-}
+    try {
+     await  axiosInstance.post('BBMPCITZAPI/NCL_PROPERTY_ID_TEMP_DEL?ID_BASIC_PROPERTY=0', data
+       )
+       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&propertyid=104931');
+       sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
+      await toast.success("Details Delete Successfully", {
+         position: "top-right",
+         autoClose: 5000,
+         hideProgressBar: false,
+         closeOnClick: true,
+         pauseOnHover: true,
+         draggable: true,
+         progress: undefined,
+       });
+       //setLoading(false);
+     
+     } catch (error) {
+    await   toast.error("Error Deleting data!" + error, {
+         position: "top-right",
+         autoClose: 5000,
+         hideProgressBar: false,
+         closeOnClick: true,
+         pauseOnHover: true,
+         draggable: true,
+         progress: undefined,
+       });
+     }
+  };
 
+ 
 
-  function GradientCircularProgress() {
-    return (
-      <React.Fragment>
-        <svg width={0} height={0}>
-          <defs>
-            <linearGradient id="my_gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#e01cd5" />
-              <stop offset="100%" stopColor="#1CB5E0" />
-            </linearGradient>
-          </defs>
-        </svg>
-        <CircularProgress sx={{ 'svg circle': { stroke: 'url(#my_gradient)' } }} />
-      </React.Fragment>
-    );
-  }
+  const handleOpenDialog = () => {
+    setIsDialogOpen(true);
+  };
 
-  if (loading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <GradientCircularProgress />
-      </Box>
-    );
-  }
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+  };
 
+  const handleAgree = () => {
+    // Save the agreement state here
+    setIsDialogOpen(false);
+    // Navigate to the next page or perform any action
+    // navigate('/ClassificationDocumentUploadPage');
+  };
+  useEffect(() => {
+    
+    fetchData();
+        
+  }, []);
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="xl">
+        <ToastContainer/>
+        <DisclaimerDialog
+        open={isDialogOpen}
+        onClose={handleCloseDialog}
+        onAgree={handleAgree}
+      />
       <Box sx={{ backgroundColor: '#f0f0f0', padding: 4, borderRadius: 2, mt: 8 }}>
-      <ToastContainer />
       <form onSubmit={handleSubmit}>
         <Typography
           variant="h3"
@@ -193,179 +292,54 @@ setLoading(false);
             }
           }}
         >
-          {t("DataAvailableInBBMPBooks")}
+        Property Classification As Per Books
         </Typography>
         <Grid container spacing={4}>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              variant="filled"
-              label="Property EID"
-              name="propertyEID"
-              value={formData.propertyEID}
-              onChange={handleChange}
-              InputProps={{
-                readOnly: true,
-                endAdornment: (
-                  <Tooltip title={t("propertyEIDInfo")}>
-                     <IconButton color="primary">
-                      <InfoIcon />
-                    </IconButton>
-                  </Tooltip>
-                )
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              variant="filled"
-                InputProps={{
-                readOnly: true,
-                endAdornment: (
-                  <Tooltip title={t("cityInfo")}>
-                     <IconButton color="primary">
-                      <InfoIcon />
-                    </IconButton>
-                  </Tooltip>
-                )
-              }}
-              label={t("city")}
-              name="ulbname"
-              value={formData.ulbname}
-              onChange={handleChange}
-              
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              variant="filled"
-                InputProps={{
-                readOnly: true,
-                endAdornment: (
-                  <Tooltip title={t("districtInfo")}>
-                    <IconButton color="primary">
-                      <InfoIcon />
-                    </IconButton>
-                  </Tooltip>
-                )
-              }}
-              label={t("district")}
-              name="district"
-              value={formData.district}
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              variant="filled"
-              label={t("wardNumber")}
-              name="wardNumber"
-              value={formData.wardNumber}
-              onChange={handleChange}
-              InputProps={{
-                readOnly: true,
-                endAdornment: (
-                  <Tooltip title={t("wardNumberInfo")}>
-                     <IconButton color="primary">
-                      <InfoIcon />
-                    </IconButton>
-                  </Tooltip>
-                )
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              variant="filled"
-              label={t("propertyNumber")}
-              name="propertyNumber"
-              value={formData.propertyNumber}
-              onChange={handleChange}
-              InputProps={{
-                readOnly: true,
-                endAdornment: (
-                  <Tooltip title={t("propertyNumberInfo")}>
-                     <IconButton color="primary">
-                      <InfoIcon />
-                    </IconButton>
-                  </Tooltip>
-                )
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              variant="filled"
-              label={t("ownerName")}
-              name="ownerName"
-              value={formData.ownerName}
-              onChange={handleChange}
-              InputProps={{
-                readOnly: true,
-                endAdornment: (
-                  <Tooltip title={t("ownerNameInfo")}>
-                     <IconButton color="primary">
-                      <InfoIcon />
-                    </IconButton>
-                  </Tooltip>
-                )
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              variant="filled"
-              label={t("streetName")}
-              name="streetName"
-              value={formData.streetName}
-              onChange={handleChange}
-              InputProps={{
-                readOnly: true,
-                endAdornment: (
-                  <Tooltip title={t("streetNameInfo")}>
-                     <IconButton color="primary">
-                      <InfoIcon />
-                    </IconButton>
-                  </Tooltip>
-                )
-              }}
-            />
-          </Grid>
-        </Grid>
-        <Typography
-          variant="h6"
-          align="center"
-          gutterBottom
-          sx={{
-            fontWeight: 'bold',
-            fontFamily:"sans-serif",
-            marginBottom: 3,
-            color: '#1565c0',
-            fontSize: {
-              xs: '1.5rem',
-              sm: '2rem',
-              md: '2.5rem',
-            }
-          }}
+         
+         
+          <Grid item xs={12} sm={4}>
+          <FormControl fullWidth sx={{ marginBottom: 3 }}>
+        <InputLabel>Document Type :</InputLabel>
+        <Select
+          name="DocumentType"
+          value={formData.DocumentType}
+          onChange={handleChange}
         >
-           {t("PostalAddressofProperty")}
-        </Typography>
-        <Grid container spacing={4}>
-          <Grid item xs={12} sm={6}>
+          <MenuItem value="">--Select--</MenuItem>
+          {tablesdata2.map((item) => (
+            <MenuItem key={item.DOCUMENTTYPEID} value={item.DOCUMENTTYPEID}>
+              {item.DOCUMENTTYPEDESCRIPTION_EN}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={3.5}>
+ <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
+<DatePicker
+
+  label="Document Registered Date (dd-mm-yyyy)"
+  name='documentregistereddate'
+  placeholder='dd-mm-yyyy'
+  value={selectedDate}
+  onChange={date => handleDateChange(date)}
+  disableFuture
+  sx={{ width: '100%' }}
+/>
+</LocalizationProvider>
+          </Grid>
+         
+          <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
-              type="number"
-              label={t("doorPlotNo")}
-              name="DoorPlotNo"
-              value={formData.DoorPlotNo}
+              variant={isEditable ? "standard" : "filled"}
+              label={"Document Details:"}
+              placeholder='Document Details'
+              name="DocumentDetails"
+              value={formData.DocumentDetails}
               onChange={handleChange}
               InputProps={{
+                readOnly:!isEditable,
                 endAdornment: (
                   <Tooltip title={t("doorPlotNoInfo")}>
                      <IconButton color="primary">
@@ -376,50 +350,23 @@ setLoading(false);
               }}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          
+        </Grid>
+    
+        <Grid container spacing={4}>
+        
+          
+         
+          <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
-              label={t("buildingLandName")}
-              name="BuildingLandName"
-              value={formData.BuildingLandName}
+            
+              label={"Document Number :"}
+              name="DocumentNumber"
+              value={formData.DocumentNumber}
               onChange={handleChange}
               InputProps={{
-                endAdornment: (
-                  <Tooltip title={t("buildingLandNameInfo")}>
-                     <IconButton color="primary">
-                      <InfoIcon />
-                    </IconButton>
-                  </Tooltip>
-                )
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label={t("street")}
-              name="Street"
-              value={formData.Street}
-              onChange={handleChange}
-              InputProps={{
-                endAdornment: (
-                  <Tooltip title={t("streetInfo")}>
-                     <IconButton color="primary">
-                      <InfoIcon />
-                    </IconButton>
-                  </Tooltip>
-                )
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label={t("nearestLandmark")}
-              name="NearestLandmark"
-              value={formData.NearestLandmark}
-              onChange={handleChange}
-              InputProps={{
+               
                 endAdornment: (
                   <Tooltip title={t("nearestLandmarkInfo")}>
                      <IconButton color="primary">
@@ -430,45 +377,9 @@ setLoading(false);
               }}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label={t("pincode")}
-              name="Pincode"
-              type="number"
-              value={formData.Pincode}
-              onChange={handleChange}
-              InputProps={{
-                endAdornment: (
-                  <Tooltip title={t("pincodeInfo")}>
-                     <IconButton color="primary">
-                      <InfoIcon />
-                    </IconButton>
-                  </Tooltip>
-                )
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label={t("areaLocality")}
-              name="AreaLocality"
-              value={formData.AreaLocality}
-              onChange={handleChange}
-              InputProps={{
-                endAdornment: (
-                  <Tooltip title={t("areaLocalityInfo")}>
-                     <IconButton color="primary">
-                      <InfoIcon />
-                    </IconButton>
-                  </Tooltip>
-                )
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Box display="flex" alignItems="center">
+         
+          <Grid item xs={12} sm={4}>
+          <Box display="flex" alignItems="center">
               <Typography variant="body1" sx={{ ml: 1 }}>
               {t("uploadPropertyPhoto")}
               </Typography>
@@ -477,10 +388,12 @@ setLoading(false);
                 variant="contained"
                 startIcon={<CloudUploadIcon />}
                 sx={{ ml: 2 }}
+                
               >
                 {t("Uploadfile")}
-                <VisuallyHiddenInput type="file" accept=".jpg,.jpeg,.png" onChange={handleFileChange} />
+                <VisuallyHiddenInput type="file" accept=".jpg,.jpeg,.png,.pdf,.doc" onChange={handleFileChange} />
               </Button>
+       
             </Box>
             {selectedFile && (
               <Box display="flex" alignItems="center" mt={2}>
@@ -490,33 +403,81 @@ setLoading(false);
                 </Button>
               </Box>
             )}
+             <Typography variant="body1" sx={{ ml: 1,color:'#df1414' }}>
+              Maximum File Size should not exceed 5 MB
+              </Typography>
           </Grid>
-        </Grid>
-        <Grid item xs={12}>
-          <Box display="flex" justifyContent="center" gap={2}>
+          </Grid>
+          <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+          Documents Uploaded
+              </Typography>
+              <TableContainer component={Paper} sx={{ mt: 4 }}>
+  <Table>
+    <TableHead>
+      <TableRow>
+        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>Sl No.</TableCell>
+        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>Document</TableCell>
+        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>Document Details</TableCell>
+        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>Document Number</TableCell>
+        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>Document Registered Date</TableCell>
+        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>Uploaded Document</TableCell>
+        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>Delete</TableCell>
+      </TableRow>
+    </TableHead>
+    <TableBody>
+      {tableData.length === 0 ? (
+        <TableRow>
+          <TableCell colSpan={12} align="center">
+            No data available
+          </TableCell>
+        </TableRow>
+      ) : (
+        tableData.map((row) => (
+          <TableRow key={row.id}>
+            <TableCell>{row.DOCUMENTID}</TableCell>
+            <TableCell>{row.DOCUMENTTYPEDESCRIPTION}</TableCell>
+            <TableCell>{row.DOCUMENTDETAILS}</TableCell>
+            <TableCell>{row.ORDERNUMBER}</TableCell>
+            <TableCell>{row.ORDERDATE}</TableCell>
+            <TableCell>
+              {row.SCANNEDDOCUMENT ?
+      <IconButton onClick={() => handleDownload(row.SCANNEDDOCUMENT, row.DOCUMENTEXTENSION,row.DOCUMENTTYPEDESCRIPTION)}>
+        <GetAppIcon color='primary'/>
+      </IconButton>
+      :
+      ""
+              }
+    </TableCell>
+                <TableCell>
+                  <Tooltip title="Delete">
+                    <IconButton color="secondary" onClick={() => handleDelete(row)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
+                </TableCell>
+          </TableRow>
+        ))
+      )}
+    </TableBody>
+  </Table>
+</TableContainer>
+
+          <Box display="flex" justifyContent="center" gap={2} mt={3}>
+          <Button variant="contained" color="primary" onClick={back}>
+              Previous
+            </Button>
             <Button variant="contained" color="success" type="submit">
-            {t("save")}
+              Save
             </Button>
-            <Button variant="contained" color="error" type="reset"
-            onClick={() => setFormData({
-              DoorPlotNo: '',
-              BuildingLandName: '',
-              Street: '',
-              NearestLandmark: '',
-              Pincode: '',
-              AreaLocality: ''
-            })}
-          >
-            {t("clear")}
-              
+            <Button variant="contained" color="error" type="reset">
+              Clear
             </Button>
-            <Button variant="contained" color="primary" onClick={navigate('/AreaDimension')}>
-            Next
+            <Button variant="contained" color="primary" onClick={handleOpenDialog}>
+              Finish
             </Button>
           </Box>
-        </Grid>
-      </form>
-    </Box>
+        </form>
+      </Box>
     </Container>
   );
 };

@@ -4,6 +4,7 @@ import {
   FormControl, MenuItem, Select, InputLabel,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 } from '@mui/material';
+import GetAppIcon from '@mui/icons-material/GetApp';
 import InfoIcon from '@mui/icons-material/Info';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -45,7 +46,7 @@ const DocumentUploadPage = () => {
  // const [loading,setLoading] = useState([]);
   const [tablesdata2,setTablesData2] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [tablesdata3,setTablesData3] = useState([]);
+  const [fileExtension,setfileExtension] = useState([]);
   const [tablesdata4,setTablesData4] = useState([]);
   const [isEditable, setIsEditable] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -53,8 +54,33 @@ const DocumentUploadPage = () => {
   const handleDateChange = (date) => {
     setSelectedDate(date);
   };
+  const getPropertyphoto = (selectedFile) => {
+    return new Promise((resolve, reject) => {
+      if (!selectedFile) {
+        resolve(''); // Return an empty string if no file is selected
+        return;
+      }
+      const reader = new FileReader();
+      reader.readAsDataURL(selectedFile);
+      reader.onloadend = () => {
+        const propertyphoto = reader.result.split(',')[1];
+        resolve(propertyphoto);
+      };
+      reader.onerror = (error) => {
+        reject(error);
+      };
+    });
+  };
   const handleChange =  async (e) => {
+    debugger
     const { name, value } = e.target;
+    if(name === "DocumentType"){
+      if(value === 26){
+        setIsEditable(true);
+      }else {
+        setIsEditable(false);
+      }
+    }
     setFormData({
       ...formData,
       [name]: value
@@ -72,16 +98,17 @@ const DocumentUploadPage = () => {
        
   }
   const handleFileChange = (e) => {
-    //setSelectedFile(e.target.files[0]);
- 
     const file = e.target.files[0];
     const maxSize = 5 * 1024 * 1024;
     if (file && file.size > maxSize) {
       toast.error('File size exceeds 5 MB limit');
-      e.target.value = null; // Clear the file input
+      e.target.value = null; 
       setSelectedFile(null);
       return;
     }
+    const fileName = file.name;
+    const fileExtension = fileName.split('.').pop().toLowerCase(); 
+    setfileExtension(fileExtension);
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -95,39 +122,30 @@ const DocumentUploadPage = () => {
   }
   const handleSubmit = async (e) => {
     e.preventDefault();
+    var propertyphoto2 = "";
     debugger
-    var BUILDINGUSAGETYPEID= 0;
-    if (formData.RentedArea === 0)
+    if(selectedFile)
       {
-          BUILDINGUSAGETYPEID = 4;
-      }
-      else if (formData.SelfuseArea === 0)
-      {
-          BUILDINGUSAGETYPEID = 5;
-      }
-      else if (formData.SelfuseArea !== 0 && formData.SelfuseArea !== 0)
-      {
-          BUILDINGUSAGETYPEID = 6;
+        propertyphoto2 = await getPropertyphoto(selectedFile);
       }
     const data = {
-      propertyCode: 104931,
-      floornumberid: 23,
-      createdby: "crc",
-      buildingusagetypeid: BUILDINGUSAGETYPEID,
-      ulbcode: 555,
-      featureheadid: formData.features,
-      featureid: formData.Typeofuse,
-      builtyear: formData.yearOfConstruction,
-      rrno: formData.BesomCustomerID,
-      watermeterno: formData.BWSSBMeterNumber,
-      buildingnumberid: formData.buildingnumberid ? "" :1,
-      buildingblockname: formData.BuildingName,
-      ownUseArea: formData.SelfuseArea,
-      rentedArea: formData.RentedArea,
+        ordernumber: formData.DocumentNumber,
+        createdby: "crc",
+        documentextension: fileExtension,
+        propertycode: 104931,
+        documentdetails: formData.DocumentDetails,
+        scanneddocument: propertyphoto2, //bytes
+     
+        orderdate: selectedDate,
+        documenttypeid: formData.DocumentType,
+        ulbcode: 555,
+       
+      //  createdip: string
+      
 }
 debugger
 try {
-  await  axiosInstance.post('BBMPCITZAPI/DEL_INS_SEL_NCL_PROP_BUILDING_TEMP?ULBCODE=555', data
+  await  axiosInstance.post('BBMPCITZAPI/NCL_PROPERTY_ID_TEMP_INS?ID_BASIC_PROPERTY=0', data
    )
   
    const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&propertyid=104931');
@@ -141,7 +159,6 @@ try {
      draggable: true,
      progress: undefined,
    });
-   //setLoading(false);
  
  } catch (error) {
 await   toast.error("Error saving data!" + error, {
@@ -161,18 +178,47 @@ await   toast.error("Error saving data!" + error, {
   }
   const handleNavigation= () =>{
     debugger
-    navigate('/OwnerDetails');
+    navigate('/ClassificationDocumentUploadPage');
     
   }
-  const handleDelete = async (id) => {
+  const handleDownload = (base64Data, fileExtension,documentdescription) => {
+    const filename = `${documentdescription}.${fileExtension.toLowerCase()}`;
+ 
+    const mimeTypes = {
+      jpg: 'image/jpeg',
+      jpeg: 'image/jpeg',
+      png: 'image/png',
+      pdf: 'application/pdf',
+      doc: 'application/msword',
+      docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    };
+  
+    const mimeType = mimeTypes[fileExtension.toLowerCase()] || 'application/octet-stream';
+  
+  
+    const byteCharacters = atob(base64Data);
+    const byteNumbers = new Array(byteCharacters.length).fill().map((_, i) => byteCharacters.charCodeAt(i));
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: mimeType });
+  
+   
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    link.click();
+  
+   
+    URL.revokeObjectURL(link.href);
+  };
+  const handleDelete = async (row) => {
     debugger
     const data = {
       propertyCode: 104931,
-      buildingnumberid: id.BUILDINGBLOCKID,
-      floornumberid: id.FLOORNUMBERID,
+      documentid: row.DOCUMENTID,
+      ulbcode: 555,
     }
     try {
-     await  axiosInstance.post('BBMPCITZAPI/DEL_SEL_NCL_PROP_BUILDING_TEMP?ULBCODE=555', data
+     await  axiosInstance.post('BBMPCITZAPI/NCL_PROPERTY_ID_TEMP_DEL?ID_BASIC_PROPERTY=0', data
        )
        const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&propertyid=104931');
        sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
@@ -227,8 +273,22 @@ await   toast.error("Error saving data!" + error, {
             }
           }}
         >
-         Title and Support Documents 
+        Eligibility Documents 
         </Typography>
+        <Typography  variant="h6"
+          align="center"
+          gutterBottom
+          sx={{
+            fontWeight: 'bold',
+            fontFamily:"sans-serif",
+            marginBottom: 3,
+            color: '#df1414',
+            fontSize: {
+              xs: '1rem',
+              sm: '1rem',
+              md: '1.3rem',
+            }
+          }}> (* One of the accompanying documents must be uploaded)</Typography>
         <Grid container spacing={4}>
          
          
@@ -267,14 +327,14 @@ await   toast.error("Error saving data!" + error, {
           <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
-              variant='filled'
+              variant={isEditable ? "standard" : "filled"}
               label={"Document Details:"}
               placeholder='Document Details'
               name="DocumentDetails"
               value={formData.DocumentDetails}
               onChange={handleChange}
               InputProps={{
-                readOnly:true,
+                readOnly:!isEditable,
                 endAdornment: (
                   <Tooltip title={t("doorPlotNoInfo")}>
                      <IconButton color="primary">
@@ -355,7 +415,7 @@ await   toast.error("Error saving data!" + error, {
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>Document Details</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>Document Number</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>Document Registered Date</TableCell>
-        {/* <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>Uploaded Document</TableCell> */}
+        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>Uploaded Document</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>Delete</TableCell>
       </TableRow>
     </TableHead>
@@ -374,7 +434,15 @@ await   toast.error("Error saving data!" + error, {
             <TableCell>{row.DOCUMENTDETAILS}</TableCell>
             <TableCell>{row.ORDERNUMBER}</TableCell>
             <TableCell>{row.ORDERDATE}</TableCell>
-            {/* <TableCell>{row.BUILTYEAR}</TableCell>  images download*/}
+            <TableCell>
+              {row.SCANNEDDOCUMENT ?
+      <IconButton onClick={() => handleDownload(row.SCANNEDDOCUMENT, row.DOCUMENTEXTENSION,row.DOCUMENTTYPEDESCRIPTION)}>
+        <GetAppIcon color='primary'/>
+      </IconButton>
+      :
+      ""
+              }
+    </TableCell>
                 <TableCell>
                   <Tooltip title="Delete">
                     <IconButton color="secondary" onClick={() => handleDelete(row)}>

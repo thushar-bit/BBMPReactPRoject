@@ -25,9 +25,12 @@ const OwnerDetails = () => {
   const [otpFieldsVisible, setOtpFieldsVisible] = useState(false);
   const [alertShown, setAlertShown] = useState(false);
   const [otpData, setOtpData] = useState({});
+  const [otpNumber,setOtpNumber] = useState(0)
   const [nameMatchStatuses, setNameMatchStatuses] = useState({});
   const { t } = useTranslation();
-
+  const [otpButtonDisabled, setOtpButtonDisabled] = useState(false);
+  const [timer, setTimer] = useState(30); // Initial countdown timer value in seconds
+  const [countdownInterval, setCountdownInterval] = useState(null);
   
   const handleChange = (e) => {
     debugger
@@ -61,20 +64,41 @@ const OwnerDetails = () => {
       [name]: value,
     }));
   };
+  React.useEffect(() => {
+    return () => {
+      clearInterval(countdownInterval);
+    };
+  }, [countdownInterval]);
   const handleGenerateOtp = async (index) => {
     debugger
     const response = await axiosInstance.get("E-KYCAPI/SendOTP?OwnerMobileNo=" + formData.MOBILENUMBER);
     toast.success("OTP Sent Successfully");
-    setOtpData(response.data);
+    setOtpData(response.data.otpResponseMessage);
+    setOtpNumber(response.data.otp);
+    formData.MOBILEVERIFY = "Not Verified";
+    setOtpButtonDisabled(true);
+    setTimer(30);
+    const interval = setInterval(() => {
+      setTimer(prevTimer => prevTimer - 1);
+    }, 1000); 
+
+   
+    setTimeout(() => {
+      setOtpButtonDisabled(false);
+      clearInterval(interval); 
+    }, 30000); 
+
+    
+    setCountdownInterval(interval);
   };
 
   const handleVerifyOtp = (index) => {
-    if (formData.OwnerOTP === otpData.toString()) {
-      toast.success("OTP Verified");
-      formData.MOBILEVERIFY = "Verfied"
+    if (formData.OwnerOTP === otpNumber.toString()) {
+      toast.success(otpData);
+      formData.MOBILEVERIFY = "Verfied";
       setOtpFieldsVisible(false);
     } else {
-      toast.error("OTP you have Entered is Wrong.");
+      toast.error(otpData);
     }
   };
   const handleEdit = (index) => {
@@ -85,41 +109,122 @@ const OwnerDetails = () => {
     
     const ownerToDelete = tablesdata9[index];
   await axiosInstance.get(`BBMPCITZAPI/DEL_SEL_NCL_PROP_OWNER_TEMP?propertyCode=${ownerToDelete.PROPERTYCODE}&ownerNumber=${ownerToDelete.OWNERNUMBER}`);
-  toast.error("Owner Deleted Successfully")
+  toast.error("Owner Deleted Successfully");
   await fetchData();
   };
 
+  const handleNavigation =() => {
+    // Extract owner numbers from tableData
+    debugger
+    const tableDataOwnerNumbers = tableData.map(item => item.OWNERNUMBER);
+    // Flags for the checks
+   // let allEKYCVerified = true;
+    let allNameMatchVerified = true;
+    let atLeastOneMobileVerified = true;
+    let relationshiptype = true;
+    let relationname = true;
+    // Check all the required conditions
+    for (let data of tablesdata9) {
+        if (tableDataOwnerNumbers.includes(data.OWNERNUMBER)) { //retaining owners
+            // if (data.EKYCVERIFIED !== "Verfied") {
+            //     allEKYCVerified = false;
+            // }
+            if (nameMatchStatuses[data.OWNERNUMBER] !== "MATCHED" && nameMatchStatuses[data.OWNERNUMBER] !== "NEW OWNER") {
+                allNameMatchVerified = false;
+            }
+            if (data.MOBILEVERIFY !== "Verfied") {
+                atLeastOneMobileVerified = false;
+            }
+        }
+        else
+        {
+        //   if (data.EKYCVERIFIED !== "Verfied") {   //new Owners
+        //     allEKYCVerified = false;
+        // }
+        if (data.MOBILEVERIFY !== "Verfied") {
+          atLeastOneMobileVerified = false;
+      }
+      if(data.IDENTIFIERNAME.length <= 0|| data.IDENTIFIERNAME === null ){
+        relationname = false;
+      }
+      if(data.IDENTIFIERTYPEID === "0" || data.IDENTIFIERTYPEID === null || data.IDENTIFIERTYPEID.length <= 0){
+        relationshiptype = false;
+      }
+        }
+    }
+
+    // Determine whether to navigate or alert
+    if ( allNameMatchVerified && atLeastOneMobileVerified && relationname && relationshiptype && tablesdata9.length > 0) {
+        // Navigate to the desired location
+        navigate("/PropertyRights")
+    } else {
+        // Display appropriate alerts
+        // if (!allEKYCVerified) {
+        //     alert("All owner numbers must have EKYCVERIFIED set to VERIFIED.");
+        // }
+        if (!allNameMatchVerified) {
+            toast.error("All Retaining Owners Should Have there Name Matching with the existing Owners.");
+        }
+        if (!atLeastOneMobileVerified) {
+          toast.error("All Owners Should Have there mobile Number Verified.");
+        }
+        if(!relationname){
+          toast.error("All Owners Should Have there Relation Name.");
+        }
+        if(!relationshiptype){
+          toast.error("All Owners Should Have there Relation Type.");
+        }
+        if(tablesdata9.length === 0){
+          toast.error("Atleast One Owner should be Added for E-Katha Verification");
+        }
+       
+    }
+}
+
+
+
   const handleSave = async () => {
-    
-    
-    
     if(otpFieldsVisible){
       toast.error("Verify the OTP!")
       return
     }
+    if(formData.IDENTIFIERTYPEID.length === 0){
+      toast.error("Please Select RelationShip Type")
+      return
+    }
+    if(formData.IDENTIFIERNAME.length <= 0){
+      toast.error("Please enter the Relation Name")
+      return
+    }
+    if(formData.MOBILENUMBER.length <= 0 && formData.MOBILENUMBER.length <10){
+      toast.error("Please enter a valid Mobile Number")
+      return
+    }
+
+
     setEditableIndex(-1); 
     const params = {
-      propertyCode: formData.PROPERTYCODE,
-      ownerNumber: formData.OWNERNUMBER,
-      IDENTIFIERTYPE: formData.IDENTIFIERTYPEID,
-      IDENTIFIERNAME_EN: formData.IDENTIFIERNAME,
-      MOBILENUMBER: formData.MOBILENUMBER,
-      MOBILEVERIFY: formData.MOBILEVERIFY,
+      propertyCode: formData.PROPERTYCODE || "",
+      ownerNumber: formData.OWNERNUMBER || "",
+      IDENTIFIERTYPE: formData.IDENTIFIERTYPEID || "",
+      IDENTIFIERNAME_EN: formData.IDENTIFIERNAME || "",
+      MOBILENUMBER: formData.MOBILENUMBER || "",
+      MOBILEVERIFY: formData.MOBILEVERIFY || "",
       loginId: 'crc'
     };
   
-    // Convert the params object to a query string
     const queryString = new URLSearchParams(params).toString();
   
-    // Make the API call with the constructed query string
+    
     const response = await axiosInstance.get(`BBMPCITZAPI/UPD_NCL_PROPERTY_OWNER_TEMP_MOBILEVERIFY?${queryString}`);
+    console.log(response.data);
     toast.success("Owner Edited Successfully")
     await fetchData();
   };
   const fetchData = async () => {
     const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
         const response2 = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
-    const response3 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
+      const response3 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&propertyid=104931');
         const {  Table5   } = response2.data;
         const {Table9:NCLTABLE9} = response3.data;
         const {Table8} = response1.data;
@@ -131,11 +236,12 @@ const OwnerDetails = () => {
   React.useEffect( () => {
     const params = new URLSearchParams(location.search);
     const txnno = params.get('txnno');
-    if (txnno) {
+    if (txnno !== null) {
       console.log('E-KYC completed successfully with txnno:', txnno);
+      toast.success("E-KYC completed successfully with txnno:",txnno)
       const callEditEYCDate = async () =>
       {
-      var ownerNumber = await EditOwnerDetailsFromEKYCData(581);
+      var ownerNumber = await EditOwnerDetailsFromEKYCData(txnno); //581
       if(ownerNumber !== "")
         {
       setOwnerNumber(ownerNumber);
@@ -143,6 +249,7 @@ const OwnerDetails = () => {
       }
       callEditEYCDate();
     }
+  //  toast.error("E-KYC was not successfully with txnno:",txnno)
     fetchData();   
   }, [location.search]);
   React.useEffect(() => {
@@ -174,6 +281,7 @@ const OwnerDetails = () => {
     const exists = tablesdata9.some(item => item.OWNERNUMBER === BBDOwnerNumber);
     return exists;
   }
+  
  
 
   const updateNameMatchStatus = async (row) => {
@@ -268,10 +376,14 @@ const OwnerDetails = () => {
             <TableCell>{row.OWNERADDRESS} {row.MOBILENUMBER}</TableCell>
             <TableCell>{row.EKYCSTATUS}</TableCell>
             <TableCell>{OwnerExists(row.OWNERNUMBER) ? "RETAINED" : "DELETED"}</TableCell>
-
-            <TableCell> <Button variant="contained" color="primary" onClick={VerfiyEKYC}>
+            <TableCell>{OwnerExists(row.OWNERNUMBER) ?
+              <Button variant="contained" color="primary" onClick={VerfiyEKYC}>
               Verfiy EKYC
-            </Button></TableCell>
+            </Button>
+         :  
+         "" 
+        }
+            </TableCell>
           </TableRow>
         ))
       )}
@@ -294,8 +406,8 @@ const OwnerDetails = () => {
       style={{
         maxWidth: '100%', 
         maxHeight: '200px', 
-        width: 'auto', // Allow the width to adjust responsively
-        height: 'auto', // Allow the height to adjust responsively
+        width: 'auto', 
+        height: 'auto',
         borderRadius: '8px',
       }}
     />
@@ -321,7 +433,7 @@ const OwnerDetails = () => {
                   fullWidth
                   label={t('Name Match Score')}
                   name="NameMatchscore"
-                  value={owner.NameMatchscore}
+                  value={nameMatchStatuses[owner.OWNERNUMBER] || "Loading..."}
                   InputProps={{
                     readOnly: true,
                   }}
@@ -449,11 +561,23 @@ const OwnerDetails = () => {
                     onChange={handleChange}
                     variant="standard"
                   />
-                  {otpFieldsVisible && (
+            
+                  {otpFieldsVisible  && (
                     <Grid>
+                            <br></br>
+                            {!otpButtonDisabled && (
+                              <>
                     <Button variant="contained" color="primary"  onClick={() => handleGenerateOtp(index)}>
                       Generate OTP
                     </Button>
+                    </>
+                  )}
+                   {otpButtonDisabled && (
+            <Typography >
+              Resend OTP in {timer} seconds
+            </Typography>
+           
+          )}
                     <TextField
                       fullWidth
                       label={t('Enter OTP')}
@@ -462,9 +586,11 @@ const OwnerDetails = () => {
                       onChange={handleChange}
                       variant="standard"
                     />
+                
                     <Button variant="contained" color="primary" onClick={() => handleVerifyOtp(index)}>
                       Verify OTP
                     </Button>
+                    <br></br>
                   </Grid>
                 )}
               </>
@@ -608,8 +734,8 @@ const OwnerDetails = () => {
             <Button variant="contained" color="primary" onClick={back}>
               Previous
             </Button>
-            <Button variant="contained" color="success" type="submit">
-              Save
+            <Button variant="contained" color="success" onClick={handleNavigation}>
+              Next
             </Button>
           </Box>
         </form>
