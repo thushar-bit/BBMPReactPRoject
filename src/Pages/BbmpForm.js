@@ -8,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../components/Axios';
-
+import ErrorPage from './ErrorPage';
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
   clipPath: 'inset(50%)',
@@ -74,6 +74,7 @@ const BbmpForm = () => {
       setLoading(false);
     } catch (error) {
       console.error('There was an error!', error);
+      return <ErrorPage errorMessage={error} />;
     }
   };
  
@@ -563,7 +564,7 @@ const handleNavigation= () =>{
                 {t("Uploadfile")}
                 <VisuallyHiddenInput type="file" accept=".jpg,.jpeg,.png" onChange={handleFileChange} />
               </Button>
-       
+              
             </Box>
             {previewUrl && (
         <div style={{ marginLeft: '10px', position: 'relative' }}>
@@ -579,12 +580,16 @@ const handleNavigation= () =>{
           />
         </div>
       )}
+      
             {selectedFile && (
               <Box display="flex" alignItems="center" mt={2}>
                 <Typography variant="body1">{selectedFile.name}</Typography>
-                <Button color="error" onClick={handleFileDelete} sx={{ ml: 2 }}>
-                  Delete
+                <Button color="error" variant='outlined' onClick={handleFileDelete} sx={{ ml: 2 }}>
+                  Delete Image
                 </Button>
+                <Typography variant="body1" sx={{ ml: 1,color:'#df1414' }}>
+              Maximum File Size should not exceed 200 KB
+              </Typography>
               </Box>
             )}
           </Grid>

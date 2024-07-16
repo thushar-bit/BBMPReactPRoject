@@ -38,6 +38,10 @@ const ClassificationDocumentUploadPage = () => {
     documentregistereddate: "",
     DocumentDetails: '',
     DocumentNumber: '',
+    PropertyClasssficationAsperBooks: "",
+    PropertyClassification:"",
+    AKatha:"",
+
   });
   
   const [tableData, setTableData] = useState([
@@ -45,6 +49,7 @@ const ClassificationDocumentUploadPage = () => {
   const navigate = useNavigate();
  // const [loading,setLoading] = useState([]);
   const [tablesdata2,setTablesData2] = useState([]);
+  const [MasterTableData,setMasterTableData] = useState([])
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileExtension,setfileExtension] = useState([]);
   const [isEditable, setIsEditable] = useState(false);
@@ -53,6 +58,28 @@ const ClassificationDocumentUploadPage = () => {
   const handleDateChange = (date) => {
     setSelectedDate(date);
   };
+  const handleAkathaDropdownValueChange = async (e) =>{
+    debugger
+    const { name, value } = e.target;
+    let updatedClassification = "";
+    if (name === "AKatha") {
+      if (value !== "48") {
+        updatedClassification = "4";
+      } else {
+        updatedClassification = "5";
+      }
+    
+    const response = await axiosInstance.get(`BBMPCITZAPI/GET_NPM_MST_CLASS_DOCUMENT_CLASSANDSUBCLASS?CLASSIFICATIONID=1&SUBCLASSIFICATIONID1=${value}&SUBCLASSIFICATIONID2=0`)
+    const {Table} = response.data;
+    setTablesData2(Table.length > 0 ? Table : []);
+    }
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+      PropertyClassification: updatedClassification,
+    }));
+  };
+  
   const getPropertyphoto = (selectedFile) => {
     return new Promise((resolve, reject) => {
       if (!selectedFile) {
@@ -70,6 +97,7 @@ const ClassificationDocumentUploadPage = () => {
       };
     });
   };
+  
   const handleChange =  async (e) => {
     debugger
     const { name, value } = e.target;
@@ -88,13 +116,23 @@ const ClassificationDocumentUploadPage = () => {
 
   const { t } = useTranslation();
   const fetchData = async () => {
-    const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterDocByCategoryOrClaimType?ULBCODE=555&CATEGORYID=1');
+    const responeMaster = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
     const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
-        const {Table1} = response1.data;
-        const {  Table15 :NCLTable15  } = response2.data;
-        setTableData( NCLTable15.length > 0 ? NCLTable15 : []);
-        setTablesData2(Table1.length > 0 ? Table1 : []);
-       
+    const response3 = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
+    debugger
+        const {Table1:BBDTable1} = response3.data;
+        const {Table19} = responeMaster.data;
+        const {  Table8 :NCLTable8,Table1:NCLTable1  } = response2.data;
+        setTableData( NCLTable8.length > 0 ? NCLTable8 : []);
+        
+        setMasterTableData(Table19.length > 0 ? Table19 : [])
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          PropertyClasssficationAsperBooks:BBDTable1[0].PROPERTYCLASSIFICATIONID !== 0 ? BBDTable1[0].PROPERTYCLASSIFICATIONID : "",
+          PropertyClassification:NCLTable1[0].PROPERTYCLASSIFICATIONID !== 0 ? NCLTable1[0].PROPERTYCLASSIFICATIONID : '',
+        }));
+          
+        
   }
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -128,23 +166,21 @@ const ClassificationDocumentUploadPage = () => {
         propertyphoto2 = await getPropertyphoto(selectedFile);
       }
     const data = {
-        ordernumber: formData.DocumentNumber,
+      documentnumber: formData.DocumentNumber,
         createdby: "crc",
         documentextension: fileExtension,
         propertycode: 104931,
         documentdetails: formData.DocumentDetails,
         scanneddocument: propertyphoto2, //bytes
-     
-        orderdate: selectedDate,
+        classificationid:formData.AKatha,
+        subclassificationid: 0,
+        documentdate: selectedDate,
         documenttypeid: formData.DocumentType,
         ulbcode: 555,
-       
-      //  createdip: string
-      
 }
 debugger
 try {
-  await  axiosInstance.post('BBMPCITZAPI/NCL_PROPERTY_ID_TEMP_INS?ID_BASIC_PROPERTY=0', data
+  await  axiosInstance.post('BBMPCITZAPI/INS_NCL_PROPERTY_DOC_BBD_CLASS_TEMP', data
    )
   
    const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&propertyid=104931');
@@ -212,12 +248,12 @@ await   toast.error("Error saving data!" + error, {
   const handleDelete = async (row) => {
     debugger
     const data = {
-      propertyCode: 104931,
-      documentid: row.DOCUMENTID,
-      ulbcode: 555,
+      PROPERTYCODE: 104931,
+      DOCUMENTROWID: row.DOCUMENTROWID,
     }
+    const queryString = new URLSearchParams(data).toString();
     try {
-     await  axiosInstance.post('BBMPCITZAPI/NCL_PROPERTY_ID_TEMP_DEL?ID_BASIC_PROPERTY=0', data
+     await  axiosInstance.get(`BBMPCITZAPI/DEL_NCL_PROPERTY_DOC_BBD_CLASS_TEMP?${queryString}`
        )
        const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&propertyid=104931');
        sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
@@ -292,10 +328,67 @@ await   toast.error("Error saving data!" + error, {
             }
           }}
         >
-        Property Classification As Per Books
+  Property Classification Documents
         </Typography>
         <Grid container spacing={4}>
-         
+        <Grid item xs={12} sm={4}>
+          <FormControl fullWidth sx={{ marginBottom: 3 }}>
+        <InputLabel>Property Classification As Per Books</InputLabel>
+        <Select
+          name="PropertyClasssficationAsperBooks"
+          value={formData.PropertyClasssficationAsperBooks}
+          onChange={handleChange}
+          disabled
+        >
+          <MenuItem value="">--Select--</MenuItem>
+          {MasterTableData.map((item) => (
+            <MenuItem key={item.PROPERTYCLASSIFICATIONID} value={item.PROPERTYCLASSIFICATIONID}>
+              {item.PROPERTYCLASSIFICATION_EN}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+          <FormControl fullWidth sx={{ marginBottom: 3 }}>
+        <InputLabel>Property Classification</InputLabel>
+        <Select
+          name="PropertyClassification"
+          value={formData.PropertyClassification}
+          onChange={handleChange}
+          disabled
+        >
+          <MenuItem value="">--Select--</MenuItem>
+          {MasterTableData.map((item) => (
+            <MenuItem key={item.PROPERTYCLASSIFICATIONID} value={item.PROPERTYCLASSIFICATIONID}>
+              {item.PROPERTYCLASSIFICATION_EN}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+          <FormControl fullWidth sx={{ marginBottom: 3 }}>
+        <InputLabel>A-Khatha claim based on :</InputLabel>
+        <Select
+          name="AKatha"
+          value={formData.AKatha}
+          onChange={handleAkathaDropdownValueChange}
+        >
+          <MenuItem value="0">--Select--</MenuItem>
+              <MenuItem value="20">A-Khata in south/East/West Zone</MenuItem>
+              <MenuItem value="28">A-Khata in MAR-19 Register of Old Municipality</MenuItem>
+              <MenuItem value="2">ESwathu Form-9 Of Old GP from where property came</MenuItem>
+              <MenuItem value="45">Old GP Form-9</MenuItem>
+              <MenuItem value="25">BDA/KHB/Other Govt. Development Authority Allotted</MenuItem>
+              <MenuItem value="26">BDA/KHB/Other Competent Authority Approved Layout</MenuItem>
+              <MenuItem value="27">BDA Reconveyed AreaTitle Deeds</MenuItem>
+              <MenuItem value="29">Layout Approved by the Competent Authority</MenuItem>
+              <MenuItem value="47">Other Cases</MenuItem>
+              <MenuItem value="48">B-Katha</MenuItem>
+        </Select>
+      </FormControl>
+          </Grid>
          
           <Grid item xs={12} sm={4}>
           <FormControl fullWidth sx={{ marginBottom: 3 }}>
@@ -434,14 +527,14 @@ await   toast.error("Error saving data!" + error, {
       ) : (
         tableData.map((row) => (
           <TableRow key={row.id}>
-            <TableCell>{row.DOCUMENTID}</TableCell>
+            <TableCell>{row.DOCUMENTROWID}</TableCell>
             <TableCell>{row.DOCUMENTTYPEDESCRIPTION}</TableCell>
             <TableCell>{row.DOCUMENTDETAILS}</TableCell>
-            <TableCell>{row.ORDERNUMBER}</TableCell>
-            <TableCell>{row.ORDERDATE}</TableCell>
+            <TableCell>{row.DOCUMENTNUMBER}</TableCell>
+            <TableCell>{row.DOCUMENTDATE}</TableCell>
             <TableCell>
               {row.SCANNEDDOCUMENT ?
-      <IconButton onClick={() => handleDownload(row.SCANNEDDOCUMENT, row.DOCUMENTEXTENSION,row.DOCUMENTTYPEDESCRIPTION)}>
+      <IconButton onClick={() => handleDownload(row.SCANNEDDOCUMENT, "pdf",row.DOCUMENTTYPEDESCRIPTION)}>
         <GetAppIcon color='primary'/>
       </IconButton>
       :

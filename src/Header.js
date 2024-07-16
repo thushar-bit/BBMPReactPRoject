@@ -30,7 +30,7 @@ const Header = () => {
           <Button color="inherit" onClick={() => handleLanguageChange('kn')}>
             ಕನ್ನಡ
           </Button>
-          {location.pathname !== '/' && (
+          {location.pathname !== '/' || location.pathname === '/ErrorPage' && (
             <Button color="inherit" onClick={handleLogout}>
               Logout
             </Button>

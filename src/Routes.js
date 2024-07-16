@@ -14,6 +14,7 @@ import ClassificationDocumentUploadPage from './Pages/ClassificationDocumentUplo
 import TaxEventPage from './Pages/TaxEventPage';
 import ObjectionPage from './Pages/ObjectionPage';
 import EKYCResponse from './Pages/EKYCResponse';
+import ErrorPage from './Pages/ErrorPage';
 import Header from './Header';
 import Footer from './Footer';
 
@@ -38,6 +39,7 @@ const AppRoutes = () => {
           <Route path="/TaxEventPage" element={<TaxEventPage />} />
           <Route path="/ObjectionPage" element={<ObjectionPage />} />
           <Route path="/EKYCResponse" element={<EKYCResponse />} />
+          <Route path="/ErrorPage" element={<ErrorPage />} />
         </Routes>
       </div>
       <Footer />

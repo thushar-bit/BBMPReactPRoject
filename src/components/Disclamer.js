@@ -3,12 +3,34 @@ import { Dialog, DialogContent, DialogActions, Button, Typography } from '@mui/m
 
 const DisclaimerDialog = ({ open, onClose, onAgree }) => {
     const contentRef = useRef(null);
-   
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const handleAgree = () => {
+      setConfirmOpen(true);
+  };
+  const handleConfirmYes = () => {
+    // Navigation function or any action you want to perform
+    // Example: navigate('/some-path');
+    setConfirmOpen(false);
+    onClose(); // Close the DisclaimerDialog
+};
 
+const handleConfirmNo = () => {
+    setConfirmOpen(false);
+    onClose(); // Close the DisclaimerDialog
+};
  
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xl" fullWidth>
+      <Dialog open={confirmOpen} onClose={handleConfirmNo} maxWidth="md" fullWidth>
+    <DialogContent>
+        <Typography variant="h5">Do you confirm that the provided details are correct and that you wish to submit the application?</Typography>
+    </DialogContent>
+    <DialogActions>
+        <Button onClick={handleConfirmYes} color="primary">Yes</Button>
+        <Button onClick={handleConfirmNo} color="secondary">No</Button>
+    </DialogActions>
+</Dialog>
       <DialogContent dividers style={{ maxHeight: '500px' }} ref={contentRef}>
         <Typography variant="h3" gutterBottom>
           Disclaimer
@@ -27,7 +49,7 @@ const DisclaimerDialog = ({ open, onClose, onAgree }) => {
       </DialogContent>
       <DialogActions>
         <Button
-          onClick={onAgree}
+          onClick={handleAgree}
           color="primary"
         //   disabled={!isScrolledToBottom}
         >
@@ -35,6 +57,7 @@ const DisclaimerDialog = ({ open, onClose, onAgree }) => {
         </Button>
       </DialogActions>
     </Dialog>
+    
   );
 };
 export default DisclaimerDialog;
