@@ -197,7 +197,7 @@ useEffect(() => {
            progress: undefined,
          });
          setTimeout(() => {
-          navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
+          navigate('/ErrorPage', { state: { errorMessage: error.message } });
         }, 2000);
        }
       }
@@ -256,7 +256,7 @@ useEffect(() => {
          progress: undefined,
        });
        setTimeout(() => {
-        navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
+        navigate('/ErrorPage', { state: { errorMessage: error.message } });
       }, 2000);
      }
     }
@@ -299,8 +299,8 @@ useEffect(() => {
            draggable: true,
            progress: undefined,
          });
-         setTimeout(() => {
-          navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
+           setTimeout(() => {
+          navigate('/ErrorPage', { state: { errorMessage: error.message } });
         }, 2000);
        }
     }

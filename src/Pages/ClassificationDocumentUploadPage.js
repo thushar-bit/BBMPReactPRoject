@@ -245,7 +245,7 @@ await   toast.error("Error saving data!" + error, {
 
   };
   const back = () => {
-    navigate('/AreaDimension/building')
+    navigate('/DocumentUploadPage')
   }
  
   const handleDownload = (base64Data, fileExtension,documentdescription) => {

@@ -162,7 +162,7 @@ const OwnerDetails = () => {
     }
 
     // Determine whether to navigate or alert
-    if ( allNameMatchVerified && atLeastOneMobileVerified && relationname && relationshiptype && tablesdata9.length > 0) {
+    if ( allNameMatchVerified && atLeastOneMobileVerified && relationname && relationshiptype || tablesdata9.length > 0) {
         // Navigate to the desired location
         navigate("/PropertyRights")
     } else {
@@ -300,7 +300,7 @@ const OwnerDetails = () => {
   
   };
   const back = () => {
-    navigate('/AreaDimension/flats');
+    navigate('/AreaDimension/select');
   };
   const VerfiyEKYC = async() => {
   var response =  await axiosInstance.post("E-KYCAPI/RequestEKYC?OwnerNumber="+23)

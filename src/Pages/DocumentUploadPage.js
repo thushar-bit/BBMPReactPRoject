@@ -193,7 +193,7 @@ await   toast.error("Error saving data!" + error, {
 
   };
   const back = () => {
-    navigate('/AreaDimension/building')
+    navigate('/PropertyRights')
   }
   const handleNavigation= () =>{
     
