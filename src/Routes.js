@@ -15,17 +15,15 @@ import EKYCResponse from './Pages/EKYCResponse';
 import ErrorPage from './Pages/ErrorPage';
 import Header from './Header';
 import Footer from './Footer';
-
-
+import Breadcrumbs from './components/Breadcrumbs';
 const AppRoutes = () => {
   
   return (
-   
     <Router>
       <Header />
       <div className="App">
+      <Breadcrumbs />
         <Routes>
-         
           <Route path="/" element={<Login />} />
           <Route path="/bbmp-form" element={<BbmpForm />} />
           <Route path="/AreaDimension/:DropdownValue" element={<AreaDimension />} />
