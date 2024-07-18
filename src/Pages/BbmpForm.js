@@ -42,7 +42,7 @@ const BbmpForm = () => {
 
 
   const fetchData = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       const response = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
       const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
@@ -92,10 +92,17 @@ const BbmpForm = () => {
   
   const { t } = useTranslation();
   const [previewUrl, setPreviewUrl] = useState('');
-  const handleFileChange = (e) => {
+  const handleFileChange = (e) => {   
     if (!isEditable) return;
     setSelectedFile(e.target.files[0]);
     const file = e.target.files[0];
+    const maxSize = 200 * 1024; 
+    if (file && file.size > maxSize) {
+      toast.error('File size exceeds 200 KB limit');
+      e.target.value = null; 
+      setSelectedFile(null);
+      return;
+    }
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -186,8 +193,11 @@ const  handleSubmit = async (e) => {
         draggable: true,
         progress: undefined,
       });
-     
-    
+
+      setTimeout(() => {
+        window.location.reload();
+   //    handleNavigation()
+      }, 1000);
     } catch (error) {
    await   toast.error("Error saving data", {
         position: "top-right",

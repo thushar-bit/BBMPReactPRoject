@@ -18,7 +18,6 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import 'dayjs/locale/en-gb';
-import dayjs from 'dayjs';
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
   clipPath: 'inset(50%)',
@@ -43,14 +42,12 @@ const DocumentUploadPage = () => {
   const [tableData, setTableData] = useState([
   ]);
   const navigate = useNavigate();
- // const [loading,setLoading] = useState([]);
   const [tablesdata2,setTablesData2] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileExtension,setfileExtension] = useState([]);
-  const [tablesdata4,setTablesData4] = useState([]);
   const [isEditable, setIsEditable] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
-  const tomorrow = dayjs();
+
   const handleDateChange = (date) => {
     setSelectedDate(date);
   };
@@ -159,7 +156,10 @@ try {
      draggable: true,
      progress: undefined,
    });
- 
+   setTimeout(() => {
+    window.location.reload();
+//    handleNavigation()
+  }, 1000);
  } catch (error) {
 await   toast.error("Error saving data!" + error, {
      position: "top-right",
@@ -231,7 +231,6 @@ await   toast.error("Error saving data!" + error, {
          draggable: true,
          progress: undefined,
        });
-       //setLoading(false);
      
      } catch (error) {
     await   toast.error("Error Deleting data!" + error, {

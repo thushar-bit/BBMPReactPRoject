@@ -1,40 +1,63 @@
 import React from 'react';
-import { Typography, Container, Grid, Paper,Button } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Typography, Container,  Paper, Button } from '@mui/material';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { styled } from '@mui/system';
+import Warning from '../assets/warning.png';
 
+// Define custom styled components
+const StyledContainer = styled(Container)({
+  textAlign: 'center',
+  height: '80vh',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+});
 
-const ErrorPage = ({ errorMessage }) => {
-    const navigate = useNavigate();
-    const handleSupport = () =>{
-        window.location.href = "https://www.google.com";
-    }
-    const handleLoginPage = () => {
-        sessionStorage.clear();
-        navigate("/")
-    }
-  
-    return (
-        <Container maxWidth="sm">
-            <Grid container spacing={3} justifyContent="center" alignItems="center" style={{ height: '100vh' }}>
-                <Grid item xs={12}>
-                    <Paper elevation={3} style={{ padding: '20px', textAlign: 'center' }}>
-                        <Typography variant="h4" gutterBottom>
-                            Oops! Something went wrong.
-                        </Typography>
-                        <Typography variant="body1" gutterBottom>
-                            {errorMessage}
-                        </Typography>
-                        <Button variant="text" onClick={handleSupport}>
-                            Contact Support
-                        </Button>
-                        <Button variant="text" onClick={handleLoginPage}>
-                            Go Back to Login
-                        </Button>
-                    </Paper>
-                </Grid>
-            </Grid>
-        </Container>
-    );
+const StyledPaper = styled(Paper)({
+  padding: '32px',
+  textAlign: 'center',
+  margin: '0 auto',
+});
+
+const SadImage = styled('img')({
+  width: '150px',
+  height: '150px',
+  marginBottom: '20px',
+});
+
+const ErrorPage = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const errorMessage = location.state?.errorMessage || "Unknown error occurred";
+
+  const handleSupport = () => {
+    window.location.href = "https://www.google.com";
+  }
+
+  const handleLoginPage = () => {
+    sessionStorage.clear();
+    navigate("/");
+  }
+
+  return (
+    <StyledContainer maxWidth="xl" fullWidth>
+      <StyledPaper >
+        <SadImage src={Warning} alt="Warning" />
+        <Typography variant="h2" gutterBottom>
+          Oops! Something went wrong.
+        </Typography>
+        <Typography variant="h3" gutterBottom>
+          {errorMessage}
+        </Typography>
+        <Button variant="text" color="primary" onClick={handleSupport} style={{ marginRight: '10px' }}>
+          Contact Support
+        </Button>
+        <Button variant="text" color="secondary" onClick={handleLoginPage}>
+          Go Back to Login
+        </Button>
+      </StyledPaper>
+    </StyledContainer>
+  );
 };
 
 export default ErrorPage;

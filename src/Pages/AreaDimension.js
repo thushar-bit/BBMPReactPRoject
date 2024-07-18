@@ -43,7 +43,6 @@ const AreaDimension = () => {
   const [isEditable, setIsEditable] = useState(false);
   const [isEditablecheckbandhi, setIsEditablecheckbandi] = useState(false);
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
   const [isOddSiteEnabled, setIsOddSiteEnabled] = useState(false);
   const handleChange = (e) => {
     debugger
@@ -182,8 +181,11 @@ useEffect(() => {
            draggable: true,
            progress: undefined,
          });
-         setLoading(false);
-       
+     
+         setTimeout(() => {
+          window.location.reload();
+     //    handleNavigation()
+        }, 1000);
        } catch (error) {
       await   toast.error("Error saving data!" + error, {
            position: "top-right",
@@ -235,7 +237,7 @@ useEffect(() => {
          draggable: true,
          progress: undefined,
        });
-       setLoading(false);
+     
      
      } catch (error) {
     await   toast.error("Error saving data!" + error, {
@@ -273,7 +275,7 @@ useEffect(() => {
            draggable: true,
            progress: undefined,
          });
-         setLoading(false);
+     
        
        } catch (error) {
       await   toast.error("Error saving data!" + error, {

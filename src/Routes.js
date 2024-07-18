@@ -11,8 +11,6 @@ import OwnerDetails from './Pages/OwnerDetails';
 import PropertyRights from './Pages/PropertyRights';
 import DocumentUploadPage from './Pages/DocumentUploadPage';
 import ClassificationDocumentUploadPage from './Pages/ClassificationDocumentUploadPage';
-import TaxEventPage from './Pages/TaxEventPage';
-import ObjectionPage from './Pages/ObjectionPage';
 import EKYCResponse from './Pages/EKYCResponse';
 import ErrorPage from './Pages/ErrorPage';
 import Header from './Header';
@@ -22,10 +20,12 @@ import Footer from './Footer';
 const AppRoutes = () => {
   
   return (
+   
     <Router>
       <Header />
       <div className="App">
         <Routes>
+         
           <Route path="/" element={<Login />} />
           <Route path="/bbmp-form" element={<BbmpForm />} />
           <Route path="/AreaDimension/:DropdownValue" element={<AreaDimension />} />
@@ -36,14 +36,13 @@ const AppRoutes = () => {
           <Route path="/PropertyRights" element={<PropertyRights />} />
           <Route path="/DocumentUploadPage" element={<DocumentUploadPage />} />
           <Route path="/ClassificationDocumentUploadPage" element={<ClassificationDocumentUploadPage />} />
-          <Route path="/TaxEventPage" element={<TaxEventPage />} />
-          <Route path="/ObjectionPage" element={<ObjectionPage />} />
           <Route path="/EKYCResponse" element={<EKYCResponse />} />
           <Route path="/ErrorPage" element={<ErrorPage />} />
         </Routes>
       </div>
       <Footer />
     </Router>
+    
   );
 };
 

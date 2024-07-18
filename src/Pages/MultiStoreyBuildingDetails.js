@@ -40,7 +40,6 @@ const MultiStoreyBuildingDetails = () => {
   const [tablesdata3,setTablesData3] = useState([]);
   const [tablesdata4,setTablesData4] = useState([]);
   const [tablesdata6,setTablesData6] = useState([]);
-  const [loading,setLoading] = useState(false);
 
   const { t } = useTranslation();
 
@@ -117,17 +116,17 @@ const MultiStoreyBuildingDetails = () => {
         setTablesData6(table17Item);
         var sharetype = "0";
         var ownersharetypeValue = "";
-        if (table13Item.PLOTAREAOWNERSHARE_AREA != "0")
+        if (table13Item.PLOTAREAOWNERSHARE_AREA !== "0")
           {
             ownersharetypeValue = table13Item.PLOTAREAOWNERSHARE_AREA
             sharetype = "1";
           }
-          else if (table13Item.PLOTAREAOWNERSHARE_FRACTION != "0")
+          else if (table13Item.PLOTAREAOWNERSHARE_FRACTION !== "0")
           {
             ownersharetypeValue = table13Item.PLOTAREAOWNERSHARE_FRACTION
             sharetype = "2";
           }
-          else if (table13Item.PLOTAREAOWNERSHARE_NOS != "0")
+          else if (table13Item.PLOTAREAOWNERSHARE_NOS !== "0")
           {
             ownersharetypeValue =  table13Item.PLOTAREAOWNERSHARE_NOS
             sharetype = "3";
@@ -202,8 +201,11 @@ try {
      draggable: true,
      progress: undefined,
    });
-   setLoading(false);
- 
+  
+   setTimeout(() => {
+    window.location.reload();
+//    handleNavigation()
+  }, 1000);
  } catch (error) {
 await   toast.error("Error saving data!" + error, {
      position: "top-right",

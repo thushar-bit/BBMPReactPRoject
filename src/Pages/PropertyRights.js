@@ -111,6 +111,10 @@ const PropertyRights = () => {
      draggable: true,
      progress: undefined,
    });
+   setTimeout(() => {
+    window.location.reload();
+//    handleNavigation()
+  }, 1000);
    }
    catch(error){
     toast.error("Error saving data!" + error, {

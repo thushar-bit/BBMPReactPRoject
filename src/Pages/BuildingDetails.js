@@ -29,7 +29,6 @@ const BuildingDetails = () => {
   const [tableData, setTableData] = useState([
   ]);
   const navigate = useNavigate();
- // const [loading,setLoading] = useState([]);
   const [tablesdata2,setTablesData2] = useState([]);
   const [tablesdata3,setTablesData3] = useState([]);
   const [tablesdata4,setTablesData4] = useState([]);
@@ -131,8 +130,11 @@ try {
      draggable: true,
      progress: undefined,
    });
-   //setLoading(false);
- 
+  
+   setTimeout(() => {
+    window.location.reload();
+//    handleNavigation()
+  }, 1000);
  } catch (error) {
 await   toast.error("Error saving data!" + error, {
      position: "top-right",
@@ -175,7 +177,8 @@ await   toast.error("Error saving data!" + error, {
          draggable: true,
          progress: undefined,
        });
-       //setLoading(false);
+       
+
      
      } catch (error) {
     await   toast.error("Error Deleting data!" + error, {

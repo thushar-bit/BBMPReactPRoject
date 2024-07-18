@@ -9,7 +9,7 @@ import Button from '@mui/joy/Button';
 import Box from '@mui/joy/Box';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../components/Axios';
-import ErrorPage from './ErrorPage';
+
 
 function generateCaptcha() {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -43,7 +43,7 @@ export default function Login() {
   //sessionStorage.setItem('MASTERDATA',JSON.stringfy(response3))
   navigate('/bbmp-form');
   }catch(error){
-    navigate('/ErrorPage',error.message)
+    navigate('/ErrorPage', { state: { errorMessage: error.message } });
   }
  }
   return (

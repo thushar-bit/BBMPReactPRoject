@@ -47,7 +47,6 @@ const ClassificationDocumentUploadPage = () => {
   const [tableData, setTableData] = useState([
   ]);
   const navigate = useNavigate();
- // const [loading,setLoading] = useState([]);
   const [tablesdata2,setTablesData2] = useState([]);
   const [MasterTableData,setMasterTableData] = useState([])
   const [selectedFile, setSelectedFile] = useState(null);
@@ -194,7 +193,10 @@ try {
      draggable: true,
      progress: undefined,
    });
- 
+   setTimeout(() => {
+    window.location.reload();
+//    handleNavigation()
+  }, 1000);
  } catch (error) {
 await   toast.error("Error saving data!" + error, {
      position: "top-right",
@@ -211,11 +213,7 @@ await   toast.error("Error saving data!" + error, {
   const back = () => {
     navigate('/AreaDimension/building')
   }
-  const handleNavigation= () =>{
-    debugger
-  //  navigate('/ClassificationDocumentUploadPage');
-    
-  }
+ 
   const handleDownload = (base64Data, fileExtension,documentdescription) => {
     const filename = `${documentdescription}.${fileExtension.toLowerCase()}`;
  
@@ -266,7 +264,7 @@ await   toast.error("Error saving data!" + error, {
          draggable: true,
          progress: undefined,
        });
-       //setLoading(false);
+       
      
      } catch (error) {
     await   toast.error("Error Deleting data!" + error, {

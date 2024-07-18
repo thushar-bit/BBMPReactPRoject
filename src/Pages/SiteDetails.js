@@ -17,7 +17,6 @@ const SiteDetails = () => {
   const navigate = useNavigate();
   const [tablesdata2,setTablesData2] = useState([]);
   const [tablesdata3,setTablesData3] = useState([]);
-  const [loading,setLoading] = useState([]);
   const handleChange = async (e) => {
     const { name, value } = e.target;
   debugger
@@ -78,8 +77,10 @@ try {
      draggable: true,
      progress: undefined,
    });
-   setLoading(false);
- 
+   setTimeout(() => {
+    window.location.reload();
+//    handleNavigation()
+  }, 1000);
  } catch (error) {
 await   toast.error("Error saving data!" + error, {
      position: "top-right",

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { Dialog, DialogContent, DialogActions, Button, Typography } from '@mui/material';
 
 const DisclaimerDialog = ({ open, onClose, onAgree }) => {
