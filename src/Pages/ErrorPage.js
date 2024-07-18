@@ -28,8 +28,8 @@ const SadImage = styled('img')({
 const ErrorPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const errorMessage = location.state?.errorMessage || "Unknown error occurred";
-
+  const errorMessage = location.state?.errorMessage || "Unknown error occurred in Sending Error Message";
+  const errorLocation = location.state.errorLocation || "Unknown Error Occured in Sending Location"
   const handleSupport = () => {
     window.location.href = "https://www.google.com";
   }
@@ -47,7 +47,10 @@ const ErrorPage = () => {
           Oops! Something went wrong.
         </Typography>
         <Typography variant="h3" gutterBottom>
-          {errorMessage}
+         The Error is : {errorMessage}
+        </Typography>
+        <Typography variant="h3" gutterBottom>
+         The Error Location is : {errorLocation}
         </Typography>
         <Button variant="text" color="primary" onClick={handleSupport} style={{ marginRight: '10px' }}>
           Contact Support

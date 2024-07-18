@@ -155,14 +155,14 @@ const  handleSubmit = async (e) => {
  
   e.preventDefault();
   var propertyphoto2 = "";
-  debugger
+  
   if(isEditable){
   if(selectedFile)
     {
       propertyphoto2 = await getPropertyphoto(selectedFile);
     }
 
-    debugger
+    
    
     const data = {
       propertyCode: formData.propertyNumber,
@@ -197,9 +197,9 @@ const  handleSubmit = async (e) => {
       setTimeout(() => {
         window.location.reload();
    //    handleNavigation()
-      }, 1000);
+      }, 2000);
     } catch (error) {
-   await   toast.error("Error saving data", {
+   await   toast.error("Error saving data ",error, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -208,6 +208,9 @@ const  handleSubmit = async (e) => {
         draggable: true,
         progress: undefined,
       });
+      setTimeout(() => {
+        navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
+      }, 2000);
     }
   }else {
     await   toast.warning("No changes to save", {
@@ -612,19 +615,7 @@ const handleNavigation= () =>{
             <Button variant="contained" color="success" type="submit">
             {t("save")}
             </Button>
-            <Button variant="contained" color="error" type="reset"
-            onClick={() => setFormData({
-              DoorPlotNo: '',
-              BuildingLandName: '',
-              Street: '',
-              NearestLandmark: '',
-              Pincode: '',
-              AreaLocality: ''
-            })}
-          >
-            {t("clear")}
-              
-            </Button>
+        
             <Button variant="contained" color="primary" onClick={handleNavigation}>
             Next
             </Button>

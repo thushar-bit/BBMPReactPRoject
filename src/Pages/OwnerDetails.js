@@ -33,7 +33,7 @@ const OwnerDetails = () => {
   const [countdownInterval, setCountdownInterval] = useState(null);
   
   const handleChange = (e) => {
-    debugger
+    
     const { name, value } = e.target;
   
     if (name === "MOBILENUMBER") {
@@ -70,8 +70,8 @@ const OwnerDetails = () => {
     };
   }, [countdownInterval]);
   const handleGenerateOtp = async (index) => {
-    debugger
-    const response = await axiosInstance.get("E-KYCAPI/SendOTP?OwnerMobileNo=" + formData.MOBILENUMBER);
+    try {
+      const response = await axiosInstance.get("E-KYCAPI/SendOTP?OwnerMobileNo=" + formData.MOBILENUMBER);
     toast.success("OTP Sent Successfully");
     setOtpData(response.data.otpResponseMessage);
     setOtpNumber(response.data.otp);
@@ -90,6 +90,10 @@ const OwnerDetails = () => {
 
     
     setCountdownInterval(interval);
+    } catch (error) {
+      console.log("failed to send otp"+error)
+    }
+    
   };
 
   const handleVerifyOtp = (index) => {
@@ -106,16 +110,20 @@ const OwnerDetails = () => {
     setFormData(tablesdata9[index]);
   };
   const handleDelete =  async (index) => {
-    
-    const ownerToDelete = tablesdata9[index];
-  await axiosInstance.get(`BBMPCITZAPI/DEL_SEL_NCL_PROP_OWNER_TEMP?propertyCode=${ownerToDelete.PROPERTYCODE}&ownerNumber=${ownerToDelete.OWNERNUMBER}`);
-  toast.error("Owner Deleted Successfully");
-  await fetchData();
+    try {
+      const ownerToDelete = tablesdata9[index];
+      await axiosInstance.get(`BBMPCITZAPI/DEL_SEL_NCL_PROP_OWNER_TEMP?propertyCode=${ownerToDelete.PROPERTYCODE}&ownerNumber=${ownerToDelete.OWNERNUMBER}`);
+      toast.error("Owner Deleted Successfully");
+      await fetchData();
+    } catch (error) {
+      console.log(error)
+    }
+   
   };
 
   const handleNavigation =() => {
     // Extract owner numbers from tableData
-    debugger
+    
     const tableDataOwnerNumbers = tableData.map(item => item.OWNERNUMBER);
     // Flags for the checks
    // let allEKYCVerified = true;
@@ -184,53 +192,71 @@ const OwnerDetails = () => {
 
 
   const handleSave = async () => {
-    if(otpFieldsVisible){
-      toast.error("Verify the OTP!")
-      return
-    }
-    if(formData.IDENTIFIERTYPEID.length === 0){
-      toast.error("Please Select RelationShip Type")
-      return
-    }
-    if(formData.IDENTIFIERNAME.length <= 0){
-      toast.error("Please enter the Relation Name")
-      return
-    }
-    if(formData.MOBILENUMBER.length <= 0 && formData.MOBILENUMBER.length <10){
-      toast.error("Please enter a valid Mobile Number")
-      return
-    }
-
-
-    setEditableIndex(-1); 
-    const params = {
-      propertyCode: formData.PROPERTYCODE || "",
-      ownerNumber: formData.OWNERNUMBER || "",
-      IDENTIFIERTYPE: formData.IDENTIFIERTYPEID || "",
-      IDENTIFIERNAME_EN: formData.IDENTIFIERNAME || "",
-      MOBILENUMBER: formData.MOBILENUMBER || "",
-      MOBILEVERIFY: formData.MOBILEVERIFY || "",
-      loginId: 'crc'
-    };
+    try {
+      if(otpFieldsVisible){
+        toast.error("Verify the OTP!")
+        return
+      }
+      if(formData.IDENTIFIERTYPEID.length === 0){
+        toast.error("Please Select RelationShip Type")
+        return
+      }
+      if(formData.IDENTIFIERNAME.length <= 0){
+        toast.error("Please enter the Relation Name")
+        return
+      }
+      if(formData.MOBILENUMBER.length <= 0 && formData.MOBILENUMBER.length <10){
+        toast.error("Please enter a valid Mobile Number")
+        return
+      }
   
-    const queryString = new URLSearchParams(params).toString();
   
+      setEditableIndex(-1); 
+      const params = {
+        propertyCode: formData.PROPERTYCODE || "",
+        ownerNumber: formData.OWNERNUMBER || "",
+        IDENTIFIERTYPE: formData.IDENTIFIERTYPEID || "",
+        IDENTIFIERNAME_EN: formData.IDENTIFIERNAME || "",
+        MOBILENUMBER: formData.MOBILENUMBER || "",
+        MOBILEVERIFY: formData.MOBILEVERIFY || "",
+        loginId: 'crc'
+      };
     
-    const response = await axiosInstance.get(`BBMPCITZAPI/UPD_NCL_PROPERTY_OWNER_TEMP_MOBILEVERIFY?${queryString}`);
-    console.log(response.data);
-    toast.success("Owner Edited Successfully")
-    await fetchData();
+      const queryString = new URLSearchParams(params).toString();
+    
+      
+      const response = await axiosInstance.get(`BBMPCITZAPI/UPD_NCL_PROPERTY_OWNER_TEMP_MOBILEVERIFY?${queryString}`);
+      console.log(response.data);
+      toast.success("Owner Edited Successfully")
+      await fetchData();
+    } catch (error) {
+      console.log("Owner save",error)
+    }
+    
   };
   const fetchData = async () => {
-    const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
-        const response2 = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
-      const response3 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&propertyid=104931');
-        const {  Table5   } = response2.data;
-        const {Table9:NCLTABLE9} = response3.data;
-        const {Table8} = response1.data;
-        setTableData8(Table8.length > 0 ? Table8 :[])
-        setTableData(Table5.length > 0 ? Table5 : []);
-        setTablesData9(NCLTABLE9.length > 0 ? NCLTABLE9 : []);
+    try {
+      const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
+      const response2 = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
+    const response3 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&propertyid=104931');
+      const {  Table5   } = response2.data;
+      const {Table9:NCLTABLE9} = response3.data;
+      const {Table8} = response1.data;
+      setTableData8(Table8.length > 0 ? Table8 :[])
+      setTableData(Table5.length > 0 ? Table5 : []);
+      setTablesData9(NCLTABLE9.length > 0 ? NCLTABLE9 : []);
+    } catch (error) {
+      toast.error("Error Getting data!" + error, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+   
   }
 
   React.useEffect( () => {
@@ -262,18 +288,23 @@ const OwnerDetails = () => {
     // Submit form data logic here
   };
   const EditOwnerDetailsFromEKYCData = async (txno) => {
-   const response = await axiosInstance.get("E-KYCAPI/EditOwnerDetailsFromEKYCData?transactionNumber="+txno)
-    if(response.data.length > 0){
-      return response.data.Table[0].OWNERNUMBER || ""
+    try {
+      const response = await axiosInstance.get("E-KYCAPI/EditOwnerDetailsFromEKYCData?transactionNumber="+txno)
+      if(response.data.length > 0){
+        return response.data.Table[0].OWNERNUMBER || ""
+      }
+      return ""
+    } catch (error) {
+      console.log("EditOwnerDetailsFromEKYCData",error)
     }
-    return ""
+  
   };
   const back = () => {
     navigate('/AreaDimension/flats');
   };
   const VerfiyEKYC = async() => {
   var response =  await axiosInstance.post("E-KYCAPI/RequestEKYC?OwnerNumber="+23)
-  debugger
+  
   console.log(response.data)
   window.location.href = response.data;
   };
@@ -293,8 +324,12 @@ const OwnerDetails = () => {
   };
 
   const Fn_CPlus_NameMatchJulyFinal2023 = async (name1, name2) => {
-   const response = await axiosInstance.get("BBMPCITZAPI/NameMatchScore2323?ownerName1="+name1+"&ownerName2="+name2)
+    try {
+      const response = await axiosInstance.get("BBMPCITZAPI/NameMatchScore2323?ownerName1="+name1+"&ownerName2="+name2)
    return response.data;
+    } catch (error) {
+      console.log("Fn_CPlus_NameMatchJulyFinal2023",error)
+    }
   };
   
   const calculateNameMatchStatus =  async (grid2OwnerName, grid2Ownernumber) => {
@@ -303,7 +338,7 @@ const OwnerDetails = () => {
     if (ownerData) {
       const grid1OwnerName = ownerData.OWNERNAME;
       const nameMatchScore =  await Fn_CPlus_NameMatchJulyFinal2023(grid2OwnerName, grid1OwnerName);
-      debugger
+      
       if (nameMatchScore) {
         nameMatchStatus = "MATCHED";
       } else {

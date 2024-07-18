@@ -58,8 +58,8 @@ const ClassificationDocumentUploadPage = () => {
     setSelectedDate(date);
   };
   const handleAkathaDropdownValueChange = async (e) =>{
-    debugger
-    const { name, value } = e.target;
+    try {
+      const { name, value } = e.target;
     let updatedClassification = "";
     if (name === "AKatha") {
       if (value !== "48") {
@@ -77,6 +77,21 @@ const ClassificationDocumentUploadPage = () => {
       [name]: value,
       PropertyClassification: updatedClassification,
     }));
+    } catch (error) {
+      toast.error("Error saving data ",error, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      setTimeout(() => {
+        navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
+      }, 2000);
+    }
+    
   };
   
   const getPropertyphoto = (selectedFile) => {
@@ -98,7 +113,7 @@ const ClassificationDocumentUploadPage = () => {
   };
   
   const handleChange =  async (e) => {
-    debugger
+    
     const { name, value } = e.target;
     if(name === "DocumentType"){
       if(value === 26){
@@ -115,10 +130,11 @@ const ClassificationDocumentUploadPage = () => {
 
   const { t } = useTranslation();
   const fetchData = async () => {
-    const responeMaster = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
+    try {
+      const responeMaster = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
     const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
     const response3 = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
-    debugger
+    
         const {Table1:BBDTable1} = response3.data;
         const {Table19} = responeMaster.data;
         const {  Table8 :NCLTable8,Table1:NCLTable1  } = response2.data;
@@ -130,6 +146,21 @@ const ClassificationDocumentUploadPage = () => {
           PropertyClasssficationAsperBooks:BBDTable1[0].PROPERTYCLASSIFICATIONID !== 0 ? BBDTable1[0].PROPERTYCLASSIFICATIONID : "",
           PropertyClassification:NCLTable1[0].PROPERTYCLASSIFICATIONID !== 0 ? NCLTable1[0].PROPERTYCLASSIFICATIONID : '',
         }));
+    } catch (error) {
+      toast.error("Error saving data ",error, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      setTimeout(() => {
+        navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
+      }, 2000);
+    }
+    
           
         
   }
@@ -159,7 +190,7 @@ const ClassificationDocumentUploadPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     var propertyphoto2 = "";
-    debugger
+    
     if(selectedFile)
       {
         propertyphoto2 = await getPropertyphoto(selectedFile);
@@ -177,7 +208,7 @@ const ClassificationDocumentUploadPage = () => {
         documenttypeid: formData.DocumentType,
         ulbcode: 555,
 }
-debugger
+
 try {
   await  axiosInstance.post('BBMPCITZAPI/INS_NCL_PROPERTY_DOC_BBD_CLASS_TEMP', data
    )
@@ -196,7 +227,7 @@ try {
    setTimeout(() => {
     window.location.reload();
 //    handleNavigation()
-  }, 1000);
+  }, 2000);
  } catch (error) {
 await   toast.error("Error saving data!" + error, {
      position: "top-right",
@@ -207,6 +238,9 @@ await   toast.error("Error saving data!" + error, {
      draggable: true,
      progress: undefined,
    });
+   setTimeout(() => {
+    navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
+  }, 2000);
  }
 
   };
@@ -244,7 +278,7 @@ await   toast.error("Error saving data!" + error, {
     URL.revokeObjectURL(link.href);
   };
   const handleDelete = async (row) => {
-    debugger
+    
     const data = {
       PROPERTYCODE: 104931,
       DOCUMENTROWID: row.DOCUMENTROWID,
@@ -276,6 +310,9 @@ await   toast.error("Error saving data!" + error, {
          draggable: true,
          progress: undefined,
        });
+       setTimeout(() => {
+        navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
+      }, 2000);
      }
   };
 
@@ -559,9 +596,6 @@ await   toast.error("Error saving data!" + error, {
             </Button>
             <Button variant="contained" color="success" type="submit">
               Save
-            </Button>
-            <Button variant="contained" color="error" type="reset">
-              Clear
             </Button>
             <Button variant="contained" color="primary" onClick={handleOpenDialog}>
               Finish

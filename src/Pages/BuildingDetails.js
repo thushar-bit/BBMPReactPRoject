@@ -34,7 +34,7 @@ const BuildingDetails = () => {
   const [tablesdata4,setTablesData4] = useState([]);
   const handleChange =  async (e) => {
     const { name, value } = e.target;
-    debugger
+    
       if (name === "features") {
         try {
           const response = await axiosInstance.get(`BBMPCITZAPI/GetNPMMasterTable?FeaturesHeadID=${value}`);
@@ -42,8 +42,18 @@ const BuildingDetails = () => {
             setTablesData3(response.data.Table);
           }
         } catch (error) {
-          console.error('Error fetching data:', error);
-         
+          toast.error("Error saving data!" + error, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          setTimeout(() => {
+            navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
+          }, 2000);
         }
       }
       if (name === 'SelfuseArea' || name === 'RentedArea') {
@@ -70,21 +80,37 @@ const BuildingDetails = () => {
 
   const { t } = useTranslation();
   const fetchData = async () => {
-    const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
-    const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
-    const {  Table15,Table16   } = response1.data;
-    debugger
-        const {  Table14   } = response2.data;
-        const table1Item = Table14.length > 0 ? Table14 : [];
-        const table16Item = Table16.length > 0 ? Table16 : [];
-        const table15Item = Table15.length > 0 ? Table15 : [];
-        setTableData(table1Item);
-        setTablesData2(table16Item);
-        setTablesData4(table15Item);
+    try {
+      const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
+      const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
+      const {  Table15,Table16   } = response1.data;
+      
+          const {  Table14   } = response2.data;
+          const table1Item = Table14.length > 0 ? Table14 : [];
+          const table16Item = Table16.length > 0 ? Table16 : [];
+          const table15Item = Table15.length > 0 ? Table15 : [];
+          setTableData(table1Item);
+          setTablesData2(table16Item);
+          setTablesData4(table15Item);
+    } catch (error) {
+      toast.error("Error saving data!" + error, {
+         position: "top-right",
+         autoClose: 5000,
+         hideProgressBar: false,
+         closeOnClick: true,
+         pauseOnHover: true,
+         draggable: true,
+         progress: undefined,
+       });
+       setTimeout(() => {
+        navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
+      }, 2000);
+    }
+   
   }
   const handleSubmit = async (e) => {
     e.preventDefault();
-    debugger
+    
     var BUILDINGUSAGETYPEID= 0;
     if (formData.RentedArea === 0)
       {
@@ -114,7 +140,7 @@ const BuildingDetails = () => {
       ownUseArea: formData.SelfuseArea,
       rentedArea: formData.RentedArea,
 }
-debugger
+
 try {
   await  axiosInstance.post('BBMPCITZAPI/DEL_INS_SEL_NCL_PROP_BUILDING_TEMP?ULBCODE=555', data
    )
@@ -134,7 +160,7 @@ try {
    setTimeout(() => {
     window.location.reload();
 //    handleNavigation()
-  }, 1000);
+  }, 2000);
  } catch (error) {
 await   toast.error("Error saving data!" + error, {
      position: "top-right",
@@ -145,6 +171,9 @@ await   toast.error("Error saving data!" + error, {
      draggable: true,
      progress: undefined,
    });
+   setTimeout(() => {
+    navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
+  }, 2000);
  }
 
   };
@@ -152,12 +181,12 @@ await   toast.error("Error saving data!" + error, {
     navigate('/AreaDimension/building')
   }
   const handleNavigation= () =>{
-    debugger
+    
     navigate('/OwnerDetails');
     
   }
   const handleDelete = async (id) => {
-    debugger
+    
     const data = {
       propertyCode: 104931,
       buildingnumberid: id.BUILDINGBLOCKID,
@@ -177,7 +206,10 @@ await   toast.error("Error saving data!" + error, {
          draggable: true,
          progress: undefined,
        });
-       
+       setTimeout(() => {
+        window.location.reload();
+   //    handleNavigation()
+      }, 2000);
 
      
      } catch (error) {
@@ -190,30 +222,49 @@ await   toast.error("Error saving data!" + error, {
          draggable: true,
          progress: undefined,
        });
+       setTimeout(() => {
+        navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
+      }, 2000);
      }
   };
 
   const handleEdit = async (row) => {
-    if(row.FEATUREHEADID !== null && row.FEATUREHEADID !== ""){
-      debugger
-     const response3 =  await axiosInstance.get(`BBMPCITZAPI/GetNPMMasterTable?FeaturesHeadID=${row.FEATUREHEADID}`);
-     if (response3.data.Table.length > 0) {
-      setTablesData3(response3.data.Table);
+    try {
+      if(row.FEATUREHEADID !== null && row.FEATUREHEADID !== ""){
+      
+        const response3 =  await axiosInstance.get(`BBMPCITZAPI/GetNPMMasterTable?FeaturesHeadID=${row.FEATUREHEADID}`);
+        if (response3.data.Table.length > 0) {
+         setTablesData3(response3.data.Table);
+       }
+        }
+       setFormData({
+         BuildingNumber: row.BUILDINGBLOCKID || '',
+         BuildingName: row.BUILDINGBLOCKNAME || '',
+         floornumber: row.FLOORNUMBERID|| '',
+         features: row.FEATUREHEADID || '',
+         Typeofuse: row.FEATUREID || '',
+         yearOfConstruction: row.BUILTYEAR || '',
+         SelfuseArea: row.AREA || 0,
+         RentedArea: row.RENTEDAREA || 0,
+         TotalArea: row.TOTALAREA || '',
+         BesomCustomerID: row.RRNO|| '',
+         BWSSBMeterNumber: row.WATERMETERNO|| ''
+       });
+    } catch (error) {
+      toast.error("Error Getting data!" + error, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      setTimeout(() => {
+        navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
+      }, 2000);
     }
-     }
-    setFormData({
-      BuildingNumber: row.BUILDINGBLOCKID || '',
-      BuildingName: row.BUILDINGBLOCKNAME || '',
-      floornumber: row.FLOORNUMBERID|| '',
-      features: row.FEATUREHEADID || '',
-      Typeofuse: row.FEATUREID || '',
-      yearOfConstruction: row.BUILTYEAR || '',
-      SelfuseArea: row.AREA || 0,
-      RentedArea: row.RENTEDAREA || 0,
-      TotalArea: row.TOTALAREA || '',
-      BesomCustomerID: row.RRNO|| '',
-      BWSSBMeterNumber: row.WATERMETERNO|| ''
-    });
+   
   };
   useEffect(() => {
     
@@ -526,9 +577,7 @@ await   toast.error("Error saving data!" + error, {
             <Button variant="contained" color="success" type="submit">
               Save
             </Button>
-            <Button variant="contained" color="error" type="reset">
-              Clear
-            </Button>
+          
             <Button variant="contained" color="primary" onClick={handleNavigation}>
               Next
             </Button>

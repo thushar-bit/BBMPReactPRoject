@@ -69,7 +69,7 @@ const DocumentUploadPage = () => {
     });
   };
   const handleChange =  async (e) => {
-    debugger
+    
     const { name, value } = e.target;
     if(name === "DocumentType"){
       if(value === 26){
@@ -86,12 +86,28 @@ const DocumentUploadPage = () => {
 
   const { t } = useTranslation();
   const fetchData = async () => {
-    const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterDocByCategoryOrClaimType?ULBCODE=555&CATEGORYID=1');
-    const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
-        const {Table1} = response1.data;
-        const {  Table15 :NCLTable15  } = response2.data;
-        setTableData( NCLTable15.length > 0 ? NCLTable15 : []);
-        setTablesData2(Table1.length > 0 ? Table1 : []);
+    try {
+      const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterDocByCategoryOrClaimType?ULBCODE=555&CATEGORYID=1');
+      const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
+          const {Table1} = response1.data;
+          const {  Table15 :NCLTable15  } = response2.data;
+          setTableData( NCLTable15.length > 0 ? NCLTable15 : []);
+          setTablesData2(Table1.length > 0 ? Table1 : []);
+    } catch (error) {
+      toast.error("Error saving data ",error, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      setTimeout(() => {
+        navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
+      }, 2000);
+    }
+   
        
   }
   const handleFileChange = (e) => {
@@ -120,7 +136,7 @@ const DocumentUploadPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     var propertyphoto2 = "";
-    debugger
+    
     if(selectedFile)
       {
         propertyphoto2 = await getPropertyphoto(selectedFile);
@@ -140,7 +156,7 @@ const DocumentUploadPage = () => {
       //  createdip: string
       
 }
-debugger
+
 try {
   await  axiosInstance.post('BBMPCITZAPI/NCL_PROPERTY_ID_TEMP_INS?ID_BASIC_PROPERTY=0', data
    )
@@ -159,7 +175,7 @@ try {
    setTimeout(() => {
     window.location.reload();
 //    handleNavigation()
-  }, 1000);
+  }, 2000);
  } catch (error) {
 await   toast.error("Error saving data!" + error, {
      position: "top-right",
@@ -170,6 +186,9 @@ await   toast.error("Error saving data!" + error, {
      draggable: true,
      progress: undefined,
    });
+   setTimeout(() => {
+    navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
+  }, 2000);
  }
 
   };
@@ -177,7 +196,7 @@ await   toast.error("Error saving data!" + error, {
     navigate('/AreaDimension/building')
   }
   const handleNavigation= () =>{
-    debugger
+    
     navigate('/ClassificationDocumentUploadPage');
     
   }
@@ -211,7 +230,7 @@ await   toast.error("Error saving data!" + error, {
     URL.revokeObjectURL(link.href);
   };
   const handleDelete = async (row) => {
-    debugger
+    
     const data = {
       propertyCode: 104931,
       documentid: row.DOCUMENTID,
@@ -231,7 +250,10 @@ await   toast.error("Error saving data!" + error, {
          draggable: true,
          progress: undefined,
        });
-     
+       setTimeout(() => {
+        window.location.reload();
+   //    handleNavigation()
+      }, 2000);
      } catch (error) {
     await   toast.error("Error Deleting data!" + error, {
          position: "top-right",
@@ -242,6 +264,9 @@ await   toast.error("Error saving data!" + error, {
          draggable: true,
          progress: undefined,
        });
+       setTimeout(() => {
+        navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
+      }, 2000);
      }
   };
 
@@ -463,9 +488,7 @@ await   toast.error("Error saving data!" + error, {
             <Button variant="contained" color="success" type="submit">
               Save
             </Button>
-            <Button variant="contained" color="error" type="reset">
-              Clear
-            </Button>
+          
             <Button variant="contained" color="primary" onClick={handleNavigation}>
               Next
             </Button>

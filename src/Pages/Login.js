@@ -32,7 +32,7 @@ export default function Login() {
   };
  const handleLogin = async  (e) =>{
   try {
-    debugger
+    
   const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&propertyid=104931');
   const response2 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&propertyid=104931');
  
@@ -43,7 +43,7 @@ export default function Login() {
   //sessionStorage.setItem('MASTERDATA',JSON.stringfy(response3))
   navigate('/bbmp-form');
   }catch(error){
-    navigate('/ErrorPage', { state: { errorMessage: error.message } });
+    navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
   }
  }
   return (

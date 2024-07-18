@@ -44,7 +44,7 @@ const MultiStoreyBuildingDetails = () => {
   const { t } = useTranslation();
 
   const handleChange = async (e) => {
-    debugger
+    
     const { name, value } = e.target;
     if (name === 'ParkingFacility' && value === 'Y') {
       setIsEditable(true);
@@ -76,8 +76,18 @@ const MultiStoreyBuildingDetails = () => {
           setTablesData3(response.data.Table);
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
-       
+        toast.error("Error saving data ",error, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        setTimeout(() => {
+          navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
+        }, 2000);
       }
     }
     if(name === "yearOfConstruction")
@@ -98,7 +108,8 @@ const MultiStoreyBuildingDetails = () => {
   };
   
   const fetchData = async () => {
-    const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
+    try {
+      const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
     const response2 = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
     const response3 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
         const {  Table15,Table16 ,Table17  } = response1.data;
@@ -137,7 +148,7 @@ const MultiStoreyBuildingDetails = () => {
             sharetype = "0";
           }
           if(table13Item.FEATUREHEADID !== null && table13Item.FEATUREHEADID !== ""){
-            debugger
+            
            const response3 =  await axiosInstance.get(`BBMPCITZAPI/GetNPMMasterTable?FeaturesHeadID=${table13Item.FEATUREHEADID}`);
            if (response3.data.Table.length > 0) {
             setTablesData3(response3.data.Table);
@@ -158,6 +169,21 @@ const MultiStoreyBuildingDetails = () => {
           OwnersShareAreaSqmts: ownersharetypeValue || '',
           ParkingFacility: table13Item.PARKINGAVAILABLE || '',
         });
+    } catch (error) {
+      toast.error("Error saving data ",error, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      setTimeout(() => {
+        navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
+      }, 2000);
+    }
+    
   }
   React.useEffect(() => {
     
@@ -166,7 +192,7 @@ const MultiStoreyBuildingDetails = () => {
   }, []);
   const handleSubmit = async (e) => {
     e.preventDefault();
- debugger
+ 
     const data = {
       propertyCode: 104931,
   plotareaownersharE_AREA: formData.SelectOwnerShareType === "1"? formData.OwnersShareAreaSqmts : 0,
@@ -185,7 +211,7 @@ const MultiStoreyBuildingDetails = () => {
   featureid:formData.features,
   featureheadid:formData.Typeofuse
   };
-  debugger
+  
 try {
   await  axiosInstance.post('BBMPCITZAPI/INS_UPD_NCL_PROPERTY_APARTMENT_TEMP1?ULBCODE=555' , data
    )
@@ -205,7 +231,7 @@ try {
    setTimeout(() => {
     window.location.reload();
 //    handleNavigation()
-  }, 1000);
+  }, 2000);
  } catch (error) {
 await   toast.error("Error saving data!" + error, {
      position: "top-right",
@@ -216,6 +242,9 @@ await   toast.error("Error saving data!" + error, {
      draggable: true,
      progress: undefined,
    });
+   setTimeout(() => {
+    navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
+  }, 2000);
  }
   }
   const back = () => {
@@ -539,9 +568,7 @@ await   toast.error("Error saving data!" + error, {
             <Button variant="contained" color="success" type="submit">
               Save
             </Button>
-            <Button variant="contained" color="error" type="reset">
-              Clear
-            </Button>
+         
             <Button variant="contained" color="primary" onClick={handleNavigation}>
               Next
             </Button>

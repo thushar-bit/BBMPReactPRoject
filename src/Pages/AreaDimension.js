@@ -45,7 +45,7 @@ const AreaDimension = () => {
   const navigate = useNavigate();
   const [isOddSiteEnabled, setIsOddSiteEnabled] = useState(false);
   const handleChange = (e) => {
-    debugger
+    
     const { name, value } = e.target;
     const updatedValue = parseFloat(value) || 0;
    
@@ -59,7 +59,7 @@ const AreaDimension = () => {
      
     }
     if (name.startsWith('cal')) {
-      debugger
+      
       const { cal1, cal2, cal3, cal4, cal5, cal6, cal7, cal8 } = {
         ...formData,
         [name]: value
@@ -104,7 +104,7 @@ const AreaDimension = () => {
  
  // const { t } = useTranslation();
 useEffect(() => {
-  debugger
+  
   const response = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
       const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
       
@@ -154,7 +154,7 @@ useEffect(() => {
 }, []);
   const handleSubmit = async (e) => {
     e.preventDefault();
-    debugger
+    
     if(isEditablecheckbandhi === true && formData.propertyType !== "flats" && formData.propertyType !== "select") //only checkbandhi data
       {
         const checkbandhidata = {
@@ -165,7 +165,7 @@ useEffect(() => {
   checkbandI_WEST: formData.west,
   loginId: "crc"
 }
-      debugger
+      
       try {
         await  axiosInstance.post('BBMPCITZAPI/UPD_NCL_PROPERTY_MAIN_TEMP_CHECKBANDI', checkbandhidata
          )
@@ -185,7 +185,7 @@ useEffect(() => {
          setTimeout(() => {
           window.location.reload();
      //    handleNavigation()
-        }, 1000);
+        }, 2000);
        } catch (error) {
       await   toast.error("Error saving data!" + error, {
            position: "top-right",
@@ -196,6 +196,9 @@ useEffect(() => {
            draggable: true,
            progress: undefined,
          });
+         setTimeout(() => {
+          navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
+        }, 2000);
        }
       }
  if((formData.propertyType === "vacant" || formData.propertyType === "building") && isEditablecheckbandhi === false && formData.propertyType !== "select" &&  (isEditable) 
@@ -221,7 +224,7 @@ useEffect(() => {
     nsoddsitE4FT: formData.cal8,
     loginId: "crc"
        };
-    debugger
+    
     try {
       await  axiosInstance.post('BBMPCITZAPI/UPD_NCL_PROPERTY_SITE_DIMENSION_TEMP', data
        )
@@ -237,7 +240,10 @@ useEffect(() => {
          draggable: true,
          progress: undefined,
        });
-     
+       setTimeout(() => {
+        window.location.reload();
+   //    handleNavigation()
+      }, 2000);
      
      } catch (error) {
     await   toast.error("Error saving data!" + error, {
@@ -249,6 +255,9 @@ useEffect(() => {
          draggable: true,
          progress: undefined,
        });
+       setTimeout(() => {
+        navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
+      }, 2000);
      }
     }
     else if(formData.propertyType === "flats"  && formData.propertyType !== "select" && isEditable === true) //only flats
@@ -260,7 +269,7 @@ useEffect(() => {
   superbuiltuparea: formData.ApartSuperBuiltArea,
       loginId: "crc"
          };
-      debugger
+      
       try {
         await  axiosInstance.post('BBMPCITZAPI/UPD_NCL_PROPERTY_APARTMENT_TEMP_AREA', data
          )
@@ -275,7 +284,10 @@ useEffect(() => {
            draggable: true,
            progress: undefined,
          });
-     
+         setTimeout(() => {
+          window.location.reload();
+     //    handleNavigation()
+        }, 2000);
        
        } catch (error) {
       await   toast.error("Error saving data!" + error, {
@@ -287,6 +299,9 @@ useEffect(() => {
            draggable: true,
            progress: undefined,
          });
+         setTimeout(() => {
+          navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
+        }, 2000);
        }
     }
     else if((isEditable === false) && (isEditablecheckbandhi === false)){
@@ -305,7 +320,7 @@ useEffect(() => {
     navigate('/bbmp-form')
   }
   const handleNavigation= () =>{
-    debugger
+    
     if(formData.propertyType === "vacant"){
       navigate('/SiteDetails')
     }else if(formData.propertyType === "building")
@@ -322,7 +337,7 @@ useEffect(() => {
   }
   const handleOddSiteChange =(e) => 
     {
-      debugger
+      
       const { name, value } = e.target;
       setFormData({
         ...formData,
@@ -1087,9 +1102,6 @@ useEffect(() => {
             </Button>
             <Button variant="contained" color="success" type="submit">
               Save
-            </Button>
-            <Button variant="contained" color="error" type="reset">
-              Clear
             </Button>
             <Button variant="contained" color="primary" onClick={handleNavigation}>
               Next

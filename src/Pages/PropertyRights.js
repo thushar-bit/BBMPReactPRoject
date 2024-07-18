@@ -33,7 +33,7 @@ const PropertyRights = () => {
     });
   };
   const handleDelete = async (row) => {
-   debugger
+   
      try {
       await axiosInstance.get("BBMPCITZAPI/NCL_PROPERTY_RIGHTS_TEMP_DEL?RIGHTSID="+row.PROPERTYRIGHTSID+"&ID_BASIC_PROPERTY="+IDBASICPROPERTY+"&ULBCODE="+555+"&PROPERTYCODE="+104931)
       
@@ -59,6 +59,9 @@ const PropertyRights = () => {
         draggable: true,
         progress: undefined,
       });
+      setTimeout(() => {
+        navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
+      }, 2000);
      }
   };
 
@@ -88,7 +91,7 @@ const PropertyRights = () => {
     fetchData();
   }, []);
   const handleSubmit = async (e) => {
-    debugger
+    
     e.preventDefault();
     if(isEditable === false){
    const data = {
@@ -114,7 +117,7 @@ const PropertyRights = () => {
    setTimeout(() => {
     window.location.reload();
 //    handleNavigation()
-  }, 1000);
+  }, 2000);
    }
    catch(error){
     toast.error("Error saving data!" + error, {
@@ -126,6 +129,9 @@ const PropertyRights = () => {
       draggable: true,
       progress: undefined,
     });
+    setTimeout(() => {
+      navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
+    }, 2000);
    }
   }
    else {
@@ -150,6 +156,10 @@ const PropertyRights = () => {
        draggable: true,
        progress: undefined,
      });
+     setTimeout(() => {
+      window.location.reload();
+ //    handleNavigation()
+    }, 2000);
      }
      catch(error){
       toast.error("Error saving data!" + error, {
@@ -161,6 +171,9 @@ const PropertyRights = () => {
         draggable: true,
         progress: undefined,
       });
+      setTimeout(() => {
+        navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
+      }, 2000);
      }
    }
   };
