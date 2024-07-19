@@ -12,7 +12,7 @@ const Breadcrumbs = () => {
     const pathnames = location.pathname.split('/').filter((x) => x);
     const currentPath = `/${pathnames.join('/')}`; 
     const storedBreadcrumbs = JSON.parse(sessionStorage.getItem('breadcrumbs')) || [];
-    if(currentPath === "/"){
+    if(currentPath === "/" || currentPath === "/ErrorPage"){
       sessionStorage.clear()
       setBreadcrumbs(storedBreadcrumbs);
       return
