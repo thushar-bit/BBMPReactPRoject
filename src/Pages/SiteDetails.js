@@ -55,7 +55,7 @@ const SiteDetails = () => {
   const handleSubmit =  async (e) => {
     e.preventDefault();
     const data = {
-      propertyCode: 104931,
+      propertyCode: 105151,
       featureheadid: formData.features,
       featureid: formData.Typeofuse,
       builtyear: formData.yearOfConstruction,
@@ -67,7 +67,7 @@ try {
   await  axiosInstance.post('BBMPCITZAPI/UPD_NCL_PROPERTY_SITE_TEMP_USAGE', data
    )
   
-   const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&propertyid=104931');
+   const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&EIDAPPNO=693&Propertycode=105151&propertyid=105151');
    sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
   await toast.success("Details Saved Successfully", {
      position: "top-right",

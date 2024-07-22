@@ -125,7 +125,7 @@ const BuildingDetails = () => {
           BUILDINGUSAGETYPEID = 6;
       }
     const data = {
-      propertyCode: 104931,
+      propertyCode: 105151,
       floornumberid: 23,
       createdby: "crc",
       buildingusagetypeid: BUILDINGUSAGETYPEID,
@@ -145,7 +145,7 @@ try {
   await  axiosInstance.post('BBMPCITZAPI/DEL_INS_SEL_NCL_PROP_BUILDING_TEMP?ULBCODE=555', data
    )
   
-   const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&propertyid=104931');
+   const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&EIDAPPNO=693&Propertycode=105151&propertyid=105151');
    sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
   await toast.success("Details Saved Successfully", {
      position: "top-right",
@@ -188,14 +188,14 @@ await   toast.error("Error saving data!" + error, {
   const handleDelete = async (id) => {
     
     const data = {
-      propertyCode: 104931,
+      propertyCode: 105151,
       buildingnumberid: id.BUILDINGBLOCKID,
       floornumberid: id.FLOORNUMBERID,
     }
     try {
      await  axiosInstance.post('BBMPCITZAPI/DEL_SEL_NCL_PROP_BUILDING_TEMP?ULBCODE=555', data
        )
-       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&propertyid=104931');
+       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&EIDAPPNO=693&Propertycode=105151&propertyid=105151');
        sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
       await toast.success("Details Delete Successfully", {
          position: "top-right",

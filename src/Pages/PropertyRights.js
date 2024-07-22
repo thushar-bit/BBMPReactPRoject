@@ -35,9 +35,9 @@ const PropertyRights = () => {
   const handleDelete = async (row) => {
    
      try {
-      await axiosInstance.get("BBMPCITZAPI/NCL_PROPERTY_RIGHTS_TEMP_DEL?RIGHTSID="+row.PROPERTYRIGHTSID+"&ID_BASIC_PROPERTY="+IDBASICPROPERTY+"&ULBCODE="+555+"&PROPERTYCODE="+104931)
+      await axiosInstance.get("BBMPCITZAPI/NCL_PROPERTY_RIGHTS_TEMP_DEL?RIGHTSID="+row.PROPERTYRIGHTSID+"&ID_BASIC_PROPERTY="+IDBASICPROPERTY+"&ULBCODE="+555+"&PROPERTYCODE="+105151)
       
-     const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&propertyid=104931');
+     const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&EIDAPPNO=693&Propertycode=105151&propertyid=105151');
      sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
     await toast.error("Details Deleted Successfully", {
        position: "top-right",
@@ -96,14 +96,14 @@ const PropertyRights = () => {
     if(isEditable === false){
    const data = {
     rights: formData.propertyrights,
-    propertycode: 104931,
+    propertycode: 105151,
     createdby: "crc",
     ulbcode:555
    }
    try {
     await axiosInstance.post("BBMPCITZAPI/NCL_PROPERTY_RIGHTS_TEMP_INS?ID_BASIC_PROPERTY="+IDBASICPROPERTY,data)
     
-   const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&propertyid=104931');
+   const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&EIDAPPNO=693&Propertycode=105151&propertyid=105151');
    sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
   await toast.success("Details Saved Successfully", {
      position: "top-right",
@@ -138,14 +138,14 @@ const PropertyRights = () => {
     const data = {
       rights: formData.propertyrights,
       propertyrightsid:Propertyrightsid,
-      propertycode: 104931,
+      propertycode: 105151,
       createdby: "crc",
       ulbcode:555
      }
      try {
       await axiosInstance.post("BBMPCITZAPI/NCL_PROPERTY_RIGHTS_TEMP_UPD?ID_BASIC_PROPERTY="+IDBASICPROPERTY,data)
       
-     const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&propertyid=104931');
+     const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&EIDAPPNO=693&Propertycode=105151&propertyid=105151');
      sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
     await toast.success("Details Updated Successfully", {
        position: "top-right",

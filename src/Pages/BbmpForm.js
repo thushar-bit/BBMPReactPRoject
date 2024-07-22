@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../components/Axios';
 import ErrorPage from './ErrorPage';
+import GoogleMaps from '../components/GoogleMaps';
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
   clipPath: 'inset(50%)',
@@ -39,7 +40,7 @@ const BbmpForm = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
-
+  const [handlemapClicks,sethandlemapClicks] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
@@ -181,7 +182,7 @@ const  handleSubmit = async (e) => {
      await  axiosInstance.post('BBMPCITZAPI/GET_PROPERTY_CTZ_PROPERTY', data
       )
       setSelectedFile(null);
-     const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&propertyid=104931');
+     const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&EIDAPPNO=693&Propertycode=105151&propertyid=105151');
       sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
      
       await toast.success("Details Saved Successfully", {
@@ -225,7 +226,19 @@ const  handleSubmit = async (e) => {
   }
   setLoading(false);
   }
+  const handleMapClick = () => {
+    if(handleMapClick === true){
+      sethandlemapClicks(false)
+    }
+    else {
+      sethandlemapClicks(true)
+    }
+  };
 
+  const handleAddressChange = (newAddress) => {
+    console.log('New address:', newAddress);
+    // Handle the new address here
+  };
 
 
 const handleNavigation= () =>{
@@ -254,11 +267,12 @@ const handleNavigation= () =>{
       </Box>
     );
   }
-
+  
   return (
     <Container maxWidth="lg">
       <Box sx={{ backgroundColor: '#f0f0f0', padding: 4, borderRadius: 2, mt: 8 }}>
       <ToastContainer />
+     
       <form onSubmit={handleSubmit}>
         <Typography
           variant="h3"
@@ -320,6 +334,7 @@ const handleNavigation= () =>{
               
             />
           </Grid>
+        
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
@@ -439,6 +454,12 @@ const handleNavigation= () =>{
         >
            {t("PostalAddressofProperty")}
         </Typography>
+        <Button color='success' variant={"contained"}onClick={handleMapClick}>Click Here to Capture Property Location</Button>
+        {handlemapClicks ? 
+        <GoogleMaps lat={13.0074} long={77.5688}  onAddressChange={handleAddressChange}/>
+:""}
+<br></br>
+<br></br>
         <Grid container spacing={4}>
           <Grid item xs={12} sm={6}>
             <TextField

@@ -147,8 +147,8 @@ const  Login =()=> {
         }
       }
       try {
-        const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&propertyid=104931');
-        const response2 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&propertyid=104931');
+        const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&EID=693&propertyid=105151');
+        const response2 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&EIDAPPNO=693&Propertycode=105151&propertyid=105151');
         sessionStorage.setItem('BBD_DRAFT_API', JSON.stringify(response1));
         sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response2));
         navigate('/bbmp-form');
