@@ -104,21 +104,21 @@ const AreaDimension = () => {
  
  // const { t } = useTranslation();
 useEffect(() => {
-  
+  try {
   const response = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
       const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
       
       const {
-        Table1: Table1Data,
-        Table2: Table2Data,
-        Table3: Table3Data,
-        Table7: Table7Data
+        Table1: Table1Data = [],
+        Table2: Table2Data = [],
+        Table3: Table3Data = [],
+        Table7: Table7Data = []
       } = response.data;
       const {
-        Table1: NCLTable1Data,
-        Table2: NCLTable2Data,
-        Table5: NCLTable5Data,
-        Table13: NCLTable13Data
+        Table1: NCLTable1Data = [],
+        Table2: NCLTable2Data = [],
+        Table5: NCLTable5Data = [],
+        Table13: NCLTable13Data = []
       } = response2.data;
      //BBD Tables
       
@@ -147,7 +147,10 @@ useEffect(() => {
           cal7: NCLTable5Data.length > 0 ? NCLTable5Data[0].NSODDSITE3FT || 0: Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT|| "":0,
           cal8: NCLTable5Data.length > 0 ? NCLTable5Data[0].NSODDSITE4FT || 0: Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT|| "":0,
         }));
- 
+      }
+      catch(error){
+        navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
+      }
    
     
   
@@ -163,7 +166,9 @@ useEffect(() => {
   checkbandI_SOUTH: formData.south,
   checkbandI_EAST: formData.east,
   checkbandI_WEST: formData.west,
-  loginId: "crc"
+  loginId: "crc",
+      eidappno:693
+  
 }
       
       try {
@@ -222,7 +227,8 @@ useEffect(() => {
     nsoddsitE2FT: formData.cal6,
     nsoddsitE3FT: formData.cal7,
     nsoddsitE4FT: formData.cal8,
-    loginId: "crc"
+    loginId: "crc",
+    eidappno:693
        };
     
     try {
@@ -267,7 +273,8 @@ useEffect(() => {
   carpetarea: formData.ApartCarpetArea,
   additionalarea: formData.ApartAddtionalArea,
   superbuiltuparea: formData.ApartSuperBuiltArea,
-      loginId: "crc"
+      loginId: "crc",
+      eidappno:693
          };
       
       try {

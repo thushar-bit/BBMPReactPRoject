@@ -112,9 +112,9 @@ const MultiStoreyBuildingDetails = () => {
       const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
     const response2 = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
     const response3 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
-        const {  Table15,Table16 ,Table17  } = response1.data;
-        const {  Table7   } = response2.data;
-        const {Table13} = response3.data;
+        const {  Table15=[],Table16=[] ,Table17=[]  } = response1.data;
+        const {  Table7 =[]  } = response2.data;
+        const {Table13=[]} = response3.data;
         const table1Item = Table7.length > 0 ? Table7 : [];
         const table13Item = Table13.length > 0 ? Table13[0] : [];
         const table16Item = Table16.length > 0 ? Table16 : [];
@@ -209,7 +209,8 @@ const MultiStoreyBuildingDetails = () => {
   yearofconstruction: formData.yearOfConstruction,
   floornumberid: formData.floornumber,
   featureid:formData.features,
-  featureheadid:formData.Typeofuse
+  featureheadid:formData.Typeofuse,
+  eidappno:693
   };
   
 try {

@@ -89,8 +89,8 @@ const DocumentUploadPage = () => {
     try {
       const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterDocByCategoryOrClaimType?ULBCODE=555&CATEGORYID=1');
       const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
-          const {Table1} = response1.data;
-          const {  Table15 :NCLTable15  } = response2.data;
+          const {Table1=[]} = response1.data;
+          const {  Table15 :NCLTable15=[]  } = response2.data;
           setTableData( NCLTable15.length > 0 ? NCLTable15 : []);
           setTablesData2(Table1.length > 0 ? Table1 : []);
     } catch (error) {
@@ -152,7 +152,7 @@ const DocumentUploadPage = () => {
         orderdate: selectedDate,
         documenttypeid: formData.DocumentType,
         ulbcode: 555,
-       
+        eidappno:693
       //  createdip: string
       
 }
@@ -235,6 +235,7 @@ await   toast.error("Error saving data!" + error, {
       propertyCode: 105151,
       documentid: row.DOCUMENTID,
       ulbcode: 555,
+      eidappno:693
     }
     try {
      await  axiosInstance.post('BBMPCITZAPI/NCL_PROPERTY_ID_TEMP_DEL?ID_BASIC_PROPERTY=0', data

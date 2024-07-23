@@ -81,7 +81,7 @@ const PropertyRights = () => {
   
   const fetchData = async () => {
     const response1 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
-        const {  Table1, Table11  } = response1.data;
+        const {  Table1=[], Table11=[]  } = response1.data;
         const tableItem = Table1.length > 0 ? Table1[0] : [];
         const table1Item = Table11.length > 0 ? Table11 : [];
         setTableData(table1Item);
@@ -98,7 +98,8 @@ const PropertyRights = () => {
     rights: formData.propertyrights,
     propertycode: 105151,
     createdby: "crc",
-    ulbcode:555
+    ulbcode:555,
+    eidappno:693
    }
    try {
     await axiosInstance.post("BBMPCITZAPI/NCL_PROPERTY_RIGHTS_TEMP_INS?ID_BASIC_PROPERTY="+IDBASICPROPERTY,data)
@@ -140,7 +141,8 @@ const PropertyRights = () => {
       propertyrightsid:Propertyrightsid,
       propertycode: 105151,
       createdby: "crc",
-      ulbcode:555
+      ulbcode:555,
+      eidappno:693
      }
      try {
       await axiosInstance.post("BBMPCITZAPI/NCL_PROPERTY_RIGHTS_TEMP_UPD?ID_BASIC_PROPERTY="+IDBASICPROPERTY,data)

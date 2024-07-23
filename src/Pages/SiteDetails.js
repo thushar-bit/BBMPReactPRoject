@@ -59,7 +59,8 @@ const SiteDetails = () => {
       featureheadid: formData.features,
       featureid: formData.Typeofuse,
       builtyear: formData.yearOfConstruction,
-loginId: "crc"
+loginId: "crc",
+eidappno:693
 
 }
 
@@ -109,8 +110,8 @@ await   toast.error("Error saving data!" + error, {
     try {
       const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
       const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
-      const {  Table16   } = response1.data;
-          const {  Table2   } = response2.data;
+      const {  Table16 =[]  } = response1.data;
+          const {  Table2  =[] } = response2.data;
           const table2Item = Table2.length > 0 ? Table2[0] : {};
           const table16Item = Table16.length > 0 ? Table16 : {};
          setTablesData2(table16Item);

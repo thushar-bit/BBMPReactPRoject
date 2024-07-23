@@ -47,9 +47,13 @@ const BbmpForm = () => {
     try {
       const response = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
       const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
-      
-      const {  Table1,   Table5,   } = response.data;
-      const {  Table17   } = response2.data;
+      console.log("BBMP-form page")
+      console.log(response.data )
+      console.log("BBMP-form bbd page")
+      console.log(response2.data)
+      console.log("BBMP-form ncl data page")
+      const {  Table1=[],   Table5=[],   } = response.data;
+      const {  Table17=[]   } = response2.data;
     
       const table1Item = Table1.length > 0 ? Table1[0] : {};
       const table5Item = Table5.length > 0 ? Table5[0] : {};
@@ -74,9 +78,11 @@ const BbmpForm = () => {
       });
       setLoading(false);
     } catch (error) {
+      setLoading(false);
       console.error('There was an error!', error);
       return <ErrorPage errorMessage={error} />;
     }
+    setLoading(false);
   };
  
   useEffect(() => {
@@ -176,7 +182,8 @@ const  handleSubmit = async (e) => {
       propertyphoto:propertyphoto2,
       categoryId: 2,
       puidNo: 's23', 
-      loginId:"crc"
+      loginId:"crc",
+      eidappno:693
     };
     try {
      await  axiosInstance.post('BBMPCITZAPI/GET_PROPERTY_CTZ_PROPERTY', data

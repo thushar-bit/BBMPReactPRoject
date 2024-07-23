@@ -83,9 +83,9 @@ const BuildingDetails = () => {
     try {
       const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
       const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
-      const {  Table15,Table16   } = response1.data;
+      const {  Table15=[],Table16 =[]  } = response1.data;
       
-          const {  Table14   } = response2.data;
+          const {  Table14=[]   } = response2.data;
           const table1Item = Table14.length > 0 ? Table14 : [];
           const table16Item = Table16.length > 0 ? Table16 : [];
           const table15Item = Table15.length > 0 ? Table15 : [];
@@ -139,6 +139,7 @@ const BuildingDetails = () => {
       buildingblockname: formData.BuildingName,
       ownUseArea: formData.SelfuseArea,
       rentedArea: formData.RentedArea,
+      eidappno:693
 }
 
 try {
@@ -191,6 +192,7 @@ await   toast.error("Error saving data!" + error, {
       propertyCode: 105151,
       buildingnumberid: id.BUILDINGBLOCKID,
       floornumberid: id.FLOORNUMBERID,
+      eidappno:693
     }
     try {
      await  axiosInstance.post('BBMPCITZAPI/DEL_SEL_NCL_PROP_BUILDING_TEMP?ULBCODE=555', data

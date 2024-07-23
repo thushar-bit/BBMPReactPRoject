@@ -40,26 +40,15 @@ const  Login =()=> {
   const navigate = useNavigate();
 
   const handleGenerateOtp = async () => {
-    debugger
+    
     if(formData.MOBILENUMBER.length === 0){
       toast.error("Enter the Mobile Number ");
       return
     }
-    if(formData.MOBILENUMBER.length > 11 ){
-      toast.error("The Mobile Number Should be Less than 10 characters")
-      return
-    }
-    if(formData.MOBILENUMBER.length < 10){
-      toast.error("The Mobile Number Should be 10 characters")
-      return
-    }
-    if (/^\d{0,10}$/.test(formData.MOBILENUMBER) !== true) {
-      toast.error("Please enter the Correct Mobile Number")
-      return
-    }
+ 
     try {
       const response = await axiosInstance.get("E-KYCAPI/SendOTP?OwnerMobileNo=" + formData.MOBILENUMBER);
-      debugger
+      
     toast.success(response.data.otpResponseMessage);
     setOtpData(response.data.otpResponseMessage);
     setOtpNumber(response.data.otp);
@@ -108,18 +97,6 @@ const  Login =()=> {
           toast.error("Enter the Mobile Number ");
           return
         }
-        if(formData.MOBILENUMBER.length > 11 ){
-          toast.error("The Mobile Number Should be Less than 10 characters")
-          return
-        }
-        if(formData.MOBILENUMBER.length < 10){
-          toast.error("The Mobile Number Should be 10 characters")
-          return
-        }
-        if (/^\d{0,10}$/.test(formData.MOBILENUMBER) !== true) {
-          toast.error("Please enter the Correct Mobile Number")
-          return
-        }
       }
       if(formData.captcha1.length === 0)
         {
@@ -136,10 +113,14 @@ const  Login =()=> {
       Password:hashedPassword,
       IsOTPGenerated:otpButtonDisabled
     }
+   
     const queryString = new URLSearchParams(data).toString();
+    console.log(queryString)
     const response = await axiosInstance.post(`Auth/CitizenLogin?${queryString}`);
-    debugger
+    console.log(response.data)
     if(response.data){
+      console.log(response.data )
+      console.log("auth")
       if(otpButtonDisabled){
         if(formData.Password !== otpNumber){
           toast.error("The Entered OTP is Wrong.Please Enter the Correct OTP")
@@ -147,12 +128,20 @@ const  Login =()=> {
         }
       }
       try {
-        const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&EID=693&propertyid=105151');
-        const response2 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&EIDAPPNO=693&Propertycode=105151&propertyid=105151');
+        const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&EID=963&propertyid=105151');
+        const response2 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=963&Propertycode=105151');
         sessionStorage.setItem('BBD_DRAFT_API', JSON.stringify(response1));
         sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response2));
         navigate('/bbmp-form');
+        console.log("LOGIN page")
+        console.log(response1.data )
+        console.log("LOGIN bbd page")
+        console.log(response2.data)
+        console.log("LOGIN ncl data page")
+       
         }catch(error){
+          console.log("login page")
+          console.log(error)
           navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
         }
     }
@@ -160,7 +149,8 @@ const  Login =()=> {
       toast.error("The Given UserId or Password is wrong")
     }
   } catch (error) {
-   
+    console.log("login page")
+    console.log(error)
       navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
   }
  

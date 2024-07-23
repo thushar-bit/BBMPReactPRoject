@@ -239,9 +239,9 @@ const OwnerDetails = () => {
       const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
       const response2 = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
     const response3 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&EIDAPPNO=693&Propertycode=105151&propertyid=105151');
-      const {  Table5   } = response2.data;
-      const {Table9:NCLTABLE9} = response3.data;
-      const {Table8} = response1.data;
+      const {  Table5   =[]} = response2.data;
+      const {Table9:NCLTABLE9=[]} = response3.data;
+      const {Table8=[]} = response1.data;
       setTableData8(Table8.length > 0 ? Table8 :[])
       setTableData(Table5.length > 0 ? Table5 : []);
       setTablesData9(NCLTABLE9.length > 0 ? NCLTABLE9 : []);

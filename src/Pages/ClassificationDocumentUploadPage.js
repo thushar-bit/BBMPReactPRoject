@@ -135,16 +135,16 @@ const ClassificationDocumentUploadPage = () => {
     const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
     const response3 = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
     
-        const {Table1:BBDTable1} = response3.data;
-        const {Table19} = responeMaster.data;
-        const {  Table8 :NCLTable8,Table1:NCLTable1  } = response2.data;
+        const {Table1:BBDTable1=[]} = response3.data;
+        const {Table19=[]} = responeMaster.data;
+        const {  Table8 :NCLTable8=[],Table1:NCLTable1=[]  } = response2.data;
         setTableData( NCLTable8.length > 0 ? NCLTable8 : []);
         
         setMasterTableData(Table19.length > 0 ? Table19 : [])
         setFormData((prevFormData) => ({
           ...prevFormData,
-          PropertyClasssficationAsperBooks:BBDTable1[0].PROPERTYCLASSIFICATIONID !== 0 ? BBDTable1[0].PROPERTYCLASSIFICATIONID : "",
-          PropertyClassification:NCLTable1[0].PROPERTYCLASSIFICATIONID !== 0 ? NCLTable1[0].PROPERTYCLASSIFICATIONID : '',
+          PropertyClasssficationAsperBooks:BBDTable1.length > 0  ? BBDTable1[0].PROPERTYCLASSIFICATIONID : "",
+          PropertyClassification:NCLTable1.length > 0  ? NCLTable1[0].PROPERTYCLASSIFICATIONID : '',
         }));
     } catch (error) {
       toast.error("Error saving data ",error, {
@@ -207,6 +207,7 @@ const ClassificationDocumentUploadPage = () => {
         documentdate: selectedDate,
         documenttypeid: formData.DocumentType,
         ulbcode: 555,
+        eidappno:693
 }
 
 try {
