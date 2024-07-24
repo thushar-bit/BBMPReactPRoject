@@ -194,7 +194,7 @@ const MultiStoreyBuildingDetails = () => {
     e.preventDefault();
  
     const data = {
-      propertyCode: 105151,
+      propertyCode: 1135783,
   plotareaownersharE_AREA: formData.SelectOwnerShareType === "1"? formData.OwnersShareAreaSqmts : 0,
   plotareaownersharE_NOS: formData.SelectOwnerShareType === "2"? formData.OwnersShareAreaSqmts : 0,
   plotareaownersharE_FRACTION: formData.SelectOwnerShareType === "3"? formData.OwnersShareAreaSqmts : 0,
@@ -210,14 +210,14 @@ const MultiStoreyBuildingDetails = () => {
   floornumberid: formData.floornumber,
   featureid:formData.features,
   featureheadid:formData.Typeofuse,
-  eidappno:693
+  eidappno:701
   };
   
 try {
   await  axiosInstance.post('BBMPCITZAPI/INS_UPD_NCL_PROPERTY_APARTMENT_TEMP1?ULBCODE=555' , data
    )
   
-   const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&EIDAPPNO=693&Propertycode=105151&propertyid=105151');
+   const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=701&Propertycode=1135783');
    sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
   await toast.success("Details Saved Successfully", {
      position: "top-right",

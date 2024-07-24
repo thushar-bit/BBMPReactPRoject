@@ -145,14 +145,14 @@ const DocumentUploadPage = () => {
         ordernumber: formData.DocumentNumber,
         createdby: "crc",
         documentextension: fileExtension,
-        propertycode: 105151,
+        propertycode: 1135783,
         documentdetails: formData.DocumentDetails,
         scanneddocument: propertyphoto2, //bytes
      
         orderdate: selectedDate,
         documenttypeid: formData.DocumentType,
         ulbcode: 555,
-        eidappno:693
+        eidappno:701
       //  createdip: string
       
 }
@@ -161,7 +161,7 @@ try {
   await  axiosInstance.post('BBMPCITZAPI/NCL_PROPERTY_ID_TEMP_INS?ID_BASIC_PROPERTY=0', data
    )
   
-   const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&EIDAPPNO=693&Propertycode=105151&propertyid=105151');
+   const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=701&Propertycode=1135783');
    sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
   await toast.success("Details Saved Successfully", {
      position: "top-right",
@@ -232,15 +232,15 @@ await   toast.error("Error saving data!" + error, {
   const handleDelete = async (row) => {
     
     const data = {
-      propertyCode: 105151,
+      propertyCode: 1135783,
       documentid: row.DOCUMENTID,
       ulbcode: 555,
-      eidappno:693
+      eidappno:701
     }
     try {
      await  axiosInstance.post('BBMPCITZAPI/NCL_PROPERTY_ID_TEMP_DEL?ID_BASIC_PROPERTY=0', data
        )
-       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&EIDAPPNO=693&Propertycode=105151&propertyid=105151');
+       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=701&Propertycode=1135783');
        sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
       await toast.success("Details Delete Successfully", {
          position: "top-right",

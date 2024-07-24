@@ -161,13 +161,13 @@ useEffect(() => {
     if(isEditablecheckbandhi === true && formData.propertyType !== "flats" && formData.propertyType !== "select") //only checkbandhi data
       {
         const checkbandhidata = {
-          propertyCode: 105151,
+          propertyCode: 1135783,
   checkbandI_NORTH: formData.east,
   checkbandI_SOUTH: formData.south,
   checkbandI_EAST: formData.east,
   checkbandI_WEST: formData.west,
   loginId: "crc",
-      eidappno:693
+      eidappno:701
   
 }
       
@@ -175,7 +175,7 @@ useEffect(() => {
         await  axiosInstance.post('BBMPCITZAPI/UPD_NCL_PROPERTY_MAIN_TEMP_CHECKBANDI', checkbandhidata
          )
         
-         const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&EIDAPPNO=693&Propertycode=105151&Propertycode=105151');
+         const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=701&Propertycode=1135783');
          sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
         await toast.success("Details Saved Successfully", {
            position: "top-right",
@@ -210,7 +210,7 @@ useEffect(() => {
     //only below data
   ){
   const data = {
-        propertyCode: 105151,
+        propertyCode: 1135783,
     siteorbuilding: formData.propertyType,
     evenoroddsite: formData.oddSite,
     sitearea: formData.plotAreaSqMt,
@@ -228,14 +228,14 @@ useEffect(() => {
     nsoddsitE3FT: formData.cal7,
     nsoddsitE4FT: formData.cal8,
     loginId: "crc",
-    eidappno:693
+    eidappno:701
        };
     
     try {
       await  axiosInstance.post('BBMPCITZAPI/UPD_NCL_PROPERTY_SITE_DIMENSION_TEMP', data
        )
       
-       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&EIDAPPNO=693&Propertycode=105151&propertyid=105151');
+       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=701&Propertycode=1135783');
        sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
       await toast.success("Details Saved Successfully", {
          position: "top-right",
@@ -269,18 +269,18 @@ useEffect(() => {
     else if(formData.propertyType === "flats"  && formData.propertyType !== "select" && isEditable === true) //only flats
       {
         const data = {
-          propertyCode: 105151,
+          propertyCode: 1135783,
   carpetarea: formData.ApartCarpetArea,
   additionalarea: formData.ApartAddtionalArea,
   superbuiltuparea: formData.ApartSuperBuiltArea,
       loginId: "crc",
-      eidappno:693
+      eidappno:701
          };
       
       try {
         await  axiosInstance.post('BBMPCITZAPI/UPD_NCL_PROPERTY_APARTMENT_TEMP_AREA', data
          )
-         const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&EIDAPPNO=693&Propertycode=105151&propertyid=105151');
+         const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=701&Propertycode=1135783');
          sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
         await toast.success("Details Saved Successfully", {
            position: "top-right",

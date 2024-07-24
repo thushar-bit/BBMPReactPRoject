@@ -168,9 +168,6 @@ const  handleSubmit = async (e) => {
     {
       propertyphoto2 = await getPropertyphoto(selectedFile);
     }
-
-    
-   
     const data = {
       propertyCode: formData.propertyNumber,
       streetid: formData.streetid, 
@@ -183,13 +180,13 @@ const  handleSubmit = async (e) => {
       categoryId: 2,
       puidNo: 's23', 
       loginId:"crc",
-      eidappno:693
+      eidappno:701
     };
     try {
      await  axiosInstance.post('BBMPCITZAPI/GET_PROPERTY_CTZ_PROPERTY', data
       )
       setSelectedFile(null);
-     const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&EIDAPPNO=693&Propertycode=105151&propertyid=105151');
+     const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=701&Propertycode=1135783');
       sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
      
       await toast.success("Details Saved Successfully", {

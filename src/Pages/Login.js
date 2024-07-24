@@ -17,7 +17,7 @@ const  Login =()=> {
   const [formData, setFormData] = useState({
     MOBILEVERIFY:"0",
     Password:"",
-    MOBILENUMBER:"",
+    UserId:"",
     captcha1:""
   })
     const generateCaptcha =()=> {
@@ -29,28 +29,28 @@ const  Login =()=> {
     return captcha;
   }
   const [captcha, setCaptcha] = useState(generateCaptcha());
-  const [captchaInput, setCaptchaInput] = useState('');
-  const [otpFieldsVisible, setOtpFieldsVisible] = useState(false);
-  const [otpData, setOtpData] = useState({});
   const [otpNumber,setOtpNumber] = useState(0);
   const [otpButtonDisabled, setOtpButtonDisabled] = useState(false);
-  const [timer, setTimer] = useState(30); // Initial countdown timer value in seconds
-  const [countdownInterval, setCountdownInterval] = useState(null);
+  const [timer, setTimer] = useState(30); 
   
   const navigate = useNavigate();
 
   const handleGenerateOtp = async () => {
-    
-    if(formData.MOBILENUMBER.length === 0){
-      toast.error("Enter the Mobile Number ");
+    if(formData.UserId.length === 0){
+      toast.error("Enter the UserId");
       return
     }
- 
     try {
-      const response = await axiosInstance.get("E-KYCAPI/SendOTP?OwnerMobileNo=" + formData.MOBILENUMBER);
+      const responseMobile = await axiosInstance.get("Auth/GetCitzMobileNumber?UserId="+formData.UserId)
+      if(responseMobile.data === "Mobile number is not available." || responseMobile.data === "INVALID USER ID"|| responseMobile.data === ""){
+        toast.error(responseMobile.data)
+        return
+      }
+      debugger
+      const response = await axiosInstance.get("E-KYCAPI/SendOTP?OwnerMobileNo=" + responseMobile.data);
       
     toast.success(response.data.otpResponseMessage);
-    setOtpData(response.data.otpResponseMessage);
+ 
     setOtpNumber(response.data.otp);
     setOtpButtonDisabled(true);
     setTimer(30);
@@ -61,7 +61,6 @@ const  Login =()=> {
       setOtpButtonDisabled(false);
       clearInterval(interval); 
     }, 30000); 
-    setCountdownInterval(interval);
     } catch (error) {
       toast.error(error.message);
     }
@@ -87,14 +86,14 @@ const  Login =()=> {
   };
  const handleLogin = async  (e) =>{
   try {
-    if(formData.MOBILENUMBER.length === 0 && formData.Password.length === 0){
+    if(formData.UserId.length === 0 && formData.Password.length === 0){
       toast.error("Please enter the password and User name");
       return
     }
      if(otpButtonDisabled)
       {
-        if(formData.MOBILENUMBER.length === 0){
-          toast.error("Enter the Mobile Number ");
+        if(formData.UserId.length === 0){
+          toast.error("Enter the UserId ");
           return
         }
       }
@@ -109,18 +108,14 @@ const  Login =()=> {
       }
     const hashedPassword = CryptoJS.MD5(formData.Password).toString();
     const data = {
-      UserId: formData.MOBILENUMBER,
+      UserId: formData.UserId,
       Password:hashedPassword,
       IsOTPGenerated:otpButtonDisabled
     }
-   
     const queryString = new URLSearchParams(data).toString();
-    console.log(queryString)
     const response = await axiosInstance.post(`Auth/CitizenLogin?${queryString}`);
-    console.log(response.data)
     if(response.data){
-      console.log(response.data )
-      console.log("auth")
+     
       if(otpButtonDisabled){
         if(formData.Password !== otpNumber){
           toast.error("The Entered OTP is Wrong.Please Enter the Correct OTP")
@@ -128,20 +123,15 @@ const  Login =()=> {
         }
       }
       try {
-        const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&EID=963&propertyid=105151');
-        const response2 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=963&Propertycode=105151');
+        const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&EID=701&propertyid=1135783');
+        const response2 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=701&Propertycode=1135783');
         sessionStorage.setItem('BBD_DRAFT_API', JSON.stringify(response1));
         sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response2));
         navigate('/bbmp-form');
-        console.log("LOGIN page")
-        console.log(response1.data )
-        console.log("LOGIN bbd page")
-        console.log(response2.data)
-        console.log("LOGIN ncl data page")
+       
        
         }catch(error){
-          console.log("login page")
-          console.log(error)
+          
           navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
         }
     }
@@ -149,8 +139,7 @@ const  Login =()=> {
       toast.error("The Given UserId or Password is wrong")
     }
   } catch (error) {
-    console.log("login page")
-    console.log(error)
+   
       navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
   }
  
@@ -213,13 +202,13 @@ const  Login =()=> {
     </Typography>
    
     <FormControl sx={{ width: '100%', maxWidth: '500px' }}>
-      <FormLabel>Phone Number</FormLabel>
+      <FormLabel>User Id</FormLabel>
       <Input
-        name="MOBILENUMBER"
+        name="UserId"
         type="text"
-        placeholder="User Name /Mobile Number"
+        placeholder="User Id"
         fullWidth
-        value={formData.MOBILENUMBER}
+        value={formData.UserId}
         onChange={handleChange}
       />
     </FormControl>

@@ -125,7 +125,7 @@ const BuildingDetails = () => {
           BUILDINGUSAGETYPEID = 6;
       }
     const data = {
-      propertyCode: 105151,
+      propertyCode: 1135783,
       floornumberid: 23,
       createdby: "crc",
       buildingusagetypeid: BUILDINGUSAGETYPEID,
@@ -139,14 +139,14 @@ const BuildingDetails = () => {
       buildingblockname: formData.BuildingName,
       ownUseArea: formData.SelfuseArea,
       rentedArea: formData.RentedArea,
-      eidappno:693
+      eidappno:701
 }
 
 try {
   await  axiosInstance.post('BBMPCITZAPI/DEL_INS_SEL_NCL_PROP_BUILDING_TEMP?ULBCODE=555', data
    )
   
-   const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&EIDAPPNO=693&Propertycode=105151&propertyid=105151');
+   const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=701&Propertycode=1135783');
    sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
   await toast.success("Details Saved Successfully", {
      position: "top-right",
@@ -189,15 +189,15 @@ await   toast.error("Error saving data!" + error, {
   const handleDelete = async (id) => {
     
     const data = {
-      propertyCode: 105151,
+      propertyCode: 1135783,
       buildingnumberid: id.BUILDINGBLOCKID,
       floornumberid: id.FLOORNUMBERID,
-      eidappno:693
+      eidappno:701
     }
     try {
      await  axiosInstance.post('BBMPCITZAPI/DEL_SEL_NCL_PROP_BUILDING_TEMP?ULBCODE=555', data
        )
-       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?UlbCode=555&EIDAPPNO=693&Propertycode=105151&propertyid=105151');
+       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=701&Propertycode=1135783');
        sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
       await toast.success("Details Delete Successfully", {
          position: "top-right",
