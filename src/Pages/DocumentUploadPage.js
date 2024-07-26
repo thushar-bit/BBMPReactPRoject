@@ -145,14 +145,14 @@ const DocumentUploadPage = () => {
         ordernumber: formData.DocumentNumber,
         createdby: "crc",
         documentextension: fileExtension,
-        propertycode: 1135783,
+        propertycode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
         documentdetails: formData.DocumentDetails,
         scanneddocument: propertyphoto2, //bytes
      
         orderdate: selectedDate,
         documenttypeid: formData.DocumentType,
         ulbcode: 555,
-        eidappno:701
+        eidappno:JSON.parse(sessionStorage.getItem('EIDAPPNO'))
       //  createdip: string
       
 }
@@ -161,7 +161,7 @@ try {
   await  axiosInstance.post('BBMPCITZAPI/NCL_PROPERTY_ID_TEMP_INS?ID_BASIC_PROPERTY=0', data
    )
   
-   const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=701&Propertycode=1135783');
+   const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO='+JSON.parse(sessionStorage.getItem('EIDAPPNO'))+'&Propertycode='+JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+'');
    sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
   await toast.success("Details Saved Successfully", {
      position: "top-right",
@@ -232,15 +232,15 @@ await   toast.error("Error saving data!" + error, {
   const handleDelete = async (row) => {
     
     const data = {
-      propertyCode: 1135783,
+      propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
       documentid: row.DOCUMENTID,
       ulbcode: 555,
-      eidappno:701
+      eidappno:JSON.parse(sessionStorage.getItem('EIDAPPNO'))
     }
     try {
      await  axiosInstance.post('BBMPCITZAPI/NCL_PROPERTY_ID_TEMP_DEL?ID_BASIC_PROPERTY=0', data
        )
-       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=701&Propertycode=1135783');
+       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO='+JSON.parse(sessionStorage.getItem('EIDAPPNO'))+'&Propertycode='+JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+'');
        sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
       await toast.success("Details Delete Successfully", {
          position: "top-right",

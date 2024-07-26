@@ -75,7 +75,7 @@ const OwnerDetails = () => {
     toast.success("OTP Sent Successfully");
     setOtpData(response.data.otpResponseMessage);
     setOtpNumber(response.data.otp);
-    formData.MOBILEVERIFY = "Not Verified";
+    formData.MOBILEVERIFY = "NOT VERIFIED";
     setOtpButtonDisabled(true);
     setTimer(30);
     const interval = setInterval(() => {
@@ -112,7 +112,7 @@ const OwnerDetails = () => {
   const handleDelete =  async (index) => {
     try {
       const ownerToDelete = tablesdata9[index];
-      await axiosInstance.get(`BBMPCITZAPI/DEL_SEL_NCL_PROP_OWNER_TEMP?propertyCode=${ownerToDelete.PROPERTYCODE}&ownerNumber=${ownerToDelete.OWNERNUMBER}`);
+      await axiosInstance.get(`BBMPCITZAPI/DEL_SEL_NCL_PROP_OWNER_TEMP?EIDAPPNO=${JSON.parse(sessionStorage.getItem('EIDAPPNO'))}&propertyCode=${ownerToDelete.PROPERTYCODE}&ownerNumber=${ownerToDelete.OWNERNUMBER}`);
       toast.error("Owner Deleted Successfully");
       await fetchData();
     } catch (error) {
@@ -193,6 +193,7 @@ const OwnerDetails = () => {
 
   const handleSave = async () => {
     try {
+      
       if(otpFieldsVisible){
         toast.error("Verify the OTP!")
         return
@@ -213,12 +214,13 @@ const OwnerDetails = () => {
   
       setEditableIndex(-1); 
       const params = {
+        EIDAPPNO:JSON.parse(sessionStorage.getItem('EIDAPPNO')),
         propertyCode: formData.PROPERTYCODE || "",
         ownerNumber: formData.OWNERNUMBER || "",
         IDENTIFIERTYPE: formData.IDENTIFIERTYPEID || "",
         IDENTIFIERNAME_EN: formData.IDENTIFIERNAME || "",
         MOBILENUMBER: formData.MOBILENUMBER || "",
-        MOBILEVERIFY: formData.MOBILEVERIFY || "",
+        MOBILEVERIFY: formData.MOBILEVERIFY !== "" ? formData.MOBILEVERIFY :  "NOT VERIFIED",
         loginId: 'crc'
       };
     
@@ -238,7 +240,7 @@ const OwnerDetails = () => {
     try {
       const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
       const response2 = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
-    const response3 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=701&Propertycode=1135783');
+    const response3 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO='+JSON.parse(sessionStorage.getItem('EIDAPPNO'))+'&Propertycode='+JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+'');
       const {  Table5   =[]} = response2.data;
       const {Table9:NCLTABLE9=[]} = response3.data;
       const {Table8=[]} = response1.data;

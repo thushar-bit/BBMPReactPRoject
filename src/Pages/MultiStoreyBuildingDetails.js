@@ -127,17 +127,18 @@ const MultiStoreyBuildingDetails = () => {
         setTablesData6(table17Item);
         var sharetype = "0";
         var ownersharetypeValue = "";
-        if (table13Item.PLOTAREAOWNERSHARE_AREA !== "0")
+        
+        if (table13Item.PLOTAREAOWNERSHARE_AREA !== 0)
           {
             ownersharetypeValue = table13Item.PLOTAREAOWNERSHARE_AREA
             sharetype = "1";
           }
-          else if (table13Item.PLOTAREAOWNERSHARE_FRACTION !== "0")
+          else if (table13Item.PLOTAREAOWNERSHARE_FRACTION !== 0)
           {
             ownersharetypeValue = table13Item.PLOTAREAOWNERSHARE_FRACTION
             sharetype = "2";
           }
-          else if (table13Item.PLOTAREAOWNERSHARE_NOS !== "0")
+          else if (table13Item.PLOTAREAOWNERSHARE_NOS !== 0)
           {
             ownersharetypeValue =  table13Item.PLOTAREAOWNERSHARE_NOS
             sharetype = "3";
@@ -194,7 +195,7 @@ const MultiStoreyBuildingDetails = () => {
     e.preventDefault();
  
     const data = {
-      propertyCode: 1135783,
+      propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
   plotareaownersharE_AREA: formData.SelectOwnerShareType === "1"? formData.OwnersShareAreaSqmts : 0,
   plotareaownersharE_NOS: formData.SelectOwnerShareType === "2"? formData.OwnersShareAreaSqmts : 0,
   plotareaownersharE_FRACTION: formData.SelectOwnerShareType === "3"? formData.OwnersShareAreaSqmts : 0,
@@ -210,14 +211,14 @@ const MultiStoreyBuildingDetails = () => {
   floornumberid: formData.floornumber,
   featureid:formData.features,
   featureheadid:formData.Typeofuse,
-  eidappno:701
+  eidappno:JSON.parse(sessionStorage.getItem('EIDAPPNO'))
   };
   
 try {
   await  axiosInstance.post('BBMPCITZAPI/INS_UPD_NCL_PROPERTY_APARTMENT_TEMP1?ULBCODE=555' , data
    )
   
-   const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=701&Propertycode=1135783');
+   const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO='+JSON.parse(sessionStorage.getItem('EIDAPPNO'))+'&Propertycode='+JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+'');
    sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
   await toast.success("Details Saved Successfully", {
      position: "top-right",

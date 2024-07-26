@@ -155,19 +155,44 @@ useEffect(() => {
     
   
 }, []);
+const handleCalulation = () =>{
+ 
+  const areaFt = Math.round((
+    (parseFloat(formData.cal1) || 1) *
+    (parseFloat(formData.cal2) || 1) *
+    (parseFloat(formData.cal3) || 1) /
+    (parseFloat(formData.cal4) || 1)
+  ) *
+  (
+    (parseFloat(formData.cal5) || 1) *
+    (parseFloat(formData.cal6) || 1) *
+    (parseFloat(formData.cal7) || 1) /
+    (parseFloat(formData.cal8) || 1)
+  ) * 100) / 100;
+
+  const areaMt = areaFt > 0 ? Math.round(areaFt * 0.092903 * 100) / 100 : 0;
+  formData.sqFt = areaFt;
+      formData.sqMt = areaMt;
+      setFormData(prevData => ({
+        ...prevData,
+        sqFt: areaFt.toString(),
+        sqMt: areaMt.toString()
+      }));
+  
+}
   const handleSubmit = async (e) => {
     e.preventDefault();
     
     if(isEditablecheckbandhi === true && formData.propertyType !== "flats" && formData.propertyType !== "select") //only checkbandhi data
       {
         const checkbandhidata = {
-          propertyCode: 1135783,
+          propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
   checkbandI_NORTH: formData.east,
   checkbandI_SOUTH: formData.south,
   checkbandI_EAST: formData.east,
   checkbandI_WEST: formData.west,
   loginId: "crc",
-      eidappno:701
+      eidappno:JSON.parse(sessionStorage.getItem('EIDAPPNO'))
   
 }
       
@@ -175,7 +200,7 @@ useEffect(() => {
         await  axiosInstance.post('BBMPCITZAPI/UPD_NCL_PROPERTY_MAIN_TEMP_CHECKBANDI', checkbandhidata
          )
         
-         const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=701&Propertycode=1135783');
+         const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO='+JSON.parse(sessionStorage.getItem('EIDAPPNO'))+'&Propertycode='+JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+'');
          sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
         await toast.success("Details Saved Successfully", {
            position: "top-right",
@@ -210,7 +235,7 @@ useEffect(() => {
     //only below data
   ){
   const data = {
-        propertyCode: 1135783,
+        propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
     siteorbuilding: formData.propertyType,
     evenoroddsite: formData.oddSite,
     sitearea: formData.plotAreaSqMt,
@@ -228,14 +253,14 @@ useEffect(() => {
     nsoddsitE3FT: formData.cal7,
     nsoddsitE4FT: formData.cal8,
     loginId: "crc",
-    eidappno:701
+    eidappno:JSON.parse(sessionStorage.getItem('EIDAPPNO'))
        };
     
     try {
       await  axiosInstance.post('BBMPCITZAPI/UPD_NCL_PROPERTY_SITE_DIMENSION_TEMP', data
        )
       
-       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=701&Propertycode=1135783');
+       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO='+JSON.parse(sessionStorage.getItem('EIDAPPNO'))+'&Propertycode='+JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+'');
        sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
       await toast.success("Details Saved Successfully", {
          position: "top-right",
@@ -269,18 +294,18 @@ useEffect(() => {
     else if(formData.propertyType === "flats"  && formData.propertyType !== "select" && isEditable === true) //only flats
       {
         const data = {
-          propertyCode: 1135783,
+          propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
   carpetarea: formData.ApartCarpetArea,
   additionalarea: formData.ApartAddtionalArea,
   superbuiltuparea: formData.ApartSuperBuiltArea,
       loginId: "crc",
-      eidappno:701
+      eidappno:JSON.parse(sessionStorage.getItem('EIDAPPNO'))
          };
       
       try {
         await  axiosInstance.post('BBMPCITZAPI/UPD_NCL_PROPERTY_APARTMENT_TEMP_AREA', data
          )
-         const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=701&Propertycode=1135783');
+         const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO='+JSON.parse(sessionStorage.getItem('EIDAPPNO'))+'&Propertycode='+JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+'');
          sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
         await toast.success("Details Saved Successfully", {
            position: "top-right",
@@ -344,7 +369,6 @@ useEffect(() => {
   }
   const handleOddSiteChange =(e) => 
     {
-      
       const { name, value } = e.target;
       setFormData({
         ...formData,
@@ -352,6 +376,7 @@ useEffect(() => {
       });
       if (name === 'oddSite' && value === 'ODD' ) {
         setIsOddSiteEnabled(true);
+        handleCalulation()
       } else if (name === 'oddSite' && value === 'EVEN' ) {
         setIsOddSiteEnabled(false);
       }

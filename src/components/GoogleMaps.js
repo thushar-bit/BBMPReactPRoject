@@ -8,11 +8,13 @@ const containerStyle = {
 
 
 const libraries = ['places'];
-const GoogleMaps = ({ lat,long, onAddressChange }) => {
+const GoogleMaps = ({ lat,long,onLocationChange }) => {
   const center = {
     lat: lat,
     lng: long
   };
+  
+
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: "AIzaSyBdb9a4LIj6aaLdxOB47HRZKD8ouOB344Q" ,// Replace with your API key
@@ -33,50 +35,66 @@ const GoogleMaps = ({ lat,long, onAddressChange }) => {
    
   }, []);
 
-  const handleMapClick = (event) => {
+  const handleMapClick = async (event) => {
     const clickedLocation = event.latLng;
     const lat = clickedLocation.lat();
     const lng = clickedLocation.lng();
     setMarkerPosition({ lat, lng });
+  
     alert(`GPS Coordinates: ${lat}, ${lng}`);
-    getPlaceDetails(lat, lng);
+    //setLat(lat);
+   // setLong(lng);
+  
+    try {
+      const address = await getPlaceDetails(lat, lng);
+      setAddress(address);
+      alert(`Address: ${address}`);
+      
+      // Call the onLocationChange callback with all values
+      if (onLocationChange) onLocationChange({ lat, lng, address });
+    } catch (error) {
+      alert('Failed to fetch place details');
+    }
   };
+  
+  
 
   const getPlaceDetails = (lat, lng) => {
-    const request = {
-      location: { lat, lng },
-      radius: '500' 
-    };
-
-    const service = new window.google.maps.places.PlacesService(document.createElement('div'));
-    service.nearbySearch(request, function (results, status) {
-      if (status === window.google.maps.places.PlacesServiceStatus.OK && results[0]) {
-        const placeId = results[0].place_id;
-        getPlaceAddress(placeId);
-      } else {
-        alert('No results found');
-      }
+    return new Promise((resolve, reject) => {
+      const request = {
+        location: { lat, lng },
+        radius: '50'
+      };
+  
+      const service = new window.google.maps.places.PlacesService(document.createElement('div'));
+      service.nearbySearch(request, (results, status) => {
+        if (status === window.google.maps.places.PlacesServiceStatus.OK && results[0]) {
+          const placeId = results[0].place_id;
+          getPlaceAddress(placeId, resolve, reject);
+        } else {
+          reject('No results found');
+        }
+      });
     });
   };
+  
 
-  const getPlaceAddress = (placeId) => {
+  const getPlaceAddress = (placeId, resolve, reject) => {
     const request = {
       placeId,
       fields: ['formatted_address']
     };
-
+  
     const service = new window.google.maps.places.PlacesService(document.createElement('div'));
-    service.getDetails(request, function (place, status) {
+    service.getDetails(request, (place, status) => {
       if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-        const address = place.formatted_address;
-        setAddress(address);
-        if (onAddressChange) onAddressChange(address);
-        alert(`Address: ${address}`);
+        resolve(place.formatted_address);
       } else {
-        alert(`Place details request failed due to: ${status}`);
+        reject(`Place details request failed due to: ${status}`);
       }
     });
   };
+  
 
   return isLoaded ? (
     <div>

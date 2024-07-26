@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, Grid, Box,Container, Typography, CircularProgress ,Tooltip,IconButton } from '@mui/material';
+import { TextField, Button, Grid, Box,Container, Typography, CircularProgress ,Tooltip,IconButton ,  
+  FormControl, MenuItem, Select, InputLabel,  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
+} from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import InfoIcon from '@mui/icons-material/Info';
 import { styled } from '@mui/material/styles';
@@ -26,6 +28,8 @@ const BbmpForm = () => {
   const [formData, setFormData] = useState({
     propertyCode: '',
     streetid: '',
+    streetName:"",
+    Street:"",
     doorno: '',
     buildingname: '',
     areaorlocality: '',
@@ -34,32 +38,44 @@ const BbmpForm = () => {
     propertyphoto: '',
     categoryId: 2,
     puidNo: '',
-    loginId: 'crc'
+    loginId: 'crc',
+    verifySASNUM:"",
+    lat1:0,
+    long1:0
   });
   const navigate = useNavigate();
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
   const [handlemapClicks,sethandlemapClicks] = useState(false);
-
+  const [handleSASClicks,sethandleSASClicks] = useState(false);
+  const [lat2,setlat1] = useState(0);
+  const [long2,setlong1] = useState(0);
+  const [tableData, setTableData] = useState([
+  ]);
+  const [SAStableData,setSASTableData] = useState([]);
   const fetchData = async () => {
     setLoading(true);
     try {
       const response = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
       const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
-      console.log("BBMP-form page")
-      console.log(response.data )
-      console.log("BBMP-form bbd page")
-      console.log(response2.data)
-      console.log("BBMP-form ncl data page")
-      const {  Table1=[],   Table5=[],   } = response.data;
-      const {  Table17=[]   } = response2.data;
-    
-      const table1Item = Table1.length > 0 ? Table1[0] : {};
-      const table5Item = Table5.length > 0 ? Table5[0] : {};
-      const table17Item = Table17.length > 0 ? Table17[0] : {};
-      setPreviewUrl(`data:image1/png;base64,${table17Item.PROPERTYPHOTO}`); 
+      const response3 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
       
+      const {  Table1=[],   Table5=[],   } = response.data;
+      const {  Table17=[],Table1:NCLTABLE1=[] ,Table7=[]  } = response2.data;
+      const {Table2=[]} = response3.data;
+      const table1Item = Table1.length > 0 ? Table1[0] : [];
+      const NCLtable1Item = NCLTABLE1.length > 0 ? NCLTABLE1[0] : [];
+
+      const table5Item = Table5.length > 0 ? Table5[0] : [];
+      const table17Item = Table17.length > 0 ? Table17[0] : [];
+      const table7Item = Table7.length > 0 ? Table7[0] : [];
+      
+    const filteredData = Table2.filter(item => 
+      item.STREETID !== 99999 && item.WARDID === table1Item.WARDID
+    );
+      setTableData(filteredData);
+      setPreviewUrl(`data:image1/png;base64,${table17Item.PROPERTYPHOTO}`); 
       setFormData({
         propertyEID: table1Item.PROPERTYID || '',
         address: table1Item.ADDRESS || '',
@@ -71,10 +87,13 @@ const BbmpForm = () => {
         streetName: table1Item.STREETNAME_EN || '',
         DoorPlotNo: table17Item.DOORNO || '',
         BuildingLandName: table17Item.BUILDINGNAME||'',
-        Street: table17Item.STREET ||'',
+        streetid: NCLtable1Item.STREETID ||'',
         NearestLandmark: table17Item.LANDMARK ||'',
         Pincode: table17Item.PINCODE ||'',
         AreaLocality: table17Item.AREAORLOCALITY ||'',
+        lat1:table7Item.LATITUDE || 0,
+        long1:table7Item.LONGITUDE || 0,
+        verifySASNUM:NCLtable1Item.PUID !== null ? NCLtable1Item.PUID: table1Item.PUID  ? table1Item.PUID:0,
       });
       setLoading(false);
     } catch (error) {
@@ -178,15 +197,17 @@ const  handleSubmit = async (e) => {
       pincode: formData.Pincode,
       propertyphoto:propertyphoto2,
       categoryId: 2,
-      puidNo: 's23', 
+      puidNo: formData.verifySASNUM, 
       loginId:"crc",
-      eidappno:701
+      eidappno:JSON.parse(sessionStorage.getItem('EIDAPPNO')),
+      latitude: formData.lat1.toString(),
+      longitude:formData.long1.toString()
     };
     try {
      await  axiosInstance.post('BBMPCITZAPI/GET_PROPERTY_CTZ_PROPERTY', data
       )
       setSelectedFile(null);
-     const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=701&Propertycode=1135783');
+     const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO='+JSON.parse(sessionStorage.getItem('EIDAPPNO'))+'&Propertycode='+JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+'');
       sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
      
       await toast.success("Details Saved Successfully", {
@@ -238,12 +259,63 @@ const  handleSubmit = async (e) => {
       sethandlemapClicks(true)
     }
   };
-
+  
   const handleAddressChange = (newAddress) => {
     console.log('New address:', newAddress);
-    // Handle the new address here
+    var parts = newAddress.address.split(', ');
+    var doorNo = '';
+    var street = '';
+    var pincode = '';
+    var area = '';
+    if (parts.length == 3) {
+       area = parts[0].trim();
+       setFormData({
+        ...formData,
+        lat1: lat2 !== undefined ? newAddress.lat : 0,
+        long1:long2 !== undefined? newAddress.lng : 0,
+        AreaLocality : area
+  
+      });
+    } else {
+      var pincodeRegex = /\b\d{6}\b/;
+        var pincodes = newAddress.address.match(pincodeRegex);
+        doorNo = parts[0].trim();
+          pincode = pincodes[0];
+         area = parts[0].trim();
+         setFormData({
+          ...formData,
+          lat1: lat2 !== undefined ? newAddress.lat : 0,
+          long1:long2 !== undefined? newAddress.lng : 0,
+          DoorPlotNo:doorNo.length > 0? doorNo :"",
+          Pincode : pincode,
+          AreaLocality : area
+    
+        });
+    }
+   
   };
-
+  
+  const handleSASClick = async () => {
+    
+    if(handleSASClicks === false){
+      sethandleSASClicks(true);
+      if(formData.verifySASNUM.length === 0){
+        toast.error("Please Provide SAS Application Number");
+        return
+      }
+      
+      const response = await axiosInstance.get('BBMPCITZAPI/GetTaxDetails?applicationNo='+ formData.verifySASNUM)
+      const {  Table=[]  } = response.data;
+      if(Table.length === 0){
+        toast.error("No Application Found");
+      }
+      setSASTableData(Table);
+    }
+    else {
+      sethandleSASClicks(false);
+      setSASTableData([]);
+    }
+  };
 
 const handleNavigation= () =>{
   navigate('/AreaDimension/select')
@@ -458,9 +530,75 @@ const handleNavigation= () =>{
         >
            {t("PostalAddressofProperty")}
         </Typography>
-        <Button color='success' variant={"contained"}onClick={handleMapClick}>Click Here to Capture Property Location</Button>
+        <Grid container spacing={4} alignItems={"center"}>
+        <Grid item xs={12} sm={6}>
+        <TextField
+              fullWidth
+              variant={isEditable ? "standard" : "filled"}
+              label="SAS Application Number"
+              name="verifySASNUM"
+              value={formData.verifySASNUM}
+              onChange={handleChange}
+              InputProps={{
+                readOnly: !isEditable,
+                endAdornment: (
+                  <Tooltip title={t("streetNameInfo")}>
+                     <IconButton color="primary">
+                      <InfoIcon />
+                    </IconButton>
+                  </Tooltip>
+                )
+              }}
+            />
+            </Grid>
+             <Grid item xs={12} sm={6}>
+        <Button color='success' variant={"contained"} onClick={async ()=>handleSASClick()}>Verify SAS Application Number</Button>
+        </Grid>
+</Grid>
+<TableContainer component={Paper} sx={{ mt: 4 }}>
+  <Table>
+    <TableHead>
+      <TableRow>
+        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>Application Number</TableCell>
+        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>PID</TableCell>
+        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>KHATHA SURVEY NO</TableCell>
+        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>Owner Name</TableCell>
+        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>Property Address</TableCell>
+        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>Site Area</TableCell>
+        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>Built Up Area</TableCell>
+      </TableRow>
+    </TableHead>
+    <TableBody>
+      {SAStableData.length === 0 ? (
+        <TableRow>
+          <TableCell colSpan={12} align="center">
+            No data available
+          </TableCell>
+        </TableRow>
+      ) : (
+        SAStableData.map((row) => (
+          <TableRow key={row.id}>
+            <TableCell>{row.APPLICATIONNUMBER}</TableCell>
+            <TableCell>{row.PID}</TableCell>
+            <TableCell>{row.KHATHA_SURVEY_NO}</TableCell>
+            <TableCell>{row.OWNERNAME}</TableCell>
+            <TableCell>{row.PROPERTYADDRESS}</TableCell>
+            <TableCell>{row.SITEAREA}</TableCell>
+            <TableCell>{row.BUILTUPAREA}</TableCell>
+          </TableRow>
+        ))
+      )}
+    </TableBody>
+  </Table>
+</TableContainer>
+<br></br>
+<br></br>
+
+        <Button color='success' variant={"contained"} onClick={handleMapClick}>Click Here to Capture Property Location</Button>
+        <br></br>
+        <br></br>
         {handlemapClicks ? 
-        <GoogleMaps lat={13.0074} long={77.5688}  onAddressChange={handleAddressChange}/>
+        <GoogleMaps lat={13.0074} long={77.5688}  onLocationChange={handleAddressChange} />
 :""}
 <br></br>
 <br></br>
@@ -506,26 +644,7 @@ const handleNavigation= () =>{
               }}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label={t("street")}
-              name="Street"
-              value={formData.Street}
-              onChange={handleChange}
-              variant={isEditable ? "standard" : "filled"}
-              InputProps={{
-                readOnly: !isEditable,
-                endAdornment: (
-                  <Tooltip title={t("streetInfo")}>
-                     <IconButton color="primary">
-                      <InfoIcon />
-                    </IconButton>
-                  </Tooltip>
-                )
-              }}
-            />
-          </Grid>
+          
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
@@ -577,6 +696,65 @@ const handleNavigation= () =>{
               variant={isEditable ? "standard" : "filled"}
               InputProps={{
                 readOnly: !isEditable,
+                endAdornment: (
+                  <Tooltip title={t("areaLocalityInfo")}>
+                     <IconButton color="primary">
+                      <InfoIcon />
+                    </IconButton>
+                  </Tooltip>
+                )
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            
+            <FormControl fullWidth sx={{ marginBottom: 3 }}>
+            <InputLabel>Street Name :</InputLabel>
+            <Select
+              name="streetid"
+              value={formData.streetid}
+              onChange={handleChange}
+              disabled={!isEditable}
+            >
+              <MenuItem value="">--Select--</MenuItem>
+          {tableData.map((item) => (
+            <MenuItem key={item.STREETID} value={item.STREETID}>
+              {item.STREETNAME1}
+            </MenuItem>
+          ))}
+            </Select>
+          </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label={t("Lattitude")}
+              name="lat1"
+              value={formData.lat1}
+              onChange={handleChange}
+              variant={"filled"}
+              InputProps={{
+                readOnly: true,
+                endAdornment: (
+                  <Tooltip title={t("areaLocalityInfo")}>
+                     <IconButton color="primary">
+                      <InfoIcon />
+                    </IconButton>
+                  </Tooltip>
+                )
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label={t("Longitude")}
+              name="long1"
+              value={formData.long1}
+              onChange={handleChange}
+              variant={"filled"}
+              InputProps={{
+                readOnly: true,
                 endAdornment: (
                   <Tooltip title={t("areaLocalityInfo")}>
                      <IconButton color="primary">

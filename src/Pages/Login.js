@@ -21,7 +21,7 @@ const  Login =()=> {
     captcha1:""
   })
     const generateCaptcha =()=> {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const chars = 'ABCDEFGHJKMNOPQRSTUVWXYZabcdefghjkmnopqrstuvwxyz0123456789';
     let captcha = '';
     for (let i = 0; i < 6; i++) {
       captcha += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -46,7 +46,7 @@ const  Login =()=> {
         toast.error(responseMobile.data)
         return
       }
-      debugger
+      
       const response = await axiosInstance.get("E-KYCAPI/SendOTP?OwnerMobileNo=" + responseMobile.data);
       
     toast.success(response.data.otpResponseMessage);
@@ -97,15 +97,15 @@ const  Login =()=> {
           return
         }
       }
-      if(formData.captcha1.length === 0)
-        {
-          toast.error("Please enter the Captcha");
-          return
-        }
-      if(formData.captcha1 !== captcha){
-        toast.error("the Captcha Entered Does not Match")
-        return;
-      }
+      // if(formData.captcha1.length === 0)
+      //   {
+      //     toast.error("Please enter the Captcha");
+      //     return
+      //   }
+      // if(formData.captcha1 !== captcha){
+      //   toast.error("the Captcha Entered Does not Match")
+      //   return;
+      // }
     const hashedPassword = CryptoJS.MD5(formData.Password).toString();
     const data = {
       UserId: formData.UserId,
@@ -122,13 +122,29 @@ const  Login =()=> {
           return
         }
       }
+      const response3 = await axiosInstance.post('BBMPCITZAPI/CopyBBDDetailstoNCLTable?LoginId=crc');
+      debugger
+      if(response3.data === "There is a issue while copying the data from Book Module"){
+        toast.error("There is a issue while copying the data from Book Module.Check Property Code and Property Id.")
+        return
+      }
+      else {
+       
+          toast.success("The data was Successfully Copied from BBMP Books");
+       
+       debugger
+        sessionStorage.setItem('EIDAPPNO', JSON.stringify(response3.data.EID));
+        sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(response3.data.PropertyId));
+      }
       try {
-        const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&EID=701&propertyid=1135783');
-        const response2 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=701&Propertycode=1135783');
+        const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&EID='+JSON.parse(sessionStorage.getItem('EIDAPPNO'))+'&propertyid='+JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+'');
+        const response2 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO='+JSON.parse(sessionStorage.getItem('EIDAPPNO'))+'&Propertycode='+JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+'');
+       
         sessionStorage.setItem('BBD_DRAFT_API', JSON.stringify(response1));
         sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response2));
+        setTimeout(() => {
         navigate('/bbmp-form');
-       
+      }, 2000);
        
         }catch(error){
           

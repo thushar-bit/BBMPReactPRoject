@@ -14,7 +14,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 const BuildingDetails = () => {
   const [formData, setFormData] = useState({
-    BuildingNumber: '',
+    BuildingNumber: 0,
   BuildingName: '',
   floornumber: "",
   features: '',
@@ -125,8 +125,9 @@ const BuildingDetails = () => {
           BUILDINGUSAGETYPEID = 6;
       }
     const data = {
-      propertyCode: 1135783,
-      floornumberid: 23,
+      propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
+      floornumberid: formData.floornumber,
+      floortypeid: formData.floornumber,
       createdby: "crc",
       buildingusagetypeid: BUILDINGUSAGETYPEID,
       ulbcode: 555,
@@ -135,18 +136,18 @@ const BuildingDetails = () => {
       builtyear: formData.yearOfConstruction,
       rrno: formData.BesomCustomerID,
       watermeterno: formData.BWSSBMeterNumber,
-      buildingnumberid: formData.buildingnumberid ? "" :1,
+      buildingnumberid: formData.BuildingNumber,
       buildingblockname: formData.BuildingName,
       ownUseArea: formData.SelfuseArea,
       rentedArea: formData.RentedArea,
-      eidappno:701
+      eidappno:JSON.parse(sessionStorage.getItem('EIDAPPNO'))
 }
 
 try {
   await  axiosInstance.post('BBMPCITZAPI/DEL_INS_SEL_NCL_PROP_BUILDING_TEMP?ULBCODE=555', data
    )
   
-   const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=701&Propertycode=1135783');
+   const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO='+JSON.parse(sessionStorage.getItem('EIDAPPNO'))+'&Propertycode='+JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+'');
    sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
   await toast.success("Details Saved Successfully", {
      position: "top-right",
@@ -189,15 +190,15 @@ await   toast.error("Error saving data!" + error, {
   const handleDelete = async (id) => {
     
     const data = {
-      propertyCode: 1135783,
-      buildingnumberid: id.BUILDINGBLOCKID,
-      floornumberid: id.FLOORNUMBERID,
-      eidappno:701
+      propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
+    //  floortypeid: id.FLOORTYPEID,
+    floortypeid :id.FLOORNUMBERID,
+      eidappno:JSON.parse(sessionStorage.getItem('EIDAPPNO'))
     }
     try {
      await  axiosInstance.post('BBMPCITZAPI/DEL_SEL_NCL_PROP_BUILDING_TEMP?ULBCODE=555', data
        )
-       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=701&Propertycode=1135783');
+       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO='+JSON.parse(sessionStorage.getItem('EIDAPPNO'))+'&Propertycode='+JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+'');
        sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
       await toast.success("Details Delete Successfully", {
          position: "top-right",
@@ -232,15 +233,16 @@ await   toast.error("Error saving data!" + error, {
 
   const handleEdit = async (row) => {
     try {
-      if(row.FEATUREHEADID !== null && row.FEATUREHEADID !== ""){
-      
+      if(row.FEATUREHEADID !== null && row.FEATUREHEADID !== "")
+        {
         const response3 =  await axiosInstance.get(`BBMPCITZAPI/GetNPMMasterTable?FeaturesHeadID=${row.FEATUREHEADID}`);
-        if (response3.data.Table.length > 0) {
+        if (response3.data.Table.length > 0)
+          {
          setTablesData3(response3.data.Table);
        }
         }
        setFormData({
-         BuildingNumber: row.BUILDINGBLOCKID || '',
+         BuildingNumber: row.BUILDINGBLOCKID || 0,
          BuildingName: row.BUILDINGBLOCKNAME || '',
          floornumber: row.FLOORNUMBERID|| '',
          features: row.FEATUREHEADID || '',
