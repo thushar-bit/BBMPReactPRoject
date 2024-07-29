@@ -501,7 +501,8 @@ const OwnerDetails = () => {
                     name="RelationShiptype"
                     value={owner.IDENTIFIERTYPEID}
                     onChange={handleChange}
-                    disabled
+                   // disabled
+                    inputProps={{ readOnly: true }}
                   >
                     <MenuItem value="">--Select--</MenuItem>
                     {tablesdata8.map((item) => (

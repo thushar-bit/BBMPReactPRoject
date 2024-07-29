@@ -122,7 +122,7 @@ const  Login =()=> {
           return
         }
       }
-      const response3 = await axiosInstance.post('BBMPCITZAPI/CopyBBDDetailstoNCLTable?LoginId=crc');
+      const response3 = await axiosInstance.get('BBMPCITZAPI/CopyBBDDetailstoNCLTable?LoginId=crc');
       debugger
       if(response3.data === "There is a issue while copying the data from Book Module"){
         toast.error("There is a issue while copying the data from Book Module.Check Property Code and Property Id.")

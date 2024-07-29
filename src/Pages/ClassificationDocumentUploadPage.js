@@ -378,7 +378,8 @@ await   toast.error("Error saving data!" + error, {
           name="PropertyClasssficationAsperBooks"
           value={formData.PropertyClasssficationAsperBooks}
           onChange={handleChange}
-          disabled
+        //  disabled
+        inputProps={{ readOnly: true }}
         >
           <MenuItem value="">--Select--</MenuItem>
           {MasterTableData.map((item) => (
@@ -396,7 +397,8 @@ await   toast.error("Error saving data!" + error, {
           name="PropertyClassification"
           value={formData.PropertyClassification}
           onChange={handleChange}
-          disabled
+        //  disabled
+          inputProps={{ readOnly: true }}
         >
           <MenuItem value="">--Select--</MenuItem>
           {MasterTableData.map((item) => (

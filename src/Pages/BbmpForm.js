@@ -714,7 +714,8 @@ const handleNavigation= () =>{
               name="streetid"
               value={formData.streetid}
               onChange={handleChange}
-              disabled={!isEditable}
+           //   disabled={!isEditable}
+             inputProps={{ readOnly: !isEditable }}
             >
               <MenuItem value="">--Select--</MenuItem>
           {tableData.map((item) => (
