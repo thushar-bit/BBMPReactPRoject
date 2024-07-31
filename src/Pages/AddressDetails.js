@@ -93,7 +93,7 @@ const AddressDetails = () => {
         AreaLocality: table17Item.AREAORLOCALITY ||'',
         lat1:table7Item.LATITUDE || 0,
         long1:table7Item.LONGITUDE || 0,
-        verifySASNUM:NCLtable1Item.PUID !== null ? NCLtable1Item.PUID: table1Item.PUID  ? table1Item.PUID:0,
+        verifySASNUM:NCLtable1Item.PUID !== null ? NCLtable1Item.PUID || 0: table1Item.PUID  ? table1Item.PUID:0,
       });
       setLoading(false);
     } catch (error) {
@@ -220,10 +220,10 @@ const  handleSubmit = async (e) => {
         progress: undefined,
       });
 
-      setTimeout(() => {
-        window.location.reload();
-   //    handleNavigation()
-      }, 2000);
+     
+        setIsEditable(false);
+        //await fetchData(); 
+      
     } catch (error) {
    await   toast.error("Error saving data ",error, {
         position: "top-right",

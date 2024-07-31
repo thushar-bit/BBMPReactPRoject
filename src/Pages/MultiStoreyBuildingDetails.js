@@ -26,7 +26,7 @@ const MultiStoreyBuildingDetails = () => {
       BesomCustomerID: '',
       SelectOwnerShareType: '0',
       OwnersShareAreaSqmts: "",
-      ParkingFacility: '',
+      ParkingFacility: 'N',
    
     
   });
@@ -156,6 +156,9 @@ const MultiStoreyBuildingDetails = () => {
             setTablesData3(response3.data.Table);
           }
            }
+           if(table13Item.PARKINGAVAILABLE  === "Y"){
+            setIsEditable(true);
+           }
         setFormData({
           BlockName: table13Item.BLOCKNUMBER || '',
           FlatNos: table13Item.FLATNO || '',
@@ -169,7 +172,7 @@ const MultiStoreyBuildingDetails = () => {
           BesomCustomerID: table13Item.RRNO || '',
           SelectOwnerShareType: sharetype || '',
           OwnersShareAreaSqmts: ownersharetypeValue || '',
-          ParkingFacility: table13Item.PARKINGAVAILABLE || '',
+          ParkingFacility: table13Item.PARKINGAVAILABLE || 'N',
         });
     } catch (error) {
       toast.error("Error saving data ",error, {
@@ -210,8 +213,8 @@ const MultiStoreyBuildingDetails = () => {
   rrno: formData.BesomCustomerID,
   yearofconstruction: formData.yearOfConstruction,
   floornumberid: formData.floornumber,
-  featureid:formData.features,
-  featureheadid:formData.Typeofuse,
+  featureid:formData.Typeofuse,
+  featureheadid:formData.features,
   eidappno:JSON.parse(sessionStorage.getItem('EIDAPPNO'))
   };
   
@@ -231,10 +234,10 @@ try {
      progress: undefined,
    });
   
-   setTimeout(() => {
-    window.location.reload();
-//    handleNavigation()
-  }, 2000);
+   setTimeout( async() => {
+    await  fetchData();
+    setIsEditable(false);
+    }, 2000);
  } catch (error) {
 await   toast.error("Error saving data!" + error, {
      position: "top-right",

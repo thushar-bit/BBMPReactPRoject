@@ -172,10 +172,10 @@ try {
      draggable: true,
      progress: undefined,
    });
-   setTimeout(() => {
-    window.location.reload();
-//    handleNavigation()
-  }, 2000);
+   setTimeout( async() => {
+    await  fetchData();
+ //    handleNavigation()
+    }, 2000);
  } catch (error) {
 await   toast.error("Error saving data!" + error, {
      position: "top-right",
@@ -251,10 +251,10 @@ await   toast.error("Error saving data!" + error, {
          draggable: true,
          progress: undefined,
        });
-       setTimeout(() => {
-        window.location.reload();
-   //    handleNavigation()
-      }, 2000);
+       setTimeout( async() => {
+        await  fetchData();
+     //    handleNavigation()
+        }, 2000);
      } catch (error) {
     await   toast.error("Error Deleting data!" + error, {
          position: "top-right",

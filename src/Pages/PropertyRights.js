@@ -48,10 +48,10 @@ const PropertyRights = () => {
        draggable: true,
        progress: undefined,
      });
-     setTimeout(() => {
-      window.location.reload();
- //    handleNavigation()
-    }, 2000);
+     setTimeout( async() => {
+      await  fetchData();
+   //    handleNavigation()
+      }, 2000);
      }
      catch(error){
       toast.error("Error saving data!" + error, {
@@ -119,10 +119,11 @@ const PropertyRights = () => {
      draggable: true,
      progress: undefined,
    });
-   setTimeout(() => {
-    window.location.reload();
-//    handleNavigation()
-  }, 2000);
+   setTimeout( async() => {
+    
+    await  fetchData();
+ //    handleNavigation()
+    }, 2000);
    }
    catch(error){
     toast.error("Error saving data!" + error, {
@@ -162,10 +163,11 @@ const PropertyRights = () => {
        draggable: true,
        progress: undefined,
      });
-     setTimeout(() => {
-      window.location.reload();
- //    handleNavigation()
-    }, 2000);
+     setTimeout( async() => {
+      setIsEditable(false);
+      await  fetchData();
+   //    handleNavigation()
+      }, 2000);
      }
      catch(error){
       toast.error("Error saving data!" + error, {

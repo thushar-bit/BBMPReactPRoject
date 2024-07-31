@@ -74,7 +74,6 @@ const ClassificationDocumentUploadPage = () => {
     }
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
       PropertyClassification: updatedClassification,
     }));
     } catch (error) {
@@ -225,10 +224,10 @@ try {
      draggable: true,
      progress: undefined,
    });
-   setTimeout(() => {
-    window.location.reload();
-//    handleNavigation()
-  }, 2000);
+   setTimeout( async() => {
+    await  fetchData();
+ //    handleNavigation()
+    }, 2000);
  } catch (error) {
 await   toast.error("Error saving data!" + error, {
      position: "top-right",
@@ -300,10 +299,10 @@ await   toast.error("Error saving data!" + error, {
          draggable: true,
          progress: undefined,
        });
-       setTimeout(() => {
-        window.location.reload();
-    //    handleNavigation()
-      }, 2000);
+       setTimeout( async() => {
+        await  fetchData();
+     //    handleNavigation()
+        }, 2000);
      
      } catch (error) {
     await   toast.error("Error Deleting data!" + error, {
@@ -396,7 +395,7 @@ await   toast.error("Error saving data!" + error, {
         <Select
           name="PropertyClassification"
           value={formData.PropertyClassification}
-          onChange={handleChange}
+          onChange={handleAkathaDropdownValueChange}
         //  disabled
           inputProps={{ readOnly: true }}
         >
