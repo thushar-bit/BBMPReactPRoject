@@ -24,7 +24,7 @@ const VisuallyHiddenInput = styled('input')({
   width: 1,
 });
 
-const BbmpForm = () => {
+const AddressDetails = () => {
   const [formData, setFormData] = useState({
     propertyCode: '',
     streetid: '',
@@ -831,4 +831,4 @@ const handleNavigation= () =>{
   );
 };
 
-export default BbmpForm;
+export default AddressDetails;

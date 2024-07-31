@@ -42,8 +42,7 @@ const GoogleMaps = ({ lat,long,onLocationChange }) => {
     setMarkerPosition({ lat, lng });
   
     alert(`GPS Coordinates: ${lat}, ${lng}`);
-    //setLat(lat);
-   // setLong(lng);
+   
   
     try {
       const address = await getPlaceDetails(lat, lng);

@@ -133,8 +133,8 @@ useEffect(() => {
           ew: NCLTable5Data.length > 0 ? NCLTable5Data[0].EASTWEST || 0: Table3Data.length > 0 ? Table3Data[0].EASTWEST|| "":0,
           plotAreaSqFt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREAFT || 0: Table2Data.length > 0 ? Table2Data[0].SITEAREAFT|| "":0,
           plotAreaSqMt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREA || 0: Table2Data.length > 0 ? Table2Data[0].SITEAREA|| "":0,
-          builtUpAreaSqFt: NCLTable2Data.length > 0 ? NCLTable2Data[0].BUILDINGAREAFT || 0: Table2Data.length > 0 ? Table2Data[0].BUILDINGAREAFT|| "":0,
-          builtUpAreaSqMt: NCLTable2Data.length > 0 ? NCLTable2Data[0].BUILDINGAREA || 0: Table2Data.length > 0 ? Table2Data[0].BUILDINGAREA|| "":0,
+          builtUpAreaSqFt: NCLTable2Data.length > 0 ? NCLTable2Data[0].BUILDINGAREAFT || 0: Table2Data.length > 0 ? Table2Data[0].BUILDINGAREAFT|| 0:0,
+          builtUpAreaSqMt: NCLTable2Data.length > 0 ? NCLTable2Data[0].BUILDINGAREA || 0: Table2Data.length > 0 ? Table2Data[0].BUILDINGAREA|| 0:0,
           ApartCarpetArea:NCLTable13Data.length > 0 ? NCLTable13Data[0].CARPETAREA || 0: Table7Data.length > 0 ? Table7Data[0].CARPETAREA|| "":0,
           ApartAddtionalArea:NCLTable13Data.length > 0 ? NCLTable13Data[0].ADDITIONALAREA || 0: Table7Data.length > 0 ? Table7Data[0].ADDITIONALAREA|| "":0,
           ApartSuperBuiltArea:NCLTable13Data.length > 0 ? NCLTable13Data[0].SUPERBUILTUPAREA || 0: Table7Data.length > 0 ? Table7Data[0].SUPERBUILTUPAREA|| "":0,
@@ -240,8 +240,8 @@ const handleCalulation = () =>{
     evenoroddsite: formData.oddSite,
     sitearea: formData.plotAreaSqMt,
     siteareaft: formData.plotAreaSqFt,
-    buildingarea: formData.builtUpAreaSqMt,
-    buildingareaft: formData.builtUpAreaSqFt,
+  //  buildingarea: formData.builtUpAreaSqMt,
+  //  buildingareaft: formData.builtUpAreaSqFt,
     eastwest: formData.ew.toString(),
     northsouth: formData.ns.toString(),
     ewoddsitE1FT: formData.cal1,
@@ -349,7 +349,7 @@ const handleCalulation = () =>{
     }
   };
   const back = () => {
-    navigate('/bbmp-form')
+    navigate('/AddressDetails')
   }
   const handleNavigation= () =>{
     

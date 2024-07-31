@@ -192,6 +192,7 @@ const OwnerDetails = () => {
 
 
   const handleSave = async () => {
+    debugger
     try {
       
       if(otpFieldsVisible){
@@ -206,10 +207,13 @@ const OwnerDetails = () => {
         toast.error("Please enter the Relation Name")
         return
       }
-      if(formData.MOBILENUMBER.length <= 0 && formData.MOBILENUMBER.length <10){
-        toast.error("Please enter a valid Mobile Number")
-        return
+      if(formData.MOBILENUMBER != null || formData.MOBILENUMBER != undefined){
+        if(formData.MOBILENUMBER.length <= 0 && formData.MOBILENUMBER.length <10){
+          toast.error("Please enter a valid Mobile Number")
+          return
+        }
       }
+      
   
   
       setEditableIndex(-1); 
@@ -232,7 +236,7 @@ const OwnerDetails = () => {
       toast.success("Owner Edited Successfully")
       await fetchData();
     } catch (error) {
-      console.log("Owner save",error)
+      toast.error("Error Saving Data ",error)
     }
     
   };

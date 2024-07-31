@@ -109,6 +109,7 @@ const MultiStoreyBuildingDetails = () => {
   
   const fetchData = async () => {
     try {
+      debugger
       const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
     const response2 = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
     const response3 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));

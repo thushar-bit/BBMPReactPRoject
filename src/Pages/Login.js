@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Sheet from '@mui/joy/Sheet';
 import CssBaseline from '@mui/joy/CssBaseline';
 import Typography from '@mui/joy/Typography';
 import FormControl from '@mui/joy/FormControl';
@@ -122,17 +121,15 @@ const  Login =()=> {
           return
         }
       }
-      const response3 = await axiosInstance.get('BBMPCITZAPI/CopyBBDDetailstoNCLTable?LoginId=crc');
+      await axiosInstance.get('BBMPCITZAPI/COPY_DATA_FROM_BBDDRAFT_NCLTEMP?LoginId=crc');
+      const response3 = await axiosInstance.get('BBMPCITZAPI/Get_Ctz_ObjectionModPendingAppl?LoginId=crc');
       debugger
-      if(response3.data === "There is a issue while copying the data from Book Module"){
-        toast.error("There is a issue while copying the data from Book Module.Check Property Code and Property Id.")
+      if(response3.data === "There is a issue while copying the data from Book Module.No Data Found"){
+        toast.error("There is a issue while copying the data from Book Module.Check Property Code and Property Id.No Data Found");
         return
       }
       else {
-       
           toast.success("The data was Successfully Copied from BBMP Books");
-       
-       debugger
         sessionStorage.setItem('EIDAPPNO', JSON.stringify(response3.data.EID));
         sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(response3.data.PropertyId));
       }
@@ -143,7 +140,7 @@ const  Login =()=> {
         sessionStorage.setItem('BBD_DRAFT_API', JSON.stringify(response1));
         sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response2));
         setTimeout(() => {
-        navigate('/bbmp-form');
+        navigate('/AddressDetails');
       }, 2000);
        
         }catch(error){
@@ -188,7 +185,7 @@ const  Login =()=> {
 >
   <img
     src={AppartMent}
-    alt='no image found'
+    alt='no images found'
     style={{
       maxWidth: '90%',  // Responsive width
       height: 'auto',    // Maintains aspect ratio
