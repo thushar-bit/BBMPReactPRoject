@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Sheet from '@mui/joy/Sheet';
 import CssBaseline from '@mui/joy/CssBaseline';
 import Typography from '@mui/joy/Typography';
 import FormControl from '@mui/joy/FormControl';
@@ -121,15 +122,22 @@ const  Login =()=> {
           return
         }
       }
-      await axiosInstance.get('BBMPCITZAPI/COPY_DATA_FROM_BBDDRAFT_NCLTEMP?LoginId=crc');
       const response3 = await axiosInstance.get('BBMPCITZAPI/Get_Ctz_ObjectionModPendingAppl?LoginId=crc');
       debugger
       if(response3.data === "There is a issue while copying the data from Book Module.No Data Found"){
+        const response4 = await axiosInstance.get('BBMPCITZAPI/COPY_DATA_FROM_BBDDRAFT_NCLTEMP?LoginId=crc');
+        const response5 = await axiosInstance.get('BBMPCITZAPI/Get_Ctz_ObjectionModPendingAppl?LoginId=crc');
+        if(response5.data === "There is a issue while copying the data from Book Module.No Data Found");
+        {
         toast.error("There is a issue while copying the data from Book Module.Check Property Code and Property Id.No Data Found");
         return
+        }
       }
       else {
+       
           toast.success("The data was Successfully Copied from BBMP Books");
+       
+       debugger
         sessionStorage.setItem('EIDAPPNO', JSON.stringify(response3.data.EID));
         sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(response3.data.PropertyId));
       }
