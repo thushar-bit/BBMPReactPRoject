@@ -1,6 +1,6 @@
-import React, { useState ,useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-   Button, Box, Container, Typography, Tooltip, IconButton,Grid,TextField,
+  Button, Box, Container, Typography, Tooltip, IconButton, Grid, TextField,
   //FormControl, MenuItem, Select, InputLabel, Radio, RadioGroup, FormControlLabel,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 } from '@mui/material';
@@ -12,13 +12,18 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Formik, Form } from 'formik';
+import * as Yup from 'yup';
+import '../components/Shake.css';
 const PropertyRights = () => {
   const [formData, setFormData] = useState({
-   
-    propertyrights:""
-    
-  });
 
+    propertyrights: ""
+
+  });
+  const validationSchema = Yup.object().shape({
+    propertyrights: Yup.string().required('Property Rights is required')
+  });
   const [tableData, setTableData] = useState([]);
   const [IDBASICPROPERTY, setIDBASICPROPERTY] = useState(0);
   const [Propertyrightsid, setPropertyrightsid] = useState(0);
@@ -29,31 +34,31 @@ const PropertyRights = () => {
     setIsEditable(true);
     setPropertyrightsid(row.PROPERTYRIGHTSID)
     setFormData({
-       propertyrights:row.RIGHTS || ""
+      propertyrights: row.RIGHTS || ""
     });
   };
   const handleDelete = async (row) => {
-   
-     try {
-      await axiosInstance.get("BBMPCITZAPI/NCL_PROPERTY_RIGHTS_TEMP_DEL?EIDAPPNO="+JSON.parse(sessionStorage.getItem('EIDAPPNO'))+"&RIGHTSID="+row.PROPERTYRIGHTSID+"&ID_BASIC_PROPERTY="+IDBASICPROPERTY+"&ULBCODE="+555+"&PROPERTYCODE="+JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')))
-      
-     const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO='+JSON.parse(sessionStorage.getItem('EIDAPPNO'))+'&Propertycode='+JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+'');
-     sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
-    await toast.error("Details Deleted Successfully", {
-       position: "top-right",
-       autoClose: 5000,
-       hideProgressBar: false,
-       closeOnClick: true,
-       pauseOnHover: true,
-       draggable: true,
-       progress: undefined,
-     });
-     setTimeout( async() => {
-      await  fetchData();
-   //    handleNavigation()
+
+    try {
+      await axiosInstance.get("BBMPCITZAPI/NCL_PROPERTY_RIGHTS_TEMP_DEL?EIDAPPNO=" + JSON.parse(sessionStorage.getItem('EIDAPPNO')) + "&RIGHTSID=" + row.PROPERTYRIGHTSID + "&ID_BASIC_PROPERTY=" + IDBASICPROPERTY + "&ULBCODE=" + 555 + "&PROPERTYCODE=" + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')))
+
+      const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=' + JSON.parse(sessionStorage.getItem('EIDAPPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
+      sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
+      await toast.error("Details Deleted Successfully", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      setTimeout(async () => {
+        await fetchData();
+        //    handleNavigation()
       }, 2000);
-     }
-     catch(error){
+    }
+    catch (error) {
       toast.error("Error saving data!" + error, {
         position: "top-right",
         autoClose: 5000,
@@ -64,262 +69,276 @@ const PropertyRights = () => {
         progress: undefined,
       });
       setTimeout(() => {
-        navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
+        navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
       }, 2000);
-     }
+    }
   };
 
 
   const { t } = useTranslation();
 
-  
+
   const handleChange = async (e) => {
     const { name, value } = e.target;
-   
+
     setFormData({
       ...formData,
       [name]: value
     });
-    
+
   };
-  
+
   const fetchData = async () => {
     const response1 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
-        const {  Table1=[], Table11=[]  } = response1.data;
-        const tableItem = Table1.length > 0 ? Table1[0] : [];
-        const table1Item = Table11.length > 0 ? Table11 : [];
-        setTableData(table1Item);
-        setIDBASICPROPERTY(tableItem.ID_BASIC_PROPERTY)
+    const { Table1 = [], Table11 = [] } = response1.data;
+    const tableItem = Table1.length > 0 ? Table1[0] : [];
+    const table1Item = Table11.length > 0 ? Table11 : [];
+    setTableData(table1Item);
+    setIDBASICPROPERTY(tableItem.ID_BASIC_PROPERTY)
   }
   useEffect(() => {
     fetchData();
   }, []);
   const handleSubmit = async (e) => {
-    
-    e.preventDefault();
-    if(isEditable === false){
-   const data = {
-    rights: formData.propertyrights,
-    propertycode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
-    createdby: "crc",
-    ulbcode:555,
-    eidappno:JSON.parse(sessionStorage.getItem('EIDAPPNO'))
-   }
-   try {
-    await axiosInstance.post("BBMPCITZAPI/NCL_PROPERTY_RIGHTS_TEMP_INS?ID_BASIC_PROPERTY="+IDBASICPROPERTY,data)
-    
-   const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO='+JSON.parse(sessionStorage.getItem('EIDAPPNO'))+'&Propertycode='+JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+'');
-   sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
-  await toast.success("Details Saved Successfully", {
-     position: "top-right",
-     autoClose: 5000,
-     hideProgressBar: false,
-     closeOnClick: true,
-     pauseOnHover: true,
-     draggable: true,
-     progress: undefined,
-   });
-   setTimeout( async() => {
-    
-    await  fetchData();
- //    handleNavigation()
-    }, 2000);
-   }
-   catch(error){
-    toast.error("Error saving data!" + error, {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-    setTimeout(() => {
-      navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
-    }, 2000);
-   }
-  }
-   else {
-    const data = {
-      rights: formData.propertyrights,
-      propertyrightsid:Propertyrightsid,
-      propertycode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
-      createdby: "crc",
-      ulbcode:555,
-      eidappno:JSON.parse(sessionStorage.getItem('EIDAPPNO'))
-     }
-     try {
-      await axiosInstance.post("BBMPCITZAPI/NCL_PROPERTY_RIGHTS_TEMP_UPD?ID_BASIC_PROPERTY="+IDBASICPROPERTY,data)
-      
-     const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO='+JSON.parse(sessionStorage.getItem('EIDAPPNO'))+'&Propertycode='+JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+'');
-     sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
-    await toast.success("Details Updated Successfully", {
-       position: "top-right",
-       autoClose: 5000,
-       hideProgressBar: false,
-       closeOnClick: true,
-       pauseOnHover: true,
-       draggable: true,
-       progress: undefined,
-     });
-     setTimeout( async() => {
-      setIsEditable(false);
-      await  fetchData();
-   //    handleNavigation()
-      }, 2000);
-     }
-     catch(error){
-      toast.error("Error saving data!" + error, {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-      setTimeout(() => {
-        navigate('/ErrorPage', { state: { errorMessage: error.message,errorLocation:window.location.pathname } });
-      }, 2000);
-     }
-   }
+
+
+    if (isEditable === false) {
+      const data = {
+        rights: formData.propertyrights,
+        propertycode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
+        createdby: "crc",
+        ulbcode: 555,
+        eidappno: JSON.parse(sessionStorage.getItem('EIDAPPNO'))
+      }
+      try {
+        await axiosInstance.post("BBMPCITZAPI/NCL_PROPERTY_RIGHTS_TEMP_INS?ID_BASIC_PROPERTY=" + IDBASICPROPERTY, data)
+
+        const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=' + JSON.parse(sessionStorage.getItem('EIDAPPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
+        sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
+        await toast.success("Details Saved Successfully", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        setTimeout(async () => {
+
+          await fetchData();
+          //    handleNavigation()
+        }, 2000);
+      }
+      catch (error) {
+        toast.error("Error saving data!" + error, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        setTimeout(() => {
+          navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
+        }, 2000);
+      }
+    }
+    else {
+      const data = {
+        rights: formData.propertyrights,
+        propertyrightsid: Propertyrightsid,
+        propertycode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
+        createdby: "crc",
+        ulbcode: 555,
+        eidappno: JSON.parse(sessionStorage.getItem('EIDAPPNO'))
+      }
+      try {
+        await axiosInstance.post("BBMPCITZAPI/NCL_PROPERTY_RIGHTS_TEMP_UPD?ID_BASIC_PROPERTY=" + IDBASICPROPERTY, data)
+
+        const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=' + JSON.parse(sessionStorage.getItem('EIDAPPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
+        sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
+        await toast.success("Details Updated Successfully", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        setTimeout(async () => {
+          setIsEditable(false);
+          await fetchData();
+          //    handleNavigation()
+        }, 2000);
+      }
+      catch (error) {
+        toast.error("Error saving data!" + error, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        setTimeout(() => {
+          navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
+        }, 2000);
+      }
+    }
   };
- 
+
 
   const back = () => {
     navigate('/OwnerDetails');
   };
- 
+
   const handleNavigation = () => {
-   
-      navigate('/DocumentUploadPage');
-  
+
+    navigate('/DocumentUploadPage');
+
   };
 
   console.log(formData.propertyType);
 
   return (
     <Container maxWidth="lg">
-         <ToastContainer/>
+      <ToastContainer />
       <Box sx={{ backgroundColor: '#f0f0f0', padding: 4, borderRadius: 2, mt: 8 }}>
-        <form onSubmit={handleSubmit}>
-          <Typography
-            variant="h3"
-            align="center"
-            gutterBottom
-            sx={{
-              fontWeight: 'bold',
-              fontFamily: "sans-serif",
-              marginBottom: 3,
-              color: '#',
-              fontSize: {
-                xs: '1.5rem',
-                sm: '2rem',
-                md: '2.5rem',
-              }
-            }}
-          >
-            Property Rights
-          </Typography>
-          <Grid container spacing={2} alignItems="center">
-      <Grid item xs={9}>
-        <TextField
-          fullWidth
-          label="Property Rights:"
-          name="propertyrights"
-          value={formData.propertyrights}
-          onChange={handleChange}
-          InputProps={{
-            endAdornment: (
-              <Tooltip title={t("propertyEIDInfo")}>
-                <IconButton color="primary">
-                  <InfoIcon />
-                </IconButton>
-              </Tooltip>
-            )
-          }}
-        />
-      </Grid>
-      {isEditable && (
-      <Grid item xs={3} style={{ display: 'flex', alignItems: 'center' }}>
-        <Button
-          variant="contained"
-          color="warning"
-          type="submit"
-          style={{ height: '100%' }}
+        <Formik
+          initialValues={formData}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
+          validateOnChange={handleChange}
+          enableReinitialize
         >
-          Update
-        </Button>
-      </Grid>
-      )}
-       {(isEditable === false) && (
-      <Grid item xs={3} style={{ display: 'flex', alignItems: 'center' }}>
-      <Button
-        variant="contained"
-        color="success"
-        type="submit"
-        style={{ height: '100%' }}
-      >
-        Save
-      </Button>
-    </Grid>
-       )}
-    </Grid>
-          <TableContainer component={Paper} sx={{ mt: 4 }}>
-            <Table>
-              <TableHead>
-                <TableRow>
-               
-                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold',color:'#FFFFFF' }}>PROPERTY RIGHTS NO</TableCell>
-                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold',color:'#FFFFFF' }}>PROPERTY RIGHTS</TableCell>
-                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold' ,color:'#FFFFFF'}}>EDIT</TableCell>
-                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold',color:'#FFFFFF' }}>DELETE</TableCell>
-                
-                </TableRow>
-              </TableHead>
-              <TableBody>
-              {tableData.length === 0 ? (
-        <TableRow>
-          <TableCell colSpan={10} align="center">
-            No data available
-          </TableCell>
-        </TableRow>
-      ) : (
-        tableData.map((row) => (
-          <TableRow key={row.id}>
-            <TableCell>{row.PROPERTYRIGHTSID}</TableCell>
-            <TableCell>{row.RIGHTS}</TableCell>
-            <TableCell>
-                  <Tooltip title="Edit">
-                    <IconButton color="primary" onClick={() => handleEdit(row)}>
-                      <EditIcon />
-                    </IconButton>
-                  </Tooltip>
-                </TableCell>
-                <TableCell>
-                  <Tooltip title="Delete">
-                    <IconButton color="secondary" onClick={() => handleDelete(row)}>
-                      <DeleteIcon />
-                    </IconButton>
-                  </Tooltip>
-                </TableCell>
-          </TableRow>
-        ))
-      )}
-    </TableBody>
-  </Table>
-</TableContainer>
+          {({ errors, touched, handleBlur }) => (
+            <Form>
+              <Typography
+                variant="h3"
+                align="center"
+                gutterBottom
+                sx={{
+                  fontWeight: 'bold',
+                  fontFamily: "sans-serif",
+                  marginBottom: 3,
+                  color: '#',
+                  fontSize: {
+                    xs: '1.5rem',
+                    sm: '2rem',
+                    md: '2.5rem',
+                  }
+                }}
+              >
+                Property Rights
+              </Typography>
+              <Grid container spacing={2} alignItems="center">
+                <Grid item xs={9}>
+                  <TextField
+                    fullWidth
+                    label="Property Rights:"
+                    name="propertyrights"
+                    value={formData.propertyrights}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    className={touched.propertyrights && !!errors.propertyrights ? 'shake' : ''}
+                    error={touched.propertyrights && !!errors.propertyrights}
+                    helperText={touched.propertyrights && errors.propertyrights}
+                    InputProps={{
+                      endAdornment: (
+                        <Tooltip title={t("propertyEIDInfo")}>
+                          <IconButton color="primary">
+                            <InfoIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )
+                    }}
+                  />
+                </Grid>
+                {isEditable && (
+                  <Grid item xs={3} style={{ display: 'flex', alignItems: 'center' }}>
+                    <Button
+                      variant="contained"
+                      color="warning"
+                      type="submit"
+                      style={{ height: '100%' }}
+                    >
+                      Update
+                    </Button>
+                  </Grid>
+                )}
+                {(isEditable === false) && (
+                  <Grid item xs={3} style={{ display: 'flex', alignItems: 'center' }}>
+                    <Button
+                      variant="contained"
+                      color="success"
+                      type="submit"
+                      style={{ height: '100%' }}
+                    >
+                      Save
+                    </Button>
+                  </Grid>
+                )}
+              </Grid>
+              <TableContainer component={Paper} sx={{ mt: 4 }}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
 
-          <Box display="flex" justifyContent="center" gap={2} mt={3}>
-            <Button variant="contained" color="primary" onClick={back}>
-              Previous
-            </Button>
-            <Button variant="contained" color="primary" onClick={handleNavigation}>
-              Next
-            </Button>
-          </Box>
-        </form>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>PROPERTY RIGHTS NO</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>PROPERTY RIGHTS</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>EDIT</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>DELETE</TableCell>
+
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {tableData.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={10} align="center">
+                          No data available
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      tableData.map((row) => (
+                        <TableRow key={row.id}>
+                          <TableCell>{row.PROPERTYRIGHTSID}</TableCell>
+                          <TableCell>{row.RIGHTS}</TableCell>
+                          <TableCell>
+                            <Tooltip title="Edit">
+                              <IconButton color="primary" onClick={() => handleEdit(row)}>
+                                <EditIcon />
+                              </IconButton>
+                            </Tooltip>
+                          </TableCell>
+                          <TableCell>
+                            <Tooltip title="Delete">
+                              <IconButton color="secondary" onClick={() => handleDelete(row)}>
+                                <DeleteIcon />
+                              </IconButton>
+                            </Tooltip>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+
+              <Box display="flex" justifyContent="center" gap={2} mt={3}>
+                <Button variant="contained" color="primary" onClick={back}>
+                  Previous
+                </Button>
+                <Button variant="contained" color="primary" onClick={handleNavigation}>
+                  Next
+                </Button>
+              </Box>
+            </Form>
+          )}
+        </Formik>
       </Box>
     </Container>
   );
