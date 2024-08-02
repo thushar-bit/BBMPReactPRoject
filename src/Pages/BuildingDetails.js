@@ -17,14 +17,14 @@ import * as Yup from 'yup';
 import '../components/Shake.css';
 const BuildingDetails = () => {
   const [formData, setFormData] = useState({
-    BuildingNumber: 0,
+    BuildingNumber: "",
     BuildingName: '',
     floornumber: "",
     features: '',
     Typeofuse: '',
     yearOfConstruction: '',
-    SelfuseArea: 0,
-    RentedArea: 0,
+    SelfuseArea: "",
+    RentedArea: "",
     TotalArea: '',
     BesomCustomerID: '',
     BWSSBMeterNumber: ''
@@ -150,10 +150,10 @@ const BuildingDetails = () => {
       featureheadid: formData.features,
       featureid: formData.Typeofuse,
       builtyear: formData.yearOfConstruction,
-      rrno: formData.BesomCustomerID,
+      rrno: formData.BesomCustomerID || null,
       watermeterno: formData.BWSSBMeterNumber,
       buildingnumberid: formData.BuildingNumber,
-      buildingblockname: formData.BuildingName,
+      buildingblockname: formData.BuildingName || null,
       ownUseArea: formData.SelfuseArea,
       rentedArea: formData.RentedArea,
       eidappno: JSON.parse(sessionStorage.getItem('EIDAPPNO'))

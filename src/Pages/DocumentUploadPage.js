@@ -138,6 +138,7 @@ const DocumentUploadPage = () => {
   };
   const handleFileDelete = () => {
     setSelectedFile(null);
+    setfileExtension('');
   }
   const handleSubmit = async (e) => {
 
@@ -146,6 +147,21 @@ const DocumentUploadPage = () => {
     if (selectedFile) {
       propertyphoto2 = await getPropertyphoto(selectedFile);
     }
+    if(fileExtension.length === 0)
+      {
+        toast.error("Please Upload the Required Document");
+        return
+      }
+      if(selectedDate === null)
+        {
+        toast.error("Please Provide Document Registed Date");
+        return
+      }
+      const today = new Date();
+      if (new Date(selectedDate) > today) {
+        toast.error("Document Registered Date cannot be greater than today");
+        return;
+      }
     const data = {
       ordernumber: formData.DocumentNumber,
       createdby: "crc",

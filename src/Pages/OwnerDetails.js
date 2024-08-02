@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   Button, Box, Container, Typography, Grid, TextField, Radio, RadioGroup, FormControlLabel, FormControl,
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, MenuItem, Select, InputLabel
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, MenuItem, Select, InputLabel, CircularProgress
 } from '@mui/material';
 //import InfoIcon from '@mui/icons-material/Info';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +21,7 @@ const OwnerDetails = () => {
   const [tablesdata9, setTablesData9] = useState([]);
   const [tablesdata8, setTableData8] = useState([]);
   const [OwnerNumber, setOwnerNumber] = useState("");
+  const [loading, setLoading] = useState(false);
   const [editableIndex, setEditableIndex] = useState(-1);
   const [otpFieldsVisible, setOtpFieldsVisible] = useState(false);
   const [alertShown, setAlertShown] = useState(false);
@@ -33,7 +34,7 @@ const OwnerDetails = () => {
   const [countdownInterval, setCountdownInterval] = useState(null);
 
   const handleChange = (e) => {
-
+debugger
     const { name, value } = e.target;
 
     if (name === "MOBILENUMBER") {
@@ -63,11 +64,11 @@ const OwnerDetails = () => {
       [name]: value,
     }));
   };
-  React.useEffect(() => {
-    return () => {
-      clearInterval(countdownInterval);
-    };
-  }, [countdownInterval]);
+  // React.useEffect(() => {
+  //   return () => {
+  //     clearInterval(countdownInterval);
+  //   };
+  // }, [countdownInterval]);
   const handleGenerateOtp = async (index) => {
     try {
       const response = await axiosInstance.get("E-KYCAPI/SendOTP?OwnerMobileNo=" + formData.MOBILENUMBER);
@@ -197,31 +198,44 @@ const OwnerDetails = () => {
         toast.error("Verify the OTP!")
         return
       }
+      if (formData.IDENTIFIERTYPEID === null || formData.IDENTIFIERTYPEID === undefined) 
+        {
+          toast.error("Please Select RelationShip Type")
+          return
+      }
       if (formData.IDENTIFIERTYPEID.length === 0) {
         toast.error("Please Select RelationShip Type")
         return
       }
+      if (formData.IDENTIFIERNAME === null || formData.IDENTIFIERNAME === undefined) 
+        {
+          toast.error("Please enter the Relation Name")
+          return
+        }
       if (formData.IDENTIFIERNAME.length <= 0) {
         toast.error("Please enter the Relation Name")
         return
       }
-      if (formData.MOBILENUMBER != null || formData.MOBILENUMBER != undefined) {
-        if (formData.MOBILENUMBER.length <= 0 && formData.MOBILENUMBER.length < 10) {
+      
+      if (formData.MOBILENUMBER === null || formData.MOBILENUMBER === undefined) 
+        {
           toast.error("Please enter a valid Mobile Number")
           return
-        }
       }
-
+      if (formData.MOBILENUMBER.length <= 0 && formData.MOBILENUMBER.length < 10) {
+        toast.error("Please enter a valid Mobile Number")
+        return
+      }
 
 
       setEditableIndex(-1);
       const params = {
         EIDAPPNO: JSON.parse(sessionStorage.getItem('EIDAPPNO')),
-        propertyCode: formData.PROPERTYCODE || "",
-        ownerNumber: formData.OWNERNUMBER || "",
-        IDENTIFIERTYPE: formData.IDENTIFIERTYPEID || "",
-        IDENTIFIERNAME_EN: formData.IDENTIFIERNAME || "",
-        MOBILENUMBER: formData.MOBILENUMBER || "",
+        propertyCode: formData.PROPERTYCODE,
+        ownerNumber: formData.OWNERNUMBER,
+        IDENTIFIERTYPE: formData.IDENTIFIERTYPEID || null,
+        IDENTIFIERNAME_EN: formData.IDENTIFIERNAME || null,
+        MOBILENUMBER: formData.MOBILENUMBER || "0",
         MOBILEVERIFY: formData.MOBILEVERIFY !== "" ? formData.MOBILEVERIFY : "NOT VERIFIED",
         loginId: 'crc'
       };
@@ -239,6 +253,7 @@ const OwnerDetails = () => {
 
   };
   const fetchData = async () => {
+    setLoading(true);
     try {
       const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
       const response2 = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
@@ -249,6 +264,7 @@ const OwnerDetails = () => {
       setTableData8(Table8.length > 0 ? Table8 : [])
       setTableData(Table5.length > 0 ? Table5 : []);
       setTablesData9(NCLTABLE9.length > 0 ? NCLTABLE9 : []);
+      setLoading(false);
     } catch (error) {
       toast.error("Error Getting data!" + error, {
         position: "top-right",
@@ -280,11 +296,11 @@ const OwnerDetails = () => {
     //  toast.error("E-KYC was not successfully with txnno:",txnno)
     fetchData();
   }, [location.search]);
-  React.useEffect(() => {
-    tablesdata9.forEach(row => {
-      updateNameMatchStatus(row);
-    });
-  }, [tablesdata9])
+  // React.useEffect(() => {
+  //   tablesdata9.forEach(row => {
+  //     updateNameMatchStatus(row);
+  //   });
+  // }, [tablesdata9])
   const handleSubmit = (e) => {
 
     // Submit form data logic here
@@ -350,7 +366,29 @@ const OwnerDetails = () => {
     return nameMatchStatus;
   };
 
+  function GradientCircularProgress() {
+    return (
+      <React.Fragment>
+        <svg width={0} height={0}>
+          <defs>
+            <linearGradient id="my_gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#e01cd5" />
+              <stop offset="100%" stopColor="#1CB5E0" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <CircularProgress sx={{ 'svg circle': { stroke: 'url(#my_gradient)' } }} />
+      </React.Fragment>
+    );
+  }
 
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <GradientCircularProgress />
+      </Box>
+    );
+  }
   return (
     <Container maxWidth="xl">
       <ToastContainer />

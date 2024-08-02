@@ -18,27 +18,27 @@ const AreaDimension = () => {
     south: '',
     ns: "",
     ew: "",
-    plotAreaSqFt: 0,
-    plotAreaSqMt: 0,
-    builtUpAreaSqFt: 0,
-    builtUpAreaSqMt: 0,
+    plotAreaSqFt: "",
+    plotAreaSqMt: "",
+    builtUpAreaSqFt: "",
+    builtUpAreaSqMt: "0",
     modify: 'no',
     modifycheckbandi: 'no',
     oddSite: 'EVEN',
     propertyType: DropdownValue,
-    ApartCarpetArea: 0,
-    ApartAddtionalArea: 0,
-    ApartSuperBuiltArea: 0,
-    cal1: 0,
-    cal2: 0,
-    cal3: 0,
-    cal4: 0,
-    cal5: 0,
-    cal6: 0,
-    cal7: 0,
-    cal8: 0,
-    sqFt: 0,
-    sqMt: 0
+    ApartCarpetArea: "0",
+    ApartAddtionalArea: "0",
+    ApartSuperBuiltArea: "0",
+    cal1: "0",
+    cal2: "0",
+    cal3: "0",
+    cal4: "0",
+    cal5: "0",
+    cal6: "0",
+    cal7: "0",
+    cal8: "0",
+    sqFt: "0",
+    sqMt: "0"
   });
   const [isEditable, setIsEditable] = useState(false);
   const [isEditablecheckbandhi, setIsEditablecheckbandi] = useState(false);
@@ -48,15 +48,21 @@ const AreaDimension = () => {
 
     const { name, value } = e.target;
     const updatedValue = parseFloat(value) || 0;
-
+debugger
     if (name === 'ns' || name === 'ew') {
       const nsValue = name === 'ns' ? updatedValue : formData.ns;
       const ewValue = name === 'ew' ? updatedValue : formData.ew;
+      if(nsValue !== 0&& ewValue !== 0){
       const plotAreaSqFt = Math.round((nsValue > 0 ? nsValue : 1) * (ewValue > 0 ? ewValue : 1) * 100) / 100;
       const plotAreaSqMt = Math.round(plotAreaSqFt * 0.092903 * 100) / 100;
       formData.plotAreaSqFt = plotAreaSqFt;
       formData.plotAreaSqMt = plotAreaSqMt;
-
+      }
+      else 
+      {
+        formData.plotAreaSqFt = 0;
+        formData.plotAreaSqMt = 0;
+      }
     }
     if (name.startsWith('cal')) {
 
@@ -123,27 +129,27 @@ const AreaDimension = () => {
 
       setFormData((prevFormData) => ({
         ...prevFormData,
-        east: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_EAST || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_EAST || "" : '',
-        west: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_WEST || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_WEST || "" : '',
-        north: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_NORTH || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_NORTH || "" : '',
-        south: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_SOUTH || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_SOUTH || "" : '',
-        ns: NCLTable5Data.length > 0 ? NCLTable5Data[0].NORTHSOUTH || 0 : Table3Data.length > 0 ? Table3Data[0].NORTHSOUTH || "" : 0,
-        ew: NCLTable5Data.length > 0 ? NCLTable5Data[0].EASTWEST || 0 : Table3Data.length > 0 ? Table3Data[0].EASTWEST || "" : 0,
-        plotAreaSqFt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREAFT || 0 : Table2Data.length > 0 ? Table2Data[0].SITEAREAFT || "" : 0,
-        plotAreaSqMt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREA || 0 : Table2Data.length > 0 ? Table2Data[0].SITEAREA || "" : 0,
-        builtUpAreaSqFt: NCLTable2Data.length > 0 ? NCLTable2Data[0].BUILDINGAREAFT || 0 : Table2Data.length > 0 ? Table2Data[0].BUILDINGAREAFT || 0 : 0,
-        builtUpAreaSqMt: NCLTable2Data.length > 0 ? NCLTable2Data[0].BUILDINGAREA || 0 : Table2Data.length > 0 ? Table2Data[0].BUILDINGAREA || 0 : 0,
-        ApartCarpetArea: NCLTable13Data.length > 0 ? NCLTable13Data[0].CARPETAREA || 0 : Table7Data.length > 0 ? Table7Data[0].CARPETAREA || "" : 0,
-        ApartAddtionalArea: NCLTable13Data.length > 0 ? NCLTable13Data[0].ADDITIONALAREA || 0 : Table7Data.length > 0 ? Table7Data[0].ADDITIONALAREA || "" : 0,
-        ApartSuperBuiltArea: NCLTable13Data.length > 0 ? NCLTable13Data[0].SUPERBUILTUPAREA || 0 : Table7Data.length > 0 ? Table7Data[0].SUPERBUILTUPAREA || "" : 0,
-        cal1: NCLTable5Data.length > 0 ? NCLTable5Data[0].EWODDSITE1FT || 0 : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || "" : 0,
-        cal2: NCLTable5Data.length > 0 ? NCLTable5Data[0].EWODDSITE2FT || 0 : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || "" : 0,
-        cal3: NCLTable5Data.length > 0 ? NCLTable5Data[0].EWODDSITE3FT || 0 : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || "" : 0,
-        cal4: NCLTable5Data.length > 0 ? NCLTable5Data[0].EWODDSITE4FT || 0 : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || "" : 0,
-        cal5: NCLTable5Data.length > 0 ? NCLTable5Data[0].NSODDSITE1FT || 0 : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || "" : 0,
-        cal6: NCLTable5Data.length > 0 ? NCLTable5Data[0].NSODDSITE2FT || 0 : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || "" : 0,
-        cal7: NCLTable5Data.length > 0 ? NCLTable5Data[0].NSODDSITE3FT || 0 : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || "" : 0,
-        cal8: NCLTable5Data.length > 0 ? NCLTable5Data[0].NSODDSITE4FT || 0 : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || "" : 0,
+        east: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_EAST || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_EAST || '' : '',
+        west: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_WEST || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_WEST || '' : '',
+        north: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_NORTH || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_NORTH || '' : '',
+        south: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_SOUTH || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_SOUTH || '' : '',
+        ns: NCLTable5Data.length > 0 ? NCLTable5Data[0].NORTHSOUTH || '' : Table3Data.length > 0 ? Table3Data[0].NORTHSOUTH || '' : '',
+        ew: NCLTable5Data.length > 0 ? NCLTable5Data[0].EASTWEST || '' : Table3Data.length > 0 ? Table3Data[0].EASTWEST || '' : '',
+        plotAreaSqFt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREAFT || '' : Table2Data.length > 0 ? Table2Data[0].SITEAREAFT || '' : '',
+        plotAreaSqMt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREA || '' : Table2Data.length > 0 ? Table2Data[0].SITEAREA || '' : '',
+        builtUpAreaSqFt: NCLTable2Data.length > 0 ? NCLTable2Data[0].BUILDINGAREAFT || '' : Table2Data.length > 0 ? Table2Data[0].BUILDINGAREAFT || '' : '',
+        builtUpAreaSqMt: NCLTable2Data.length > 0 ? NCLTable2Data[0].BUILDINGAREA || '' : Table2Data.length > 0 ? Table2Data[0].BUILDINGAREA || '' : '',
+        ApartCarpetArea: NCLTable13Data.length > 0 ? NCLTable13Data[0].CARPETAREA || '' : Table7Data.length > 0 ? Table7Data[0].CARPETAREA || '' : '',
+        ApartAddtionalArea: NCLTable13Data.length > 0 ? NCLTable13Data[0].ADDITIONALAREA || '' : Table7Data.length > 0 ? Table7Data[0].ADDITIONALAREA || '' : '',
+        ApartSuperBuiltArea: NCLTable13Data.length > 0 ? NCLTable13Data[0].SUPERBUILTUPAREA || 0 : Table7Data.length > 0 ? Table7Data[0].SUPERBUILTUPAREA || '' : '',
+        cal1: NCLTable5Data.length > 0 ? NCLTable5Data[0].EWODDSITE1FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
+        cal2: NCLTable5Data.length > 0 ? NCLTable5Data[0].EWODDSITE2FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
+        cal3: NCLTable5Data.length > 0 ? NCLTable5Data[0].EWODDSITE3FT || '': Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
+        cal4: NCLTable5Data.length > 0 ? NCLTable5Data[0].EWODDSITE4FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
+        cal5: NCLTable5Data.length > 0 ? NCLTable5Data[0].NSODDSITE1FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
+        cal6: NCLTable5Data.length > 0 ? NCLTable5Data[0].NSODDSITE2FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
+        cal7: NCLTable5Data.length > 0 ? NCLTable5Data[0].NSODDSITE3FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
+        cal8: NCLTable5Data.length > 0 ? NCLTable5Data[0].NSODDSITE4FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
       }));
     }
     catch (error) {
@@ -179,8 +185,8 @@ const AreaDimension = () => {
 
   }
   const handleSubmit = async (e) => {
-
-
+e.preventDefault();
+debugger
     if (isEditablecheckbandhi === true && formData.propertyType !== "flats" && formData.propertyType !== "select") //only checkbandhi data
     {
       const checkbandhidata = {
@@ -236,22 +242,22 @@ const AreaDimension = () => {
     ) {
       const data = {
         propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
-        siteorbuilding: formData.propertyType || "",
-        evenoroddsite: formData.oddSite || "",
-        sitearea: formData.plotAreaSqMt || "",
-        siteareaft: formData.plotAreaSqFt || "",
-        //  buildingarea: formData.builtUpAreaSqMt,
-        //  buildingareaft: formData.builtUpAreaSqFt,
-        eastwest: formData.ew.toString(),
-        northsouth: formData.ns.toString(),
-        ewoddsitE1FT: formData.cal1 || "",
-        ewoddsitE2FT: formData.cal2 || "",
-        ewoddsitE3FT: formData.cal3 || "",
-        ewoddsitE4FT: formData.cal4 || "",
-        nsoddsitE1FT: formData.cal5 || "",
-        nsoddsitE2FT: formData.cal6 || "",
-        nsoddsitE3FT: formData.cal7 || "",
-        nsoddsitE4FT: formData.cal8 || "",
+        siteorbuilding: formData.propertyType || null,
+        evenoroddsite: formData.oddSite || null,
+        sitearea: formData.plotAreaSqMt || null,
+        siteareaft: formData.plotAreaSqFt || null,
+          buildingarea: formData.builtUpAreaSqMt || null,
+          buildingareaft: formData.builtUpAreaSqFt || null,
+        eastwest: formData.ew.toString() || null,
+        northsouth: formData.ns.toString() || null,
+        ewoddsitE1FT: formData.cal1 || null,
+        ewoddsitE2FT: formData.cal2 || null,
+        ewoddsitE3FT: formData.cal3 || null,
+        ewoddsitE4FT: formData.cal4 || null,
+        nsoddsitE1FT: formData.cal5 || null,
+        nsoddsitE2FT: formData.cal6 || null,
+        nsoddsitE3FT: formData.cal7 || null,
+        nsoddsitE4FT: formData.cal8 || null,
         loginId: "crc",
         eidappno: JSON.parse(sessionStorage.getItem('EIDAPPNO'))
       };
@@ -300,9 +306,9 @@ const AreaDimension = () => {
     {
       const data = {
         propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
-        carpetarea: formData.ApartCarpetArea,
-        additionalarea: formData.ApartAddtionalArea,
-        superbuiltuparea: formData.ApartSuperBuiltArea,
+        carpetarea: formData.ApartCarpetArea || "0",
+        additionalarea: formData.ApartAddtionalArea || "0",
+        superbuiltuparea: formData.ApartSuperBuiltArea || "0",
         loginId: "crc",
         eidappno: JSON.parse(sessionStorage.getItem('EIDAPPNO'))
       };
@@ -323,7 +329,11 @@ const AreaDimension = () => {
         });
         setTimeout(async () => {
           await fetchData();
-          //    handleNavigation()
+          setIsEditable(false);
+          setFormData({
+            ...formData,
+            modify: 'no',
+          });
         }, 2000);
 
       } catch (error) {

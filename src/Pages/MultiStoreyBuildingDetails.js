@@ -14,7 +14,7 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import '../components/Shake.css';
 const MultiStoreyBuildingDetails = () => {
-  const [ownersharetype, setOwnerSharetype] = useState("Owner Share Area(in Sq.mts.) :")
+  const [ownersharetype, setOwnerSharetype] = useState("")
   const [formData, setFormData] = useState({
 
     BlockName: '',
@@ -140,18 +140,21 @@ const MultiStoreyBuildingDetails = () => {
       setTablesData6(table17Item);
       var sharetype = "0";
       var ownersharetypeValue = "";
-
+debugger
       if (table13Item.PLOTAREAOWNERSHARE_AREA !== 0) {
         ownersharetypeValue = table13Item.PLOTAREAOWNERSHARE_AREA
         sharetype = "1";
+        setOwnerSharetype("Owner Share Area(in Sq.mts.) :")
       }
       else if (table13Item.PLOTAREAOWNERSHARE_FRACTION !== 0) {
         ownersharetypeValue = table13Item.PLOTAREAOWNERSHARE_FRACTION
-        sharetype = "2";
+        sharetype = "3";
+          setOwnerSharetype("Owner Share Number : ")
       }
       else if (table13Item.PLOTAREAOWNERSHARE_NOS !== 0) {
         ownersharetypeValue = table13Item.PLOTAREAOWNERSHARE_NOS
-        sharetype = "3";
+        sharetype = "2";
+    setOwnerSharetype("Owners Share Percent (in Percentile) : ")
       }
       else {
         ownersharetypeValue = ""
@@ -211,11 +214,11 @@ const MultiStoreyBuildingDetails = () => {
       plotareaownersharE_AREA: formData.SelectOwnerShareType === "1" ? formData.OwnersShareAreaSqmts : 0,
       plotareaownersharE_NOS: formData.SelectOwnerShareType === "2" ? formData.OwnersShareAreaSqmts : 0,
       plotareaownersharE_FRACTION: formData.SelectOwnerShareType === "3" ? formData.OwnersShareAreaSqmts : 0,
-      parkingavailable: formData.ParkingFacility,
-      parkingunits: formData.ParkingFacility === "Y" ? formData.Totalnumberofparkingunits : 0,
+      parkingavailable: formData.ParkingFacility || null,
+      parkingunits:  formData.ParkingFacility === "Y" ? formData.Totalnumberofparkingunits || null : 0,
       blocknumber: formData.BlockName,
       flatno: formData.FlatNos,
-      parkingarea: formData.ParkingFacility === "Y" ? formData.TotalParkingArea : "0",
+      parkingarea: formData.ParkingFacility === "Y" ? formData.TotalParkingArea || null: "0",
       buildingusagetypeid: formData.Occupancy,
       ulbcode: 555,
       rrno: formData.BesomCustomerID,

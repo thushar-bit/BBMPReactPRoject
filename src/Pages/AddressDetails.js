@@ -61,6 +61,7 @@ const AddressDetails = () => {
 
   const navigate = useNavigate();
   const [selectedFile, setSelectedFile] = useState(null);
+  const [fileExtension, setfileExtension] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
   const [handlemapClicks, sethandlemapClicks] = useState(false);
@@ -138,6 +139,9 @@ const AddressDetails = () => {
     if (!isEditable) return;
     setSelectedFile(e.target.files[0]);
     const file = e.target.files[0];
+    const fileName = file.name;
+    const fileExtension = fileName.split('.').pop().toLowerCase();
+    setfileExtension(fileExtension);
     const maxSize = 200 * 1024;
     if (file && file.size > maxSize) {
       toast.error('File size exceeds 200 KB limit');
@@ -158,6 +162,7 @@ const AddressDetails = () => {
   const handleFileDelete = () => {
     setSelectedFile(null);
     setPreviewUrl(null);
+    setfileExtension('');
   };
   const handleAddressEdit = (e) => {
     const { name, value } = e.target;
@@ -195,12 +200,17 @@ const AddressDetails = () => {
 
   const handleSubmit = async () => {
     debugger
-    // 
+    
     var propertyphoto2 = "";
     if (isEditable) {
       if (selectedFile) {
         propertyphoto2 = await getPropertyphoto(selectedFile);
       }
+      if(fileExtension.length === 0){
+        toast.error("Please Upload the Property Photo");
+        return;
+      }
+      setLoading(true);
       const data = {
         propertyCode: formData.propertyNumber,
         streetid: formData.streetid,
@@ -223,8 +233,8 @@ const AddressDetails = () => {
         setSelectedFile(null);
         const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=' + JSON.parse(sessionStorage.getItem('EIDAPPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
         sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
-
-        await toast.success("Details Saved Successfully", {
+        setTimeout(() => {
+         toast.success("Details Saved Successfully", {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -233,11 +243,11 @@ const AddressDetails = () => {
           draggable: true,
           progress: undefined,
         });
-
+      }, 1000);
 
         setIsEditable(false);
         //await fetchData(); 
-
+        setLoading(false);
       } catch (error) {
         await toast.error("Error saving data ", error, {
           position: "top-right",

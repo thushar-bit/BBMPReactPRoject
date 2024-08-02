@@ -151,7 +151,7 @@ const ClassificationDocumentUploadPage = () => {
       const { Table19 = [] } = responeMaster.data;
       const { Table8: NCLTable8 = [], Table1: NCLTable1 = [] } = response2.data;
       setTableData(NCLTable8.length > 0 ? NCLTable8 : []);
-
+debugger
       setMasterTableData(Table19.length > 0 ? Table19 : [])
       setFormData((prevFormData) => ({
         ...prevFormData,
@@ -198,6 +198,7 @@ const ClassificationDocumentUploadPage = () => {
   };
   const handleFileDelete = () => {
     setSelectedFile(null);
+    setfileExtension('');
   }
   const handleSubmit = async (e) => {
 
@@ -206,6 +207,21 @@ const ClassificationDocumentUploadPage = () => {
     if (selectedFile) {
       propertyphoto2 = await getPropertyphoto(selectedFile);
     }
+    if(fileExtension.length === 0)
+      {
+        toast.error("Please Upload the Required Document");
+        return
+      }
+      if(selectedDate === null)
+        {
+        toast.error("Please Provide Document Registed Date");
+        return
+      }
+      const today = new Date();
+      if (new Date(selectedDate) > today) {
+        toast.error("Document Registered Date cannot be greater than today");
+        return;
+      }
     const data = {
       documentnumber: formData.DocumentNumber,
       createdby: "crc",
