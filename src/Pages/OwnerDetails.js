@@ -64,11 +64,11 @@ debugger
       [name]: value,
     }));
   };
-  // React.useEffect(() => {
-  //   return () => {
-  //     clearInterval(countdownInterval);
-  //   };
-  // }, [countdownInterval]);
+  React.useEffect(() => {
+    return () => {
+      clearInterval(countdownInterval);
+    };
+  }, [countdownInterval]);
   const handleGenerateOtp = async (index) => {
     try {
       const response = await axiosInstance.get("E-KYCAPI/SendOTP?OwnerMobileNo=" + formData.MOBILENUMBER);
@@ -296,11 +296,11 @@ debugger
     //  toast.error("E-KYC was not successfully with txnno:",txnno)
     fetchData();
   }, [location.search]);
-  // React.useEffect(() => {
-  //   tablesdata9.forEach(row => {
-  //     updateNameMatchStatus(row);
-  //   });
-  // }, [tablesdata9])
+  React.useEffect(() => {
+    tablesdata9.forEach(row => {
+      updateNameMatchStatus(row);
+    });
+  }, [tablesdata9])
   const handleSubmit = (e) => {
 
     // Submit form data logic here
