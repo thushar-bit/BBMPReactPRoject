@@ -63,7 +63,7 @@ const SiteDetails = () => {
   // const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
-
+debugger
     const data = {
       propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
       featureheadid: formData.features,
@@ -117,6 +117,7 @@ const SiteDetails = () => {
 
   }
   const fetchData = async () => {
+    debugger
     try {
       const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
       const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
@@ -125,7 +126,8 @@ const SiteDetails = () => {
       const table2Item = Table2.length > 0 ? Table2[0] : [];
       const table16Item = Table16.length > 0 ? Table16 : [];
       setTablesData2(table16Item);
-      if (table2Item.length > 0) {
+      debugger
+      if (table2Item) {
         if (table2Item.FEATUREHEADID !== null && table2Item.FEATUREHEADID !== "" && table2Item.FEATUREHEADID !== undefined) {
           const response3 = await axiosInstance.get(`BBMPCITZAPI/GetNPMMasterTable?FeaturesHeadID=${table2Item.FEATUREHEADID}`);
           if (response3.data.Table.length > 0) {
@@ -142,7 +144,7 @@ const SiteDetails = () => {
         }
       }
     } catch (error) {
-      toast.error("something went wrong")
+      toast.error("something went wrong",error)
       setTimeout(() => {
         navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
       }, 2000);

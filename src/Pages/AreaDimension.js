@@ -522,6 +522,7 @@ debugger
                     fullWidth
                     label="East"
                     name="east"
+                     type="number"
                     value={formData.east}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "standard" : "filled"}
@@ -542,6 +543,7 @@ debugger
                     fullWidth
                     label="West"
                     name="west"
+                     type="number"
                     value={formData.west}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "standard" : "filled"}
@@ -562,6 +564,7 @@ debugger
                     fullWidth
                     label="North"
                     name="north"
+                     type="number"
                     value={formData.north}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "standard" : "filled"}
@@ -582,6 +585,7 @@ debugger
                     fullWidth
                     label="South"
                     name="south"
+                     type="number"
                     value={formData.south}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "standard" : "filled"}
@@ -728,6 +732,7 @@ debugger
                     fullWidth
                     label="East"
                     name="east"
+                     type="number"
                     value={formData.east}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "standard" : "filled"}
@@ -748,6 +753,7 @@ debugger
                     fullWidth
                     label="West"
                     name="west"
+                     type="number"
                     value={formData.west}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "standard" : "filled"}
@@ -768,6 +774,7 @@ debugger
                     fullWidth
                     label="North"
                     name="north"
+                     type="number"
                     value={formData.north}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "standard" : "filled"}
@@ -788,6 +795,7 @@ debugger
                     fullWidth
                     label="South"
                     name="south"
+                     type="number"
                     value={formData.south}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "standard" : "filled"}
@@ -967,6 +975,7 @@ debugger
                       variant={isEditable ? "standard" : "filled"}
                       size="small"
                       name="cal1"
+                       type="number"
                       value={formData.cal1}
                       onChange={handleChange}
                       sx={{ width: '100px', borderColor: '#016767' }}
@@ -983,6 +992,7 @@ debugger
                       variant={isEditable ? "standard" : "filled"}
                       size="small"
                       name="cal2"
+                       type="number"
                       value={formData.cal2}
                       onChange={handleChange}
                       sx={{ width: '100px', borderColor: '#016767' }}
@@ -999,6 +1009,7 @@ debugger
                       variant={isEditable ? "standard" : "filled"}
                       size="small"
                       name="cal3"
+                       type="number"
                       value={formData.cal3}
                       onChange={handleChange}
                       sx={{ width: '100px', borderColor: '#016767' }}
@@ -1015,6 +1026,7 @@ debugger
                       variant={isEditable ? "standard" : "filled"}
                       size="small"
                       name="cal4"
+                       type="number"
                       value={formData.cal4}
                       onChange={handleChange}
                       sx={{ width: '100px', borderColor: '#016767' }}
@@ -1031,6 +1043,7 @@ debugger
                       variant={isEditable ? "standard" : "filled"}
                       size="small"
                       name="cal5"
+                       type="number"
                       value={formData.cal5}
                       onChange={handleChange}
                       sx={{ width: '100px', borderColor: '#016767' }}
@@ -1047,6 +1060,7 @@ debugger
                       variant={isEditable ? "standard" : "filled"}
                       size="small"
                       name="cal6"
+                       type="number"
                       value={formData.cal6}
                       onChange={handleChange}
                       sx={{ width: '100px', borderColor: '#016767' }}
@@ -1066,6 +1080,7 @@ debugger
                       variant={isEditable ? "standard" : "filled"}
                       size="small"
                       name="cal7"
+                       type="number"
                       value={formData.cal7}
                       onChange={handleChange}
                       sx={{ width: '100px', borderColor: '#016767' }}
@@ -1086,6 +1101,7 @@ debugger
                       variant={isEditable ? "standard" : "filled"}
                       size="small"
                       name="cal8"
+                       type="number"
                       value={formData.cal8}
                       onChange={handleChange}
                       sx={{ width: '100px', borderColor: '#016767' }}
@@ -1109,6 +1125,7 @@ debugger
                       variant="filled"
                       size="small"
                       name="sqFt"
+                       type="number"
                       value={formData.sqFt}
                       onChange={handleChange}
                       sx={{ width: '100px', borderColor: '#016767' }}
@@ -1128,6 +1145,7 @@ debugger
                       variant="filled"
                       size="small"
                       name="sqMt"
+                       type="number"
                       value={formData.sqMt}
                       onChange={handleChange}
                       InputProps={{

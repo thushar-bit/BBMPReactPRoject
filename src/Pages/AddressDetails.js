@@ -127,6 +127,15 @@ const AddressDetails = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (name === "Pincode") {
+      if (/^\d{0,6}$/.test(value)) {
+        setFormData({
+          ...formData,
+          [name]: value
+        });
+      }
+      return
+    }
     setFormData({
       ...formData,
       [name]: value

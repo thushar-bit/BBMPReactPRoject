@@ -462,6 +462,7 @@ debugger
                     variant={isEditable ? "standard" : "filled"}
                     label={"Total number of parking units : "}
                     name="Totalnumberofparkingunits"
+                    type='number'
                     value={formData.Totalnumberofparkingunits}
                     onChange={handleChange}
                     InputProps={{
@@ -482,6 +483,7 @@ debugger
                     variant={isEditable ? "standard" : "filled"}
                     label={"Total Parking Area(in Sq. mts.)"}
                     name="TotalParkingArea"
+                    type='number'
                     value={formData.TotalParkingArea}
                     onChange={handleChange}
                     InputProps={{
