@@ -282,7 +282,8 @@ debugger
   React.useEffect(() => {
     const params = new URLSearchParams(location.search);
     const txnno = params.get('txnno');
-    if (txnno !== null) {
+    debugger
+    if (txnno !== null && txnno !== undefined) {
       console.log('E-KYC completed successfully with txnno:', txnno);
       toast.success("E-KYC completed successfully with txnno:", txnno)
       const callEditEYCDate = async () => {

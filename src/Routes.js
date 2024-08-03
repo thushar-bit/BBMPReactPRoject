@@ -19,7 +19,7 @@ import Breadcrumbs from './components/Breadcrumbs';
 const AppRoutes = () => {
   
   return (
-    <Router>
+    <Router basename="/citizen_core">
       <Header />
       <div className="App">
       <Breadcrumbs />
