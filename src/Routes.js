@@ -16,31 +16,64 @@ import ErrorPage from './Pages/ErrorPage';
 import Header from './Header';
 import Footer from './Footer';
 import Breadcrumbs from './components/Breadcrumbs';
+import PrivateRoute from './components/PrivateRoute';
+import { AuthProvider } from './context/AuthProvider';
+
 const AppRoutes = () => {
-  
   return (
-    <Router basename="/citizen_core">
-      <Header />
-      <div className="App">
-      <Breadcrumbs />
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/AddressDetails" element={<AddressDetails />} />
-          <Route path="/AreaDimension/:DropdownValue" element={<AreaDimension />} />
-          <Route path="/SiteDetails" element={<SiteDetails />} />
-          <Route path="/BuildingDetails" element={<BuildingDetails />} />
-          <Route path="/MultiStoreyBuildingDetails" element={<MultiStoreyBuildingDetails />} />
-          <Route path="/OwnerDetails" element={<OwnerDetails />} />
-          <Route path="/PropertyRights" element={<PropertyRights />} />
-          <Route path="/DocumentUploadPage" element={<DocumentUploadPage />} />
-          <Route path="/ClassificationDocumentUploadPage" element={<ClassificationDocumentUploadPage />} />
-          <Route path="/EKYCResponse" element={<EKYCResponse />} />
-          <Route path="/ErrorPage" element={<ErrorPage />} />
-        </Routes>
-      </div>
-      <Footer />
-    </Router>
-    
+    <AuthProvider>
+      <Router basename="/citizen_core">
+        <Header />
+        <div className="App">
+          <Breadcrumbs />
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route
+              path="/AddressDetails"
+              element={<PrivateRoute element={<AddressDetails />} />}
+            />
+            <Route
+              path="/AreaDimension/:DropdownValue"
+              element={<PrivateRoute element={<AreaDimension />} />}
+            />
+            <Route
+              path="/SiteDetails"
+              element={<PrivateRoute element={<SiteDetails />} />}
+            />
+            <Route
+              path="/BuildingDetails"
+              element={<PrivateRoute element={<BuildingDetails />} />}
+            />
+            <Route
+              path="/MultiStoreyBuildingDetails"
+              element={<PrivateRoute element={<MultiStoreyBuildingDetails />} />}
+            />
+            <Route
+              path="/OwnerDetails"
+              element={<PrivateRoute element={<OwnerDetails />} />}
+            />
+            <Route
+              path="/PropertyRights"
+              element={<PrivateRoute element={<PropertyRights />} />}
+            />
+            <Route
+              path="/DocumentUploadPage"
+              element={<PrivateRoute element={<DocumentUploadPage />} />}
+            />
+            <Route
+              path="/ClassificationDocumentUploadPage"
+              element={<PrivateRoute element={<ClassificationDocumentUploadPage />} />}
+            />
+            <Route
+              path="/EKYCResponse"
+              element={<PrivateRoute element={<EKYCResponse />} />}
+            />
+            <Route path="/ErrorPage" element={<ErrorPage />} />
+          </Routes>
+        </div>
+        <Footer />
+      </Router>
+    </AuthProvider>
   );
 };
 

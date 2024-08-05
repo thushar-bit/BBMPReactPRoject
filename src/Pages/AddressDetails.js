@@ -65,7 +65,7 @@ const AddressDetails = () => {
   const [loading, setLoading] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
   const [handlemapClicks, sethandlemapClicks] = useState(false);
-  const [handleSASClicks, sethandleSASClicks] = useState(false);
+  const [handleSASClicks, sethandleSASClicks] = useState(true);
   const [lat2, setlat1] = useState(0);
   const [long2, setlong1] = useState(0);
   const [tableData, setTableData] = useState([
@@ -112,6 +112,14 @@ const AddressDetails = () => {
         long1: table7Item.LONGITUDE || 0,
         verifySASNUM: NCLtable1Item.PUID !== null ? NCLtable1Item.PUID || 0 : table1Item.PUID ? table1Item.PUID : 0,
       });
+      const sasNum = NCLtable1Item.PUID !== null ? NCLtable1Item.PUID || 0 : table1Item.PUID ? table1Item.PUID : 0;
+      const responseSAS = await axiosInstance.get('BBMPCITZAPI/GetTaxDetails?applicationNo=' + sasNum)
+      const { Table = [] } = responseSAS.data;
+      
+      if (Table.length === 0) {
+        toast.error("No SAS Applications Found");
+      }
+      setSASTableData(Table);
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -151,9 +159,9 @@ const AddressDetails = () => {
     const fileName = file.name;
     const fileExtension = fileName.split('.').pop().toLowerCase();
     setfileExtension(fileExtension);
-    const maxSize = 200 * 1024;
+    const maxSize = 500 * 1024;
     if (file && file.size > maxSize) {
-      toast.error('File size exceeds 200 KB limit');
+      toast.error('File size exceeds 500 KB limit');
       e.target.value = null;
       setSelectedFile(null);
       return;
@@ -208,7 +216,7 @@ const AddressDetails = () => {
   };
 
   const handleSubmit = async () => {
-    debugger
+    //
     
     var propertyphoto2 = "";
     if (isEditable) {
@@ -294,13 +302,19 @@ const AddressDetails = () => {
   };
 
   const handleAddressChange = (newAddress) => {
+    
     console.log('New address:', newAddress);
+    if (!newAddress || !newAddress.address) {
+      console.error('Address is undefined');
+      return;
+    }
     var parts = newAddress.address.split(', ');
-    var doorNo = '';
-    var street = '';
-    var pincode = '';
-    var area = '';
-    if (parts.length == 3) {
+    var doorNo = "";
+    var pincode = "";
+    var area = "";
+ 
+    console.log(pincodes)
+    if (parts.length === 3) {
       area = parts[0].trim();
       setFormData({
         ...formData,
@@ -313,7 +327,9 @@ const AddressDetails = () => {
       var pincodeRegex = /\b\d{6}\b/;
       var pincodes = newAddress.address.match(pincodeRegex);
       doorNo = parts[0].trim();
+      if(pincodes != null){
       pincode = pincodes[0];
+    }
       area = parts[0].trim();
       setFormData({
         ...formData,
@@ -340,7 +356,7 @@ const AddressDetails = () => {
       const response = await axiosInstance.get('BBMPCITZAPI/GetTaxDetails?applicationNo=' + formData.verifySASNUM)
       const { Table = [] } = response.data;
       if (Table.length === 0) {
-        toast.error("No Application Found");
+        toast.error("No SAS Applications Found");
       }
       setSASTableData(Table);
     }
@@ -381,15 +397,7 @@ const AddressDetails = () => {
     <Container maxWidth="lg">
       <Box sx={{ backgroundColor: '#f0f0f0', padding: 4, borderRadius: 2, mt: 8 }}>
         <ToastContainer />
-        <Formik
-          initialValues={formData}
-          validationSchema={validationSchema}
-          onSubmit={handleSubmit}
-          validateOnChange={handleChange}
-          enableReinitialize
-        >
-          {({ errors, touched, handleBlur }) => (
-            <Form>
+        
               <Typography
                 variant="h3"
                 align="center"
@@ -570,80 +578,22 @@ const AddressDetails = () => {
               >
                 {t("PostalAddressofProperty")}
               </Typography>
-              <Grid container spacing={4} alignItems={"center"}>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    variant={isEditable ? "standard" : "filled"}
-                    label="SAS Application Number"
-                    name="verifySASNUM"
-                    value={formData.verifySASNUM}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    className={touched.verifySASNUM && !!errors.verifySASNUM ? 'shake' : ''}
-                    error={touched.verifySASNUM && !!errors.verifySASNUM}
-                    helperText={touched.verifySASNUM && errors.verifySASNUM}
-                    InputProps={{
-                      readOnly: !isEditable,
-                      endAdornment: (
-                        <Tooltip title={t("streetNameInfo")}>
-                          <IconButton color="primary">
-                            <InfoIcon />
-                          </IconButton>
-                        </Tooltip>
-                      )
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Button color='success' variant={"contained"} onClick={async () => handleSASClick()}>Verify SAS Application Number</Button>
-                </Grid>
-              </Grid>
-              <TableContainer component={Paper} sx={{ mt: 4 }}>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Application Number</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>PID</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>KHATHA SURVEY NO</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Owner Name</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Property Address</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Site Area</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Built Up Area</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {SAStableData.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={12} align="center">
-                          No data available
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      SAStableData.map((row) => (
-                        <TableRow key={row.id}>
-                          <TableCell>{row.APPLICATIONNUMBER}</TableCell>
-                          <TableCell>{row.PID}</TableCell>
-                          <TableCell>{row.KHATHA_SURVEY_NO}</TableCell>
-                          <TableCell>{row.OWNERNAME}</TableCell>
-                          <TableCell>{row.PROPERTYADDRESS}</TableCell>
-                          <TableCell>{row.SITEAREA}</TableCell>
-                          <TableCell>{row.BUILTUPAREA}</TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <br></br>
-              <br></br>
+              <GoogleMaps lat={13.0074} long={77.5688} onLocationChange={handleAddressChange} />
+              <Formik
+          initialValues={formData}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
+          validateOnChange={false}
+          enableReinitialize
+        >
+          {({ errors, touched, handleBlur  }) => (
+            <Form>
+             
 
-              <Button color='success' variant={"contained"} onClick={handleMapClick}>Click Here to Capture Property Location</Button>
-              <br></br>
-              <br></br>
-              {handlemapClicks ?
-                <GoogleMaps lat={13.0074} long={77.5688} onLocationChange={handleAddressChange} />
-                : ""}
+             
+           
+                
+              
               <br></br>
               <br></br>
               <Grid container spacing={4}>
@@ -883,6 +833,74 @@ const AddressDetails = () => {
                   )}
                 </Grid>
               </Grid>
+              <Grid container spacing={4} alignItems={"center"}>
+                <Grid item xs={12} sm={6}>
+                  
+                  <TextField
+                    fullWidth
+                    variant={isEditable ? "standard" : "filled"}
+                    label="SAS Application Number"
+                    name="verifySASNUM"
+                    value={formData.verifySASNUM}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    className={touched.verifySASNUM && !!errors.verifySASNUM ? 'shake' : ''}
+                    error={touched.verifySASNUM && !!errors.verifySASNUM}
+                    helperText={touched.verifySASNUM && errors.verifySASNUM}
+                    InputProps={{
+                      readOnly: !isEditable,
+                      endAdornment: (
+                        <Tooltip title={t("streetNameInfo")}>
+                          <IconButton color="primary">
+                            <InfoIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Button color='success' variant={"contained"} onClick={async () => handleSASClick()}>Verify SAS Application Number</Button>
+                </Grid>
+              </Grid>
+              <TableContainer component={Paper} sx={{ mt: 4 }}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Application Number</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>PID</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>KHATHA SURVEY NO</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Owner Name</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Property Address</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Site Area</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Built Up Area</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {SAStableData.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={12} align="center">
+                          No data available
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      SAStableData.map((row) => (
+                        <TableRow key={row.id}>
+                          <TableCell>{row.APPLICATIONNUMBER}</TableCell>
+                          <TableCell>{row.PID}</TableCell>
+                          <TableCell>{row.KHATHA_SURVEY_NO}</TableCell>
+                          <TableCell>{row.OWNERNAME}</TableCell>
+                          <TableCell>{row.PROPERTYADDRESS}</TableCell>
+                          <TableCell>{row.SITEAREA}</TableCell>
+                          <TableCell>{row.BUILTUPAREA}</TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <br></br>
+              <br></br>
               <Grid item xs={12}>
                 <Box display="flex" justifyContent="center" gap={2}>
                   <Button variant="contained" color="primary" onClick={handleAddressEdit}>

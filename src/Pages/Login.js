@@ -12,7 +12,7 @@ import axiosInstance from '../components/Axios';
 import { toast, ToastContainer } from 'react-toastify';
 import AppartMent from "../assets/Appartment.png"
 import CryptoJS from 'crypto-js';
-
+import { useAuth } from '../context/AuthProvider';
 const Login = () => {
   const [formData, setFormData] = useState({
     MOBILEVERIFY: "0",
@@ -32,7 +32,7 @@ const Login = () => {
   const [otpNumber, setOtpNumber] = useState(0);
   const [otpButtonDisabled, setOtpButtonDisabled] = useState(false);
   const [timer, setTimer] = useState(30);
-
+  const { setToken } = useAuth();
   const navigate = useNavigate();
 
   const handleGenerateOtp = async () => {
@@ -114,12 +114,21 @@ const Login = () => {
       const queryString = new URLSearchParams(data).toString();
       const response = await axiosInstance.post(`Auth/CitizenLogin?${queryString}`);
       if (response.data) {
-
+debugger
         if (otpButtonDisabled) {
           if (formData.Password !== otpNumber) {
             toast.error("The Entered OTP is Wrong.Please Enter the Correct OTP")
             return
           }
+        }
+        if (response.data.token) {
+          sessionStorage.setItem('token', response.data.token);
+          setToken(response.data.token);
+        } else {
+          
+          toast.error('Login Not Authorized');
+          sessionStorage.clear();
+          return
         }
         const response3 = await axiosInstance.get('BBMPCITZAPI/Get_Ctz_ObjectionModPendingAppl?LoginId=crc');
         debugger
