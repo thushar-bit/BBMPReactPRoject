@@ -121,8 +121,8 @@ debugger
       const {
         Table1: NCLTable1Data = [],
         Table2: NCLTable2Data = [],
-        Table5: NCLTable5Data = [],
-        Table13: NCLTable13Data = []
+        Table3: NCLTable3Data = [],
+        Table7: NCLTable7Data = []
       } = response2.data;
       //BBD Tables
 
@@ -133,23 +133,23 @@ debugger
         west: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_WEST || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_WEST || '' : '',
         north: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_NORTH || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_NORTH || '' : '',
         south: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_SOUTH || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_SOUTH || '' : '',
-        ns: NCLTable5Data.length > 0 ? NCLTable5Data[0].NORTHSOUTH || '' : Table3Data.length > 0 ? Table3Data[0].NORTHSOUTH || '' : '',
-        ew: NCLTable5Data.length > 0 ? NCLTable5Data[0].EASTWEST || '' : Table3Data.length > 0 ? Table3Data[0].EASTWEST || '' : '',
+        ns: NCLTable3Data.length > 0 ? NCLTable3Data[0].NORTHSOUTH || '' : Table3Data.length > 0 ? Table3Data[0].NORTHSOUTH || '' : '',
+        ew: NCLTable3Data.length > 0 ? NCLTable3Data[0].EASTWEST || '' : Table3Data.length > 0 ? Table3Data[0].EASTWEST || '' : '',
         plotAreaSqFt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREAFT || '' : Table2Data.length > 0 ? Table2Data[0].SITEAREAFT || '' : '',
         plotAreaSqMt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREA || '' : Table2Data.length > 0 ? Table2Data[0].SITEAREA || '' : '',
         builtUpAreaSqFt: NCLTable2Data.length > 0 ? NCLTable2Data[0].BUILDINGAREAFT || '' : Table2Data.length > 0 ? Table2Data[0].BUILDINGAREAFT || '' : '',
         builtUpAreaSqMt: NCLTable2Data.length > 0 ? NCLTable2Data[0].BUILDINGAREA || '' : Table2Data.length > 0 ? Table2Data[0].BUILDINGAREA || '' : '',
-        ApartCarpetArea: NCLTable13Data.length > 0 ? NCLTable13Data[0].CARPETAREA || '' : Table7Data.length > 0 ? Table7Data[0].CARPETAREA || '' : '',
-        ApartAddtionalArea: NCLTable13Data.length > 0 ? NCLTable13Data[0].ADDITIONALAREA || '' : Table7Data.length > 0 ? Table7Data[0].ADDITIONALAREA || '' : '',
-        ApartSuperBuiltArea: NCLTable13Data.length > 0 ? NCLTable13Data[0].SUPERBUILTUPAREA || 0 : Table7Data.length > 0 ? Table7Data[0].SUPERBUILTUPAREA || '' : '',
-        cal1: NCLTable5Data.length > 0 ? NCLTable5Data[0].EWODDSITE1FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
-        cal2: NCLTable5Data.length > 0 ? NCLTable5Data[0].EWODDSITE2FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
-        cal3: NCLTable5Data.length > 0 ? NCLTable5Data[0].EWODDSITE3FT || '': Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
-        cal4: NCLTable5Data.length > 0 ? NCLTable5Data[0].EWODDSITE4FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
-        cal5: NCLTable5Data.length > 0 ? NCLTable5Data[0].NSODDSITE1FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
-        cal6: NCLTable5Data.length > 0 ? NCLTable5Data[0].NSODDSITE2FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
-        cal7: NCLTable5Data.length > 0 ? NCLTable5Data[0].NSODDSITE3FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
-        cal8: NCLTable5Data.length > 0 ? NCLTable5Data[0].NSODDSITE4FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
+        ApartCarpetArea: NCLTable7Data.length > 0 ? NCLTable7Data[0].CARPETAREA || '' : Table7Data.length > 0 ? Table7Data[0].CARPETAREA || '' : '',
+        ApartAddtionalArea: NCLTable7Data.length > 0 ? NCLTable7Data[0].ADDITIONALAREA || '' : Table7Data.length > 0 ? Table7Data[0].ADDITIONALAREA || '' : '',
+        ApartSuperBuiltArea: NCLTable7Data.length > 0 ? NCLTable7Data[0].SUPERBUILTUPAREA || 0 : Table7Data.length > 0 ? Table7Data[0].SUPERBUILTUPAREA || '' : '',
+        cal1: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE1FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
+        cal2: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE2FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
+        cal3: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE3FT || '': Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
+        cal4: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE4FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
+        cal5: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE1FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
+        cal6: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE2FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
+        cal7: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE3FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
+        cal8: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE4FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
       }));
     }
     catch (error) {
@@ -196,7 +196,7 @@ debugger
         checkbandI_EAST: formData.east,
         checkbandI_WEST: formData.west,
         loginId: "crc",
-        eidappno: JSON.parse(sessionStorage.getItem('EIDAPPNO'))
+        p_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))
 
       }
 
@@ -204,7 +204,7 @@ debugger
         await axiosInstance.post('BBMPCITZAPI/UPD_NCL_PROPERTY_MAIN_TEMP_CHECKBANDI', checkbandhidata
         )
 
-        const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=' + JSON.parse(sessionStorage.getItem('EIDAPPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
+        const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
         sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
         await toast.success("Details Saved Successfully", {
           position: "top-right",
@@ -259,14 +259,14 @@ debugger
         nsoddsitE3FT: formData.cal7 || null,
         nsoddsitE4FT: formData.cal8 || null,
         loginId: "crc",
-        eidappno: JSON.parse(sessionStorage.getItem('EIDAPPNO'))
+        p_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))
       };
 
       try {
         await axiosInstance.post('BBMPCITZAPI/UPD_NCL_PROPERTY_SITE_DIMENSION_TEMP', data
         )
 
-        const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=' + JSON.parse(sessionStorage.getItem('EIDAPPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
+        const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
         sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
         await toast.success("Details Saved Successfully", {
           position: "top-right",
@@ -310,13 +310,13 @@ debugger
         additionalarea: formData.ApartAddtionalArea || "0",
         superbuiltuparea: formData.ApartSuperBuiltArea || "0",
         loginId: "crc",
-        eidappno: JSON.parse(sessionStorage.getItem('EIDAPPNO'))
+        p_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))
       };
 
       try {
         await axiosInstance.post('BBMPCITZAPI/UPD_NCL_PROPERTY_APARTMENT_TEMP_AREA', data
         )
-        const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=' + JSON.parse(sessionStorage.getItem('EIDAPPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
+        const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
         sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
         await toast.success("Details Saved Successfully", {
           position: "top-right",

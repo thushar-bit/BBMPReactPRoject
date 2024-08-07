@@ -40,9 +40,9 @@ const PropertyRights = () => {
   const handleDelete = async (row) => {
 
     try {
-      await axiosInstance.get("BBMPCITZAPI/NCL_PROPERTY_RIGHTS_TEMP_DEL?EIDAPPNO=" + JSON.parse(sessionStorage.getItem('EIDAPPNO')) + "&RIGHTSID=" + row.PROPERTYRIGHTSID + "&ID_BASIC_PROPERTY=" + IDBASICPROPERTY + "&ULBCODE=" + 555 + "&PROPERTYCODE=" + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')))
+      await axiosInstance.get("BBMPCITZAPI/NCL_PROPERTY_RIGHTS_TEMP_DEL?P_BOOKS_PROP_APPNO=" + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + "&RIGHTSID=" + row.PROPERTYRIGHTSID + "&ID_BASIC_PROPERTY=" + IDBASICPROPERTY + "&ULBCODE=" + 555 + "&PROPERTYCODE=" + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')))
 
-      const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=' + JSON.parse(sessionStorage.getItem('EIDAPPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
+      const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
       sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
       await toast.error("Details Deleted Successfully", {
         position: "top-right",
@@ -90,10 +90,10 @@ const PropertyRights = () => {
 
   const fetchData = async () => {
     const response1 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
-    const { Table1 = [], Table11 = [] } = response1.data;
+    const { Table1 = [], Table6 = [] } = response1.data;
     const tableItem = Table1.length > 0 ? Table1[0] : [];
-    const table1Item = Table11.length > 0 ? Table11 : [];
-    setTableData(table1Item);
+    const table6Item = Table6.length > 0 ? Table6 : [];
+    setTableData(table6Item);
     setIDBASICPROPERTY(tableItem.ID_BASIC_PROPERTY)
   }
   useEffect(() => {
@@ -108,12 +108,12 @@ const PropertyRights = () => {
         propertycode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
         createdby: "crc",
         ulbcode: 555,
-        eidappno: JSON.parse(sessionStorage.getItem('EIDAPPNO'))
+        p_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))
       }
       try {
         await axiosInstance.post("BBMPCITZAPI/NCL_PROPERTY_RIGHTS_TEMP_INS?ID_BASIC_PROPERTY=" + IDBASICPROPERTY, data)
 
-        const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=' + JSON.parse(sessionStorage.getItem('EIDAPPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
+        const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
         sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
         await toast.success("Details Saved Successfully", {
           position: "top-right",
@@ -152,12 +152,12 @@ const PropertyRights = () => {
         propertycode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
         createdby: "crc",
         ulbcode: 555,
-        eidappno: JSON.parse(sessionStorage.getItem('EIDAPPNO'))
+        p_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))
       }
       try {
         await axiosInstance.post("BBMPCITZAPI/NCL_PROPERTY_RIGHTS_TEMP_UPD?ID_BASIC_PROPERTY=" + IDBASICPROPERTY, data)
 
-        const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=' + JSON.parse(sessionStorage.getItem('EIDAPPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
+        const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
         sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
         await toast.success("Details Updated Successfully", {
           position: "top-right",

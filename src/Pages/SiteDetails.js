@@ -70,7 +70,7 @@ debugger
       featureid: formData.Typeofuse,
       builtyear: formData.yearOfConstruction,
       loginId: "crc",
-      eidappno: JSON.parse(sessionStorage.getItem('EIDAPPNO'))
+      p_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))
 
     }
 
@@ -78,7 +78,7 @@ debugger
       await axiosInstance.post('BBMPCITZAPI/UPD_NCL_PROPERTY_SITE_TEMP_USAGE', data
       )
 
-      const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=' + JSON.parse(sessionStorage.getItem('EIDAPPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
+      const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
       sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
       await toast.success("Details Saved Successfully", {
         position: "top-right",

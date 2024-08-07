@@ -53,7 +53,7 @@ const handleConfirmNo = () => {
           color="primary"
         //   disabled={!isScrolledToBottom}
         >
-          I Understand
+          Submit
         </Button>
       </DialogActions>
     </Dialog>

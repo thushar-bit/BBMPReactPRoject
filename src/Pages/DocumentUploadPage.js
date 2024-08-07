@@ -96,8 +96,8 @@ const DocumentUploadPage = () => {
       const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterDocByCategoryOrClaimType?ULBCODE=555&CATEGORYID=1');
       const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
       const { Table1 = [] } = response1.data;
-      const { Table15: NCLTable15 = [] } = response2.data;
-      setTableData(NCLTable15.length > 0 ? NCLTable15 : []);
+      const { Table9: NCLTable9 = [] } = response2.data;
+      setTableData(NCLTable9.length > 0 ? NCLTable9 : []);
       setTablesData2(Table1.length > 0 ? Table1 : []);
     } catch (error) {
       toast.error("Error saving data ", error, {
@@ -173,7 +173,7 @@ const DocumentUploadPage = () => {
       orderdate: selectedDate,
       documenttypeid: formData.DocumentType,
       ulbcode: 555,
-      eidappno: JSON.parse(sessionStorage.getItem('EIDAPPNO'))
+      p_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))
       //  createdip: string
 
     }
@@ -182,7 +182,7 @@ const DocumentUploadPage = () => {
       await axiosInstance.post('BBMPCITZAPI/NCL_PROPERTY_ID_TEMP_INS?ID_BASIC_PROPERTY=0', data
       )
 
-      const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=' + JSON.parse(sessionStorage.getItem('EIDAPPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
+      const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
       sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
       await toast.success("Details Saved Successfully", {
         position: "top-right",
@@ -256,12 +256,12 @@ const DocumentUploadPage = () => {
       propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
       documentid: row.DOCUMENTID,
       ulbcode: 555,
-      eidappno: JSON.parse(sessionStorage.getItem('EIDAPPNO'))
+      p_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))
     }
     try {
       await axiosInstance.post('BBMPCITZAPI/NCL_PROPERTY_ID_TEMP_DEL?ID_BASIC_PROPERTY=0', data
       )
-      const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=' + JSON.parse(sessionStorage.getItem('EIDAPPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
+      const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
       sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
       await toast.success("Details Delete Successfully", {
         position: "top-right",

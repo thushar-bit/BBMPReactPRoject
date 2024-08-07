@@ -146,12 +146,12 @@ debugger
           toast.success("The data was Successfully Copied from BBMP Books");
 
           debugger
-          sessionStorage.setItem('EIDAPPNO', JSON.stringify(response3.data.EID));
+          sessionStorage.setItem('P_BOOKS_PROP_APPNO', JSON.stringify(response3.data.P_BOOKS_PROP_APPNO));
           sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(response3.data.PropertyId));
         }
         try {
-          const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&EID=' + JSON.parse(sessionStorage.getItem('EIDAPPNO')) + '&propertyid=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
-          const response2 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=' + JSON.parse(sessionStorage.getItem('EIDAPPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
+          const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&propertyid=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
+          const response2 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
 
           sessionStorage.setItem('BBD_DRAFT_API', JSON.stringify(response1));
           sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response2));

@@ -74,25 +74,27 @@ const AddressDetails = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
-      const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
+    //  const response = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
+   //   const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
+      const response = await axiosInstance.get('BBMPCITZAPI/GetBBDRedisData?propertyid='+JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+'');
+     const response2 = await axiosInstance.get('BBMPCITZAPI/GetNCLRedisData?P_BOOKS_PROP_APPNO='+JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))+'&Propertycode='+JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+'');
       const response3 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
-
+debugger
       const { Table1 = [], Table5 = [], } = response.data;
-      const { Table17 = [], Table1: NCLTABLE1 = [], Table7 = [] } = response2.data;
+      const { Table11 = [], Table1: NCLTABLE1 = [], Table7 = [] } = response2.data;
       const { Table2 = [] } = response3.data;
       const table1Item = Table1.length > 0 ? Table1[0] : [];
       const NCLtable1Item = NCLTABLE1.length > 0 ? NCLTABLE1[0] : [];
 
       const table5Item = Table5.length > 0 ? Table5[0] : [];
-      const table17Item = Table17.length > 0 ? Table17[0] : [];
+      const Table11Item = Table11.length > 0 ? Table11[0] : [];
       const table7Item = Table7.length > 0 ? Table7[0] : [];
 
       const filteredData = Table2.filter(item =>
         item.STREETID !== 99999 && item.WARDID === table1Item.WARDID
       );
       setTableData(filteredData);
-      setPreviewUrl(`data:image1/png;base64,${table17Item.PROPERTYPHOTO}`);
+      setPreviewUrl(`data:image1/png;base64,${Table11Item.PROPERTYPHOTO}`);
       setFormData({
         propertyEID: table1Item.PROPERTYID || '',
         address: table1Item.ADDRESS || '',
@@ -102,12 +104,12 @@ const AddressDetails = () => {
         ulbname: table1Item.ULBNAME || '',
         ownerName: table5Item.OWNERNAME || '',
         streetName: table1Item.STREETNAME_EN || '',
-        DoorPlotNo: table17Item.DOORNO || '',
-        BuildingLandName: table17Item.BUILDINGNAME || '',
+        DoorPlotNo: Table11Item.DOORNO || '',
+        BuildingLandName: Table11Item.BUILDINGNAME || '',
         streetid: NCLtable1Item.STREETID || '',
-        NearestLandmark: table17Item.LANDMARK || '',
-        Pincode: table17Item.PINCODE || '',
-        AreaLocality: table17Item.AREAORLOCALITY || '',
+        NearestLandmark: Table11Item.LANDMARK || '',
+        Pincode: Table11Item.PINCODE || '',
+        AreaLocality: Table11Item.AREAORLOCALITY || '',
         lat1: table7Item.LATITUDE || 0,
         long1: table7Item.LONGITUDE || 0,
         verifySASNUM: NCLtable1Item.PUID !== null ? NCLtable1Item.PUID || 0 : table1Item.PUID ? table1Item.PUID : 0,
@@ -240,7 +242,7 @@ const AddressDetails = () => {
         categoryId: 2,
         puidNo: formData.verifySASNUM,
         loginId: "crc",
-        eidappno: JSON.parse(sessionStorage.getItem('EIDAPPNO')),
+        P_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')),
         latitude: formData.lat1.toString(),
         longitude: formData.long1.toString()
       };
@@ -248,8 +250,8 @@ const AddressDetails = () => {
         await axiosInstance.post('BBMPCITZAPI/GET_PROPERTY_CTZ_PROPERTY', data
         )
         setSelectedFile(null);
-        const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=' + JSON.parse(sessionStorage.getItem('EIDAPPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
-        sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
+        const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
+       // sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
         setTimeout(() => {
          toast.success("Details Saved Successfully", {
           position: "top-right",
@@ -827,7 +829,7 @@ const AddressDetails = () => {
                         Delete Image
                       </Button>
                       <Typography variant="body1" sx={{ ml: 1, color: '#df1414' }}>
-                        Maximum File Size should not exceed 200 KB
+                        Maximum File Size should not exceed 500 KB
                       </Typography>
                     </Box>
                   )}

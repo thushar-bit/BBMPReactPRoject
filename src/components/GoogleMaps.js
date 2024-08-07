@@ -104,6 +104,7 @@ const GoogleMaps = ({ lat,long,onLocationChange }) => {
         onLoad={onLoad}
         onUnmount={onUnmount}
         onClick={handleMapClick}
+        mapTypeId='hybrid'
       >
         <Marker position={markerPosition} />
       </GoogleMap>

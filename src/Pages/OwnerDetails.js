@@ -112,7 +112,7 @@ debugger
   const handleDelete = async (index) => {
     try {
       const ownerToDelete = tablesdata9[index];
-      await axiosInstance.get(`BBMPCITZAPI/DEL_SEL_NCL_PROP_OWNER_TEMP?EIDAPPNO=${JSON.parse(sessionStorage.getItem('EIDAPPNO'))}&propertyCode=${ownerToDelete.PROPERTYCODE}&ownerNumber=${ownerToDelete.OWNERNUMBER}`);
+      await axiosInstance.get(`BBMPCITZAPI/DEL_SEL_NCL_PROP_OWNER_TEMP?P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&propertyCode=${ownerToDelete.PROPERTYCODE}&ownerNumber=${ownerToDelete.OWNERNUMBER}`);
       toast.error("Owner Deleted Successfully");
       await fetchData();
     } catch (error) {
@@ -230,7 +230,7 @@ debugger
 
       setEditableIndex(-1);
       const params = {
-        EIDAPPNO: JSON.parse(sessionStorage.getItem('EIDAPPNO')),
+        p_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')),
         propertyCode: formData.PROPERTYCODE,
         ownerNumber: formData.OWNERNUMBER,
         IDENTIFIERTYPE: formData.IDENTIFIERTYPEID || null,
@@ -257,13 +257,13 @@ debugger
     try {
       const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
       const response2 = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
-      const response3 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=' + JSON.parse(sessionStorage.getItem('EIDAPPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
+      const response3 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
       const { Table5 = [] } = response2.data;
-      const { Table9: NCLTABLE9 = [] } = response3.data;
+      const { Table5: NCLTable5 = [] } = response3.data;
       const { Table8 = [] } = response1.data;
       setTableData8(Table8.length > 0 ? Table8 : [])
       setTableData(Table5.length > 0 ? Table5 : []);
-      setTablesData9(NCLTABLE9.length > 0 ? NCLTABLE9 : []);
+      setTablesData9(NCLTable5.length > 0 ? NCLTable5 : []);
       setLoading(false);
     } catch (error) {
       toast.error("Error Getting data!" + error, {

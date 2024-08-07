@@ -127,9 +127,9 @@ const MultiStoreyBuildingDetails = () => {
       const response3 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
       const { Table15 = [], Table16 = [], Table17 = [] } = response1.data;
       const { Table7 = [] } = response2.data;
-      const { Table13 = [] } = response3.data;
+      const { Table7:NCLTABLE7 = [] } = response3.data;
       const table1Item = Table7.length > 0 ? Table7 : [];
-      const table13Item = Table13.length > 0 ? Table13[0] : [];
+      const table13Item = NCLTABLE7.length > 0 ? NCLTABLE7[0] : [];
       const table16Item = Table16.length > 0 ? Table16 : [];
       const table15Item = Table15.length > 0 ? Table15 : [];
       const table17Item = Table17.length > 0 ? Table17 : [];
@@ -226,14 +226,14 @@ debugger
       floornumberid: formData.floornumber,
       featureid: formData.Typeofuse,
       featureheadid: formData.features,
-      eidappno: JSON.parse(sessionStorage.getItem('EIDAPPNO'))
+      p_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))
     };
 
     try {
       await axiosInstance.post('BBMPCITZAPI/INS_UPD_NCL_PROPERTY_APARTMENT_TEMP1?ULBCODE=555', data
       )
 
-      const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&EIDAPPNO=' + JSON.parse(sessionStorage.getItem('EIDAPPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
+      const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
       sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
       await toast.success("Details Saved Successfully", {
         position: "top-right",
