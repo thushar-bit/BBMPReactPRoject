@@ -1123,12 +1123,12 @@ debugger
                   <Grid item>
                     <TextField
                       variant="filled"
-                      size="small"
+                      size="medium"
                       name="sqFt"
                        type="number"
                       value={formData.sqFt}
                       onChange={handleChange}
-                      sx={{ width: '100px', borderColor: '#016767' }}
+                      sx={{ width: '300px', borderColor: '#016767' }}
                       InputProps={{
                         readOnly: true,
                       }}
@@ -1143,7 +1143,7 @@ debugger
                   <Grid item>
                     <TextField
                       variant="filled"
-                      size="small"
+                      size="medium"
                       name="sqMt"
                        type="number"
                       value={formData.sqMt}
@@ -1151,7 +1151,7 @@ debugger
                       InputProps={{
                         readOnly: true,
                       }}
-                      sx={{ width: '100px', borderColor: '#016767' }}
+                      sx={{ width: '300px', borderColor: '#016767' }}
                     />
                   </Grid>
                 </Grid>

@@ -74,21 +74,21 @@ const AddressDetails = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-    //  const response = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
-   //   const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
-      const response = await axiosInstance.get('BBMPCITZAPI/GetBBDRedisData?propertyid='+JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+'');
-     const response2 = await axiosInstance.get('BBMPCITZAPI/GetNCLRedisData?P_BOOKS_PROP_APPNO='+JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))+'&Propertycode='+JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+'');
+      const response = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
+      const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
+    //  const response = await axiosInstance.get('BBMPCITZAPI/GetBBDRedisData?propertyid='+JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+'');
+   //  const response2 = await axiosInstance.get('BBMPCITZAPI/GetNCLRedisData?P_BOOKS_PROP_APPNO='+JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))+'&Propertycode='+JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+'');
       const response3 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
 debugger
       const { Table1 = [], Table5 = [], } = response.data;
-      const { Table11 = [], Table1: NCLTABLE1 = [], Table7 = [] } = response2.data;
+      const { Table11 = [], Table1: NCLTABLE1 = [], Table4 = [] } = response2.data;
       const { Table2 = [] } = response3.data;
       const table1Item = Table1.length > 0 ? Table1[0] : [];
       const NCLtable1Item = NCLTABLE1.length > 0 ? NCLTABLE1[0] : [];
 
       const table5Item = Table5.length > 0 ? Table5[0] : [];
       const Table11Item = Table11.length > 0 ? Table11[0] : [];
-      const table7Item = Table7.length > 0 ? Table7[0] : [];
+      const table4Item = Table4.length > 0 ? Table4[0] : [];
 
       const filteredData = Table2.filter(item =>
         item.STREETID !== 99999 && item.WARDID === table1Item.WARDID
@@ -110,8 +110,8 @@ debugger
         NearestLandmark: Table11Item.LANDMARK || '',
         Pincode: Table11Item.PINCODE || '',
         AreaLocality: Table11Item.AREAORLOCALITY || '',
-        lat1: table7Item.LATITUDE || 0,
-        long1: table7Item.LONGITUDE || 0,
+        lat1: table4Item.LATITUDE || 0,
+        long1: table4Item.LONGITUDE || 0,
         verifySASNUM: NCLtable1Item.PUID !== null ? NCLtable1Item.PUID || 0 : table1Item.PUID ? table1Item.PUID : 0,
       });
       const sasNum = NCLtable1Item.PUID !== null ? NCLtable1Item.PUID || 0 : table1Item.PUID ? table1Item.PUID : 0;
@@ -219,17 +219,27 @@ debugger
 
   const handleSubmit = async () => {
     //
-    
+    debugger
     var propertyphoto2 = "";
     if (isEditable) {
       if (selectedFile) {
         propertyphoto2 = await getPropertyphoto(selectedFile);
       }
       if(fileExtension.length === 0){
-        toast.error("Please Upload the Property Photo");
+        toast.error("Please Upload the New Property Photo");
         return;
       }
       setLoading(true);
+      if(JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) === null){
+        const response4 = await axiosInstance.get('BBMPCITZAPI/COPY_DATA_FROM_BBDDRAFT_NCLTEMP?LoginId=crc');
+        const response3 = await axiosInstance.get('BBMPCITZAPI/Get_Ctz_ObjectionModPendingAppl?LoginId=crc');
+        if (response3.data === "There is a issue while copying the data from Book Module.No Data Found") {
+         toast.error("There is a issue while copying the data from Book Module.No Data Found")
+         return
+           }
+      }
+     
+        
       const data = {
         propertyCode: formData.propertyNumber,
         streetid: formData.streetid,
@@ -238,7 +248,7 @@ debugger
         areaorlocality: formData.AreaLocality,
         landmark: formData.NearestLandmark,
         pincode: formData.Pincode,
-        propertyphoto: propertyphoto2,
+        propertyphoto: propertyphoto2 ,
         categoryId: 2,
         puidNo: formData.verifySASNUM,
         loginId: "crc",

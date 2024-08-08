@@ -133,30 +133,27 @@ debugger
         const response3 = await axiosInstance.get('BBMPCITZAPI/Get_Ctz_ObjectionModPendingAppl?LoginId=crc');
         debugger
         if (response3.data === "There is a issue while copying the data from Book Module.No Data Found") {
-          const response4 = await axiosInstance.get('BBMPCITZAPI/COPY_DATA_FROM_BBDDRAFT_NCLTEMP?LoginId=crc');
-          const response5 = await axiosInstance.get('BBMPCITZAPI/Get_Ctz_ObjectionModPendingAppl?LoginId=crc');
-          if (response5.data === "There is a issue while copying the data from Book Module.No Data Found");
-          {
-            toast.error("There is a issue while copying the data from Book Module.Check Property Code and Property Id.No Data Found");
-            return
-          }
+       //   const response4 = await axiosInstance.get('BBMPCITZAPI/COPY_DATA_FROM_BBDDRAFT_NCLTEMP?LoginId=crc');
+        toast.error("Error in fetching Applicant Entered Property Data")
+        return
         }
         else {
 
           toast.success("The data was Successfully Copied from BBMP Books");
 
           debugger
-          sessionStorage.setItem('P_BOOKS_PROP_APPNO', JSON.stringify(response3.data.P_BOOKS_PROP_APPNO));
+          sessionStorage.setItem('P_BOOKS_PROP_APPNO', JSON.stringify(response3.data.P_BOOKS_PROP_APPNO || null));
           sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(response3.data.PropertyId));
-        }
+        
         try {
-          const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&propertyid=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
+          const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&propertyid=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
           const response2 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
 
           sessionStorage.setItem('BBD_DRAFT_API', JSON.stringify(response1));
           sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response2));
           setTimeout(() => {
-            navigate('/AddressDetails');
+         //   navigate('/BBDDraft');
+         navigate('/AddressDetails')
           }, 2000);
 
         } catch (error) {
@@ -164,6 +161,7 @@ debugger
           navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
         }
       }
+    }
       else {
         toast.error("The Given UserId or Password is wrong")
       }
@@ -171,7 +169,7 @@ debugger
 
       navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
     }
-
+  
   }
   return (
 

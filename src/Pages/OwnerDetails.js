@@ -98,7 +98,7 @@ debugger
 
   const handleVerifyOtp = (index) => {
     if (formData.OwnerOTP === otpNumber.toString()) {
-      toast.success(otpData);
+      toast.success("OTP Verified Successfully");
       formData.MOBILEVERIFY = "Verfied";
       setOtpFieldsVisible(false);
     } else {
@@ -230,7 +230,7 @@ debugger
 
       setEditableIndex(-1);
       const params = {
-        p_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')),
+        P_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')),
         propertyCode: formData.PROPERTYCODE,
         ownerNumber: formData.OWNERNUMBER,
         IDENTIFIERTYPE: formData.IDENTIFIERTYPEID || null,
@@ -322,7 +322,13 @@ debugger
     navigate('/AreaDimension/select');
   };
   const VerfiyEKYC = async () => {
-    var response = await axiosInstance.post("E-KYCAPI/RequestEKYC?OwnerNumber=" + 23)
+    debugger
+    var ownerNumber = 1;
+    if(tablesdata9.length > 0){
+      const maxOwnerNumber = Math.max(...tablesdata9.map(item => item.OWNERNUMBER));
+      ownerNumber = maxOwnerNumber + 1;
+    }
+    var response = await axiosInstance.post("E-KYCAPI/RequestEKYC?OwnerNumber=" + ownerNumber + "&BOOK_APP_NO="+JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))+"&PROPERTY_CODE="+ JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')))
 
     console.log(response.data)
     window.location.href = response.data;
@@ -692,7 +698,7 @@ debugger
                           fullWidth
                           label={t('Mobile Verify')}
                           name="MOBILEVERIFY"
-                          value={formData.MOBILEVERIFY || ""}
+                          value={formData.MOBILEVERIFY === null ? "NOT VERIFIED" : formData.MOBILEVERIFY}
                           onChange={handleChange}
                           InputProps={{
                             readOnly: true,
