@@ -4,10 +4,10 @@ import React, { createContext, useState, useContext } from 'react';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(localStorage.getItem('token') || '');
+  const [token, setToken] = useState(sessionStorage.getItem('token') || '');
 
   const saveToken = (userToken) => {
-    localStorage.setItem('token', userToken);
+    sessionStorage.setItem('token', userToken);
     setToken(userToken);
   };
 
