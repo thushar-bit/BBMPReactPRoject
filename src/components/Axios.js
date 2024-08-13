@@ -2,8 +2,8 @@ import axios from 'axios';
 
 
 
-//const baseURL = "https://localhost:44368/v1/"  //local
-const baseURL = "https://bbmpeaasthi.karnataka.gov.in/BBMPCoreAPI/v1" //testurl
+const baseURL = "https://localhost:44368/v1/"  //local
+//const baseURL = "https://bbmpeaasthi.karnataka.gov.in/BBMPCoreAPI/v1" //testurl
 //const baseURL = "https://localhost:44368/v1/" //produrl
 
 const instance = axios.create({
@@ -13,6 +13,7 @@ const instance = axios.create({
 instance.interceptors.request.use(
   (config) => {
     const token = sessionStorage.getItem('token');
+    console.log('Token before request:', token);
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }

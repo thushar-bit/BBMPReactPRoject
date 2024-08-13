@@ -35,7 +35,7 @@ const AppRoutes = () => {
             /> */}
             <Route
               path="/AddressDetails"
-              element={<PrivateRoute element={<AddressDetails />} />}
+             element={<AddressDetails />}
             />
             <Route
               path="/AreaDimension/:DropdownValue"
@@ -55,7 +55,7 @@ const AppRoutes = () => {
             />
             <Route
               path="/OwnerDetails"
-              element={<PrivateRoute element={<OwnerDetails />} />}
+              element={<OwnerDetails />}
             />
             <Route
               path="/PropertyRights"
@@ -71,9 +71,9 @@ const AppRoutes = () => {
             />
             <Route
               path="/EKYCResponse"
-              element={<PrivateRoute element={<EKYCResponse />} />}
+             element={<EKYCResponse />}
             />
-            <Route path="/ErrorPage" element={<ErrorPage />} />
+            <Route path="*" element={<ErrorPage />} />
           </Routes>
         </div>
         <Footer />

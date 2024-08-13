@@ -285,7 +285,9 @@ debugger
     debugger
     if (txnno !== null && txnno !== undefined) {
       console.log('E-KYC completed successfully with txnno:', txnno);
-      toast.success("E-KYC completed successfully with txnno:", txnno)
+      setTimeout(() => {
+      toast.success("E-KYC completed successfully with txnno:", txnno);
+    }, 30000);
       const callEditEYCDate = async () => {
         var ownerNumber = await EditOwnerDetailsFromEKYCData(txnno); //581
         if (ownerNumber !== "") {
