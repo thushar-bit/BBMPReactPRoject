@@ -11,12 +11,14 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import '../components/Shake.css';
+import Loaders from '../components/Loader';
 const SiteDetails = () => {
   const [formData, setFormData] = useState({
     features: "",
     Typeofuse: "",
     yearOfConstruction: ""
   });
+  
   const validationSchema = Yup.object().shape({
     features: Yup.string().required('Type of Feature is required'),
     Typeofuse: Yup.string().required('Type Of Use is required'),
@@ -28,6 +30,8 @@ const SiteDetails = () => {
   const navigate = useNavigate();
   const [tablesdata2, setTablesData2] = useState([]);
   const [tablesdata3, setTablesData3] = useState([]);
+  const [isInitialEditable,setInitialEditable] = useState(false);
+  const [loading, setLoading] = useState(false);
   const handleChange = async (e) => {
     const { name, value } = e.target;
     if (name === "features") {
@@ -91,6 +95,7 @@ debugger
       });
       setTimeout(async () => {
         await fetchData();
+        setInitialEditable(false);
         //    handleNavigation()
       }, 2000);
     } catch (error) {
@@ -108,8 +113,17 @@ debugger
       }, 2000);
     }
   };
+  const handleEdit = () => {
+    if(isInitialEditable)
+      {
+      setInitialEditable(false);
+    }
+    else {
+      setInitialEditable(true);
+    }
+  }
   const back = () => {
-    navigate('/AreaDimension/vacant')
+    navigate('/AreaDimension')
   }
   const handleNavigation = () => {
 
@@ -119,6 +133,7 @@ debugger
   const fetchData = async () => {
     debugger
     try {
+      setLoading(true);
       const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
       const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
       const { Table16 = [] } = response1.data;
@@ -143,6 +158,7 @@ debugger
           }));
         }
       }
+      setLoading(false)
     } catch (error) {
       toast.error("something went wrong",error)
       setTimeout(() => {
@@ -159,6 +175,7 @@ debugger
 
   return (
     <Container maxWidth="lg">
+      <Loaders loading={loading} />
       <ToastContainer />
       <Box sx={{ backgroundColor: '#f0f0f0', padding: 4, borderRadius: 2, mt: 8 }}>
         <Formik
@@ -192,6 +209,8 @@ debugger
                   name="features"
                   value={formData.features}
                   onChange={handleChange}
+                  sx={{ backgroundColor: !isInitialEditable?  '':"#ffff" }}
+                      inputProps={{ readOnly: !isInitialEditable }}
                 >
                   <MenuItem value="">--Select--</MenuItem>
                   {tablesdata2.map((item) => (
@@ -216,6 +235,8 @@ debugger
                   value={formData.Typeofuse}
                   onChange={handleChange}
                   onBlur={handleBlur}
+                  sx={{ backgroundColor: !isInitialEditable?  '':"#ffff" }}
+                      inputProps={{ readOnly: !isInitialEditable }}
                 >
                   <MenuItem value="">--Select--</MenuItem>
                   {tablesdata3.map((item) => (
@@ -242,11 +263,18 @@ debugger
                   className={touched.yearOfConstruction && !!errors.yearOfConstruction ? 'shake' : ''}
                   error={touched.yearOfConstruction && !!errors.yearOfConstruction}
                   helperText={touched.yearOfConstruction && errors.yearOfConstruction}
+                  InputProps={{
+                  style: { backgroundColor:  isInitialEditable ? '#ffff': "" } ,
+                  readOnly: !isInitialEditable,
+                }}
                 />
               </FormControl>
               <Box display="flex" justifyContent="center" gap={2} mt={3}>
                 <Button variant="contained" color="primary" onClick={back}>
                   Previous
+                </Button>
+                <Button variant="contained" color="primary" onClick={handleEdit}>
+                  Edit
                 </Button>
                 <Button variant="contained" color="success" type="submit">
                   Save

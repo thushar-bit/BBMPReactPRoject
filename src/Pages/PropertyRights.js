@@ -22,7 +22,7 @@ const PropertyRights = () => {
 
   });
   const validationSchema = Yup.object().shape({
-    propertyrights: Yup.string().required('Property Rights is required')
+    propertyrights: Yup.string().required('Property Rights / Encumbrances is required')
   });
   const [tableData, setTableData] = useState([]);
   const [IDBASICPROPERTY, setIDBASICPROPERTY] = useState(0);
@@ -233,13 +233,13 @@ const PropertyRights = () => {
                   }
                 }}
               >
-                Property Rights
+                Property Rights / Encumbrances
               </Typography>
               <Grid container spacing={2} alignItems="center">
                 <Grid item xs={9}>
                   <TextField
                     fullWidth
-                    label="Property Rights:"
+                    label="Property Rights/Encumbrances:"
                     name="propertyrights"
                     value={formData.propertyrights}
                     onChange={handleChange}
@@ -248,6 +248,7 @@ const PropertyRights = () => {
                     error={touched.propertyrights && !!errors.propertyrights}
                     helperText={touched.propertyrights && errors.propertyrights}
                     InputProps={{
+                      style:{backgroundColor:"#ffff"},
                       endAdornment: (
                         <Tooltip title={t("propertyEIDInfo")}>
                           <IconButton color="primary">

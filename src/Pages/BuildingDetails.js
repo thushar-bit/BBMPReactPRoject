@@ -196,7 +196,7 @@ const BuildingDetails = () => {
 
   };
   const back = () => {
-    navigate('/AreaDimension/building')
+    navigate('/AreaDimension')
   }
   const handleNavigation = () => {
 
@@ -330,10 +330,12 @@ const BuildingDetails = () => {
                     value={formData.BuildingNumber}
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    
                     className={touched.BuildingNumber && !!errors.BuildingNumber ? 'shake' : ''}
                     error={touched.BuildingNumber && !!errors.BuildingNumber}
                     helperText={touched.BuildingNumber && errors.BuildingNumber}
                     InputProps={{
+                      style: { backgroundColor: '#ffff' } ,
                       endAdornment: (
                         <Tooltip title={t("propertyEIDInfo")}>
                           <IconButton color="primary">
@@ -348,6 +350,7 @@ const BuildingDetails = () => {
                   <TextField
                     fullWidth
                     InputProps={{
+                      style: { backgroundColor: '#ffff' } ,
                       endAdornment: (
                         <Tooltip title={t("cityInfo")}>
                           <IconButton color="primary">
@@ -379,6 +382,7 @@ const BuildingDetails = () => {
                       value={formData.floornumber}
                       onChange={handleChange}
                       onBlur={handleBlur}
+                      sx={{ backgroundColor: '#ffff' }}
                     >
                       <MenuItem value="">--Select--</MenuItem>
                       {tablesdata4.map((item) => (
@@ -405,6 +409,7 @@ const BuildingDetails = () => {
                       value={formData.features}
                       onChange={handleChange}
                       onBlur={handleBlur}
+                      sx={{ backgroundColor: '#ffff' }}
                     >
                       <MenuItem value="">--Select--</MenuItem>
                       {tablesdata2.map((item) => (
@@ -431,6 +436,7 @@ const BuildingDetails = () => {
                       value={formData.Typeofuse}
                       onChange={handleChange}
                       onBlur={handleBlur}
+                      sx={{ backgroundColor: '#ffff' }}
                     >
                       <MenuItem value="">--Select--</MenuItem>
                       {tablesdata3.map((item) => (
@@ -460,6 +466,7 @@ const BuildingDetails = () => {
                     helperText={touched.yearOfConstruction && errors.yearOfConstruction}
                     InputProps={{
                       maxLength: 4,
+                      style: { backgroundColor: '#ffff' } ,
                       endAdornment: (
                         <Tooltip title={t("doorPlotNoInfo")}>
                           <IconButton color="primary">
@@ -488,6 +495,7 @@ const BuildingDetails = () => {
                     error={touched.SelfuseArea && !!errors.SelfuseArea}
                     helperText={touched.SelfuseArea && errors.SelfuseArea}
                     InputProps={{
+                      style: { backgroundColor: '#ffff' } ,
                       endAdornment: (
                         <Tooltip title={t("buildingLandNameInfo")}>
                           <IconButton color="primary">
@@ -511,6 +519,7 @@ const BuildingDetails = () => {
                     error={touched.RentedArea && !!errors.RentedArea}
                     helperText={touched.RentedArea && errors.RentedArea}
                     InputProps={{
+                      style: { backgroundColor: '#ffff' } ,
                       endAdornment: (
                         <Tooltip title={t("streetInfo")}>
                           <IconButton color="primary">
@@ -553,6 +562,7 @@ const BuildingDetails = () => {
                     error={touched.BesomCustomerID && !!errors.BesomCustomerID}
                     helperText={touched.BesomCustomerID && errors.BesomCustomerID}
                     InputProps={{
+                      style: { backgroundColor: '#ffff' } ,
                       endAdornment: (
                         <Tooltip title={t("pincodeInfo")}>
                           <IconButton color="primary">
@@ -575,6 +585,7 @@ const BuildingDetails = () => {
                     error={touched.BWSSBMeterNumber && !!errors.BWSSBMeterNumber}
                     helperText={touched.BWSSBMeterNumber && errors.BWSSBMeterNumber}
                     InputProps={{
+                      style: { backgroundColor: '#ffff' } ,
                       endAdornment: (
                         <Tooltip title={t("areaLocalityInfo")}>
                           <IconButton color="primary">

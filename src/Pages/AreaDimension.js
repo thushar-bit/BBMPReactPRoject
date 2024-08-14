@@ -10,7 +10,6 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axiosInstance from '../components/Axios';
 const AreaDimension = () => {
-  const { DropdownValue } = useParams();
   const [formData, setFormData] = useState({
     east: '',
     west: '',
@@ -25,7 +24,7 @@ const AreaDimension = () => {
     modify: 'no',
     modifycheckbandi: 'no',
     oddSite: 'EVEN',
-    propertyType: DropdownValue,
+    propertyType: "",
     ApartCarpetArea: "0",
     ApartAddtionalArea: "0",
     ApartSuperBuiltArea: "0",
@@ -126,9 +125,10 @@ debugger
       } = response2.data;
       //BBD Tables
 
-
+debugger
       setFormData((prevFormData) => ({
         ...prevFormData,
+        propertyType: NCLTable1Data.length > 0 ? NCLTable1Data[0].PROPERTYCATEGORYID || "0" : "0",
         east: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_EAST || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_EAST || '' : '',
         west: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_WEST || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_WEST || '' : '',
         north: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_NORTH || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_NORTH || '' : '',
@@ -187,7 +187,7 @@ debugger
   const handleSubmit = async (e) => {
 e.preventDefault();
 debugger
-    if (isEditablecheckbandhi === true && formData.propertyType !== "flats" && formData.propertyType !== "select") //only checkbandhi data
+    if (isEditablecheckbandhi === true && formData.propertyType !== 3 ) //only checkbandhi data
     {
       const checkbandhidata = {
         propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
@@ -237,7 +237,7 @@ debugger
         }, 2000);
       }
     }
-    if ((formData.propertyType === "vacant" || formData.propertyType === "building") && isEditablecheckbandhi === false && formData.propertyType !== "select" && (isEditable)
+    if ((formData.propertyType === 1 || formData.propertyType === 2) && isEditablecheckbandhi === false  && (isEditable)
       //only below data
     ) {
       const data = {
@@ -302,7 +302,7 @@ debugger
         }, 2000);
       }
     }
-    else if (formData.propertyType === "flats" && formData.propertyType !== "select" && isEditable === true) //only flats
+    else if (formData.propertyType === 3 && isEditable === true) //only 3
     {
       const data = {
         propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
@@ -368,17 +368,21 @@ debugger
   }
   const handleNavigation = () => {
 
-    if (formData.propertyType === "vacant") {
+    if (formData.propertyType === 1) {
       navigate('/SiteDetails')
-    } else if (formData.propertyType === "building") {
+    } else if (formData.propertyType === 2) {
       navigate('/BuildingDetails')
     }
-    else if (formData.propertyType === "flats") {
+    else if (formData.propertyType === 3) {
 
       navigate('/MultiStoreyBuildingDetails')
     } else {
 
-      alert("Please Select the property type");
+      toast.error("Property Type Not Found");
+      setTimeout(() => {
+        navigate("/AddressDetails")
+      }, 1000);
+      
     }
   }
   const handleOddSiteChange = (e) => {
@@ -412,20 +416,8 @@ debugger
           >
             Property Use Details
           </Typography>
-          <FormControl fullWidth sx={{ marginBottom: 3 }}>
-            <InputLabel>Property Type</InputLabel>
-            <Select
-              name="propertyType"
-              value={formData.propertyType}
-              onChange={handleChange}
-            >
-              <MenuItem value="select">Select</MenuItem>
-              <MenuItem value="vacant">Vacant Site</MenuItem>
-              <MenuItem value="building">Site with Building</MenuItem>
-              <MenuItem value="flats">Multistorey Flats</MenuItem>
-            </Select>
-          </FormControl>
-          {formData.propertyType === 'flats' && (
+         
+          {formData.propertyType === 3 && (
             <Grid container spacing={3}>
 
               <Grid item xs={6} sm={3}>
@@ -445,9 +437,10 @@ debugger
                   value={formData.ApartCarpetArea}
                   onChange={handleChange}
                   type="number"
-                  variant={isEditable ? "standard" : "filled"}
+                  variant={isEditable ? "outlined" : "filled"}
                   InputProps={{
                     readOnly: !isEditable,
+                    style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
                     endAdornment: (
                       <Tooltip title="Calculated as N-S * E-W">
                         <IconButton>
@@ -467,9 +460,10 @@ debugger
                   value={formData.ApartAddtionalArea}
                   onChange={handleChange}
                   type="number"
-                  variant={isEditable ? "standard" : "filled"}
+                  variant={isEditable ? "outlined" : "filled"}
                   InputProps={{
                     readOnly: !isEditable,
+                    style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
                     endAdornment: (
                       <Tooltip title="Calculated as N-S * E-W">
                         <IconButton>
@@ -489,9 +483,10 @@ debugger
                   value={formData.ApartSuperBuiltArea}
                   onChange={handleChange}
                   type="number"
-                  variant={isEditable ? "standard" : "filled"}
+                  variant={isEditable ? "outlined" : "filled"}
                   InputProps={{
                     readOnly: !isEditable,
+                    style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
                     endAdornment: (
                       <Tooltip title="Calculated as N-S * E-W">
                         <IconButton>
@@ -505,7 +500,7 @@ debugger
 
             </Grid>
           )}
-          {(formData.propertyType === 'vacant') && (
+          {(formData.propertyType === 1) && (
             <div>
               <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
                 Schedule Of The Property
@@ -525,9 +520,10 @@ debugger
                      type="number"
                     value={formData.east}
                     onChange={handleChange}
-                    variant={isEditablecheckbandhi ? "standard" : "filled"}
+                    variant={isEditablecheckbandhi ? "outlined" : "filled"}
                     InputProps={{
                       readOnly: !isEditablecheckbandhi,
+                      style: { backgroundColor:  !isEditablecheckbandhi ? '': "#ffff" } ,
                       endAdornment: (
                         <Tooltip title="Converted from Sq.ft">
                           <IconButton>
@@ -546,9 +542,10 @@ debugger
                      type="number"
                     value={formData.west}
                     onChange={handleChange}
-                    variant={isEditablecheckbandhi ? "standard" : "filled"}
+                    variant={isEditablecheckbandhi ? "outlined" : "filled"}
                     InputProps={{
                       readOnly: !isEditablecheckbandhi,
+                      style: { backgroundColor:  !isEditablecheckbandhi ? '': "#ffff" } ,
                       endAdornment: (
                         <Tooltip title="Converted from Sq.ft">
                           <IconButton>
@@ -567,9 +564,10 @@ debugger
                      type="number"
                     value={formData.north}
                     onChange={handleChange}
-                    variant={isEditablecheckbandhi ? "standard" : "filled"}
+                    variant={isEditablecheckbandhi ? "outlined" : "filled"}
                     InputProps={{
                       readOnly: !isEditablecheckbandhi,
+                      style: { backgroundColor:  !isEditablecheckbandhi ? '': "#ffff" } ,
                       endAdornment: (
                         <Tooltip title="Converted from Sq.ft">
                           <IconButton>
@@ -588,9 +586,10 @@ debugger
                      type="number"
                     value={formData.south}
                     onChange={handleChange}
-                    variant={isEditablecheckbandhi ? "standard" : "filled"}
+                    variant={isEditablecheckbandhi ? "outlined" : "filled"}
                     InputProps={{
                       readOnly: !isEditablecheckbandhi,
+                      style: { backgroundColor:  !isEditablecheckbandhi ? '': "#ffff" } ,
                       endAdornment: (
                         <Tooltip title="Converted from Sq.ft">
                           <IconButton>
@@ -633,9 +632,10 @@ debugger
                       value={formData.ns}
                       onChange={handleChange}
                       type="number"
-                      variant={isEditable ? "standard" : "filled"}
+                      variant={isEditable ? "outlined" : "filled"}
                       InputProps={{
                         readOnly: !isEditable,
+                        style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
                         endAdornment: (
                           <Tooltip title="Converted from Sq.ft">
                             <IconButton>
@@ -654,9 +654,10 @@ debugger
                       value={formData.ew}
                       onChange={handleChange}
                       type="number"
-                      variant={isEditable ? "standard" : "filled"}
+                      variant={isEditable ? "outlined" : "filled"}
                       InputProps={{
                         readOnly: !isEditable,
+                        style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
                         endAdornment: (
                           <Tooltip title="Converted from Sq.ft">
                             <IconButton>
@@ -715,7 +716,7 @@ debugger
               )}
             </div>
           )}
-          {(formData.propertyType === 'building') && (
+          {(formData.propertyType === 2) && (
             <div>
               <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
                 Schedule Of The Property
@@ -735,9 +736,10 @@ debugger
                      type="number"
                     value={formData.east}
                     onChange={handleChange}
-                    variant={isEditablecheckbandhi ? "standard" : "filled"}
+                    variant={isEditablecheckbandhi ? "outlined" : "filled"}
                     InputProps={{
                       readOnly: !isEditablecheckbandhi,
+                      style: { backgroundColor:  !isEditablecheckbandhi ? '': "#ffff" } ,
                       endAdornment: (
                         <Tooltip title="Converted from Sq.ft">
                           <IconButton>
@@ -756,9 +758,10 @@ debugger
                      type="number"
                     value={formData.west}
                     onChange={handleChange}
-                    variant={isEditablecheckbandhi ? "standard" : "filled"}
+                    variant={isEditablecheckbandhi ? "outlined" : "filled"}
                     InputProps={{
                       readOnly: !isEditablecheckbandhi,
+                      style: { backgroundColor:  !isEditablecheckbandhi ? '': "#ffff" } ,
                       endAdornment: (
                         <Tooltip title="Converted from Sq.ft">
                           <IconButton>
@@ -777,9 +780,10 @@ debugger
                      type="number"
                     value={formData.north}
                     onChange={handleChange}
-                    variant={isEditablecheckbandhi ? "standard" : "filled"}
+                    variant={isEditablecheckbandhi ? "outlined" : "filled"}
                     InputProps={{
                       readOnly: !isEditablecheckbandhi,
+                      style: { backgroundColor:  !isEditablecheckbandhi ? '': "#ffff" } ,
                       endAdornment: (
                         <Tooltip title="Converted from Sq.ft">
                           <IconButton>
@@ -798,9 +802,10 @@ debugger
                      type="number"
                     value={formData.south}
                     onChange={handleChange}
-                    variant={isEditablecheckbandhi ? "standard" : "filled"}
+                    variant={isEditablecheckbandhi ? "outlined" : "filled"}
                     InputProps={{
                       readOnly: !isEditablecheckbandhi,
+                      style: { backgroundColor:  !isEditablecheckbandhi ? '': "#ffff" } ,
                       endAdornment: (
                         <Tooltip title="Converted from Sq.ft">
                           <IconButton>
@@ -843,9 +848,10 @@ debugger
                       value={formData.ns}
                       onChange={handleChange}
                       type="number"
-                      variant={isEditable ? "standard" : "filled"}
+                      variant={isEditable ? "outlined" : "filled"}
                       InputProps={{
                         readOnly: !isEditable,
+                        style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
                         endAdornment: (
                           <Tooltip title="Converted from Sq.ft">
                             <IconButton>
@@ -864,9 +870,10 @@ debugger
                       value={formData.ew}
                       onChange={handleChange}
                       type="number"
-                      variant={isEditable ? "standard" : "filled"}
+                      variant={isEditable ? "outlined" : "filled"}
                       InputProps={{
                         readOnly: !isEditable,
+                        style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
                         endAdornment: (
                           <Tooltip title="Converted from Sq.ft">
                             <IconButton>
@@ -966,13 +973,13 @@ debugger
             </div>
 
           )}
-          {isOddSiteEnabled && formData.propertyType !== "flats" && formData.propertyType !== "select" && (
+          {isOddSiteEnabled && formData.propertyType !== 3  && (
             <Grid container spacing={3} alignItems="center" justifyContent="center">
               <Grid item>
                 <Grid container spacing={1} alignItems="center" justifyContent="center">
                   <Grid item>
                     <TextField
-                      variant={isEditable ? "standard" : "filled"}
+                      variant={isEditable ? "outlined" : "filled"}
                       size="small"
                       name="cal1"
                        type="number"
@@ -981,6 +988,7 @@ debugger
                       sx={{ width: '100px', borderColor: '#016767' }}
                       InputProps={{
                         readOnly: !isEditable,
+                        style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
                       }}
                     />
                   </Grid>
@@ -989,7 +997,7 @@ debugger
                   </Grid>
                   <Grid item>
                     <TextField
-                      variant={isEditable ? "standard" : "filled"}
+                      variant={isEditable ? "outlined" : "filled"}
                       size="small"
                       name="cal2"
                        type="number"
@@ -998,6 +1006,7 @@ debugger
                       sx={{ width: '100px', borderColor: '#016767' }}
                       InputProps={{
                         readOnly: !isEditable,
+                        style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
                       }}
                     />
                   </Grid>
@@ -1006,7 +1015,7 @@ debugger
                   </Grid>
                   <Grid item>
                     <TextField
-                      variant={isEditable ? "standard" : "filled"}
+                      variant={isEditable ? "outlined" : "filled"}
                       size="small"
                       name="cal3"
                        type="number"
@@ -1015,6 +1024,7 @@ debugger
                       sx={{ width: '100px', borderColor: '#016767' }}
                       InputProps={{
                         readOnly: !isEditable,
+                        style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
                       }}
                     />
                   </Grid>
@@ -1023,7 +1033,7 @@ debugger
                   </Grid>
                   <Grid item>
                     <TextField
-                      variant={isEditable ? "standard" : "filled"}
+                      variant={isEditable ? "outlined" : "filled"}
                       size="small"
                       name="cal4"
                        type="number"
@@ -1032,6 +1042,7 @@ debugger
                       sx={{ width: '100px', borderColor: '#016767' }}
                       InputProps={{
                         readOnly: !isEditable,
+                        style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
                       }}
                     />
                   </Grid>
@@ -1040,7 +1051,7 @@ debugger
                   </Grid>
                   <Grid item>
                     <TextField
-                      variant={isEditable ? "standard" : "filled"}
+                      variant={isEditable ? "outlined" : "filled"}
                       size="small"
                       name="cal5"
                        type="number"
@@ -1049,6 +1060,7 @@ debugger
                       sx={{ width: '100px', borderColor: '#016767' }}
                       InputProps={{
                         readOnly: !isEditable,
+                        style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
                       }}
                     />
                   </Grid>
@@ -1057,7 +1069,7 @@ debugger
                   </Grid>
                   <Grid item>
                     <TextField
-                      variant={isEditable ? "standard" : "filled"}
+                      variant={isEditable ? "outlined" : "filled"}
                       size="small"
                       name="cal6"
                        type="number"
@@ -1066,6 +1078,7 @@ debugger
                       sx={{ width: '100px', borderColor: '#016767' }}
                       InputProps={{
                         readOnly: !isEditable,
+                        style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
                       }}
                     />
                   </Grid>
@@ -1077,7 +1090,7 @@ debugger
                   </Grid>
                   <Grid item>
                     <TextField
-                      variant={isEditable ? "standard" : "filled"}
+                      variant={isEditable ? "outlined" : "filled"}
                       size="small"
                       name="cal7"
                        type="number"
@@ -1086,6 +1099,7 @@ debugger
                       sx={{ width: '100px', borderColor: '#016767' }}
                       InputProps={{
                         readOnly: !isEditable,
+                        style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
                       }}
                     />
                   </Grid>
@@ -1098,7 +1112,7 @@ debugger
                   </Grid>
                   <Grid item>
                     <TextField
-                      variant={isEditable ? "standard" : "filled"}
+                      variant={isEditable ? "outlined" : "filled"}
                       size="small"
                       name="cal8"
                        type="number"
@@ -1107,6 +1121,7 @@ debugger
                       sx={{ width: '100px', borderColor: '#016767' }}
                       InputProps={{
                         readOnly: !isEditable,
+                        style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
                       }}
                     />
                   </Grid>

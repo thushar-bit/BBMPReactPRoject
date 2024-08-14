@@ -38,7 +38,7 @@ const AppRoutes = () => {
              element={<AddressDetails />}
             />
             <Route
-              path="/AreaDimension/:DropdownValue"
+              path="/AreaDimension"
               element={<PrivateRoute element={<AreaDimension />} />}
             />
             <Route

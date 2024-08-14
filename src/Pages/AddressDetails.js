@@ -38,6 +38,7 @@ const AddressDetails = () => {
     buildingname: '',
     areaorlocality: '',
     landmark: '',
+    propertyType: '',
     pincode: '',
     propertyphoto: '',
     categoryId: 2,
@@ -57,6 +58,7 @@ const AddressDetails = () => {
       .matches(/^\d{6}$/, 'Pincode must be a 6-digit number'),
     verifySASNUM: Yup.string().required('SAS Application Number is required'),
     streetid: Yup.string().required('Street Name is required'),
+    propertyType:Yup.string().required('Property Type is required'),
   });
 
   const navigate = useNavigate();
@@ -85,7 +87,9 @@ debugger
       const { Table2 = [] } = response3.data;
       const table1Item = Table1.length > 0 ? Table1[0] : [];
       const NCLtable1Item = NCLTABLE1.length > 0 ? NCLTABLE1[0] : [];
-
+      if(NCLTABLE1.length === 0){
+        setIsEditable(true)
+      }
       const table5Item = Table5.length > 0 ? Table5[0] : [];
       const Table11Item = Table11.length > 0 ? Table11[0] : [];
       const table4Item = Table4.length > 0 ? Table4[0] : [];
@@ -95,7 +99,9 @@ debugger
       );
       setTableData(filteredData);
       setPreviewUrl(`data:image1/png;base64,${Table11Item.PROPERTYPHOTO}`);
+      setPropertyPhoto(Table11Item.PROPERTYPHOTO);
       setFormData({
+        propertyType: NCLtable1Item.PROPERTYCATEGORYID || "0" ,
         propertyEID: table1Item.PROPERTYID || '',
         address: table1Item.ADDRESS || '',
         district: table1Item.DISTRICTNAME || '',
@@ -115,7 +121,7 @@ debugger
         verifySASNUM: NCLtable1Item.PUID !== null ? NCLtable1Item.PUID || 0 : table1Item.PUID ? table1Item.PUID : 0,
       });
       const sasNum = NCLtable1Item.PUID !== null ? NCLtable1Item.PUID || 0 : table1Item.PUID ? table1Item.PUID : 0;
-      const responseSAS = await axiosInstance.get('BBMPCITZAPI/GetTaxDetails?applicationNo=' + sasNum)
+      const responseSAS = await axiosInstance.get('BBMPCITZAPI/GetTaxDetails?applicationNo=' + sasNum + '&propertycode='+JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+'&P_BOOKS_PROP_APPNO='+JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))+'&loginId=crc')
       const { Table = [] } = responseSAS.data;
       
       if (Table.length === 0) {
@@ -136,6 +142,7 @@ debugger
   }, []);
 
   const handleChange = (e) => {
+    debugger
     const { name, value } = e.target;
     if (name === "Pincode") {
       if (/^\d{0,6}$/.test(value)) {
@@ -154,6 +161,8 @@ debugger
 
   const { t } = useTranslation();
   const [previewUrl, setPreviewUrl] = useState('');
+  const [propertyPhoto, setPropertyPhoto] = useState('');
+
   const handleFileChange = (e) => {
     if (!isEditable) return;
     setSelectedFile(e.target.files[0]);
@@ -216,7 +225,26 @@ debugger
       };
     });
   };
-
+const CopyBookData = async () => {
+  try {
+    if(JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) === null){
+      const response4 = await axiosInstance.get('BBMPCITZAPI/COPY_DATA_FROM_BBDDRAFT_NCLTEMP?LoginId=crc');
+      const response3 = await axiosInstance.get('BBMPCITZAPI/Get_Ctz_ObjectionModPendingAppl?LoginId=crc');
+      if (response3.data === "There is a issue while copying the data from Book Module.No Data Found") {
+       toast.error("There is a issue while copying the data from Book Module.No Data Found")
+       return false
+         }
+         return true;
+    }
+    else{
+      return true;
+    }
+  } catch (error) {
+    <ErrorPage errorMessage={error}/>
+    return false;
+  }
+  
+}
   const handleSubmit = async () => {
     //
     debugger
@@ -225,31 +253,29 @@ debugger
       if (selectedFile) {
         propertyphoto2 = await getPropertyphoto(selectedFile);
       }
-      if(fileExtension.length === 0){
+      if(propertyPhoto.length === 0){
         toast.error("Please Upload the New Property Photo");
         return;
       }
       setLoading(true);
-      if(JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) === null){
-        const response4 = await axiosInstance.get('BBMPCITZAPI/COPY_DATA_FROM_BBDDRAFT_NCLTEMP?LoginId=crc');
-        const response3 = await axiosInstance.get('BBMPCITZAPI/Get_Ctz_ObjectionModPendingAppl?LoginId=crc');
-        if (response3.data === "There is a issue while copying the data from Book Module.No Data Found") {
-         toast.error("There is a issue while copying the data from Book Module.No Data Found")
-         return
-           }
+      const copy = await CopyBookData();
+      if(copy){
+        toast.success("Copy From BBMP Books Data Was Successfull.")
+      }else{
+        toast.error("Something Went wrong.Copy of Book Data was Not SuccessFull")
       }
      
         
       const data = {
         propertyCode: formData.propertyNumber,
+        categoryId:formData.propertyType,
         streetid: formData.streetid,
         doorno: formData.DoorPlotNo,
         buildingname: formData.BuildingLandName,
         areaorlocality: formData.AreaLocality,
         landmark: formData.NearestLandmark,
         pincode: formData.Pincode,
-        propertyphoto: propertyphoto2 ,
-        categoryId: 2,
+        propertyphoto: propertyphoto2.length > 0 ? propertyphoto2 : propertyPhoto,
         puidNo: formData.verifySASNUM,
         loginId: "crc",
         P_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')),
@@ -261,7 +287,7 @@ debugger
         )
         setSelectedFile(null);
         const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
-       // sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
+        sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
         setTimeout(() => {
          toast.success("Details Saved Successfully", {
           position: "top-right",
@@ -364,8 +390,16 @@ debugger
         toast.error("Please Provide SAS Application Number");
         return
       }
+      const copy = await CopyBookData();
+      if(copy){
+        toast.success("Copy From BBMP Books Data Was Successfull.")
+      }else{
+        toast.error("Something Went wrong.Copy of Book Data was Not SuccessFull")
+        return
+      }
+      const response = await axiosInstance.get('BBMPCITZAPI/GetTaxDetails?applicationNo=' + formData.verifySASNUM + '&propertycode='+JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+'&P_BOOKS_PROP_APPNO='+JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))+'&loginId=crc')
 
-      const response = await axiosInstance.get('BBMPCITZAPI/GetTaxDetails?applicationNo=' + formData.verifySASNUM)
+     
       const { Table = [] } = response.data;
       if (Table.length === 0) {
         toast.error("No SAS Applications Found");
@@ -379,7 +413,7 @@ debugger
   };
 
   const handleNavigation = () => {
-    navigate('/AreaDimension/select')
+    navigate('/AreaDimension')
   }
   function GradientCircularProgress() {
     return (
@@ -600,14 +634,29 @@ debugger
         >
           {({ errors, touched, handleBlur  }) => (
             <Form>
-             
-
-             
-           
-                
-              
               <br></br>
               <br></br>
+              <FormControl fullWidth sx={{ marginBottom: 3 }}
+              error={touched.propertyType && !!errors.propertyType}
+              className={touched.propertyType && !!errors.propertyType ? 'shake' : ''}>
+            <InputLabel>Select the Property Type</InputLabel>
+            <Select
+              name="propertyType"
+              value={formData.propertyType}
+              onChange={handleChange}
+              inputProps={{ readOnly: !isEditable }}
+              onBlur={handleBlur}
+              sx={{backgroundColor: !isEditable? '' : "#ffff"}}
+            >
+              <MenuItem value="">Select</MenuItem>
+              <MenuItem value="1">Vacant Site</MenuItem>
+              <MenuItem value="2">Site with Building</MenuItem>
+              <MenuItem value="3">Multistorey Flats</MenuItem>
+            </Select>
+            <FormHelperText>
+                      {touched.propertyType && errors.propertyType ? errors.propertyType : ''}
+                    </FormHelperText>
+          </FormControl>
               <Grid container spacing={4}>
                 <Grid item xs={12} sm={6}>
                   <TextField
@@ -617,13 +666,14 @@ debugger
                     name="DoorPlotNo"
                     value={formData.DoorPlotNo}
                     onChange={handleChange}
-                    variant={isEditable ? "standard" : "filled"}
+                    variant={isEditable ? "outlined" : "filled"}
                     onBlur={handleBlur}
                     className={touched.DoorPlotNo && !!errors.DoorPlotNo ? 'shake' : ''}
                     error={touched.DoorPlotNo && !!errors.DoorPlotNo}
                     helperText={touched.DoorPlotNo && errors.DoorPlotNo}
                     InputProps={{
                       readOnly: !isEditable,
+                      style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
                       endAdornment: (
                         <Tooltip title={t("doorPlotNoInfo")}>
                           <IconButton color="primary">
@@ -641,13 +691,14 @@ debugger
                     name="BuildingLandName"
                     value={formData.BuildingLandName}
                     onChange={handleChange}
-                    variant={isEditable ? "standard" : "filled"}
+                    variant={isEditable ? "outlined" : "filled"}
                     onBlur={handleBlur}
                     className={touched.BuildingLandName && !!errors.BuildingLandName ? 'shake' : ''}
                     error={touched.BuildingLandName && !!errors.BuildingLandName}
                     helperText={touched.BuildingLandName && errors.BuildingLandName}
                     InputProps={{
                       readOnly: !isEditable,
+                      style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
                       endAdornment: (
                         <Tooltip title={t("buildingLandNameInfo")}>
                           <IconButton color="primary">
@@ -670,9 +721,10 @@ debugger
                     className={touched.NearestLandmark && !!errors.NearestLandmark ? 'shake' : ''}
                     error={touched.NearestLandmark && !!errors.NearestLandmark}
                     helperText={touched.NearestLandmark && errors.NearestLandmark}
-                    variant={isEditable ? "standard" : "filled"}
+                    variant={isEditable ? "outlined" : "filled"}
                     InputProps={{
                       readOnly: !isEditable,
+                      style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
                       endAdornment: (
                         <Tooltip title={t("nearestLandmarkInfo")}>
                           <IconButton color="primary">
@@ -695,9 +747,10 @@ debugger
                     className={touched.Pincode && !!errors.Pincode ? 'shake' : ''}
                     error={touched.Pincode && !!errors.Pincode}
                     helperText={touched.Pincode && errors.Pincode}
-                    variant={isEditable ? "standard" : "filled"}
+                    variant={isEditable ? "outlined" : "filled"}
                     InputProps={{
                       readOnly: !isEditable,
+                      style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
                       endAdornment: (
                         <Tooltip title={t("pincodeInfo")}>
                           <IconButton color="primary">
@@ -719,8 +772,9 @@ debugger
                     className={touched.AreaLocality && !!errors.AreaLocality ? 'shake' : ''}
                     error={touched.AreaLocality && !!errors.AreaLocality}
                     helperText={touched.AreaLocality && errors.AreaLocality}
-                    variant={isEditable ? "standard" : "filled"}
+                    variant={isEditable ? "outlined" : "filled"}
                     InputProps={{
+                      style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
                       readOnly: !isEditable,
                       endAdornment: (
                         <Tooltip title={t("areaLocalityInfo")}>
@@ -747,6 +801,7 @@ debugger
                       onChange={handleChange}
                       inputProps={{ readOnly: !isEditable }}
                       onBlur={handleBlur}
+                      sx={{backgroundColor: !isEditable? '' : "#ffff"}}
                     >
                       <MenuItem value="">--Select--</MenuItem>
                       {tableData.map((item) => (
@@ -838,19 +893,17 @@ debugger
                       <Button color="error" variant='outlined' onClick={handleFileDelete} sx={{ ml: 2 }}>
                         Delete Image
                       </Button>
-                      <Typography variant="body1" sx={{ ml: 1, color: '#df1414' }}>
-                        Maximum File Size should not exceed 500 KB
-                      </Typography>
                     </Box>
                   )}
                 </Grid>
               </Grid>
+              <br></br>
               <Grid container spacing={4} alignItems={"center"}>
                 <Grid item xs={12} sm={6}>
                   
                   <TextField
                     fullWidth
-                    variant={isEditable ? "standard" : "filled"}
+                    variant={isEditable ? "outlined" : "filled"}
                     label="SAS Application Number"
                     name="verifySASNUM"
                     value={formData.verifySASNUM}
@@ -861,6 +914,7 @@ debugger
                     helperText={touched.verifySASNUM && errors.verifySASNUM}
                     InputProps={{
                       readOnly: !isEditable,
+                      style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
                       endAdornment: (
                         <Tooltip title={t("streetNameInfo")}>
                           <IconButton color="primary">
@@ -872,7 +926,7 @@ debugger
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <Button color='success' variant={"contained"} onClick={async () => handleSASClick()}>Verify SAS Application Number</Button>
+                  <Button color='success' variant={"contained"}  disabled={!isEditable} onClick={async () => handleSASClick()}>Verify SAS Application Number</Button>
                 </Grid>
               </Grid>
               <TableContainer component={Paper} sx={{ mt: 4 }}>
@@ -916,7 +970,7 @@ debugger
               <Grid item xs={12}>
                 <Box display="flex" justifyContent="center" gap={2}>
                   <Button variant="contained" color="primary" onClick={handleAddressEdit}>
-                    Edit Address
+                    Edit
                   </Button>
                   <Button variant="contained" color="success" type="submit">
                     {t("save")}

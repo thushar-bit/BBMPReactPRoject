@@ -50,6 +50,7 @@ const MultiStoreyBuildingDetails = () => {
 
   const navigate = useNavigate();
   const [isEditable, setIsEditable] = useState(false);
+  const [isInitialEditable,setInitialEditable] = useState(false);
   const [tablesdata2, setTablesData2] = useState([]);
   const [tablesdata3, setTablesData3] = useState([]);
   const [tablesdata4, setTablesData4] = useState([]);
@@ -118,7 +119,15 @@ const MultiStoreyBuildingDetails = () => {
     });
 
   };
-
+const handleEdit = () => {
+  if(isInitialEditable)
+    {
+    setInitialEditable(false);
+  }
+  else {
+    setInitialEditable(true);
+  }
+}
   const fetchData = async () => {
     try {
       debugger
@@ -248,6 +257,7 @@ debugger
       setTimeout(async () => {
         await fetchData();
         setIsEditable(false);
+        setInitialEditable(false);
       }, 2000);
     } catch (error) {
       await toast.error("Error saving data!" + error, {
@@ -265,7 +275,7 @@ debugger
     }
   }
   const back = () => {
-    navigate('/AreaDimension/flats');
+    navigate('/AreaDimension');
   };
 
   const handleNavigation = () => {
@@ -320,7 +330,10 @@ debugger
                     error={touched.BlockName && !!errors.BlockName}
                     helperText={touched.BlockName && errors.BlockName}
                     InputProps={{
+                      style: { backgroundColor:  !isInitialEditable ? '#ffff': "" } ,
+                      readOnly: !isInitialEditable,
                       endAdornment: (
+                        
                         <Tooltip title={t("propertyEIDInfo")}>
                           <IconButton color="primary">
                             <InfoIcon />
@@ -342,6 +355,8 @@ debugger
                     error={touched.FlatNos && !!errors.FlatNos}
                     helperText={touched.FlatNos && errors.FlatNos}
                     InputProps={{
+                      style: { backgroundColor:  isInitialEditable ? '#ffff': "" } ,
+                      readOnly: !isInitialEditable,
                       endAdornment: (
                         <Tooltip title={t("propertyEIDInfo")}>
                           <IconButton color="primary">
@@ -365,6 +380,8 @@ debugger
                       value={formData.floornumber}
                       onChange={handleChange}
                       onBlur={handleBlur}
+                      sx={{ backgroundColor: !isInitialEditable?  '':"#ffff" }}
+                      inputProps={{ readOnly: !isInitialEditable }}
                     >
                       <MenuItem value="">--Select--</MenuItem>
                       {tablesdata4.map((item) => (
@@ -391,6 +408,8 @@ debugger
                       value={formData.features}
                       onChange={handleChange}
                       onBlur={handleBlur}
+                      sx={{ backgroundColor: !isInitialEditable?  '':"#ffff" }}
+                      inputProps={{ readOnly: !isInitialEditable }}
                     >
                       <MenuItem value="">--Select--</MenuItem>
                       {tablesdata2.map((item) => (
@@ -417,6 +436,8 @@ debugger
                       value={formData.Typeofuse}
                       onChange={handleChange}
                       onBlur={handleBlur}
+                      sx={{ backgroundColor: !isInitialEditable?  '':"#ffff" }}
+                      inputProps={{ readOnly: !isInitialEditable }}
                     >
                       <MenuItem value="">--Select--</MenuItem>
                       {tablesdata3.map((item) => (
@@ -443,6 +464,8 @@ debugger
                     error={touched.yearOfConstruction && !!errors.yearOfConstruction}
                     helperText={touched.yearOfConstruction && errors.yearOfConstruction}
                     InputProps={{
+                      style: { backgroundColor:  isInitialEditable ? '#ffff': "" } ,
+                      readOnly: !isInitialEditable,
                       endAdornment: (
                         <Tooltip title={t("doorPlotNoInfo")}>
                           <IconButton color="primary">
@@ -459,14 +482,15 @@ debugger
                 <Grid item xs={12} sm={4}>
                   <TextField
                     fullWidth
-                    variant={isEditable ? "standard" : "filled"}
+                    variant={isEditable ? "outlined" : "filled"}
                     label={"Total number of parking units : "}
                     name="Totalnumberofparkingunits"
                     type='number'
                     value={formData.Totalnumberofparkingunits}
                     onChange={handleChange}
                     InputProps={{
-                      readOnly: !isEditable,
+                      style: { backgroundColor: isEditable && isInitialEditable? '#ffff' : '' },
+                      readOnly: (isEditable && isInitialEditable ? false :true),
                       endAdornment: (
                         <Tooltip title={t("buildingLandNameInfo")}>
                           <IconButton color="primary">
@@ -480,14 +504,15 @@ debugger
                 <Grid item xs={12} sm={4}>
                   <TextField
                     fullWidth
-                    variant={isEditable ? "standard" : "filled"}
+                    variant={isEditable ? "outlined" : "filled"}
                     label={"Total Parking Area(in Sq. mts.)"}
                     name="TotalParkingArea"
                     type='number'
                     value={formData.TotalParkingArea}
                     onChange={handleChange}
                     InputProps={{
-                      readOnly: !isEditable,
+                      readOnly: (isEditable && isInitialEditable ? false :true),
+                      style: { backgroundColor: isEditable && isInitialEditable? '#ffff' : '' },
                       endAdornment: (
                         <Tooltip title={t("streetInfo")}>
                           <IconButton color="primary">
@@ -511,6 +536,8 @@ debugger
                       value={formData.Occupancy}
                       onChange={handleChange}
                       onBlur={handleBlur}
+                      inputProps={{ readOnly: !isInitialEditable }}
+                      sx={{ backgroundColor: !isInitialEditable?  '':"#ffff" }}
                     >
                       <MenuItem value="">--Select--</MenuItem>
                       {tablesdata6.map((item) => (
@@ -537,6 +564,8 @@ debugger
                     error={touched.BesomCustomerID && !!errors.BesomCustomerID}
                     helperText={touched.BesomCustomerID && errors.BesomCustomerID}
                     InputProps={{
+                      style: { backgroundColor:  isInitialEditable ? '#ffff': "" } ,
+                      readOnly: !isInitialEditable,
                       endAdornment: (
                         <Tooltip title={t("pincodeInfo")}>
                           <IconButton color="primary">
@@ -560,6 +589,8 @@ debugger
                       value={formData.SelectOwnerShareType}
                       onChange={handleChange}
                       onBlur={handleBlur}
+                      inputProps={{ readOnly: !isInitialEditable }}
+                      sx={{ backgroundColor: !isInitialEditable?  '':"#ffff" }}
                     >
                       <MenuItem value="">--Select--</MenuItem>
                       <MenuItem value="1">ಮಾಲೀಕರ ಹಕ್ಕಿನ ವಿಸ್ತೀರ್ಣ / Owner Share Area</MenuItem>
@@ -584,6 +615,8 @@ debugger
                     helperText={touched.OwnersShareAreaSqmts && errors.OwnersShareAreaSqmts}
                     type='number'
                     InputProps={{
+                      style: { backgroundColor:  isInitialEditable ? '#ffff': "" } ,
+                      readOnly:!isInitialEditable,
                       endAdornment: (
                         <Tooltip title={t("areaLocalityInfo")}>
                           <IconButton color="primary">
@@ -657,6 +690,9 @@ debugger
                 <Button variant="contained" color="primary" onClick={back}>
                   Previous
                 </Button>
+                <Button variant="contained" color="primary" onClick={handleEdit}>
+                  Edit
+                </Button>
                 <Button variant="contained" color="success" type="submit">
                   Save
                 </Button>
@@ -664,6 +700,7 @@ debugger
                 <Button variant="contained" color="primary" onClick={handleNavigation}>
                   Next
                 </Button>
+           
               </Box>
             </Form>
           )}

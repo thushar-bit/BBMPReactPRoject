@@ -321,7 +321,7 @@ debugger
 
   };
   const back = () => {
-    navigate('/AreaDimension/select');
+    navigate('/AreaDimension');
   };
   const VerfiyEKYC = async () => {
     debugger
