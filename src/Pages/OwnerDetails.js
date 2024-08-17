@@ -151,10 +151,10 @@ debugger
         if (data.MOBILEVERIFY !== "Verfied") {
           atLeastOneMobileVerified = false;
         }
-        if (data.IDENTIFIERNAME.length <= 0 || data.IDENTIFIERNAME === null) {
+        if (data.IDENTIFIERNAME === null || data.IDENTIFIERNAME === "" || data.IDENTIFIERNAME === undefined) {
           relationname = false;
         }
-        if (data.IDENTIFIERTYPEID === "0" || data.IDENTIFIERTYPEID === null || data.IDENTIFIERTYPEID.length <= 0) {
+        if (data.IDENTIFIERTYPEID === "0" || data.IDENTIFIERTYPEID === null || data.IDENTIFIERTYPEID === undefined) {
           relationshiptype = false;
         }
       }

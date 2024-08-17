@@ -20,25 +20,26 @@ const AreaDimension = () => {
     plotAreaSqFt: "",
     plotAreaSqMt: "",
     builtUpAreaSqFt: "",
-    builtUpAreaSqMt: "0",
+    builtUpAreaSqMt: "",
     modify: 'no',
     modifycheckbandi: 'no',
     oddSite: 'EVEN',
     propertyType: "",
-    ApartCarpetArea: "0",
-    ApartAddtionalArea: "0",
-    ApartSuperBuiltArea: "0",
-    cal1: "0",
-    cal2: "0",
-    cal3: "0",
-    cal4: "0",
-    cal5: "0",
-    cal6: "0",
-    cal7: "0",
-    cal8: "0",
-    sqFt: "0",
-    sqMt: "0"
+    ApartCarpetArea: "",
+    ApartAddtionalArea: "",
+    ApartSuperBuiltArea: "",
+    cal1: "",
+    cal2: "",
+    cal3: "",
+    cal4: "",
+    cal5: "",
+    cal6: "",
+    cal7: "",
+    cal8: "",
+    sqFt: "",
+    sqMt: ""
   });
+  
   const [isEditable, setIsEditable] = useState(false);
   const [isEditablecheckbandhi, setIsEditablecheckbandi] = useState(false);
   const navigate = useNavigate();
@@ -121,46 +122,31 @@ const AreaDimension = () => {
         Table3: NCLTable3Data = [],
         Table7: NCLTable7Data = []
       } = response2.data;
-      setFormData((prevFormData) => {
-        const updatedFormData = {
-          ...prevFormData,
-          propertyType: NCLTable1Data.length > 0 ? NCLTable1Data[0].PROPERTYCATEGORYID || "0" : "0",
-          east: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_EAST || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_EAST || '' : '',
-          west: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_WEST || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_WEST || '' : '',
-          north: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_NORTH || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_NORTH || '' : '',
-          south: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_SOUTH || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_SOUTH || '' : '',
-          ns: NCLTable3Data.length > 0 ? NCLTable3Data[0].NORTHSOUTH || '' : Table3Data.length > 0 ? Table3Data[0].NORTHSOUTH || '' : '',
-          ew: NCLTable3Data.length > 0 ? NCLTable3Data[0].EASTWEST || '' : Table3Data.length > 0 ? Table3Data[0].EASTWEST || '' : '',
-          plotAreaSqFt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREAFT || '' : Table2Data.length > 0 ? Table2Data[0].SITEAREAFT || '' : '',
-          plotAreaSqMt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREA || '' : Table2Data.length > 0 ? Table2Data[0].SITEAREA || '' : '',
-          builtUpAreaSqFt: NCLTable2Data.length > 0 ? NCLTable2Data[0].BUILDINGAREAFT || '' : Table2Data.length > 0 ? Table2Data[0].BUILDINGAREAFT || '' : '',
-          builtUpAreaSqMt: NCLTable2Data.length > 0 ? NCLTable2Data[0].BUILDINGAREA || '' : Table2Data.length > 0 ? Table2Data[0].BUILDINGAREA || '' : '',
-          ApartCarpetArea: NCLTable7Data.length > 0 ? NCLTable7Data[0].CARPETAREA || '' : Table7Data.length > 0 ? Table7Data[0].CARPETAREA || '' : '',
-          ApartAddtionalArea: NCLTable7Data.length > 0 ? NCLTable7Data[0].ADDITIONALAREA || '' : Table7Data.length > 0 ? Table7Data[0].ADDITIONALAREA || '' : '',
-          ApartSuperBuiltArea: NCLTable7Data.length > 0 ? NCLTable7Data[0].SUPERBUILTUPAREA || "0" : Table7Data.length > 0 ? Table7Data[0].SUPERBUILTUPAREA || '' : '',
-          cal1: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE1FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
-          cal2: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE2FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
-          cal3: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE3FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
-          cal4: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE4FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
-          cal5: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE1FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
-          cal6: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE2FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
-          cal7: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE3FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
-          cal8: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE4FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
-        };
-      
-        const areAllFieldsEmpty = Object.values(updatedFormData).every(value => value === '' || value === "0");
-      
-        // Log the check for debugging
-        console.log('Are all fields empty?', areAllFieldsEmpty);
-      
-        setIsEditable(areAllFieldsEmpty);
-        setIsEditablecheckbandi(areAllFieldsEmpty);
-      
-        return updatedFormData;
-      });
-      debugger
-      
-   
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        propertyType: NCLTable1Data.length > 0 ? NCLTable1Data[0].PROPERTYCATEGORYID || "0" : "0",
+        east: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_EAST || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_EAST || '' : '',
+        west: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_WEST || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_WEST || '' : '',
+        north: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_NORTH || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_NORTH || '' : '',
+        south: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_SOUTH || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_SOUTH || '' : '',
+        ns: NCLTable3Data.length > 0 ? NCLTable3Data[0].NORTHSOUTH || '' : Table3Data.length > 0 ? Table3Data[0].NORTHSOUTH || '' : '',
+        ew: NCLTable3Data.length > 0 ? NCLTable3Data[0].EASTWEST || '' : Table3Data.length > 0 ? Table3Data[0].EASTWEST || '' : '',
+        plotAreaSqFt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREAFT || '' : Table2Data.length > 0 ? Table2Data[0].SITEAREAFT || '' : '',
+        plotAreaSqMt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREA || '' : Table2Data.length > 0 ? Table2Data[0].SITEAREA || '' : '',
+        builtUpAreaSqFt: NCLTable2Data.length > 0 ? NCLTable2Data[0].BUILDINGAREAFT || '' : Table2Data.length > 0 ? Table2Data[0].BUILDINGAREAFT || '' : '',
+        builtUpAreaSqMt: NCLTable2Data.length > 0 ? NCLTable2Data[0].BUILDINGAREA || '' : Table2Data.length > 0 ? Table2Data[0].BUILDINGAREA || '' : '',
+        ApartCarpetArea: NCLTable7Data.length > 0 ? NCLTable7Data[0].CARPETAREA || '' : Table7Data.length > 0 ? Table7Data[0].CARPETAREA || '' : '',
+        ApartAddtionalArea: NCLTable7Data.length > 0 ? NCLTable7Data[0].ADDITIONALAREA || '' : Table7Data.length > 0 ? Table7Data[0].ADDITIONALAREA || '' : '',
+        ApartSuperBuiltArea: NCLTable7Data.length > 0 ? NCLTable7Data[0].SUPERBUILTUPAREA || 0 : Table7Data.length > 0 ? Table7Data[0].SUPERBUILTUPAREA || '' : '',
+        cal1: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE1FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
+        cal2: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE2FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
+        cal3: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE3FT || '': Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
+        cal4: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE4FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
+        cal5: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE1FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
+        cal6: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE2FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
+        cal7: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE3FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
+        cal8: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE4FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
+      }));
     }
     catch (error) {
       navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
