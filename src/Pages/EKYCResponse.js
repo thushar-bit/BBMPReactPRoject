@@ -14,7 +14,7 @@ const EKYCResponse = () => {
   const fetchData = async () => {
     const params = new URLSearchParams(location.search);
     const txnno = params.get('txnno');
-    const Success = params.get('Success');
+    const status = params.get('status');
     const vaultrefno = params.get('vaultrefno');
     const LoginId = params.get('LoginId');
 
@@ -22,19 +22,19 @@ const EKYCResponse = () => {
     if (txnno !== null) {
       const params1 = {
         txnNo: txnno,
-        success: Success,
+        success: status,
         vaultrefno: vaultrefno,
         loginid: LoginId,
       };
       settxnos(txnno);
       const queryString = new URLSearchParams(params1).toString();
       console.log("txno no" + txnno)
-      console.log("Success" + Success)
+      console.log("Success" + status)
       console.log(" vaultrefno " + vaultrefno)
       console.log("loginid" + LoginId)
 
 
-      setStatus(Success);
+      setStatus(status);
       try {
         const response = await axiosInstance.get(`E-KYCAPI/UPDATE_EKYC_OWNER_VAULT_RESPONSE?${queryString}`);
         if (response.status === 200) {

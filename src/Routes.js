@@ -19,11 +19,13 @@ import Footer from './Footer';
 import Breadcrumbs from './components/Breadcrumbs';
 import PrivateRoute from './components/PrivateRoute';
 import { AuthProvider } from './context/AuthProvider';
+import ScrollToTop from './components/ScrollTop';
 
 const AppRoutes = () => {
   return (
     <AuthProvider>
       <Router basename="/citizen_core">
+      <ScrollToTop />
         <Header />
         <div className="App">
           <Breadcrumbs />
