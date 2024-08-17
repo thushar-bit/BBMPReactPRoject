@@ -134,16 +134,22 @@ debugger
         debugger
         if (response3.data === "There is a issue while copying the data from Book Module.No Data Found") {
        //   const response4 = await axiosInstance.get('BBMPCITZAPI/COPY_DATA_FROM_BBDDRAFT_NCLTEMP?LoginId=crc');
-        toast.error("Error in fetching Applicant Entered Property Data")
-        return
+        //toast.error("Error in fetching Applicant Entered Property Data")
+        sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(response3.data.PropertyId || 1135760));
+        const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&propertyid=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
+        sessionStorage.setItem('BBD_DRAFT_API', JSON.stringify(response1));
+        setTimeout(() => {
+          //   navigate('/BBDDraft');
+          navigate('/AddressDetails')
+           }, 2000);
         }
         else {
 
           toast.success("Login Successfull !!");
 
           debugger
-          sessionStorage.setItem('P_BOOKS_PROP_APPNO', JSON.stringify(response3.data.P_BOOKS_PROP_APPNO || null));
-          sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(response3.data.PropertyId));
+          sessionStorage.setItem('P_BOOKS_PROP_APPNO', JSON.stringify(response3.data.P_BOOKS_PROP_APPNO || 0));
+          sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(response3.data.PropertyId || 0));
         
         try {
           const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&propertyid=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');

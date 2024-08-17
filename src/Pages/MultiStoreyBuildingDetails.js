@@ -137,6 +137,9 @@ const handleEdit = () => {
       const { Table15 = [], Table16 = [], Table17 = [] } = response1.data;
       const { Table7 = [] } = response2.data;
       const { Table7:NCLTABLE7 = [] } = response3.data;
+      if(NCLTABLE7.length === 0){
+        setInitialEditable(true);
+      }
       const table1Item = Table7.length > 0 ? Table7 : [];
       const table13Item = NCLTABLE7.length > 0 ? NCLTABLE7[0] : [];
       const table16Item = Table16.length > 0 ? Table16 : [];
@@ -169,7 +172,7 @@ debugger
         ownersharetypeValue = ""
         sharetype = "0";
       }
-      if (table13Item.FEATUREHEADID !== null && table13Item.FEATUREHEADID !== "") {
+      if (table13Item.FEATUREHEADID !== null && table13Item.FEATUREHEADID !== "" && table13Item.FEATUREHEADID !== undefined) {
 
         const response3 = await axiosInstance.get(`BBMPCITZAPI/GetNPMMasterTable?FeaturesHeadID=${table13Item.FEATUREHEADID}`);
         if (response3.data.Table.length > 0) {
@@ -284,7 +287,7 @@ debugger
 
   };
 
-  console.log(formData.propertyType);
+ 
 
   return (
     <Container maxWidth="xl">
@@ -330,7 +333,7 @@ debugger
                     error={touched.BlockName && !!errors.BlockName}
                     helperText={touched.BlockName && errors.BlockName}
                     InputProps={{
-                      style: { backgroundColor:  !isInitialEditable ? '#ffff': "" } ,
+                      style: { backgroundColor:  !isInitialEditable ? '': "#ffff" } ,
                       readOnly: !isInitialEditable,
                       endAdornment: (
                         
@@ -355,7 +358,7 @@ debugger
                     error={touched.FlatNos && !!errors.FlatNos}
                     helperText={touched.FlatNos && errors.FlatNos}
                     InputProps={{
-                      style: { backgroundColor:  isInitialEditable ? '#ffff': "" } ,
+                      style: { backgroundColor:  !isInitialEditable ? '': "#ffff" } ,
                       readOnly: !isInitialEditable,
                       endAdornment: (
                         <Tooltip title={t("propertyEIDInfo")}>

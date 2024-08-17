@@ -289,7 +289,7 @@ const BuildingDetails = () => {
     fetchData();
 
   }, []);
-  console.log(formData.propertyType)
+ 
   return (
     <Container maxWidth="xl">
       <ToastContainer />

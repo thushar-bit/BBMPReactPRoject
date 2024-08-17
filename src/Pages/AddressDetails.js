@@ -31,11 +31,17 @@ const VisuallyHiddenInput = styled('input')({
 const AddressDetails = () => {
   const [formData, setFormData] = useState({
     propertyCode: '',
+    propertyNumber:"",
+    propertyEID:"",
+    district:"",
+    ulbname:"",
+    buildingname:"",
+    NearestLandmark:"",
+    DoorPlotNo:"",
     streetid: '',
     streetName: "",
     Street: "",
     doorno: '',
-    buildingname: '',
     areaorlocality: '',
     landmark: '',
     propertyType: '',
@@ -46,19 +52,23 @@ const AddressDetails = () => {
     loginId: 'crc',
     verifySASNUM: "",
     lat1: 0,
-    long1: 0
+    long1: 0,
+    wardNumber:"",
+    ownerName:""
   });
   const validationSchema = Yup.object().shape({
-    DoorPlotNo: Yup.string().required('Door/Plot Number is required'),
-    BuildingLandName: Yup.string().required('Building/Land Name is required'),
-    AreaLocality: Yup.string().required('Area/Locality is required'),
+    DoorPlotNo: Yup.string().required('Door/Plot Number is required').notOneOf(['0'], 'Door Name cannot be "0"'),
+    buildingname: Yup.string().required('Building/Land Name is required'),
+    areaorlocality: Yup.string().required('Area/Locality is required'),
     NearestLandmark: Yup.string().required('Nearest Landmark is required'),
-    Pincode: Yup.string()
+    pincode: Yup.string()
       .required('Pincode is required')
       .matches(/^\d{6}$/, 'Pincode must be a 6-digit number'),
-    verifySASNUM: Yup.string().required('SAS Application Number is required'),
-    streetid: Yup.string().required('Street Name is required'),
-    propertyType:Yup.string().required('Property Type is required'),
+    verifySASNUM: Yup.string().required('SAS Application Number is required').notOneOf(['0'], 'SAS Number cannot be "0"'),
+    streetid: Yup.string().required('Street Name is required').notOneOf(['0'], 'Street Name cannot be "0"'),
+    propertyType:Yup.string().required('Property Type is required').notOneOf(['0'], 'Property Type cannot be Select'),
+    lat1:Yup.string().required('latitude is required').notOneOf(['0'], 'latitude cannot be "0"'),
+    long1:Yup.string().required('longitude is required').notOneOf(['0'], 'longitude cannot be "0"'),
   });
 
   const navigate = useNavigate();
@@ -68,8 +78,10 @@ const AddressDetails = () => {
   const [isEditable, setIsEditable] = useState(false);
   const [handlemapClicks, sethandlemapClicks] = useState(false);
   const [handleSASClicks, sethandleSASClicks] = useState(true);
+  const [fieldvalue,setFieldValue] = useState("")
   const [lat2, setlat1] = useState(0);
   const [long2, setlong1] = useState(0);
+  
   const [tableData, setTableData] = useState([
   ]);
   const [SAStableData, setSASTableData] = useState([]);
@@ -78,28 +90,34 @@ const AddressDetails = () => {
     try {
       const response = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
       const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
-    //  const response = await axiosInstance.get('BBMPCITZAPI/GetBBDRedisData?propertyid='+JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+'');
-   //  const response2 = await axiosInstance.get('BBMPCITZAPI/GetNCLRedisData?P_BOOKS_PROP_APPNO='+JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))+'&Propertycode='+JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+'');
       const response3 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
 debugger
       const { Table1 = [], Table5 = [], } = response.data;
+let NCLtable1Item = [];
+let Table11Item = [];
+let table4Item = [];
+      if(response2){
       const { Table11 = [], Table1: NCLTABLE1 = [], Table4 = [] } = response2.data;
+       NCLtable1Item = NCLTABLE1.length > 0 ? NCLTABLE1[0] : [];
+       Table11Item = Table11.length > 0 ? Table11[0] : [];
+       table4Item = Table4.length > 0 ? Table4[0] : [];
+      setPreviewUrl(`data:image1/png;base64,${Table11Item.PROPERTYPHOTO || ""}`);
+      setPropertyPhoto(Table11Item.PROPERTYPHOTO || "");
+     
+      }else {
+      setIsEditable(true)
+      }
       const { Table2 = [] } = response3.data;
       const table1Item = Table1.length > 0 ? Table1[0] : [];
-      const NCLtable1Item = NCLTABLE1.length > 0 ? NCLTABLE1[0] : [];
-      if(NCLTABLE1.length === 0){
-        setIsEditable(true)
-      }
+     
       const table5Item = Table5.length > 0 ? Table5[0] : [];
-      const Table11Item = Table11.length > 0 ? Table11[0] : [];
-      const table4Item = Table4.length > 0 ? Table4[0] : [];
+      
 
       const filteredData = Table2.filter(item =>
         item.STREETID !== 99999 && item.WARDID === table1Item.WARDID
       );
       setTableData(filteredData);
-      setPreviewUrl(`data:image1/png;base64,${Table11Item.PROPERTYPHOTO}`);
-      setPropertyPhoto(Table11Item.PROPERTYPHOTO);
+  
       setFormData({
         propertyType: NCLtable1Item.PROPERTYCATEGORYID || "0" ,
         propertyEID: table1Item.PROPERTYID || '',
@@ -111,11 +129,11 @@ debugger
         ownerName: table5Item.OWNERNAME || '',
         streetName: table1Item.STREETNAME_EN || '',
         DoorPlotNo: Table11Item.DOORNO || '',
-        BuildingLandName: Table11Item.BUILDINGNAME || '',
+        buildingname: Table11Item.BUILDINGNAME || '',
         streetid: NCLtable1Item.STREETID || '',
         NearestLandmark: Table11Item.LANDMARK || '',
-        Pincode: Table11Item.PINCODE || '',
-        AreaLocality: Table11Item.AREAORLOCALITY || '',
+        pincode: Table11Item.PINCODE || '',
+        areaorlocality: Table11Item.AREAORLOCALITY || '',
         lat1: table4Item.LATITUDE || 0,
         long1: table4Item.LONGITUDE || 0,
         verifySASNUM: NCLtable1Item.PUID !== null ? NCLtable1Item.PUID || 0 : table1Item.PUID ? table1Item.PUID : 0,
@@ -144,7 +162,7 @@ debugger
   const handleChange = (e) => {
     debugger
     const { name, value } = e.target;
-    if (name === "Pincode") {
+    if (name === "pincode") {
       if (/^\d{0,6}$/.test(value)) {
         setFormData({
           ...formData,
@@ -234,6 +252,7 @@ const CopyBookData = async () => {
        toast.error("There is a issue while copying the data from Book Module.No Data Found")
        return false
          }
+         sessionStorage.setItem('P_BOOKS_PROP_APPNO', JSON.stringify(response3.data.P_BOOKS_PROP_APPNO));
          return true;
     }
     else{
@@ -245,8 +264,9 @@ const CopyBookData = async () => {
   }
   
 }
+
   const handleSubmit = async () => {
-    //
+  
     debugger
     var propertyphoto2 = "";
     if (isEditable) {
@@ -254,8 +274,10 @@ const CopyBookData = async () => {
         propertyphoto2 = await getPropertyphoto(selectedFile);
       }
       if(propertyPhoto.length === 0){
+        if(propertyphoto2.length === 0){
         toast.error("Please Upload the New Property Photo");
         return;
+        }
       }
       setLoading(true);
       const copy = await CopyBookData();
@@ -271,10 +293,10 @@ const CopyBookData = async () => {
         categoryId:formData.propertyType,
         streetid: formData.streetid,
         doorno: formData.DoorPlotNo,
-        buildingname: formData.BuildingLandName,
-        areaorlocality: formData.AreaLocality,
+        buildingname: formData.buildingname,
+        areaorlocality: formData.areaorlocality,
         landmark: formData.NearestLandmark,
-        pincode: formData.Pincode,
+        pincode: formData.pincode,
         propertyphoto: propertyphoto2.length > 0 ? propertyphoto2 : propertyPhoto,
         puidNo: formData.verifySASNUM,
         loginId: "crc",
@@ -301,7 +323,7 @@ const CopyBookData = async () => {
       }, 1000);
 
         setIsEditable(false);
-        //await fetchData(); 
+        await fetchData(); 
         setLoading(false);
       } catch (error) {
         await toast.error("Error saving data ", error, {
@@ -330,6 +352,7 @@ const CopyBookData = async () => {
     }
     setLoading(false);
   }
+
   const handleMapClick = () => {
     if (handleMapClick === true) {
       sethandlemapClicks(false)
@@ -341,7 +364,7 @@ const CopyBookData = async () => {
 
   const handleAddressChange = (newAddress) => {
     
-    console.log('New address:', newAddress);
+   
     if (!newAddress || !newAddress.address) {
       console.error('Address is undefined');
       return;
@@ -351,14 +374,14 @@ const CopyBookData = async () => {
     var pincode = "";
     var area = "";
  
-    console.log(pincodes)
+   
     if (parts.length === 3) {
       area = parts[0].trim();
       setFormData({
         ...formData,
         lat1: lat2 !== undefined ? newAddress.lat : 0,
         long1: long2 !== undefined ? newAddress.lng : 0,
-        AreaLocality: area
+        areaorlocality: area
 
       });
     } else {
@@ -374,8 +397,8 @@ const CopyBookData = async () => {
         lat1: lat2 !== undefined ? newAddress.lat : 0,
         long1: long2 !== undefined ? newAddress.lng : 0,
         DoorPlotNo: doorNo.length > 0 ? doorNo : "",
-        Pincode: pincode,
-        AreaLocality: area
+        pincode: pincode,
+        areaorlocality: area
 
       });
     }
@@ -412,9 +435,17 @@ const CopyBookData = async () => {
     }
   };
 
-  const handleNavigation = () => {
-    navigate('/AreaDimension')
-  }
+  const handleNavigation = async () => {
+    if(propertyPhoto.length === 0){
+      toast.error("Please Save the Address Details Before Going to Next Step");
+      return;
+      }
+      navigate('/AreaDimension')
+    }
+   
+   
+    
+  
   function GradientCircularProgress() {
     return (
       <React.Fragment>
@@ -628,11 +659,22 @@ const CopyBookData = async () => {
               <Formik
           initialValues={formData}
           validationSchema={validationSchema}
-          onSubmit={handleSubmit}
+          //onSubmit={handleSubmit}
+          onSubmit={(values, { setSubmitting }) => {
+            debugger
+            if (fieldvalue === 'save') {
+             handleSubmit()
+
+            } else if (fieldvalue === 'next') {
+            
+              handleNavigation();
+            }
+            setSubmitting(false);
+          }}
           validateOnChange={false}
           enableReinitialize
         >
-          {({ errors, touched, handleBlur  }) => (
+          {({ errors, touched, handleBlur }) => (
             <Form>
               <br></br>
               <br></br>
@@ -648,7 +690,7 @@ const CopyBookData = async () => {
               onBlur={handleBlur}
               sx={{backgroundColor: !isEditable? '' : "#ffff"}}
             >
-              <MenuItem value="">Select</MenuItem>
+              <MenuItem value="0">Select</MenuItem>
               <MenuItem value="1">Vacant Site</MenuItem>
               <MenuItem value="2">Site with Building</MenuItem>
               <MenuItem value="3">Multistorey Flats</MenuItem>
@@ -688,14 +730,14 @@ const CopyBookData = async () => {
                   <TextField
                     fullWidth
                     label={t("buildingLandName")}
-                    name="BuildingLandName"
-                    value={formData.BuildingLandName}
+                    name="buildingname"
+                    value={formData.buildingname}
                     onChange={handleChange}
                     variant={isEditable ? "outlined" : "filled"}
                     onBlur={handleBlur}
-                    className={touched.BuildingLandName && !!errors.BuildingLandName ? 'shake' : ''}
-                    error={touched.BuildingLandName && !!errors.BuildingLandName}
-                    helperText={touched.BuildingLandName && errors.BuildingLandName}
+                    className={touched.buildingname && !!errors.buildingname ? 'shake' : ''}
+                    error={touched.buildingname && !!errors.buildingname}
+                    helperText={touched.buildingname && errors.buildingname}
                     InputProps={{
                       readOnly: !isEditable,
                       style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
@@ -739,14 +781,14 @@ const CopyBookData = async () => {
                   <TextField
                     fullWidth
                     label={t("pincode")}
-                    name="Pincode"
+                    name="pincode"
                     type="number"
-                    value={formData.Pincode}
+                    value={formData.pincode}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className={touched.Pincode && !!errors.Pincode ? 'shake' : ''}
-                    error={touched.Pincode && !!errors.Pincode}
-                    helperText={touched.Pincode && errors.Pincode}
+                    className={touched.pincode && !!errors.pincode ? 'shake' : ''}
+                    error={touched.pincode && !!errors.pincode}
+                    helperText={touched.pincode && errors.pincode}
                     variant={isEditable ? "outlined" : "filled"}
                     InputProps={{
                       readOnly: !isEditable,
@@ -765,13 +807,13 @@ const CopyBookData = async () => {
                   <TextField
                     fullWidth
                     label={t("areaLocality")}
-                    name="AreaLocality"
-                    value={formData.AreaLocality}
+                    name="areaorlocality"
+                    value={formData.areaorlocality}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className={touched.AreaLocality && !!errors.AreaLocality ? 'shake' : ''}
-                    error={touched.AreaLocality && !!errors.AreaLocality}
-                    helperText={touched.AreaLocality && errors.AreaLocality}
+                    className={touched.areaorlocality && !!errors.areaorlocality ? 'shake' : ''}
+                    error={touched.areaorlocality && !!errors.areaorlocality}
+                    helperText={touched.areaorlocality && errors.areaorlocality}
                     variant={isEditable ? "outlined" : "filled"}
                     InputProps={{
                       style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
@@ -823,6 +865,9 @@ const CopyBookData = async () => {
                     value={formData.lat1}
                     onChange={handleChange}
                     variant={"filled"}
+                    className={touched.lat1 && !!errors.lat1 ? 'shake' : ''}
+                    error={touched.lat1 && !!errors.lat1}
+                    helperText={touched.lat1 && errors.lat1}
                     InputProps={{
                       readOnly: true,
                       endAdornment: (
@@ -843,6 +888,9 @@ const CopyBookData = async () => {
                     value={formData.long1}
                     onChange={handleChange}
                     variant={"filled"}
+                    className={touched.long1 && !!errors.long1 ? 'shake' : ''}
+                    error={touched.long1 && !!errors.long1}
+                    helperText={touched.long1 && errors.long1}
                     InputProps={{
                       readOnly: true,
                       endAdornment: (
@@ -972,11 +1020,12 @@ const CopyBookData = async () => {
                   <Button variant="contained" color="primary" onClick={handleAddressEdit}>
                     Edit
                   </Button>
-                  <Button variant="contained" color="success" type="submit">
+                  <Button variant="contained" color="success" type="submit"  onClick={() => setFieldValue('save')}>
                     {t("save")}
                   </Button>
 
-                  <Button variant="contained" color="primary" onClick={handleNavigation}>
+                  <Button variant="contained" color="primary"  type="submit"
+        onClick={() => setFieldValue('next')} >
                     Next
                   </Button>
                 </Box>

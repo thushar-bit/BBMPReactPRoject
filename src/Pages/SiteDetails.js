@@ -138,6 +138,9 @@ debugger
       const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
       const { Table16 = [] } = response1.data;
       const { Table2 = [] } = response2.data;
+      if(Table2.length === 0){
+        setInitialEditable(true)
+      }
       const table2Item = Table2.length > 0 ? Table2[0] : [];
       const table16Item = Table16.length > 0 ? Table16 : [];
       setTablesData2(table16Item);

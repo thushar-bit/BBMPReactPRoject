@@ -47,18 +47,17 @@ const AreaDimension = () => {
 
     const { name, value } = e.target;
     const updatedValue = parseFloat(value) || 0;
-debugger
+    debugger
     if (name === 'ns' || name === 'ew') {
       const nsValue = name === 'ns' ? updatedValue : formData.ns;
       const ewValue = name === 'ew' ? updatedValue : formData.ew;
-      if(nsValue !== 0&& ewValue !== 0){
-      const plotAreaSqFt = Math.round((nsValue > 0 ? nsValue : 1) * (ewValue > 0 ? ewValue : 1) * 100) / 100;
-      const plotAreaSqMt = Math.round(plotAreaSqFt * 0.092903 * 100) / 100;
-      formData.plotAreaSqFt = plotAreaSqFt;
-      formData.plotAreaSqMt = plotAreaSqMt;
+      if (nsValue !== 0 && ewValue !== 0) {
+        const plotAreaSqFt = Math.round((nsValue > 0 ? nsValue : 1) * (ewValue > 0 ? ewValue : 1) * 100) / 100;
+        const plotAreaSqMt = Math.round(plotAreaSqFt * 0.092903 * 100) / 100;
+        formData.plotAreaSqFt = plotAreaSqFt;
+        formData.plotAreaSqMt = plotAreaSqMt;
       }
-      else 
-      {
+      else {
         formData.plotAreaSqFt = 0;
         formData.plotAreaSqMt = 0;
       }
@@ -110,7 +109,6 @@ debugger
     try {
       const response = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
       const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
-
       const {
         Table1: Table1Data = [],
         Table2: Table2Data = [],
@@ -123,40 +121,52 @@ debugger
         Table3: NCLTable3Data = [],
         Table7: NCLTable7Data = []
       } = response2.data;
-      //BBD Tables
-
-debugger
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        propertyType: NCLTable1Data.length > 0 ? NCLTable1Data[0].PROPERTYCATEGORYID || "0" : "0",
-        east: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_EAST || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_EAST || '' : '',
-        west: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_WEST || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_WEST || '' : '',
-        north: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_NORTH || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_NORTH || '' : '',
-        south: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_SOUTH || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_SOUTH || '' : '',
-        ns: NCLTable3Data.length > 0 ? NCLTable3Data[0].NORTHSOUTH || '' : Table3Data.length > 0 ? Table3Data[0].NORTHSOUTH || '' : '',
-        ew: NCLTable3Data.length > 0 ? NCLTable3Data[0].EASTWEST || '' : Table3Data.length > 0 ? Table3Data[0].EASTWEST || '' : '',
-        plotAreaSqFt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREAFT || '' : Table2Data.length > 0 ? Table2Data[0].SITEAREAFT || '' : '',
-        plotAreaSqMt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREA || '' : Table2Data.length > 0 ? Table2Data[0].SITEAREA || '' : '',
-        builtUpAreaSqFt: NCLTable2Data.length > 0 ? NCLTable2Data[0].BUILDINGAREAFT || '' : Table2Data.length > 0 ? Table2Data[0].BUILDINGAREAFT || '' : '',
-        builtUpAreaSqMt: NCLTable2Data.length > 0 ? NCLTable2Data[0].BUILDINGAREA || '' : Table2Data.length > 0 ? Table2Data[0].BUILDINGAREA || '' : '',
-        ApartCarpetArea: NCLTable7Data.length > 0 ? NCLTable7Data[0].CARPETAREA || '' : Table7Data.length > 0 ? Table7Data[0].CARPETAREA || '' : '',
-        ApartAddtionalArea: NCLTable7Data.length > 0 ? NCLTable7Data[0].ADDITIONALAREA || '' : Table7Data.length > 0 ? Table7Data[0].ADDITIONALAREA || '' : '',
-        ApartSuperBuiltArea: NCLTable7Data.length > 0 ? NCLTable7Data[0].SUPERBUILTUPAREA || 0 : Table7Data.length > 0 ? Table7Data[0].SUPERBUILTUPAREA || '' : '',
-        cal1: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE1FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
-        cal2: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE2FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
-        cal3: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE3FT || '': Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
-        cal4: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE4FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
-        cal5: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE1FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
-        cal6: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE2FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
-        cal7: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE3FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
-        cal8: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE4FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
-      }));
+      setFormData((prevFormData) => {
+        const updatedFormData = {
+          ...prevFormData,
+          propertyType: NCLTable1Data.length > 0 ? NCLTable1Data[0].PROPERTYCATEGORYID || "0" : "0",
+          east: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_EAST || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_EAST || '' : '',
+          west: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_WEST || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_WEST || '' : '',
+          north: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_NORTH || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_NORTH || '' : '',
+          south: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_SOUTH || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_SOUTH || '' : '',
+          ns: NCLTable3Data.length > 0 ? NCLTable3Data[0].NORTHSOUTH || '' : Table3Data.length > 0 ? Table3Data[0].NORTHSOUTH || '' : '',
+          ew: NCLTable3Data.length > 0 ? NCLTable3Data[0].EASTWEST || '' : Table3Data.length > 0 ? Table3Data[0].EASTWEST || '' : '',
+          plotAreaSqFt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREAFT || '' : Table2Data.length > 0 ? Table2Data[0].SITEAREAFT || '' : '',
+          plotAreaSqMt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREA || '' : Table2Data.length > 0 ? Table2Data[0].SITEAREA || '' : '',
+          builtUpAreaSqFt: NCLTable2Data.length > 0 ? NCLTable2Data[0].BUILDINGAREAFT || '' : Table2Data.length > 0 ? Table2Data[0].BUILDINGAREAFT || '' : '',
+          builtUpAreaSqMt: NCLTable2Data.length > 0 ? NCLTable2Data[0].BUILDINGAREA || '' : Table2Data.length > 0 ? Table2Data[0].BUILDINGAREA || '' : '',
+          ApartCarpetArea: NCLTable7Data.length > 0 ? NCLTable7Data[0].CARPETAREA || '' : Table7Data.length > 0 ? Table7Data[0].CARPETAREA || '' : '',
+          ApartAddtionalArea: NCLTable7Data.length > 0 ? NCLTable7Data[0].ADDITIONALAREA || '' : Table7Data.length > 0 ? Table7Data[0].ADDITIONALAREA || '' : '',
+          ApartSuperBuiltArea: NCLTable7Data.length > 0 ? NCLTable7Data[0].SUPERBUILTUPAREA || "0" : Table7Data.length > 0 ? Table7Data[0].SUPERBUILTUPAREA || '' : '',
+          cal1: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE1FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
+          cal2: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE2FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
+          cal3: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE3FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
+          cal4: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE4FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
+          cal5: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE1FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
+          cal6: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE2FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
+          cal7: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE3FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
+          cal8: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE4FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
+        };
+      
+        const areAllFieldsEmpty = Object.values(updatedFormData).every(value => value === '' || value === "0");
+      
+        // Log the check for debugging
+        console.log('Are all fields empty?', areAllFieldsEmpty);
+      
+        setIsEditable(areAllFieldsEmpty);
+        setIsEditablecheckbandi(areAllFieldsEmpty);
+      
+        return updatedFormData;
+      });
+      debugger
+      
+   
     }
     catch (error) {
       navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
     }
   }
-  useEffect(() => {
+  useEffect(  () => {
     fetchData();
   }, []);
   const handleCalulation = () => {
@@ -185,9 +195,9 @@ debugger
 
   }
   const handleSubmit = async (e) => {
-e.preventDefault();
-debugger
-    if (isEditablecheckbandhi === true && formData.propertyType !== 3 ) //only checkbandhi data
+    e.preventDefault();
+    debugger
+    if (isEditablecheckbandhi === true && formData.propertyType !== 3) //only checkbandhi data
     {
       const checkbandhidata = {
         propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
@@ -237,17 +247,16 @@ debugger
         }, 2000);
       }
     }
-    if ((formData.propertyType === 1 || formData.propertyType === 2) && isEditablecheckbandhi === false  && (isEditable)
+    if ((formData.propertyType === 1 || formData.propertyType === 2) && isEditablecheckbandhi === false && (isEditable)
       //only below data
     ) {
       const data = {
         propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
-        siteorbuilding: formData.propertyType || null,
         evenoroddsite: formData.oddSite || null,
         sitearea: formData.plotAreaSqMt || null,
         siteareaft: formData.plotAreaSqFt || null,
-          buildingarea: formData.builtUpAreaSqMt || null,
-          buildingareaft: formData.builtUpAreaSqFt || null,
+        buildingarea: formData.builtUpAreaSqMt || null,
+        buildingareaft: formData.builtUpAreaSqFt || null,
         eastwest: formData.ew.toString() || null,
         northsouth: formData.ns.toString() || null,
         ewoddsitE1FT: formData.cal1 || null,
@@ -367,7 +376,10 @@ debugger
     navigate('/AddressDetails')
   }
   const handleNavigation = () => {
-
+    if(isEditable && isEditablecheckbandhi){
+      toast.error("Please Save the Details Before Going to Next Section")
+      return
+    }
     if (formData.propertyType === 1) {
       navigate('/SiteDetails')
     } else if (formData.propertyType === 2) {
@@ -382,7 +394,7 @@ debugger
       setTimeout(() => {
         navigate("/AddressDetails")
       }, 1000);
-      
+
     }
   }
   const handleOddSiteChange = (e) => {
@@ -416,7 +428,7 @@ debugger
           >
             Property Use Details
           </Typography>
-         
+
           {formData.propertyType === 3 && (
             <Grid container spacing={3}>
 
@@ -440,7 +452,7 @@ debugger
                   variant={isEditable ? "outlined" : "filled"}
                   InputProps={{
                     readOnly: !isEditable,
-                    style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
+                    style: { backgroundColor: !isEditable ? '' : "#ffff" },
                     endAdornment: (
                       <Tooltip title="Calculated as N-S * E-W">
                         <IconButton>
@@ -463,7 +475,7 @@ debugger
                   variant={isEditable ? "outlined" : "filled"}
                   InputProps={{
                     readOnly: !isEditable,
-                    style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
+                    style: { backgroundColor: !isEditable ? '' : "#ffff" },
                     endAdornment: (
                       <Tooltip title="Calculated as N-S * E-W">
                         <IconButton>
@@ -486,7 +498,7 @@ debugger
                   variant={isEditable ? "outlined" : "filled"}
                   InputProps={{
                     readOnly: !isEditable,
-                    style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
+                    style: { backgroundColor: !isEditable ? '' : "#ffff" },
                     endAdornment: (
                       <Tooltip title="Calculated as N-S * E-W">
                         <IconButton>
@@ -517,13 +529,13 @@ debugger
                     fullWidth
                     label="East"
                     name="east"
-                     type="number"
+                    type="number"
                     value={formData.east}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "outlined" : "filled"}
                     InputProps={{
                       readOnly: !isEditablecheckbandhi,
-                      style: { backgroundColor:  !isEditablecheckbandhi ? '': "#ffff" } ,
+                      style: { backgroundColor: !isEditablecheckbandhi ? '' : "#ffff" },
                       endAdornment: (
                         <Tooltip title="Converted from Sq.ft">
                           <IconButton>
@@ -539,13 +551,13 @@ debugger
                     fullWidth
                     label="West"
                     name="west"
-                     type="number"
+                    type="number"
                     value={formData.west}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "outlined" : "filled"}
                     InputProps={{
                       readOnly: !isEditablecheckbandhi,
-                      style: { backgroundColor:  !isEditablecheckbandhi ? '': "#ffff" } ,
+                      style: { backgroundColor: !isEditablecheckbandhi ? '' : "#ffff" },
                       endAdornment: (
                         <Tooltip title="Converted from Sq.ft">
                           <IconButton>
@@ -561,13 +573,13 @@ debugger
                     fullWidth
                     label="North"
                     name="north"
-                     type="number"
+                    type="number"
                     value={formData.north}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "outlined" : "filled"}
                     InputProps={{
                       readOnly: !isEditablecheckbandhi,
-                      style: { backgroundColor:  !isEditablecheckbandhi ? '': "#ffff" } ,
+                      style: { backgroundColor: !isEditablecheckbandhi ? '' : "#ffff" },
                       endAdornment: (
                         <Tooltip title="Converted from Sq.ft">
                           <IconButton>
@@ -583,13 +595,13 @@ debugger
                     fullWidth
                     label="South"
                     name="south"
-                     type="number"
+                    type="number"
                     value={formData.south}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "outlined" : "filled"}
                     InputProps={{
                       readOnly: !isEditablecheckbandhi,
-                      style: { backgroundColor:  !isEditablecheckbandhi ? '': "#ffff" } ,
+                      style: { backgroundColor: !isEditablecheckbandhi ? '' : "#ffff" },
                       endAdornment: (
                         <Tooltip title="Converted from Sq.ft">
                           <IconButton>
@@ -635,7 +647,7 @@ debugger
                       variant={isEditable ? "outlined" : "filled"}
                       InputProps={{
                         readOnly: !isEditable,
-                        style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
+                        style: { backgroundColor: !isEditable ? '' : "#ffff" },
                         endAdornment: (
                           <Tooltip title="Converted from Sq.ft">
                             <IconButton>
@@ -657,7 +669,7 @@ debugger
                       variant={isEditable ? "outlined" : "filled"}
                       InputProps={{
                         readOnly: !isEditable,
-                        style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
+                        style: { backgroundColor: !isEditable ? '' : "#ffff" },
                         endAdornment: (
                           <Tooltip title="Converted from Sq.ft">
                             <IconButton>
@@ -733,13 +745,13 @@ debugger
                     fullWidth
                     label="East"
                     name="east"
-                     type="number"
+                    type="number"
                     value={formData.east}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "outlined" : "filled"}
                     InputProps={{
                       readOnly: !isEditablecheckbandhi,
-                      style: { backgroundColor:  !isEditablecheckbandhi ? '': "#ffff" } ,
+                      style: { backgroundColor: !isEditablecheckbandhi ? '' : "#ffff" },
                       endAdornment: (
                         <Tooltip title="Converted from Sq.ft">
                           <IconButton>
@@ -755,13 +767,13 @@ debugger
                     fullWidth
                     label="West"
                     name="west"
-                     type="number"
+                    type="number"
                     value={formData.west}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "outlined" : "filled"}
                     InputProps={{
                       readOnly: !isEditablecheckbandhi,
-                      style: { backgroundColor:  !isEditablecheckbandhi ? '': "#ffff" } ,
+                      style: { backgroundColor: !isEditablecheckbandhi ? '' : "#ffff" },
                       endAdornment: (
                         <Tooltip title="Converted from Sq.ft">
                           <IconButton>
@@ -777,13 +789,13 @@ debugger
                     fullWidth
                     label="North"
                     name="north"
-                     type="number"
+                    type="number"
                     value={formData.north}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "outlined" : "filled"}
                     InputProps={{
                       readOnly: !isEditablecheckbandhi,
-                      style: { backgroundColor:  !isEditablecheckbandhi ? '': "#ffff" } ,
+                      style: { backgroundColor: !isEditablecheckbandhi ? '' : "#ffff" },
                       endAdornment: (
                         <Tooltip title="Converted from Sq.ft">
                           <IconButton>
@@ -799,13 +811,13 @@ debugger
                     fullWidth
                     label="South"
                     name="south"
-                     type="number"
+                    type="number"
                     value={formData.south}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "outlined" : "filled"}
                     InputProps={{
                       readOnly: !isEditablecheckbandhi,
-                      style: { backgroundColor:  !isEditablecheckbandhi ? '': "#ffff" } ,
+                      style: { backgroundColor: !isEditablecheckbandhi ? '' : "#ffff" },
                       endAdornment: (
                         <Tooltip title="Converted from Sq.ft">
                           <IconButton>
@@ -851,7 +863,7 @@ debugger
                       variant={isEditable ? "outlined" : "filled"}
                       InputProps={{
                         readOnly: !isEditable,
-                        style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
+                        style: { backgroundColor: !isEditable ? '' : "#ffff" },
                         endAdornment: (
                           <Tooltip title="Converted from Sq.ft">
                             <IconButton>
@@ -873,7 +885,7 @@ debugger
                       variant={isEditable ? "outlined" : "filled"}
                       InputProps={{
                         readOnly: !isEditable,
-                        style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
+                        style: { backgroundColor: !isEditable ? '' : "#ffff" },
                         endAdornment: (
                           <Tooltip title="Converted from Sq.ft">
                             <IconButton>
@@ -973,7 +985,7 @@ debugger
             </div>
 
           )}
-          {isOddSiteEnabled && formData.propertyType !== 3  && (
+          {isOddSiteEnabled && formData.propertyType !== 3 && (
             <Grid container spacing={3} alignItems="center" justifyContent="center">
               <Grid item>
                 <Grid container spacing={1} alignItems="center" justifyContent="center">
@@ -982,13 +994,13 @@ debugger
                       variant={isEditable ? "outlined" : "filled"}
                       size="small"
                       name="cal1"
-                       type="number"
+                      type="number"
                       value={formData.cal1}
                       onChange={handleChange}
                       sx={{ width: '100px', borderColor: '#016767' }}
                       InputProps={{
                         readOnly: !isEditable,
-                        style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
+                        style: { backgroundColor: !isEditable ? '' : "#ffff" },
                       }}
                     />
                   </Grid>
@@ -1000,13 +1012,13 @@ debugger
                       variant={isEditable ? "outlined" : "filled"}
                       size="small"
                       name="cal2"
-                       type="number"
+                      type="number"
                       value={formData.cal2}
                       onChange={handleChange}
                       sx={{ width: '100px', borderColor: '#016767' }}
                       InputProps={{
                         readOnly: !isEditable,
-                        style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
+                        style: { backgroundColor: !isEditable ? '' : "#ffff" },
                       }}
                     />
                   </Grid>
@@ -1018,13 +1030,13 @@ debugger
                       variant={isEditable ? "outlined" : "filled"}
                       size="small"
                       name="cal3"
-                       type="number"
+                      type="number"
                       value={formData.cal3}
                       onChange={handleChange}
                       sx={{ width: '100px', borderColor: '#016767' }}
                       InputProps={{
                         readOnly: !isEditable,
-                        style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
+                        style: { backgroundColor: !isEditable ? '' : "#ffff" },
                       }}
                     />
                   </Grid>
@@ -1036,13 +1048,13 @@ debugger
                       variant={isEditable ? "outlined" : "filled"}
                       size="small"
                       name="cal4"
-                       type="number"
+                      type="number"
                       value={formData.cal4}
                       onChange={handleChange}
                       sx={{ width: '100px', borderColor: '#016767' }}
                       InputProps={{
                         readOnly: !isEditable,
-                        style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
+                        style: { backgroundColor: !isEditable ? '' : "#ffff" },
                       }}
                     />
                   </Grid>
@@ -1054,13 +1066,13 @@ debugger
                       variant={isEditable ? "outlined" : "filled"}
                       size="small"
                       name="cal5"
-                       type="number"
+                      type="number"
                       value={formData.cal5}
                       onChange={handleChange}
                       sx={{ width: '100px', borderColor: '#016767' }}
                       InputProps={{
                         readOnly: !isEditable,
-                        style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
+                        style: { backgroundColor: !isEditable ? '' : "#ffff" },
                       }}
                     />
                   </Grid>
@@ -1072,13 +1084,13 @@ debugger
                       variant={isEditable ? "outlined" : "filled"}
                       size="small"
                       name="cal6"
-                       type="number"
+                      type="number"
                       value={formData.cal6}
                       onChange={handleChange}
                       sx={{ width: '100px', borderColor: '#016767' }}
                       InputProps={{
                         readOnly: !isEditable,
-                        style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
+                        style: { backgroundColor: !isEditable ? '' : "#ffff" },
                       }}
                     />
                   </Grid>
@@ -1093,13 +1105,13 @@ debugger
                       variant={isEditable ? "outlined" : "filled"}
                       size="small"
                       name="cal7"
-                       type="number"
+                      type="number"
                       value={formData.cal7}
                       onChange={handleChange}
                       sx={{ width: '100px', borderColor: '#016767' }}
                       InputProps={{
                         readOnly: !isEditable,
-                        style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
+                        style: { backgroundColor: !isEditable ? '' : "#ffff" },
                       }}
                     />
                   </Grid>
@@ -1115,13 +1127,13 @@ debugger
                       variant={isEditable ? "outlined" : "filled"}
                       size="small"
                       name="cal8"
-                       type="number"
+                      type="number"
                       value={formData.cal8}
                       onChange={handleChange}
                       sx={{ width: '100px', borderColor: '#016767' }}
                       InputProps={{
                         readOnly: !isEditable,
-                        style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
+                        style: { backgroundColor: !isEditable ? '' : "#ffff" },
                       }}
                     />
                   </Grid>
@@ -1140,7 +1152,7 @@ debugger
                       variant="filled"
                       size="medium"
                       name="sqFt"
-                       type="number"
+                      type="number"
                       value={formData.sqFt}
                       onChange={handleChange}
                       sx={{ width: '300px', borderColor: '#016767' }}
@@ -1160,7 +1172,7 @@ debugger
                       variant="filled"
                       size="medium"
                       name="sqMt"
-                       type="number"
+                      type="number"
                       value={formData.sqMt}
                       onChange={handleChange}
                       InputProps={{

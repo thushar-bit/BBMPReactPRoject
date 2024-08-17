@@ -292,6 +292,7 @@ debugger
         var ownerNumber = await EditOwnerDetailsFromEKYCData(txnno); //581
         if (ownerNumber !== "") {
           setOwnerNumber(ownerNumber);
+          console.log(ownerNumber)
         }
       }
       callEditEYCDate();
@@ -312,7 +313,9 @@ debugger
     try {
       const response = await axiosInstance.get("E-KYCAPI/EditOwnerDetailsFromEKYCData?transactionNumber=" + txno)
       if (response.data.length > 0) {
+        console.log(response.data)
         return response.data.Table[0].OWNERNUMBER || ""
+      
       }
       return ""
     } catch (error) {

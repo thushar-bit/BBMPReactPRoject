@@ -202,7 +202,7 @@ const PropertyRights = () => {
 
   };
 
-  console.log(formData.propertyType);
+
 
   return (
     <Container maxWidth="lg">

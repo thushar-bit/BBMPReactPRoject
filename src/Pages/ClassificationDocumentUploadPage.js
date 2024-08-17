@@ -457,6 +457,7 @@ debugger
                       value={formData.AKatha}
                       onChange={handleAkathaDropdownValueChange}
                       onBlur={handleBlur}
+                      sx={{ backgroundColor: '#ffff' }}
                     >
                       <MenuItem value="0">--Select--</MenuItem>
                       <MenuItem value="20">A-Khata in south/East/West Zone</MenuItem>
@@ -489,6 +490,7 @@ debugger
                       value={formData.DocumentType}
                       onChange={handleChange}
                       onBlur={handleBlur}
+                      sx={{ backgroundColor: '#ffff' }}
                     >
                       <MenuItem value="">--Select--</MenuItem>
                       {tablesdata2.map((item) => (
@@ -512,7 +514,7 @@ debugger
                       value={selectedDate}
                       onChange={date => handleDateChange(date)}
                       disableFuture
-                      sx={{ width: '100%' }}
+                      sx={{ width: '100%',backgroundColor: '#ffff' }}
                     />
                   </LocalizationProvider>
                 </Grid>
@@ -520,7 +522,7 @@ debugger
                 <Grid item xs={12} sm={4}>
                   <TextField
                     fullWidth
-                    variant={isEditable ? "standard" : "filled"}
+                    variant={isEditable ? "outlined" : "filled"}
                     label={"Document Details:"}
                     placeholder='Document Details'
                     name="DocumentDetails"
@@ -528,6 +530,7 @@ debugger
                     onChange={handleChange}
                     InputProps={{
                       readOnly: !isEditable,
+                      style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
                       endAdornment: (
                         <Tooltip title={t("doorPlotNoInfo")}>
                           <IconButton color="primary">
@@ -558,6 +561,7 @@ debugger
                     error={touched.DocumentNumber && !!errors.DocumentNumber}
                     helperText={touched.DocumentNumber && errors.DocumentNumber}
                     InputProps={{
+                      style:{backgroundColor:'#ffff'},
                       endAdornment: (
                         <Tooltip title={t("nearestLandmarkInfo")}>
                           <IconButton color="primary">
