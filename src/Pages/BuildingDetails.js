@@ -129,6 +129,7 @@ const BuildingDetails = () => {
   }
   const handleSubmit = async () => {
     // 
+    debugger
 
     var BUILDINGUSAGETYPEID = 0;
     if (formData.RentedArea === 0) {
@@ -208,7 +209,7 @@ const BuildingDetails = () => {
     const data = {
       propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
       //  floortypeid: id.FLOORTYPEID,
-      floortypeid: id.FLOORNUMBERID,
+      floortypeid: id.BUILDINGROWID,
       p_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))
     }
     try {
@@ -325,6 +326,7 @@ const BuildingDetails = () => {
                 <Grid item xs={12} sm={4}>
                   <TextField
                     fullWidth
+                    type='number'
                     label="Building Number:"
                     name="BuildingNumber"
                     value={formData.BuildingNumber}
@@ -638,8 +640,8 @@ const BuildingDetails = () => {
                           <TableCell>{row.AREA}</TableCell>
                           <TableCell>{row.RENTEDAREA}</TableCell>
                           <TableCell>{row.TOTALAREA}</TableCell>
-                          <TableCell>{row.RRNO}</TableCell>
-                          <TableCell>{row.RRNO} {row.WATERMETERNO}</TableCell>
+                          <TableCell>{row.ACCOUNTID}</TableCell>
+                          <TableCell>{row.WATERMETERNO}</TableCell>
                           <TableCell>
                             <Tooltip title="Edit">
                               <IconButton color="primary" onClick={() => handleEdit(row)}>
