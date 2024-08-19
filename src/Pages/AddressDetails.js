@@ -85,7 +85,7 @@ const AddressDetails = () => {
   const [tableData, setTableData] = useState([
   ]);
   const [SAStableData, setSASTableData] = useState([]);
-  const fetchData = async () => {
+  const fetchData = React.useCallback( async () => {
     setLoading(true);
     try {
       const response = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
@@ -153,7 +153,7 @@ let table4Item = [];
       return <ErrorPage errorMessage={error} />;
     }
     setLoading(false);
-  };
+  }, []); 
 
   useEffect(() => {
     fetchData();
@@ -286,7 +286,11 @@ const CopyBookData = async () => {
       }else{
         toast.error("Something Went wrong.Copy of Book Data was Not SuccessFull")
       }
-     
+      debugger
+     if(formData.DoorPlotNo === "" || formData.DoorPlotNo === null || formData.DoorPlotNo === undefined){
+      toast.error("Please Enter the Door No")
+      return
+     }
         
       const data = {
         propertyCode: formData.propertyNumber,
@@ -703,7 +707,6 @@ const CopyBookData = async () => {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    type="number"
                     label={t("doorPlotNo")}
                     name="DoorPlotNo"
                     value={formData.DoorPlotNo}

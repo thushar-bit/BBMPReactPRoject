@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import {
   TextField, Button, Grid, Box, Container, Typography, Tooltip, IconButton,
-  Radio, RadioGroup, FormControlLabel, FormControl, MenuItem, Select, InputLabel
+  Radio, RadioGroup, FormControlLabel, FormControl
 } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 //import { useTranslation } from 'react-i18next';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axiosInstance from '../components/Axios';
@@ -23,7 +23,7 @@ const AreaDimension = () => {
     builtUpAreaSqMt: "",
     modify: 'no',
     modifycheckbandi: 'no',
-    oddSite: 'EVEN',
+    oddSite: '',
     propertyType: "",
     ApartCarpetArea: "",
     ApartAddtionalArea: "",
@@ -45,7 +45,7 @@ const AreaDimension = () => {
   const navigate = useNavigate();
   const [isOddSiteEnabled, setIsOddSiteEnabled] = useState(false);
   const handleChange = (e) => {
-
+debugger
     const { name, value } = e.target;
     const updatedValue = parseFloat(value) || 0;
     debugger
@@ -83,12 +83,18 @@ const AreaDimension = () => {
         ) * 100) / 100;
 
       const areaMt = areaFt > 0 ? Math.round(areaFt * 0.092903 * 100) / 100 : 0;
-      formData.sqFt = areaFt;
-      formData.sqMt = areaMt;
+      if(areaFt === 1 && areaMt === 0.09){
+        formData.sqFt = "";
+     formData.sqMt = "";
+      }
+      else {
+     formData.sqFt = areaFt;
+     formData.sqMt = areaMt;
+      }
       setFormData(prevData => ({
         ...prevData,
-        sqFt: areaFt.toString(),
-        sqMt: areaMt.toString()
+       // sqFt: areaFt.toString(),
+      //  sqMt: areaMt.toString()
       }));
     }
     if (name === 'modify' && value === 'yes') {
@@ -107,6 +113,7 @@ const AreaDimension = () => {
     });
   };
   const fetchData = async () => {
+    debugger
     try {
       const response = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
       const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
@@ -146,7 +153,25 @@ const AreaDimension = () => {
         cal6: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE2FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
         cal7: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE3FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
         cal8: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE4FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
+        oddSite: NCLTable3Data.length > 0 ? NCLTable3Data[0].ODDSITE || '' : Table3Data.length > 0 ? Table3Data[0].ODDSITE || '' : '',
       }));
+      if(NCLTable3Data.length > 0){
+        if(NCLTable3Data[0].ODDSITE === "Y"){
+          setIsOddSiteEnabled(true)
+          handleCalulationNCL(NCLTable3Data[0])
+        }
+        else {
+          setIsOddSiteEnabled(false)
+        }
+      }else if(Table3Data.length > 0){
+        if(Table3Data[0].ODDSITE === "Y"){
+          setIsOddSiteEnabled(true)
+          handleCalulationNCL(Table3Data[0])
+        }
+        else {
+          setIsOddSiteEnabled(false)
+        }
+      }
     }
     catch (error) {
       navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
@@ -156,7 +181,7 @@ const AreaDimension = () => {
     fetchData();
   }, []);
   const handleCalulation = () => {
-
+debugger
     const areaFt = Math.round((
       (parseFloat(formData.cal1) || 1) *
       (parseFloat(formData.cal2) || 1) *
@@ -171,15 +196,59 @@ const AreaDimension = () => {
       ) * 100) / 100;
 
     const areaMt = areaFt > 0 ? Math.round(areaFt * 0.092903 * 100) / 100 : 0;
-    formData.sqFt = areaFt;
-    formData.sqMt = areaMt;
+    if(areaFt === 1 && areaMt === 0.09){
+      formData.sqFt = "";
+   formData.sqMt = "";
+    }
+    else {
+   formData.sqFt = areaFt;
+   formData.sqMt = areaMt;
+    }
+    // formData.sqFt = "";
+    // formData.sqMt = "";
     setFormData(prevData => ({
       ...prevData,
-      sqFt: areaFt.toString(),
-      sqMt: areaMt.toString()
+     // sqFt: areaFt.toString(),
+     // sqMt: areaMt.toString()
+      // sqFt: "",
+      // sqMt: ""
     }));
 
   }
+  const handleCalulationNCL = (TableData) => {
+    debugger
+        const areaFt = Math.round((
+          (parseFloat(TableData.EWODDSITE1FT) || 1) *
+          (parseFloat(TableData.EWODDSITE2FT) || 1) *
+          (parseFloat(TableData.EWODDSITE3FT) || 1) /
+          (parseFloat(TableData.EWODDSITE4FT) || 1)
+        ) *
+          (
+            (parseFloat(TableData.NSODDSITE1FT) || 1) *
+            (parseFloat(TableData.NSODDSITE2FT) || 1) *
+            (parseFloat(TableData.NSODDSITE3FT) || 1) /
+            (parseFloat(TableData.NSODDSITE4FT) || 1)
+          ) * 100) / 100;
+    
+        const areaMt = areaFt > 0 ? Math.round(areaFt * 0.092903 * 100) / 100 : 0;
+        if(areaFt === 1 && areaMt === 0.09){
+          formData.sqFt = "";
+       formData.sqMt = "";
+        }
+        else {
+       formData.sqFt = areaFt;
+       formData.sqMt = areaMt;
+        }
+        // formData.sqFt = "";
+        // formData.sqMt = "";
+        setFormData(prevData => ({
+          ...prevData,
+          sqFt: areaFt.toString(),
+          sqMt: areaMt.toString()
+         
+        }));
+    
+      }
   const handleSubmit = async (e) => {
     e.preventDefault();
     debugger
@@ -202,18 +271,10 @@ const AreaDimension = () => {
 
         const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
         sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
-        await toast.success("Details Saved Successfully", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-
+       
         setIsEditablecheckbandi(false);
-        await fetchData();
+        
+       
         setFormData({
           ...formData,
           modifycheckbandi: 'no',
@@ -233,7 +294,8 @@ const AreaDimension = () => {
         }, 2000);
       }
     }
-    if ((formData.propertyType === 1 || formData.propertyType === 2) && isEditablecheckbandhi === false && (isEditable)
+   
+    if ((formData.propertyType === 1 || formData.propertyType === 2)  && (isEditable)
       //only below data
     ) {
       const data = {
@@ -263,24 +325,19 @@ const AreaDimension = () => {
 
         const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
         sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
-        await toast.success("Details Saved Successfully", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
+
+      
         setTimeout(async () => {
-          await fetchData();
+         // await fetchData();
           //    handleNavigation()
           setIsEditable(false);
+          setIsEditablecheckbandi(false);
           setFormData({
             ...formData,
             modify: 'no',
+            modifycheckbandi: 'no',
           });
-        }, 2000);
+        }, 1000);
 
       } catch (error) {
         await toast.error("Error saving data!" + error, {
@@ -313,17 +370,9 @@ const AreaDimension = () => {
         )
         const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
         sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
-        await toast.success("Details Saved Successfully", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
+      
         setTimeout(async () => {
-          await fetchData();
+         // await fetchData();
           setIsEditable(false);
           setFormData({
             ...formData,
@@ -357,6 +406,16 @@ const AreaDimension = () => {
         progress: undefined,
       });
     }
+    await toast.success("Details Saved Successfully", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+    await fetchData();
   };
   const back = () => {
     navigate('/AddressDetails')
@@ -389,11 +448,12 @@ const AreaDimension = () => {
       ...formData,
       [name]: value,
     });
-    if (name === 'oddSite' && value === 'ODD') {
+    if (name === 'oddSite' && value === 'N') {
+      setIsOddSiteEnabled(false);
+     
+    } else if (name === 'oddSite' && value === 'Y') {
       setIsOddSiteEnabled(true);
       handleCalulation()
-    } else if (name === 'oddSite' && value === 'EVEN') {
-      setIsOddSiteEnabled(false);
     }
   }
 
@@ -613,8 +673,8 @@ const AreaDimension = () => {
               </Typography>
               <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
                 <RadioGroup row name="oddSite" value={formData.oddSite} onChange={handleOddSiteChange}>
-                  <FormControlLabel value="ODD" control={<Radio disabled={!isEditable} />} label="Yes" />
-                  <FormControlLabel value="EVEN" control={<Radio disabled={!isEditable} />} label="No" />
+                  <FormControlLabel value="Y" control={<Radio disabled={!isEditable} />} label="Yes" />
+                  <FormControlLabel value="N" control={<Radio disabled={!isEditable} />} label="No" />
                 </RadioGroup>
               </FormControl>
               <Typography variant="h6" sx={{ fontWeight: 'bold', }}>
@@ -829,8 +889,8 @@ const AreaDimension = () => {
               </Typography>
               <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
                 <RadioGroup row name="oddSite" value={formData.oddSite} onChange={handleOddSiteChange}>
-                  <FormControlLabel value="ODD" control={<Radio />} label="Yes" />
-                  <FormControlLabel value="EVEN" control={<Radio />} label="No" />
+                  <FormControlLabel value="Y" control={<Radio />} label="Yes" />
+                  <FormControlLabel value="N" control={<Radio />} label="No" />
                 </RadioGroup>
               </FormControl>
               <Typography variant="h6" sx={{ fontWeight: 'bold', }}>
