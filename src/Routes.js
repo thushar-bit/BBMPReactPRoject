@@ -9,7 +9,7 @@ import SiteDetails from './Pages/SiteDetails';
 import BuildingDetails from './Pages/BuildingDetails';
 import MultiStoreyBuildingDetails from './Pages/MultiStoreyBuildingDetails';
 import OwnerDetails from './Pages/OwnerDetails';
-import PropertyRights from './Pages/PropertyRights';
+//import PropertyRights from './Pages/PropertyRights';
 import DocumentUploadPage from './Pages/DocumentUploadPage';
 import ClassificationDocumentUploadPage from './Pages/ClassificationDocumentUploadPage';
 import EKYCResponse from './Pages/EKYCResponse';
@@ -20,6 +20,7 @@ import Breadcrumbs from './components/Breadcrumbs';
 import PrivateRoute from './components/PrivateRoute';
 import { AuthProvider } from './context/AuthProvider';
 import ScrollToTop from './components/ScrollTop';
+import KaveriData from './Pages/KaveriData';
 
 const AppRoutes = () => {
   return (
@@ -59,10 +60,14 @@ const AppRoutes = () => {
               path="/OwnerDetails"
               element={<OwnerDetails />}
             />
-            <Route
+            {/* <Route
               path="/PropertyRights"
               element={<PrivateRoute element={<PropertyRights />} />}
-            />
+            /> */}
+             <Route
+              path="/KaveriData"
+              element={<PrivateRoute element={<KaveriData />} />}
+            /> 
             <Route
               path="/DocumentUploadPage"
               element={<PrivateRoute element={<DocumentUploadPage />} />}

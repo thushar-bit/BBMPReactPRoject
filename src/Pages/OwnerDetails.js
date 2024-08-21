@@ -163,7 +163,7 @@ debugger
     // Determine whether to navigate or alert
     if (allNameMatchVerified && atLeastOneMobileVerified && relationname && relationshiptype || tablesdata9.length > 0) {
       // Navigate to the desired location
-      navigate("/PropertyRights")
+      navigate("/KaveriData")
     } else {
       // Display appropriate alerts
       // if (!allEKYCVerified) {
