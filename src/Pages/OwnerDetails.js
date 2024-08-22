@@ -34,7 +34,7 @@ const OwnerDetails = () => {
   const [countdownInterval, setCountdownInterval] = useState(null);
 
   const handleChange = (e) => {
-debugger
+
     const { name, value } = e.target;
 
     if (name === "MOBILENUMBER") {
@@ -191,7 +191,7 @@ debugger
 
 
   const handleSave = async () => {
-    debugger
+    
     try {
 
       if (otpFieldsVisible) {
@@ -282,7 +282,7 @@ debugger
   React.useEffect(() => {
     const params = new URLSearchParams(location.search);
     const txnno = params.get('txnno');
-    debugger
+    
     if (txnno !== null && txnno !== undefined) {
       console.log('E-KYC completed successfully with txnno:', txnno);
       setTimeout(() => {
@@ -327,7 +327,7 @@ debugger
     navigate('/AreaDimension');
   };
   const VerfiyEKYC = async () => {
-    debugger
+    
     var ownerNumber = 1;
     if(tablesdata9.length > 0){
       const maxOwnerNumber = Math.max(...tablesdata9.map(item => item.OWNERNUMBER));

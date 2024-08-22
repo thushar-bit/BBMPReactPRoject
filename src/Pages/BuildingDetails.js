@@ -129,7 +129,7 @@ const BuildingDetails = () => {
   }
   const handleSubmit = async () => {
     // 
-    debugger
+    
 
     var BUILDINGUSAGETYPEID = 0;
     if (formData.RentedArea === 0) {

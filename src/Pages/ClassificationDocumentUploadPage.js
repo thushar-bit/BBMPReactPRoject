@@ -68,7 +68,7 @@ const ClassificationDocumentUploadPage = () => {
     try {
       const { name, value } = e.target;
       let updatedClassification = "";
-      debugger
+      
       if (name === "AKatha") {
        
         if (value !== "") {
@@ -151,7 +151,7 @@ const ClassificationDocumentUploadPage = () => {
       const { Table19 = [] } = responeMaster.data;
       const { Table10: NCLTable10 = [], Table1: NCLTable1 = [] } = response2.data;
       setTableData(NCLTable10.length > 0 ? NCLTable10 : []);
-debugger
+
       setMasterTableData(Table19.length > 0 ? Table19 : [])
       setFormData((prevFormData) => ({
         ...prevFormData,

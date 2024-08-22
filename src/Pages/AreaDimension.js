@@ -78,10 +78,10 @@ const AreaDimension = () => {
   };
   
   const handleChange = (e) => {
-debugger
+
     const { name, value } = e.target;
     const updatedValue = parseFloat(value) || 0;
-    debugger
+    
     if (name === 'ns' || name === 'ew') {
       const nsValue = name === 'ns' ? updatedValue : formData.ns;
       const ewValue = name === 'ew' ? updatedValue : formData.ew;
@@ -97,7 +97,7 @@ debugger
       }
     }
     if (name.startsWith('cal')) {
-debugger
+
 const updatedFormData = {
   ...formData,
   [name]: value,
@@ -130,7 +130,7 @@ const updatedFormData = {
     });
   };
   const fetchData = async () => {
-    debugger
+    
     try {
       const response = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
       const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
@@ -198,7 +198,7 @@ const updatedFormData = {
     fetchData();
   }, []);
   const handleCalulation = () => {
-debugger
+
     const areaFt = Math.round((
       (parseFloat(formData.cal1) || 1) *
       (parseFloat(formData.cal2) || 1) *
@@ -233,7 +233,7 @@ debugger
 
   }
   const handleCalulationNCL = (TableData) => {
-    debugger
+    
         const areaFt = Math.round((
           (parseFloat(TableData.EWODDSITE1FT) || 1) *
           (parseFloat(TableData.EWODDSITE2FT) || 1) *
@@ -268,7 +268,7 @@ debugger
       }
   const handleSubmit = async (e) => {
     e.preventDefault();
-    debugger
+    
     if (isEditablecheckbandhi === true && formData.propertyType !== 3) //only checkbandhi data
     {
       const checkbandhidata = {

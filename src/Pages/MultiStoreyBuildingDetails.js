@@ -82,7 +82,7 @@ const MultiStoreyBuildingDetails = () => {
     }
     if (name === "features") {
       try {
-        debugger
+        
         if (value !== "") {
           const response = await axiosInstance.get(`BBMPCITZAPI/GetNPMMasterTable?FeaturesHeadID=${value}`);
           if (response.data.Table.length > 0) {
@@ -130,7 +130,7 @@ const handleEdit = () => {
 }
   const fetchData = async () => {
     try {
-      debugger
+      
       const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
       const response2 = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
       const response3 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
@@ -152,7 +152,7 @@ const handleEdit = () => {
       setTablesData6(table17Item);
       var sharetype = "0";
       var ownersharetypeValue = "";
-debugger
+
       if (table13Item.PLOTAREAOWNERSHARE_AREA !== 0) {
         ownersharetypeValue = table13Item.PLOTAREAOWNERSHARE_AREA
         sharetype = "1";

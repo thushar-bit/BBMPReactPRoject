@@ -38,7 +38,7 @@ const EKYCResponse = () => {
       try {
         const response = await axiosInstance.get(`E-KYCAPI/UPDATE_EKYC_OWNER_VAULT_RESPONSE?${queryString}`);
         if (response.status === 200) {
-          debugger
+          
           navigate(`/OwnerDetails?txnno=${txnno}`);
         } else {
 

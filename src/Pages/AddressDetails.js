@@ -91,7 +91,7 @@ const AddressDetails = () => {
       const response = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
       const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
       const response3 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
-debugger
+
       const { Table1 = [], Table5 = [], } = response.data;
 let NCLtable1Item = [];
 let Table11Item = [];
@@ -160,7 +160,7 @@ let table4Item = [];
   }, []);
 
   const handleChange = (e) => {
-    debugger
+    
     const { name, value } = e.target;
     if (name === "pincode") {
       if (/^\d{0,6}$/.test(value)) {
@@ -267,7 +267,7 @@ const CopyBookData = async () => {
 
   const handleSubmit = async () => {
   
-    debugger
+    
     var propertyphoto2 = "";
     if (isEditable) {
       if (selectedFile) {
@@ -286,7 +286,7 @@ const CopyBookData = async () => {
       }else{
         toast.error("Something Went wrong.Copy of Book Data was Not SuccessFull")
       }
-      debugger
+      
      if(formData.DoorPlotNo === "" || formData.DoorPlotNo === null || formData.DoorPlotNo === undefined){
       toast.error("Please Enter the Door No")
       return
@@ -665,7 +665,7 @@ const CopyBookData = async () => {
           validationSchema={validationSchema}
           //onSubmit={handleSubmit}
           onSubmit={(values, { setSubmitting }) => {
-            debugger
+            
             if (fieldvalue === 'save') {
              handleSubmit()
 

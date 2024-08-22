@@ -67,7 +67,7 @@ const SiteDetails = () => {
   // const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
-debugger
+
     const data = {
       propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
       featureheadid: formData.features,
@@ -131,7 +131,7 @@ debugger
 
   }
   const fetchData = async () => {
-    debugger
+    
     try {
       setLoading(true);
       const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
@@ -144,7 +144,7 @@ debugger
       const table2Item = Table2.length > 0 ? Table2[0] : [];
       const table16Item = Table16.length > 0 ? Table16 : [];
       setTablesData2(table16Item);
-      debugger
+      
       if (table2Item) {
         if (table2Item.FEATUREHEADID !== null && table2Item.FEATUREHEADID !== "" && table2Item.FEATUREHEADID !== undefined) {
           const response3 = await axiosInstance.get(`BBMPCITZAPI/GetNPMMasterTable?FeaturesHeadID=${table2Item.FEATUREHEADID}`);

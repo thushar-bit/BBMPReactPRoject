@@ -113,7 +113,7 @@ const Login = () => {
       const queryString = new URLSearchParams(data).toString();
       const response = await axiosInstance.post(`Auth/CitizenLogin?${queryString}`);
       if (response.data) {
-debugger
+
         if (otpButtonDisabled) {
           if (formData.Password !== otpNumber) {
             toast.error("The Entered OTP is Wrong.Please Enter the Correct OTP")
@@ -130,7 +130,7 @@ debugger
           return
         }
         const response3 = await axiosInstance.get('BBMPCITZAPI/Get_Ctz_ObjectionModPendingAppl?LoginId=crc');
-        debugger
+        
         if (response3.data === "There is a issue while copying the data from Book Module.No Data Found") {
 
         //future the propertyid will come from bbddraft page 
@@ -148,7 +148,7 @@ debugger
 
           toast.success("Login Successfull !!");
 
-          debugger
+          
           sessionStorage.setItem('P_BOOKS_PROP_APPNO', JSON.stringify(response3.data.P_BOOKS_PROP_APPNO || 0));
           sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(response3.data.PropertyId || 0));
         

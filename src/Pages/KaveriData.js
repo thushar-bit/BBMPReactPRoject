@@ -28,7 +28,7 @@ const KaveriData = () => {
     try {
        let response =  await axiosInstance.get(`KaveriAPI/GetKaveriDocData?RegistrationNoNumber=${formData.RegistrationNumber}&BOOKS_APP_NO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&PropertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&LoginId=32`)
        const result = response.data;
-       debugger
+       
        if(result.success)
         {
             setTableKavDocData(result.data);
@@ -38,7 +38,7 @@ const KaveriData = () => {
             return
         }
    
-       debugger
+       
        toast.success("Details Fetched Successfully", {
         position: "top-right",
         autoClose: 5000,
