@@ -9,8 +9,6 @@ import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../components/Axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Formik, Form } from 'formik';
-import * as Yup from 'yup';
 import '../components/Shake.css';
 const KaveriData = () => {
   const [formData, setFormData] = useState({
@@ -120,16 +118,15 @@ const KaveriData = () => {
   };
 
   const handleNavigation = () => {
-    if(TableKavDocData != undefined && TableKavDocData != null){
+    if(TableKavDocData !== undefined && TableKavDocData !== null){
       if(TableKavDocData.length === 0)
         {
       navigate('/DocumentUploadPage');
+    }else {
+      navigate("/ClassificationDocumentUploadPage")
     }
   }
-    else
-     {
-      navigate("ClassificationDocumentUploadPage")
-    }
+    
   };
 
 

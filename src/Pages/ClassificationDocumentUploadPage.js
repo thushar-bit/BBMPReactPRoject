@@ -70,6 +70,7 @@ const ClassificationDocumentUploadPage = () => {
       let updatedClassification = "";
       debugger
       if (name === "AKatha") {
+       
         if (value !== "") {
           if (value !== "48") {
             updatedClassification = "4";
@@ -78,6 +79,11 @@ const ClassificationDocumentUploadPage = () => {
           }
         } else {
           updatedClassification = "0";
+        }
+        if (value === "47") {
+          setIsEditable(true);
+        } else {
+          setIsEditable(false);
         }
 
         const response = await axiosInstance.get(`BBMPCITZAPI/GET_NPM_MST_CLASS_DOCUMENT_CLASSANDSUBCLASS?CLASSIFICATIONID=1&SUBCLASSIFICATIONID1=${value}&SUBCLASSIFICATIONID2=0`)
@@ -127,13 +133,7 @@ const ClassificationDocumentUploadPage = () => {
   const handleChange = async (e) => {
 
     const { name, value } = e.target;
-    if (name === "DocumentType") {
-      if (value === 26) {
-        setIsEditable(true);
-      } else {
-        setIsEditable(false);
-      }
-    }
+    
     setFormData({
       ...formData,
       [name]: value

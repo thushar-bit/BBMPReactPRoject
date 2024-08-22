@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import {
   TextField, Button, Grid, Box, Container, Typography, Tooltip, IconButton,
-  Radio, RadioGroup, FormControlLabel, FormControl
+  Radio, RadioGroup, FormControlLabel, FormControl,
+  MenuItem,
+  Select,
+  InputLabel
 } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 //import { useTranslation } from 'react-i18next';
@@ -12,6 +15,7 @@ import axiosInstance from '../components/Axios';
 const AreaDimension = () => {
   const [formData, setFormData] = useState({
     east: '',
+    noofSides:"",
     west: '',
     north: '',
     south: '',
@@ -44,6 +48,35 @@ const AreaDimension = () => {
   const [isEditablecheckbandhi, setIsEditablecheckbandi] = useState(false);
   const navigate = useNavigate();
   const [isOddSiteEnabled, setIsOddSiteEnabled] = useState(false);
+  const calculateArea = (numberOfSides, formData) => {
+    // Extract the cal values dynamically based on the number of sides
+    const values = Array.from({ length: numberOfSides }, (_, i) =>
+      parseFloat(formData[`cal${i + 1}`])
+    );
+  
+    // Check if all relevant values are greater than 0 and not NaN
+    if (values.some(val => val <= 0 || isNaN(val))) {
+      return { areaFt: '', areaMt: '' }; // Return empty if any value is invalid
+    }
+  
+    let areaFt = 0;
+  
+    if (numberOfSides === 3) {
+      // Heron's formula for 3 sides
+      const [a, b, c] = values;
+      const s = (a + b + c) / 2;
+      areaFt = Math.sqrt(s * (s - a) * (s - b) * (s - c));
+    } else {
+      // Generalized multiplicative logic for more sides
+      areaFt = values.reduce((acc, val) => acc * val, 1) / values.reduce((acc, val) => acc + val, 0);
+    }
+  
+    // Convert to meters (ft to m conversion)
+    const areaMt = areaFt > 0 ? Math.round(areaFt * 0.092903 * 100) / 100 : '';
+  
+    return { areaFt, areaMt };
+  };
+  
   const handleChange = (e) => {
 debugger
     const { name, value } = e.target;
@@ -64,33 +97,17 @@ debugger
       }
     }
     if (name.startsWith('cal')) {
+debugger
+const updatedFormData = {
+  ...formData,
+  [name]: value,
+};
+      const { areaFt, areaMt } = calculateArea(formData.noofSides, updatedFormData);
 
-      const { cal1, cal2, cal3, cal4, cal5, cal6, cal7, cal8 } = {
-        ...formData,
-        [name]: value
-      };
-      const areaFt = Math.round((
-        (parseFloat(cal1) || 1) *
-        (parseFloat(cal2) || 1) *
-        (parseFloat(cal3) || 1) /
-        (parseFloat(cal4) || 1)
-      ) *
-        (
-          (parseFloat(cal5) || 1) *
-          (parseFloat(cal6) || 1) *
-          (parseFloat(cal7) || 1) /
-          (parseFloat(cal8) || 1)
-        ) * 100) / 100;
-
-      const areaMt = areaFt > 0 ? Math.round(areaFt * 0.092903 * 100) / 100 : 0;
-      if(areaFt === 1 && areaMt === 0.09){
-        formData.sqFt = "";
-     formData.sqMt = "";
-      }
-      else {
+    
      formData.sqFt = areaFt;
      formData.sqMt = areaMt;
-      }
+      
       setFormData(prevData => ({
         ...prevData,
        // sqFt: areaFt.toString(),
@@ -1031,170 +1048,65 @@ debugger
             </div>
 
           )}
+            {isOddSiteEnabled && formData.propertyType !== 3 && (
+          <FormControl
+                    fullWidth
+                  >
+                    <InputLabel>No of Sides :</InputLabel>
+                    <Select
+                      name="noofSides"
+                      value={formData.noofSides}
+                      onChange={handleChange}
+                      inputProps={{ readOnly: !isEditable }}
+                      sx={{backgroundColor: !isEditable? '' : "#ffff", width:"20%"}}
+                    >
+                      <MenuItem value="">--Select--</MenuItem>
+                      {[3,4,5,6,7,8,9].map((item) => (
+                        <MenuItem key={item} value={item}>
+                          {item}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                   
+                  </FormControl>
+            )}
+                  <br></br>
+                  <br></br>
+                  <br></br>
           {isOddSiteEnabled && formData.propertyType !== 3 && (
             <Grid container spacing={3} alignItems="center" justifyContent="center">
               <Grid item>
                 <Grid container spacing={1} alignItems="center" justifyContent="center">
+                 
                   <Grid item>
+                  {Array.from({ length: formData.noofSides }).map((_, index) => (
                     <TextField
+                      key={index}
                       variant={isEditable ? "outlined" : "filled"}
                       size="small"
-                      name="cal1"
+                      placeholder={`Side ${index + 1}`}
+                      name={`cal${index + 1}`}
                       type="number"
-                      value={formData.cal1}
+                      value={formData[`cal${index + 1}`] || ''}
                       onChange={handleChange}
-                      sx={{ width: '100px', borderColor: '#016767' }}
+                      sx={{ width: '100px', borderColor: '#016767' ,paddingRight:'20px' }}
                       InputProps={{
                         readOnly: !isEditable,
                         style: { backgroundColor: !isEditable ? '' : "#ffff" },
                       }}
                     />
-                  </Grid>
-                  <Grid item>
-                    <Typography>x</Typography>
-                  </Grid>
-                  <Grid item>
-                    <TextField
-                      variant={isEditable ? "outlined" : "filled"}
-                      size="small"
-                      name="cal2"
-                      type="number"
-                      value={formData.cal2}
-                      onChange={handleChange}
-                      sx={{ width: '100px', borderColor: '#016767' }}
-                      InputProps={{
-                        readOnly: !isEditable,
-                        style: { backgroundColor: !isEditable ? '' : "#ffff" },
-                      }}
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Typography>x</Typography>
-                  </Grid>
-                  <Grid item>
-                    <TextField
-                      variant={isEditable ? "outlined" : "filled"}
-                      size="small"
-                      name="cal3"
-                      type="number"
-                      value={formData.cal3}
-                      onChange={handleChange}
-                      sx={{ width: '100px', borderColor: '#016767' }}
-                      InputProps={{
-                        readOnly: !isEditable,
-                        style: { backgroundColor: !isEditable ? '' : "#ffff" },
-                      }}
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Typography>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</Typography>
-                  </Grid>
-                  <Grid item>
-                    <TextField
-                      variant={isEditable ? "outlined" : "filled"}
-                      size="small"
-                      name="cal4"
-                      type="number"
-                      value={formData.cal4}
-                      onChange={handleChange}
-                      sx={{ width: '100px', borderColor: '#016767' }}
-                      InputProps={{
-                        readOnly: !isEditable,
-                        style: { backgroundColor: !isEditable ? '' : "#ffff" },
-                      }}
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Typography>x</Typography>
-                  </Grid>
-                  <Grid item>
-                    <TextField
-                      variant={isEditable ? "outlined" : "filled"}
-                      size="small"
-                      name="cal5"
-                      type="number"
-                      value={formData.cal5}
-                      onChange={handleChange}
-                      sx={{ width: '100px', borderColor: '#016767' }}
-                      InputProps={{
-                        readOnly: !isEditable,
-                        style: { backgroundColor: !isEditable ? '' : "#ffff" },
-                      }}
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Typography>x</Typography>
-                  </Grid>
-                  <Grid item>
-                    <TextField
-                      variant={isEditable ? "outlined" : "filled"}
-                      size="small"
-                      name="cal6"
-                      type="number"
-                      value={formData.cal6}
-                      onChange={handleChange}
-                      sx={{ width: '100px', borderColor: '#016767' }}
-                      InputProps={{
-                        readOnly: !isEditable,
-                        style: { backgroundColor: !isEditable ? '' : "#ffff" },
-                      }}
-                    />
-                  </Grid>
-
-                  <Grid item xs={12}>
-                    <Typography align="center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;------------------------------------------------------------- X ------------------------------------------------------------&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</Typography>
-                  </Grid>
-                  <Grid item xs={12}>
-                  </Grid>
-                  <Grid item>
-                    <TextField
-                      variant={isEditable ? "outlined" : "filled"}
-                      size="small"
-                      name="cal7"
-                      type="number"
-                      value={formData.cal7}
-                      onChange={handleChange}
-                      sx={{ width: '100px', borderColor: '#016767' }}
-                      InputProps={{
-                        readOnly: !isEditable,
-                        style: { backgroundColor: !isEditable ? '' : "#ffff" },
-                      }}
-                    />
-                  </Grid>
-                  <Grid item marginX={14}>
-                  </Grid>
-                  <Grid item>
-                    <Typography>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</Typography>
-                  </Grid>
-                  <Grid item>
-                  </Grid>
-                  <Grid item>
-                    <TextField
-                      variant={isEditable ? "outlined" : "filled"}
-                      size="small"
-                      name="cal8"
-                      type="number"
-                      value={formData.cal8}
-                      onChange={handleChange}
-                      sx={{ width: '100px', borderColor: '#016767' }}
-                      InputProps={{
-                        readOnly: !isEditable,
-                        style: { backgroundColor: !isEditable ? '' : "#ffff" },
-                      }}
-                    />
-                  </Grid>
-                  <Grid item>
+                  ))}
                   </Grid>
                 </Grid>
               </Grid>
-
+{formData.noofSides && (
               <Grid item>
                 <Grid container spacing={1} alignItems="center">
                   <Grid item>
-                    <Typography>Sq.Ft.</Typography>
+                    <Typography>Area Sq.Ft.</Typography>
                   </Grid>
                   <Grid item>
-                    <TextField
+                  <TextField
                       variant="filled"
                       size="medium"
                       name="sqFt"
@@ -1211,10 +1123,10 @@ debugger
                     <Typography>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</Typography>
                   </Grid>
                   <Grid item>
-                    <Typography>Sq.Mt.</Typography>
+                     <Typography>Area Sq.Mt.</Typography>
                   </Grid>
                   <Grid item>
-                    <TextField
+                     <TextField
                       variant="filled"
                       size="medium"
                       name="sqMt"
@@ -1229,7 +1141,9 @@ debugger
                   </Grid>
                 </Grid>
               </Grid>
+              )}
             </Grid>
+                    
           )}
 
           <Box display="flex" justifyContent="center" gap={2} mt={3}>
