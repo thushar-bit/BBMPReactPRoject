@@ -129,45 +129,11 @@ const Login = () => {
           sessionStorage.clear();
           return
         }
-        const response3 = await axiosInstance.get('BBMPCITZAPI/Get_Ctz_ObjectionModPendingAppl?LoginId=crc');
-        
-        if (response3.data === "There is a issue while copying the data from Book Module.No Data Found") {
-
-        //future the propertyid will come from bbddraft page 
-        sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(response3.data.PropertyId || 1135760));
-        const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&propertyid=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
-        sessionStorage.setItem('BBD_DRAFT_API', JSON.stringify(response1));
-        toast.success("Login Successfull !!");
+        toast.success("Login SuccessFull !!");
         setTimeout(() => {
-          //   navigate('/BBDDraft');
-          
-          navigate('/AddressDetails')
-           }, 1000);
-        }
-        else {
-
-          toast.success("Login Successfull !!");
-
-          
-          sessionStorage.setItem('P_BOOKS_PROP_APPNO', JSON.stringify(response3.data.P_BOOKS_PROP_APPNO || 0));
-          sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(response3.data.PropertyId || 0));
-        
-        try {
-          const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&propertyid=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
-          const response2 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
-
-          sessionStorage.setItem('BBD_DRAFT_API', JSON.stringify(response1));
-          sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response2));
-          setTimeout(() => {
-         //   navigate('/BBDDraft');
-         navigate('/AddressDetails')
-          }, 2000);
-
-        } catch (error) {
-
-          navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
-        }
-      }
+           navigate("/BBDDraft");
+        }, 1000);
+       
     }
       else {
         toast.error("The Given UserId or Password is wrong")

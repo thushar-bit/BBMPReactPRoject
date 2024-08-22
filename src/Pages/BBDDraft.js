@@ -79,8 +79,49 @@ const BBDDraft = () => {
 
   const { t } = useTranslation();
 
-  const handleNavigation = () => {
-    navigate('/AddressDetails')
+  const handleNavigation = async (row) => {
+  //  navigate('/AddressDetails')
+  debugger
+  
+    const response3 = await axiosInstance.get(`BBMPCITZAPI/Get_Ctz_ObjectionModPendingAppl?LoginId=crc&propertycode=${row.PROPERTYCODE}&propertyid=${row.PROPERTYID}`);
+        
+        if (response3.data === "There is a issue while copying the data from Book Module.No Data Found") {
+
+        //future the propertyid will come from bbddraft page 
+        sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(row.PROPERTYCODE));
+        const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&propertyid=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
+        sessionStorage.setItem('BBD_DRAFT_API', JSON.stringify(response1));
+        sessionStorage.setItem('SETPROPERYID', row.PROPERTYID);
+        setTimeout(() => {
+            // navigate('/BBDDraft');
+          
+          navigate('/AddressDetails')
+           }, 1000);
+        }
+        else {
+
+         
+
+          
+          sessionStorage.setItem('P_BOOKS_PROP_APPNO', JSON.stringify(response3.data.P_BOOKS_PROP_APPNO || 0));
+          sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(response3.data.PropertyId || 0));
+        
+        try {
+          const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&propertyid=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
+          const response2 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
+
+          sessionStorage.setItem('BBD_DRAFT_API', JSON.stringify(response1));
+          sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response2));
+          setTimeout(() => {
+           // navigate('/BBDDraft');
+         navigate('/AddressDetails')
+          }, 1000);
+
+        } catch (error) {
+
+          navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
+        }
+      }
   }
 
   const handleChangePage = (event, newPage) => {
@@ -249,7 +290,7 @@ const BBDDraft = () => {
                       <TableCell>{row.ADDRESS}</TableCell>
                       <TableCell>{row.SASAPPLICATIONNO}</TableCell>
                       <TableCell>{row.OWNERNAME}</TableCell>
-                      <TableCell><Link href="" underline="hover" onClick={handleNavigation}>Click Here</Link></TableCell>
+                      <TableCell><Button color="primary" onClick={() => handleNavigation(row)}>Click Here</Button></TableCell>
                     </TableRow>
                   ))
               )}

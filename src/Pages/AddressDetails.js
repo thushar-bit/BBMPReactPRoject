@@ -210,6 +210,14 @@ let table4Item = [];
     setPreviewUrl(null);
     setfileExtension('');
   };
+  const handleBack = () => {
+    sessionStorage.removeItem("BBD_DRAFT_API");
+    sessionStorage.removeItem("NCL_TEMP_API");
+    sessionStorage.removeItem("P_BOOKS_PROP_APPNO");
+    sessionStorage.removeItem("SETPROPERTYCODE");
+    sessionStorage.removeItem("SETPROPERYID");
+    navigate("/BBDDraft");
+  }
   const handleAddressEdit = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -243,11 +251,12 @@ let table4Item = [];
       };
     });
   };
+
 const CopyBookData = async () => {
   try {
     if(JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) === null){
-      const response4 = await axiosInstance.get('BBMPCITZAPI/COPY_DATA_FROM_BBDDRAFT_NCLTEMP?LoginId=crc');
-      const response3 = await axiosInstance.get('BBMPCITZAPI/Get_Ctz_ObjectionModPendingAppl?LoginId=crc');
+      const response4 = await axiosInstance.get(`BBMPCITZAPI/COPY_DATA_FROM_BBDDRAFT_NCLTEMP?LoginId=crc&propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&propertyid=${JSON.parse(sessionStorage.getItem('SETPROPERYID'))}`);
+      const response3 = await axiosInstance.get(`BBMPCITZAPI/Get_Ctz_ObjectionModPendingAppl?LoginId=crc&propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&propertyid=${JSON.parse(sessionStorage.getItem('SETPROPERYID'))}`);
       if (response3.data === "There is a issue while copying the data from Book Module.No Data Found") {
        toast.error("There is a issue while copying the data from Book Module.No Data Found")
        return false
@@ -266,7 +275,7 @@ const CopyBookData = async () => {
 }
 
   const handleSubmit = async () => {
-  
+  debugger
     
     var propertyphoto2 = "";
     if (isEditable) {
@@ -1020,6 +1029,9 @@ const CopyBookData = async () => {
               <br></br>
               <Grid item xs={12}>
                 <Box display="flex" justifyContent="center" gap={2}>
+                <Button variant="contained" color="primary" onClick={handleBack}>
+                    Back
+                  </Button>
                   <Button variant="contained" color="primary" onClick={handleAddressEdit}>
                     Edit
                   </Button>
