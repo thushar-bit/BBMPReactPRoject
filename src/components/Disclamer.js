@@ -1,15 +1,28 @@
 import React, {  useRef,useState } from 'react';
-import { Dialog, DialogContent, DialogActions, Button, Typography } from '@mui/material';
-
+import { Dialog, DialogContent, DialogActions, Button, Typography,Box } from '@mui/material';
+import Switch from '@mui/material/Switch';
 const DisclaimerDialog = ({ open, onClose, onAgree }) => {
     const contentRef = useRef(null);
     const [confirmOpen, setConfirmOpen] = useState(false);
+    const [disabled,setDisabled] = useState(false)
     const handleAgree = () => {
+      if(disabled){
       setConfirmOpen(true);
+      }else {
+        alert("Please Agree that you Understand");
+      }
   };
+  const handleSwtich = () => {
+    if(disabled){
+      setDisabled(false)
+    }else {
+      setDisabled(true)
+    }
+  }
   const handleConfirmYes = () => {
     // Navigation function or any action you want to perform
     // Example: navigate('/some-path');
+    setDisabled(false)
     setConfirmOpen(false);
     onClose(); // Close the DisclaimerDialog
 };
@@ -36,7 +49,7 @@ const handleConfirmNo = () => {
           Disclaimer
         </Typography>
         <Typography variant="h5">
-          I understand:
+         
           <ol>
             <li>In case of core wards [south, east + west zones], the existing A-katha properties will be issued A-katha upon submission of UpToDate information of existing owners along with their Aadhaar etc. Registered deed and other supporting documents are optional.</li>
             <li>In case of any additional owner or change in name etc., registered deed or other supporting documents are mandatory.</li>
@@ -46,15 +59,27 @@ const handleConfirmNo = () => {
             <li>Properties on Govt lands / rajakaluve / lakes / etc. will not get final ekatha in general.</li>
           </ol>
         </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Switch defaultChecked={disabled} color="warning" onClick={handleSwtich} />
+        <Typography variant="h5" sx={{ marginLeft: 1 }}>
+          I understand
+        </Typography>
+      </Box>
+       
+       
       </DialogContent>
+      
       <DialogActions>
-        <Button
-          onClick={handleAgree}
-          color="primary"
-        //   disabled={!isScrolledToBottom}
-        >
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+        <Button onClick={handleConfirmNo} color="primary" style={{ float: 'left' }}>
+          Cancel
+        </Button>
+        <Button onClick={handleAgree} color="primary" style={{ float: 'right' }}>
           Submit
         </Button>
+      </Box>
+    
+        
       </DialogActions>
     </Dialog>
     
