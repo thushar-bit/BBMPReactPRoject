@@ -214,7 +214,7 @@ const DocumentUploadPage = () => {
 
   };
   const back = () => {
-    navigate('/PropertyRights')
+    navigate('/KaveriData')
   }
   const handleNavigation = () => {
 

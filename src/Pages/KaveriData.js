@@ -18,7 +18,7 @@ const KaveriData = () => {
     ECDocumentNumber:""
   });
   const [TableKavDocData,setTableKavDocData] = useState([]);
-  const [EcDocumentBase64,setEcDocumentBase64] = useState([]);
+  const [EcDocumentBase64,setEcDocumentBase64] = useState("");
  
   const navigate = useNavigate();
   
@@ -84,10 +84,13 @@ const KaveriData = () => {
 
 
   const handleECPropertyData = async () => {
+    if(formData.ECDocumentNumber.length === 0){
+      toast.error("Please Enter the EC Document Number")
+    }
       try {
         let response = await axiosInstance.get("KaveriAPI/GetKaveriECData?ECNumber=NMG-EC-A-000648-2023-24&BOOKS_APP_NO=23&PropertyCode=23&LoginId=asd")
         setEcDocumentBase64(response.data)
-         toast.error("Details Fetched Successfully", {
+         toast.success("Details Fetched Successfully", {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -117,7 +120,16 @@ const KaveriData = () => {
   };
 
   const handleNavigation = () => {
-    navigate('/DocumentUploadPage');
+    if(TableKavDocData != undefined && TableKavDocData != null){
+      if(TableKavDocData.length === 0)
+        {
+      navigate('/DocumentUploadPage');
+    }
+  }
+    else
+     {
+      navigate("ClassificationDocumentUploadPage")
+    }
   };
 
 
