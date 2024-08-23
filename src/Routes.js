@@ -25,7 +25,7 @@ import KaveriData from './Pages/KaveriData';
 const AppRoutes = () => {
   return (
     <AuthProvider>
-      <Router basename="/citizen_core">
+      <Router basename="/citizen_core/">
       <ScrollToTop />
         <Header />
         <div className="App">

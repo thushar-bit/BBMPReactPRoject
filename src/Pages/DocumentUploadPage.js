@@ -127,6 +127,12 @@ const DocumentUploadPage = () => {
     }
     const fileName = file.name;
     const fileExtension = fileName.split('.').pop().toLowerCase();
+    if(!['pdf'].includes(fileExtension)){
+      toast.error("Please Select Only '.pdf' File ");
+      e.target.value = null;
+      setSelectedFile(null);
+      return
+    }
     setfileExtension(fileExtension);
     if (file) {
       const reader = new FileReader();
@@ -455,7 +461,7 @@ const DocumentUploadPage = () => {
 
                     >
                       {t("Uploadfile")}
-                      <VisuallyHiddenInput type="file" accept=".jpg,.jpeg,.png,.pdf,.doc" onChange={handleFileChange} />
+                      <VisuallyHiddenInput type="file" accept=".pdf" onChange={handleFileChange} />
                     </Button>
 
                   </Box>

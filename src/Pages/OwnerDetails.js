@@ -326,8 +326,7 @@ const OwnerDetails = () => {
   const back = () => {
     navigate('/AreaDimension');
   };
-  const VerfiyEKYC = async () => {
-    
+  const AddEKYCOwner = async () => {
     var ownerNumber = 1;
     if(tablesdata9.length > 0){
       const maxOwnerNumber = Math.max(...tablesdata9.map(item => item.OWNERNUMBER));
@@ -335,9 +334,21 @@ const OwnerDetails = () => {
     }
     var response = await axiosInstance.post("E-KYCAPI/RequestEKYC?OwnerNumber=" + ownerNumber + "&BOOK_APP_NO="+JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))+"&PROPERTY_CODE="+ JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')))
 
-    console.log(response.data)
+    
     window.location.href = response.data;
   };
+  const VerfiyEKYC = async (row) => {
+    debugger
+    let ownerNumber = 0;
+    if(row.OWNERNUMBER !== ""){
+      ownerNumber = row.OWNERNUMBER;
+    }else
+     {
+      ownerNumber = row.SLNO;
+    }
+    var response = await axiosInstance.post("E-KYCAPI/RequestEKYC?OwnerNumber=" + ownerNumber + "&BOOK_APP_NO="+JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))+"&PROPERTY_CODE="+ JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')))
+    window.location.href = response.data;
+  }
   const OwnerExists = (BBDOwnerNumber) => {
     const exists = tablesdata9.some(item => item.OWNERNUMBER === BBDOwnerNumber);
     return exists;
@@ -429,7 +440,7 @@ const OwnerDetails = () => {
             <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
               Existing Owners As Per Digitization
             </Typography>
-            <Button variant="contained" color="warning" onClick={VerfiyEKYC}>
+            <Button variant="contained" color="warning" onClick={AddEKYCOwner}>
               ADD NEW OWNER
             </Button>
           </Box>
@@ -464,7 +475,7 @@ const OwnerDetails = () => {
                       <TableCell>{row.EKYCSTATUS}</TableCell>
                       <TableCell>{OwnerExists(row.OWNERNUMBER) ? "RETAINED" : "DELETED"}</TableCell>
                       <TableCell>{OwnerExists(row.OWNERNUMBER) ?
-                        <Button variant="contained" color="primary" onClick={VerfiyEKYC}>
+                        <Button variant="contained" color="primary" onClick={() =>VerfiyEKYC(row)}>
                           Verfiy EKYC
                         </Button>
                         :

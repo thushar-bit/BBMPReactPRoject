@@ -177,7 +177,7 @@ const SiteDetails = () => {
   }, []);
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="md">
       <Loaders loading={loading} />
       <ToastContainer />
       <Box sx={{ backgroundColor: '#f0f0f0', padding: 4, borderRadius: 2, mt: 8 }}>
@@ -253,12 +253,11 @@ const SiteDetails = () => {
                 </FormHelperText>
               </FormControl>
 
-              <FormControl fullWidth sx={{ marginBottom: 3 }}>
+              <FormControl  sx={{ marginBottom: 3 }}>
                 <InputLabel></InputLabel>
                 <TextField
-                  fullWidth
-                  label="
-                       Year Of Construction/Usage Started"
+                
+                  label="Year Of Construction/Usage Started"
                   name="yearOfConstruction"
                   value={formData.yearOfConstruction}
                   onChange={handleChange}

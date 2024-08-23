@@ -187,6 +187,12 @@ const ClassificationDocumentUploadPage = () => {
     }
     const fileName = file.name;
     const fileExtension = fileName.split('.').pop().toLowerCase();
+    if(!['pdf'].includes(fileExtension)){
+      toast.error("Please Select Only '.pdf' File ");
+      e.target.value = null;
+      setSelectedFile(null);
+      return
+    }
     setfileExtension(fileExtension);
     if (file) {
       const reader = new FileReader();
@@ -476,7 +482,30 @@ const ClassificationDocumentUploadPage = () => {
                     </FormHelperText>
                   </FormControl>
                 </Grid>
-
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    fullWidth
+                    variant={isEditable ? "outlined" : "filled"}
+                    label={"Document Details:"}
+                    placeholder='Document Details'
+                    name="DocumentDetails"
+                    value={formData.DocumentDetails}
+                    onChange={handleChange}
+                    InputProps={{
+                      readOnly: !isEditable,
+                      style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
+                      endAdornment: (
+                        <Tooltip title={t("doorPlotNoInfo")}>
+                          <IconButton color="primary">
+                            <InfoIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={4}></Grid>
+                <Grid item xs={12} sm={4}></Grid>
                 <Grid item xs={12} sm={4}>
                   <FormControl
                     fullWidth
@@ -504,7 +533,7 @@ const ClassificationDocumentUploadPage = () => {
                     </FormHelperText>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={3.5}>
+                <Grid item xs={12} sm={4}>
                   <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
                     <DatePicker
 
@@ -519,32 +548,11 @@ const ClassificationDocumentUploadPage = () => {
                   </LocalizationProvider>
                 </Grid>
 
-                <Grid item xs={12} sm={4}>
-                  <TextField
-                    fullWidth
-                    variant={isEditable ? "outlined" : "filled"}
-                    label={"Document Details:"}
-                    placeholder='Document Details'
-                    name="DocumentDetails"
-                    value={formData.DocumentDetails}
-                    onChange={handleChange}
-                    InputProps={{
-                      readOnly: !isEditable,
-                      style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
-                      endAdornment: (
-                        <Tooltip title={t("doorPlotNoInfo")}>
-                          <IconButton color="primary">
-                            <InfoIcon />
-                          </IconButton>
-                        </Tooltip>
-                      )
-                    }}
-                  />
-                </Grid>
+               
 
-              </Grid>
+              {/* </Grid>
 
-              <Grid container spacing={4}>
+              <Grid container spacing={4}> */}
 
 
 
@@ -572,7 +580,7 @@ const ClassificationDocumentUploadPage = () => {
                     }}
                   />
                 </Grid>
-
+              
                 <Grid item xs={12} sm={4}>
                   <Box display="flex" alignItems="center">
                     <Typography variant="body1" sx={{ ml: 1 }}>
@@ -586,7 +594,7 @@ const ClassificationDocumentUploadPage = () => {
 
                     >
                       {t("Uploadfile")}
-                      <VisuallyHiddenInput type="file" accept=".jpg,.jpeg,.png,.pdf,.doc" onChange={handleFileChange} />
+                      <VisuallyHiddenInput type="file" accept=".pdf" onChange={handleFileChange} />
                     </Button>
 
                   </Box>

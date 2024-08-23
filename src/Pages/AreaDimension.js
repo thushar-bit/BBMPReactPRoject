@@ -15,6 +15,7 @@ import axiosInstance from '../components/Axios';
 const AreaDimension = () => {
   const [formData, setFormData] = useState({
     east: '',
+    Bookeast:'',
     noofSides:"",
     west: '',
     north: '',
@@ -23,6 +24,13 @@ const AreaDimension = () => {
     ew: "",
     plotAreaSqFt: "",
     plotAreaSqMt: "",
+    Bookwest: '',
+    Booknorth: '',
+    Booksouth: '',
+    Bookns: "",
+    Bookew: "",
+    BookplotAreaSqFt: "",
+    BookplotAreaSqMt: "",
     builtUpAreaSqFt: "",
     builtUpAreaSqMt: "",
     modify: 'no',
@@ -62,13 +70,16 @@ const AreaDimension = () => {
     let areaFt = 0;
   
     if (numberOfSides === 3) {
-      // Heron's formula for 3 sides
+     
       const [a, b, c] = values;
       const s = (a + b + c) / 2;
       areaFt = Math.sqrt(s * (s - a) * (s - b) * (s - c));
     } else {
-      // Generalized multiplicative logic for more sides
-      areaFt = values.reduce((acc, val) => acc * val, 1) / values.reduce((acc, val) => acc + val, 0);
+      const s = values.reduce((acc, val) => acc + val, 0) / 2;
+
+areaFt = Math.sqrt(
+  values.reduce((acc, val) => acc * (s - val), 1)
+);     
     }
   
     // Convert to meters (ft to m conversion)
@@ -149,14 +160,22 @@ const updatedFormData = {
       setFormData((prevFormData) => ({
         ...prevFormData,
         propertyType: NCLTable1Data.length > 0 ? NCLTable1Data[0].PROPERTYCATEGORYID || "0" : "0",
-        east: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_EAST || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_EAST || '' : '',
-        west: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_WEST || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_WEST || '' : '',
-        north: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_NORTH || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_NORTH || '' : '',
-        south: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_SOUTH || '' : Table1Data.length > 0 ? Table1Data.CHECKBANDI_SOUTH || '' : '',
-        ns: NCLTable3Data.length > 0 ? NCLTable3Data[0].NORTHSOUTH || '' : Table3Data.length > 0 ? Table3Data[0].NORTHSOUTH || '' : '',
-        ew: NCLTable3Data.length > 0 ? NCLTable3Data[0].EASTWEST || '' : Table3Data.length > 0 ? Table3Data[0].EASTWEST || '' : '',
-        plotAreaSqFt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREAFT || '' : Table2Data.length > 0 ? Table2Data[0].SITEAREAFT || '' : '',
-        plotAreaSqMt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREA || '' : Table2Data.length > 0 ? Table2Data[0].SITEAREA || '' : '',
+        east: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_EAST : "",
+        west: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_WEST || '' : '',
+        north: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_NORTH || '' : '',
+        south: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_SOUTH || ''  : '',
+        ns: NCLTable3Data.length > 0 ? NCLTable3Data[0].NORTHSOUTH || '' : '',
+        ew: NCLTable3Data.length > 0 ? NCLTable3Data[0].EASTWEST || '' : '',
+        plotAreaSqFt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREAFT || '' :  '',
+        plotAreaSqMt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREA || '' : '',
+        Bookeast:  Table1Data.length > 0 ? Table1Data.CHECKBANDI_EAST || '' : '',
+        Bookwest: Table1Data.length > 0 ? Table1Data.CHECKBANDI_WEST || '' : '',
+        Booknorth: Table1Data.length > 0 ? Table1Data.CHECKBANDI_NORTH || '' : '',
+        Booksouth:  Table1Data.length > 0 ? Table1Data.CHECKBANDI_SOUTH || '' : '',
+        Bookns:  Table3Data.length > 0 ? Table3Data[0].NORTHSOUTH || '' : '',
+        Bookew:  Table3Data.length > 0 ? Table3Data[0].EASTWEST || '' : '',
+        BookplotAreaSqFt:  Table2Data.length > 0 ? Table2Data[0].SITEAREAFT || '' : '',
+        BookplotAreaSqMt:  Table2Data.length > 0 ? Table2Data[0].SITEAREA || '' : '',
         builtUpAreaSqFt: NCLTable2Data.length > 0 ? NCLTable2Data[0].BUILDINGAREAFT || '' : Table2Data.length > 0 ? Table2Data[0].BUILDINGAREAFT || '' : '',
         builtUpAreaSqMt: NCLTable2Data.length > 0 ? NCLTable2Data[0].BUILDINGAREA || '' : Table2Data.length > 0 ? Table2Data[0].BUILDINGAREA || '' : '',
         ApartCarpetArea: NCLTable7Data.length > 0 ? NCLTable7Data[0].CARPETAREA || '' : Table7Data.length > 0 ? Table7Data[0].CARPETAREA || '' : '',
@@ -172,18 +191,20 @@ const updatedFormData = {
         cal8: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE4FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
         oddSite: NCLTable3Data.length > 0 ? NCLTable3Data[0].ODDSITE || '' : Table3Data.length > 0 ? Table3Data[0].ODDSITE || '' : '',
       }));
+      debugger
       if(NCLTable3Data.length > 0){
         if(NCLTable3Data[0].ODDSITE === "Y"){
           setIsOddSiteEnabled(true)
-          handleCalulationNCL(NCLTable3Data[0])
+        //  handleCalulationNCL(NCLTable3Data[0])
         }
         else {
           setIsOddSiteEnabled(false)
         }
-      }else if(Table3Data.length > 0){
+      }
+      else if(Table3Data.length > 0){
         if(Table3Data[0].ODDSITE === "Y"){
           setIsOddSiteEnabled(true)
-          handleCalulationNCL(Table3Data[0])
+         // handleCalulationNCL(Table3Data[0])
         }
         else {
           setIsOddSiteEnabled(false)
@@ -198,31 +219,12 @@ const updatedFormData = {
     fetchData();
   }, []);
   const handleCalulation = () => {
-
-    const areaFt = Math.round((
-      (parseFloat(formData.cal1) || 1) *
-      (parseFloat(formData.cal2) || 1) *
-      (parseFloat(formData.cal3) || 1) /
-      (parseFloat(formData.cal4) || 1)
-    ) *
-      (
-        (parseFloat(formData.cal5) || 1) *
-        (parseFloat(formData.cal6) || 1) *
-        (parseFloat(formData.cal7) || 1) /
-        (parseFloat(formData.cal8) || 1)
-      ) * 100) / 100;
-
-    const areaMt = areaFt > 0 ? Math.round(areaFt * 0.092903 * 100) / 100 : 0;
-    if(areaFt === 1 && areaMt === 0.09){
-      formData.sqFt = "";
-   formData.sqMt = "";
-    }
-    else {
+   
+    const { areaFt, areaMt } = calculateArea(formData.noofSides, formData);
    formData.sqFt = areaFt;
    formData.sqMt = areaMt;
-    }
-    // formData.sqFt = "";
-    // formData.sqMt = "";
+    
+   
     setFormData(prevData => ({
       ...prevData,
      // sqFt: areaFt.toString(),
@@ -234,28 +236,11 @@ const updatedFormData = {
   }
   const handleCalulationNCL = (TableData) => {
     
-        const areaFt = Math.round((
-          (parseFloat(TableData.EWODDSITE1FT) || 1) *
-          (parseFloat(TableData.EWODDSITE2FT) || 1) *
-          (parseFloat(TableData.EWODDSITE3FT) || 1) /
-          (parseFloat(TableData.EWODDSITE4FT) || 1)
-        ) *
-          (
-            (parseFloat(TableData.NSODDSITE1FT) || 1) *
-            (parseFloat(TableData.NSODDSITE2FT) || 1) *
-            (parseFloat(TableData.NSODDSITE3FT) || 1) /
-            (parseFloat(TableData.NSODDSITE4FT) || 1)
-          ) * 100) / 100;
-    
-        const areaMt = areaFt > 0 ? Math.round(areaFt * 0.092903 * 100) / 100 : 0;
-        if(areaFt === 1 && areaMt === 0.09){
-          formData.sqFt = "";
-       formData.sqMt = "";
-        }
-        else {
-       formData.sqFt = areaFt;
-       formData.sqMt = areaMt;
-        }
+    const { areaFt, areaMt } = calculateArea(formData.noofSides, TableData);
+    formData.sqFt = areaFt;
+    formData.sqMt = areaMt;
+       
+        
         // formData.sqFt = "";
         // formData.sqMt = "";
         setFormData(prevData => ({
@@ -311,13 +296,13 @@ const updatedFormData = {
         }, 2000);
       }
     }
-   
+   debugger
     if ((formData.propertyType === 1 || formData.propertyType === 2)  && (isEditable)
       //only below data
     ) {
       const data = {
         propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
-        evenoroddsite: formData.oddSite || null,
+        evenoroddsite: formData.oddSite === "Y" ? "ODD" : "EVEN",
         sitearea: formData.plotAreaSqMt || null,
         siteareaft: formData.plotAreaSqFt || null,
         buildingarea: formData.builtUpAreaSqMt || null,
@@ -335,7 +320,7 @@ const updatedFormData = {
         loginId: "crc",
         p_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))
       };
-
+debugger
       try {
         await axiosInstance.post('BBMPCITZAPI/UPD_NCL_PROPERTY_SITE_DIMENSION_TEMP', data
         )
@@ -591,8 +576,93 @@ const updatedFormData = {
                   <TextField
                     fullWidth
                     label="East"
+                    name="Bookeast"
+                    value={formData.Bookeast}
+                    onChange={handleChange}
+                    variant={"filled"}
+                    InputProps={{
+                      readOnly: true,
+                      endAdornment: (
+                        <Tooltip title="Converted from Sq.ft">
+                          <IconButton>
+                            <InfoIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={6} sm={3}>
+                  <TextField
+                    fullWidth
+                    label="West"
+                    name="Bookwest"
+                  
+                    value={formData.Bookwest}
+                    onChange={handleChange}
+                     variant={"filled"}
+                    InputProps={{
+                      readOnly: true,
+                      endAdornment: (
+                        <Tooltip title="Converted from Sq.ft">
+                          <IconButton>
+                            <InfoIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={6} sm={3}>
+                  <TextField
+                    fullWidth
+                    label="North"
+                    name="Booknorth"
+              
+                    value={formData.Booknorth}
+                    onChange={handleChange}
+                     variant={"filled"}
+                    InputProps={{
+                      readOnly: true,
+                      endAdornment: (
+                        <Tooltip title="Converted from Sq.ft">
+                          <IconButton>
+                            <InfoIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={6} sm={3}>
+                  <TextField
+                    fullWidth
+                    label="South"
+                    name="Booksouth"
+                   
+                    value={formData.Booksouth}
+                    onChange={handleChange}
+                     variant={"filled"}
+                    InputProps={{
+                      readOnly: true,
+                      endAdornment: (
+                        <Tooltip title="Converted from Sq.ft">
+                          <IconButton>
+                            <InfoIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )
+                    }}
+                  />
+                </Grid>
+              </Grid>
+              <br></br>
+              <Grid container spacing={3}>
+                <Grid item xs={6} sm={3}>
+                  <TextField
+                    fullWidth
+                    label="East"
                     name="east"
-                    type="number"
                     value={formData.east}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "outlined" : "filled"}
@@ -614,7 +684,7 @@ const updatedFormData = {
                     fullWidth
                     label="West"
                     name="west"
-                    type="number"
+                  
                     value={formData.west}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "outlined" : "filled"}
@@ -636,7 +706,7 @@ const updatedFormData = {
                     fullWidth
                     label="North"
                     name="north"
-                    type="number"
+              
                     value={formData.north}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "outlined" : "filled"}
@@ -658,7 +728,6 @@ const updatedFormData = {
                     fullWidth
                     label="South"
                     name="south"
-                    type="number"
                     value={formData.south}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "outlined" : "filled"}
@@ -698,7 +767,94 @@ const updatedFormData = {
               </Typography>
 
               {(isOddSiteEnabled === false) && (
+                
                 <Grid container spacing={3}>
+                  <Grid item xs={6} sm={3}>
+                    <TextField
+                      fullWidth
+                      label="N-S (ft)"
+                      name="Bookns"
+                      value={formData.Bookns}
+                      onChange={handleChange}
+                      type="number"
+                      variant={ "filled"}
+                      InputProps={{
+                        readOnly: true,
+                        endAdornment: (
+                          <Tooltip title="Converted from Sq.ft">
+                            <IconButton>
+                              <InfoIcon />
+                            </IconButton>
+                          </Tooltip>
+                        )
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={6} sm={3}>
+                    <TextField
+                      fullWidth
+                      label="E-W (ft)"
+                      name="Bookew"
+                      value={formData.Bookew}
+                      onChange={handleChange}
+                      type="number"
+                      variant={"filled"}
+                      InputProps={{
+                        readOnly: true,
+                       
+                        endAdornment: (
+                          <Tooltip title="Converted from Sq.ft">
+                            <IconButton>
+                              <InfoIcon />
+                            </IconButton>
+                          </Tooltip>
+                        )
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={6} sm={3}>
+                    <TextField
+                      fullWidth
+                      label="PLOT AREA(N-S*E-W)"
+                      name="BookplotAreaSqFt"
+                      value={formData.BookplotAreaSqFt}
+                      onChange={handleChange}
+                      type="number"
+                      variant={"filled"}
+                      InputProps={{
+                        readOnly: true,
+                        endAdornment: (
+                          <Tooltip title="Calculated as N-S * E-W">
+                            <IconButton>
+                              <InfoIcon />
+                            </IconButton>
+                          </Tooltip>
+                        )
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={6} sm={3}>
+                    <TextField
+                      fullWidth
+                      label="Plot Area (Sq.Mt)"
+                      name="BookplotAreaSqMt"
+                      value={formData.BookplotAreaSqMt}
+                      onChange={handleChange}
+                      type="number"
+                      variant={"filled"}
+                      InputProps={{
+                        readOnly: true,
+                        endAdornment: (
+                          <Tooltip title="Converted from Sq.ft">
+                            <IconButton>
+                              <InfoIcon />
+                            </IconButton>
+                          </Tooltip>
+                        )
+                      }}
+                    />
+
+                  </Grid>
                   <Grid item xs={6} sm={3}>
                     <TextField
                       fullWidth
@@ -786,7 +942,6 @@ const updatedFormData = {
                     />
 
                   </Grid>
-
                 </Grid>
               )}
             </div>
@@ -807,8 +962,99 @@ const updatedFormData = {
                   <TextField
                     fullWidth
                     label="East"
+                    name="Bookeast"
+                   
+                    value={formData.Bookeast}
+                    onChange={handleChange}
+                    variant={"filled"}
+                    InputProps={{
+                      readOnly: true,
+                    
+                      endAdornment: (
+                        <Tooltip title="Converted from Sq.ft">
+                          <IconButton>
+                            <InfoIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={6} sm={3}>
+                  <TextField
+                    fullWidth
+                    label="West"
+                    name="Bookwest"
+                  
+                    value={formData.Bookwest}
+                    onChange={handleChange}
+                    variant={"filled"}
+                    InputProps={{
+                      readOnly: true,
+                     
+                      endAdornment: (
+                        <Tooltip title="Converted from Sq.ft">
+                          <IconButton>
+                            <InfoIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={6} sm={3}>
+                  <TextField
+                    fullWidth
+                    label="North"
+                    name="Booknorth"
+                  
+                    value={formData.Booknorth}
+                    onChange={handleChange}
+                    variant={"filled"}
+                    InputProps={{
+                      readOnly: true,
+                    
+                      endAdornment: (
+                        <Tooltip title="Converted from Sq.ft">
+                          <IconButton>
+                            <InfoIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={6} sm={3}>
+                  <TextField
+                    fullWidth
+                    label="South"
+                    name="Booksouth"
+                   
+                    value={formData.Booksouth}
+                    onChange={handleChange}
+                    variant={"filled"}
+                    InputProps={{
+                      readOnly: true,
+                   
+                      endAdornment: (
+                        <Tooltip title="Converted from Sq.ft">
+                          <IconButton>
+                            <InfoIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )
+                    }}
+                  />
+                </Grid>
+              </Grid>
+              <br></br>
+              <Grid container spacing={3}>
+                <Grid item xs={6} sm={3}>
+                  <TextField
+                    fullWidth
+                    label="East"
                     name="east"
-                    type="number"
+                   
                     value={formData.east}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "outlined" : "filled"}
@@ -830,7 +1076,7 @@ const updatedFormData = {
                     fullWidth
                     label="West"
                     name="west"
-                    type="number"
+                  
                     value={formData.west}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "outlined" : "filled"}
@@ -852,7 +1098,7 @@ const updatedFormData = {
                     fullWidth
                     label="North"
                     name="north"
-                    type="number"
+                  
                     value={formData.north}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "outlined" : "filled"}
@@ -874,7 +1120,7 @@ const updatedFormData = {
                     fullWidth
                     label="South"
                     name="south"
-                    type="number"
+                   
                     value={formData.south}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "outlined" : "filled"}
@@ -915,6 +1161,92 @@ const updatedFormData = {
 
               {(isOddSiteEnabled === false) && (
                 <Grid container spacing={3}>
+                  <Grid item xs={6} sm={3}>
+                    <TextField
+                      fullWidth
+                      label="N-S (ft)"
+                      name="ns"
+                      value={formData.Bookns}
+                      onChange={handleChange}
+                      type="number"
+                      variant={"filled"}
+                      InputProps={{
+                        readOnly: true,
+                       
+                        endAdornment: (
+                          <Tooltip title="Converted from Sq.ft">
+                            <IconButton>
+                              <InfoIcon />
+                            </IconButton>
+                          </Tooltip>
+                        )
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={6} sm={3}>
+                    <TextField
+                      fullWidth
+                      label="E-W (ft)"
+                      name="ew"
+                      value={formData.Bookew}
+                      onChange={handleChange}
+                      type="number"
+                      variant={"filled"}
+                      InputProps={{
+                        readOnly: true,
+                       
+                        endAdornment: (
+                          <Tooltip title="Converted from Sq.ft">
+                            <IconButton>
+                              <InfoIcon />
+                            </IconButton>
+                          </Tooltip>
+                        )
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={6} sm={3}>
+                    <TextField
+                      fullWidth
+                      label="PLOT AREA(N-S*E-W)"
+                      name="BookplotAreaSqFt"
+                      value={formData.BookplotAreaSqFt}
+                      onChange={handleChange}
+                      type="number"
+                      variant={"filled"}
+                      InputProps={{
+                        readOnly: true,
+                        endAdornment: (
+                          <Tooltip title="Calculated as N-S * E-W">
+                            <IconButton>
+                              <InfoIcon />
+                            </IconButton>
+                          </Tooltip>
+                        )
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={6} sm={3}>
+                    <TextField
+                      fullWidth
+                      label="Plot Area (Sq.Mt)"
+                      name="BookplotAreaSqMt"
+                      value={formData.BookplotAreaSqMt}
+                      onChange={handleChange}
+                      type="number"
+                      variant={"filled"}
+                      InputProps={{
+                        readOnly: false,
+                        endAdornment: (
+                          <Tooltip title="Converted from Sq.ft">
+                            <IconButton>
+                              <InfoIcon />
+                            </IconButton>
+                          </Tooltip>
+                        )
+                      }}
+                    />
+                  </Grid>
                   <Grid item xs={6} sm={3}>
                     <TextField
                       fullWidth
@@ -1083,13 +1415,13 @@ const updatedFormData = {
                     <TextField
                       key={index}
                       variant={isEditable ? "outlined" : "filled"}
-                      size="small"
-                      placeholder={`Side ${index + 1}`}
+
+                      placeholder={index + 1  === 1? `Road faced side length` : `Length ${index + 1}` }
                       name={`cal${index + 1}`}
                       type="number"
                       value={formData[`cal${index + 1}`] || ''}
                       onChange={handleChange}
-                      sx={{ width: '100px', borderColor: '#016767' ,paddingRight:'20px' }}
+                      sx={{ width: '31.3%', borderColor: '#016767' ,paddingRight:'2%',paddingTop:"1%" }}
                       InputProps={{
                         readOnly: !isEditable,
                         style: { backgroundColor: !isEditable ? '' : "#ffff" },

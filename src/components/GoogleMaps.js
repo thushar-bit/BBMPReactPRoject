@@ -9,9 +9,11 @@ const containerStyle = {
 
 const libraries = ['places'];
 const GoogleMaps = ({ lat,long,onLocationChange }) => {
+  debugger
+  
   const center = {
-    lat: lat,
-    lng: long
+    lat: parseFloat(lat),
+    lng: parseFloat(long)
   };
   
 

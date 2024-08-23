@@ -66,7 +66,7 @@ const AddressDetails = () => {
       .matches(/^\d{6}$/, 'Pincode must be a 6-digit number'),
     verifySASNUM: Yup.string().required('SAS Application Number is required').notOneOf(['0'], 'SAS Number cannot be "0"'),
     streetid: Yup.string().required('Street Name is required').notOneOf(['0'], 'Street Name cannot be "0"'),
-    propertyType:Yup.string().required('Property Type is required').notOneOf(['0'], 'Property Type cannot be Select'),
+   // propertyType:Yup.string().required('Property Type is required').notOneOf(['0'], 'Property Type cannot be Select'),
     lat1:Yup.string().required('latitude is required').notOneOf(['0'], 'latitude cannot be "0"'),
     long1:Yup.string().required('longitude is required').notOneOf(['0'], 'longitude cannot be "0"'),
   });
@@ -81,6 +81,8 @@ const AddressDetails = () => {
   const [fieldvalue,setFieldValue] = useState("")
   const [lat2, setlat1] = useState(0);
   const [long2, setlong1] = useState(0);
+  const [wardlat,setWardLat] = useState(123);
+  const [wardLong,setWardLong] = useState(123)
   
   const [tableData, setTableData] = useState([
   ]);
@@ -91,7 +93,7 @@ const AddressDetails = () => {
       const response = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
       const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
       const response3 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
-
+      
       const { Table1 = [], Table5 = [], } = response.data;
 let NCLtable1Item = [];
 let Table11Item = [];
@@ -134,9 +136,9 @@ let table4Item = [];
         NearestLandmark: Table11Item.LANDMARK || '',
         pincode: Table11Item.PINCODE || '',
         areaorlocality: Table11Item.AREAORLOCALITY || '',
-        lat1: table4Item.LATITUDE || 0,
-        long1: table4Item.LONGITUDE || 0,
-        verifySASNUM: NCLtable1Item.PUID !== null ? NCLtable1Item.PUID || 0 : table1Item.PUID ? table1Item.PUID : 0,
+        lat1: table4Item.LATITUDE || "",
+        long1: table4Item.LONGITUDE || "",
+        verifySASNUM: NCLtable1Item.PUID !== null ? NCLtable1Item.PUID || "" : table1Item.PUID ? table1Item.PUID : "",
       });
       const sasNum = NCLtable1Item.PUID !== null ? NCLtable1Item.PUID || 0 : table1Item.PUID ? table1Item.PUID : 0;
       const responseSAS = await axiosInstance.get('BBMPCITZAPI/GetTaxDetails?applicationNo=' + sasNum + '&propertycode='+JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+'&P_BOOKS_PROP_APPNO='+JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))+'&loginId=crc')
@@ -146,6 +148,19 @@ let table4Item = [];
         toast.error("No SAS Applications Found");
       }
       setSASTableData(Table);
+      const GetWardCordinates = await axiosInstance.get("BBMPCITZAPI/GetWardCordinates?wardNumber="+table1Item.WARDNUMBER)
+      const { Table:ward = [] } = GetWardCordinates.data;
+      debugger
+      if(table4Item.length > 0){
+        setWardLat(table4Item.LATITUDE);
+        setWardLong(table4Item.LONGITUDE);
+      }
+      else 
+      {
+        setWardLat(ward[0].WARDLATITUDE);
+        setWardLong(ward[0].WARDLONGITUDE);
+      }
+    
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -171,6 +186,15 @@ let table4Item = [];
       }
       return
     }
+    if (name === "verifySASNUM") {
+      if (/^\d{0,10}$/.test(value)) {
+        setFormData(prevFormData => ({
+          ...prevFormData,
+          [name]: value
+        }));
+      }
+      return
+    }
     setFormData({
       ...formData,
       [name]: value
@@ -187,6 +211,14 @@ let table4Item = [];
     const file = e.target.files[0];
     const fileName = file.name;
     const fileExtension = fileName.split('.').pop().toLowerCase();
+   
+    
+    if(!['jpg', 'jpeg', 'png'].includes(fileExtension)){
+      toast.error("Please Select Only '.jpg','.jpeg','.png' File ");
+      e.target.value = null;
+      setSelectedFile(null);
+      return
+    }
     setfileExtension(fileExtension);
     const maxSize = 500 * 1024;
     if (file && file.size > maxSize) {
@@ -277,15 +309,19 @@ const CopyBookData = async () => {
   const handleSubmit = async () => {
   debugger
     
-    var propertyphoto2 = "";
+    let propertyphoto2 = "";
     if (isEditable) {
-      if (selectedFile) {
+      if (selectedFile != null) {
         propertyphoto2 = await getPropertyphoto(selectedFile);
       }
       if(propertyPhoto.length === 0){
         if(propertyphoto2.length === 0){
         toast.error("Please Upload the New Property Photo");
         return;
+        }
+        if(formData.propertyType === "0"){
+          toast.error("Please Select the Property Type")
+          return
         }
       }
       setLoading(true);
@@ -419,30 +455,46 @@ const CopyBookData = async () => {
   };
 
   const handleSASClick = async () => {
-
-    if (handleSASClicks === false) {
-      sethandleSASClicks(true);
-      if (formData.verifySASNUM.length === 0) {
-        toast.error("Please Provide SAS Application Number");
-        return
-      }
-      const copy = await CopyBookData();
-      if(copy){
-        toast.success("Copy From BBMP Books Data Was Successfull.")
-      }else{
-        toast.error("Something Went wrong.Copy of Book Data was Not SuccessFull")
-        return
-      }
-      const response = await axiosInstance.get('BBMPCITZAPI/GetTaxDetails?applicationNo=' + formData.verifySASNUM + '&propertycode='+JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+'&P_BOOKS_PROP_APPNO='+JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))+'&loginId=crc')
-
-     
-      const { Table = [] } = response.data;
-      if (Table.length === 0) {
-        toast.error("No SAS Applications Found");
-      }
-      setSASTableData(Table);
+    if (!formData.verifySASNUM || formData.verifySASNUM.length === 0) {
+      toast.error("Please Provide SAS Application Number");
+      return;
     }
-    else {
+  
+    if (!handleSASClicks) {
+      sethandleSASClicks(true);
+  
+      try {
+        const copy = await CopyBookData();
+        if (copy) {
+       //   toast.success("Copy From BBMP Books Data Was Successful.");
+        } else {
+          toast.error("Something went wrong. Copy of Book Data was not successful.");
+          sethandleSASClicks(false);
+          return;
+        }
+  
+        const response = await axiosInstance.get(
+          'BBMPCITZAPI/GetTaxDetails', {
+            params: {
+              applicationNo: formData.verifySASNUM,
+              propertycode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
+              P_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')),
+              loginId: 'crc'
+            }
+          }
+        );
+  
+        const { Table = [] } = response.data;
+        if (Table.length === 0) {
+          toast.error("No SAS Applications Found");
+        }
+        setSASTableData(Table);
+      } catch (error) {
+        toast.error("An error occurred while fetching the SAS details.");
+      } finally {
+        sethandleSASClicks(false);
+      }
+    } else {
       sethandleSASClicks(false);
       setSASTableData([]);
     }
@@ -649,6 +701,25 @@ const CopyBookData = async () => {
                     }}
                   />
                 </Grid>
+                <Grid item xs={12} sm={12}>
+                <FormControl fullWidth >
+            <InputLabel>Select the Property Type</InputLabel>
+            <Select
+              name="propertyType"
+              value={formData.propertyType}
+              onChange={handleChange}
+              inputProps={{ readOnly: !isEditable }}
+           
+              sx={{backgroundColor: !isEditable? '' : "#ffff"}}
+            >
+              <MenuItem value="0">Select</MenuItem>
+              <MenuItem value="1">Vacant Site</MenuItem>
+              <MenuItem value="2">Site with Building</MenuItem>
+              <MenuItem value="3">Multistorey Flats</MenuItem>
+            </Select>
+            
+          </FormControl>
+          </Grid>
               </Grid>
               <Typography
                 variant="h6"
@@ -668,7 +739,7 @@ const CopyBookData = async () => {
               >
                 {t("PostalAddressofProperty")}
               </Typography>
-              <GoogleMaps lat={13.0074} long={77.5688} onLocationChange={handleAddressChange} />
+              <GoogleMaps lat={wardlat} long={wardLong} onLocationChange={handleAddressChange} />
               <Formik
           initialValues={formData}
           validationSchema={validationSchema}
@@ -691,27 +762,7 @@ const CopyBookData = async () => {
             <Form>
               <br></br>
               <br></br>
-              <FormControl fullWidth sx={{ marginBottom: 3 }}
-              error={touched.propertyType && !!errors.propertyType}
-              className={touched.propertyType && !!errors.propertyType ? 'shake' : ''}>
-            <InputLabel>Select the Property Type</InputLabel>
-            <Select
-              name="propertyType"
-              value={formData.propertyType}
-              onChange={handleChange}
-              inputProps={{ readOnly: !isEditable }}
-              onBlur={handleBlur}
-              sx={{backgroundColor: !isEditable? '' : "#ffff"}}
-            >
-              <MenuItem value="0">Select</MenuItem>
-              <MenuItem value="1">Vacant Site</MenuItem>
-              <MenuItem value="2">Site with Building</MenuItem>
-              <MenuItem value="3">Multistorey Flats</MenuItem>
-            </Select>
-            <FormHelperText>
-                      {touched.propertyType && errors.propertyType ? errors.propertyType : ''}
-                    </FormHelperText>
-          </FormControl>
+              
               <Grid container spacing={4}>
                 <Grid item xs={12} sm={6}>
                   <TextField
@@ -947,7 +998,7 @@ const CopyBookData = async () => {
                     </div>
                   )}
 
-                  {selectedFile && (
+                  {selectedFile != null && (
                     <Box display="flex" alignItems="center" mt={2}>
                       <Typography variant="body1">{selectedFile.name}</Typography>
                       <Button color="error" variant='outlined' onClick={handleFileDelete} sx={{ ml: 2 }}>
@@ -986,8 +1037,15 @@ const CopyBookData = async () => {
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <Button color='success' variant={"contained"}  disabled={!isEditable} onClick={async () => handleSASClick()}>Verify SAS Application Number</Button>
-                </Grid>
+                <Button color='success'
+                   variant={"contained"} 
+                    disabled={!isEditable} 
+                     onClick={handleSASClick}>
+                       Verify SAS Application Number 
+                      </Button>
+                      </Grid>
+                
+              
               </Grid>
               <TableContainer component={Paper} sx={{ mt: 4 }}>
                 <Table>
@@ -1032,9 +1090,11 @@ const CopyBookData = async () => {
                 <Button variant="contained" color="primary" onClick={handleBack}>
                     Back
                   </Button>
+                  {!isEditable && (
                   <Button variant="contained" color="primary" onClick={handleAddressEdit}>
                     Edit
                   </Button>
+                  )}
                   <Button variant="contained" color="success" type="submit"  onClick={() => setFieldValue('save')}>
                     {t("save")}
                   </Button>
