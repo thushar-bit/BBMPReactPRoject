@@ -349,6 +349,19 @@ const OwnerDetails = () => {
     var response = await axiosInstance.post("E-KYCAPI/RequestEKYC?OwnerNumber=" + ownerNumber + "&BOOK_APP_NO="+JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))+"&PROPERTY_CODE="+ JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')))
     window.location.href = response.data;
   }
+  const ReaddDeletedOwner = async (row) => {
+    let ownerNumber = 0;
+    if(row.OWNERNUMBER !== ""){
+      ownerNumber = row.OWNERNUMBER;
+    }else
+     {
+      ownerNumber = row.SLNO;
+    }
+    var response = await axiosInstance.get("BBMPCITZAPI/COPY_OWNER_FROM_BBDDRAFT_NCLTEMP?&P_BOOKS_PROP_APPNOAPPNO="+JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))+"&propertyCode="+ JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+"&ownerNumber="+ownerNumber)
+    console.log(response.data)
+    const { Table1 = [] } = response.data;
+    setTablesData9(Table1);
+  }
   const OwnerExists = (BBDOwnerNumber) => {
     const exists = tablesdata9.some(item => item.OWNERNUMBER === BBDOwnerNumber);
     return exists;
@@ -456,6 +469,8 @@ const OwnerDetails = () => {
                   <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>E-KYC Status</TableCell>
                   <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Owner Status</TableCell>
                   <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Verify E-KYC</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}></TableCell>
+
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -480,6 +495,14 @@ const OwnerDetails = () => {
                         </Button>
                         :
                         ""
+                      }
+                      </TableCell>
+                      <TableCell>{OwnerExists(row.OWNERNUMBER) ?
+                        ""
+                        :
+                        <Button variant="contained" color="primary" onClick={() =>ReaddDeletedOwner(row)}>
+                          Re-Add Deleted Owner
+                        </Button>
                       }
                       </TableCell>
                     </TableRow>

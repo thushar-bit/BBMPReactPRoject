@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   TextField, Button, Box, Container, Typography,
-  FormControl, MenuItem, Select, InputLabel, FormHelperText
+  FormControl, MenuItem, Select, InputLabel, FormHelperText,Skeleton 
 } from '@mui/material';
 //import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -178,7 +178,7 @@ const SiteDetails = () => {
 
   return (
     <Container maxWidth="md">
-      <Loaders loading={loading} />
+      {/* <Loaders loading={loading} /> */}
       <ToastContainer />
       <Box sx={{ backgroundColor: '#f0f0f0', padding: 4, borderRadius: 2, mt: 8 }}>
         <Formik
@@ -201,6 +201,15 @@ const SiteDetails = () => {
               >
                 Details Of Usage Of Vacant Plot
               </Typography>
+              {loading ? (
+          <>
+            <Skeleton variant="text" height={60} sx={{ marginBottom: 3 }}  animation="wave"/>
+            <Skeleton variant="rectangular" height={48} sx={{ marginBottom: 3 }}  animation="wave"/>
+            <Skeleton variant="rectangular" height={48} sx={{ marginBottom: 3 }} animation="wave" />
+            <Skeleton variant="rectangular" height={48} sx={{ marginBottom: 3 }}  animation="wave"/>
+          </>
+        ) : (
+          <>
               <FormControl
                 fullWidth
                 error={touched.features && !!errors.features}
@@ -285,6 +294,8 @@ const SiteDetails = () => {
                   Next
                 </Button>
               </Box>
+              </>
+        )}
             </Form>
           )}
         </Formik>
