@@ -29,7 +29,7 @@ const KaveriData = () => {
     try {
        let response =  await axiosInstance.get(`KaveriAPI/GetKaveriDocData?RegistrationNoNumber=${formData.RegistrationNumber}&BOOKS_APP_NO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&PropertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&LoginId=crc`)
        const result = response.data;
-       debugger
+       
        if(result.success)
         {
           setisShowKaveriDocumentDetais(true);
@@ -95,9 +95,9 @@ const KaveriData = () => {
         let response = await axiosInstance.get
         (`KaveriAPI/GetKaveriECData?ECNumber=${formData.ECDocumentNumber}&RegistrationNoNumber=${formData.RegistrationNumber}&BOOKS_APP_NO=
           ${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&PropertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&LoginId=crc`)
-          debugger
+          
           const result = response.data;
-          debugger
+          
           if(result.success){
             if(result.ecDataExists){
               setEcDocumentData(result.data);

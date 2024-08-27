@@ -9,7 +9,7 @@ const containerStyle = {
 
 const libraries = ['places'];
 const GoogleMaps = ({ lat,long,onLocationChange }) => {
-  debugger
+  
   
   const center = {
     lat: parseFloat(lat),

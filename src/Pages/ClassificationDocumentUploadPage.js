@@ -66,7 +66,7 @@ const ClassificationDocumentUploadPage = () => {
     setSelectedDate(date);
   };
   const handleAkathaDropdownValueChange = async (e) => {
-    debugger
+    
     try {
       const { name, value } = e.target;
       let updatedClassification = "";
@@ -164,7 +164,7 @@ const ClassificationDocumentUploadPage = () => {
         DocumentDetails:NCLTable1.length > 0 ? NCLTable1[0].SUBCLASSIFICATION === null ? "":NCLTable1[0].SUBCLASSIFICATION   : "",
         AKatha:NCLTable1.length > 0 ?NCLTable1[0].SUBCLASSIFICATIONID : ""
       }));
-      debugger
+      
       if(NCLTable1.length > 0){
         if(NCLTable1[0].SUBCLASSIFICATIONID === null){
           setIsClassificationEditable(false)
@@ -221,7 +221,7 @@ const ClassificationDocumentUploadPage = () => {
     setfileExtension('');
   }
   const onClassifySave = async () => {
-    debugger
+    
     if(formData.AKatha === "0"){
       toast.error("Please Select A Katha Claim")
       return

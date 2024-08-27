@@ -338,7 +338,7 @@ const OwnerDetails = () => {
     window.location.href = response.data;
   };
   const VerfiyEKYC = async (row) => {
-    debugger
+    
     let ownerNumber = 0;
     if(row.OWNERNUMBER !== ""){
       ownerNumber = row.OWNERNUMBER;

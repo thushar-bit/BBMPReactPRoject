@@ -77,7 +77,7 @@ const AreaDimension = () => {
       const s = (a + b + c) / 2;
       areaFt = Math.sqrt(s * (s - a) * (s - b) * (s - c));
     } else {
-      debugger
+      
       const s = values.reduce((acc, val) => acc + val, 0) / 2;
 
 for (const side of values) {
@@ -197,7 +197,7 @@ const updatedFormData = {
         noofSides: NCLTable3Data.length > 0 ? NCLTable3Data[0].ODDSITENOOFSIDES || '' : Table3Data.length > 0 ? Table3Data[0].ODDSITENOOFSIDES || '' : '',
         oddSite: NCLTable3Data.length > 0 ? NCLTable3Data[0].ODDSITE || '' : Table3Data.length > 0 ? Table3Data[0].ODDSITE || '' : '',
       }));
-      debugger
+      
       if(NCLTable3Data.length > 0){
         if(NCLTable3Data[0].ODDSITE === "Y"){
           setIsOddSiteEnabled(true)
@@ -302,7 +302,7 @@ const updatedFormData = {
         }, 2000);
       }
     }
-   debugger
+   
     if ((formData.propertyType === 1 || formData.propertyType === 2)  && (isEditable)
       //only below data
     ) {
@@ -329,7 +329,7 @@ const updatedFormData = {
         loginId: "crc",
         p_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))
       };
-debugger
+
       try {
         await axiosInstance.post('BBMPCITZAPI/UPD_NCL_PROPERTY_SITE_DIMENSION_TEMP', data
         )

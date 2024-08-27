@@ -39,7 +39,7 @@ const BBDDraft = () => {
 
   const handleChange = async (e) => {
     try{
-      debugger
+      
     const { name, value } = e.target;
     if (name === "ZoneName") {
       var response = await axiosInstance.get("BBMPCITZAPI/GetMasterWard?ZoneId=" + value)
@@ -64,7 +64,7 @@ const BBDDraft = () => {
   };
 
   const handleSearch = async () => {
-    debugger
+    
     if(formData.ZoneName === ""){
         toast.error("Please Select A Zone")
         return
@@ -106,7 +106,7 @@ const BBDDraft = () => {
 
   const handleNavigation = async (row) => {
   //  navigate('/AddressDetails')
-  debugger
+  
   
     const response3 = await axiosInstance.get(`BBMPCITZAPI/Get_Ctz_ObjectionModPendingAppl?LoginId=crc&propertycode=${row.PROPERTYCODE}&propertyid=${row.PROPERTYID}`);
         

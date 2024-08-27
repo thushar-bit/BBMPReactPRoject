@@ -150,7 +150,7 @@ let table4Item = [];
       setSASTableData(Table);
       const GetWardCordinates = await axiosInstance.get("BBMPCITZAPI/GetWardCordinates?wardNumber="+table1Item.WARDNUMBER)
       const { Table:ward = [] } = GetWardCordinates.data;
-      debugger
+      
       if(table4Item.length > 0){
         setWardLat(table4Item.LATITUDE);
         setWardLong(table4Item.LONGITUDE);
@@ -307,7 +307,7 @@ const CopyBookData = async () => {
 }
 
   const handleSubmit = async () => {
-  debugger
+  
     
     let propertyphoto2 = "";
     if (isEditable) {
