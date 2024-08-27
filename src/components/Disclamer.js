@@ -74,7 +74,7 @@ const handleConfirmNo = () => {
         <Button onClick={handleConfirmNo} color="primary" style={{ float: 'left' }}>
           Cancel
         </Button>
-        <Button onClick={handleAgree} color="primary" style={{ float: 'right' }}>
+        <Button onClick={handleAgree} disabled={!disabled} color="primary" style={{ float: 'right' }}>
           Submit
         </Button>
       </Box>

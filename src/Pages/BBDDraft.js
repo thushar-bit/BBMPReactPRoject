@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import {
-  TextField, Button, Grid, Box, Container, Typography, CircularProgress, Tooltip, IconButton,
-  FormControl, FormHelperText, MenuItem, Select, InputLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-  Link, TablePagination
+  TextField, Button, Grid, Box, Container, Typography, CircularProgress, 
+  FormControl, MenuItem, Select, InputLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
+  TablePagination
 } from '@mui/material';
-import InfoIcon from '@mui/icons-material/Info';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../components/Axios';
 import ErrorPage from './ErrorPage';
-import * as Yup from 'yup';
 import '../components/Shake.css';
 
 const BBDDraft = () => {
@@ -40,40 +38,67 @@ const BBDDraft = () => {
   }, []);
 
   const handleChange = async (e) => {
+    try{
+      debugger
     const { name, value } = e.target;
     if (name === "ZoneName") {
       var response = await axiosInstance.get("BBMPCITZAPI/GetMasterWard?ZoneId=" + value)
-      setWardData(response.data.Table || [])
+      setWardData(response.data.Table)
     }
+    
     if (name === "WardName") {
         setLoading(true);
-      var response = await axiosInstance.get("BBMPCITZAPI/LOAD_BBD_RECORDS_BY_WARD?ZoneId=" + formData.ZoneName + "&WardId=" + value)
-      setPropertyData(response.data.Table || [])
+        var response = await axiosInstance.get(`BBMPCITZAPI/LOAD_BBD_RECORDS?ZoneId=${formData.ZoneName}&WardId=${value}&SerachType=${0}&Search=${"thushar"}`)
+        setPropertyData(response.data.Table || [])
+        
       setLoading(false);
     }
     setFormData({
       ...formData,
       [name]: value
     });
+  }catch(error){
+    setLoading(false);
+    console.log(error)
+  }
   };
 
   const handleSearch = async () => {
-    
+    debugger
     if(formData.ZoneName === ""){
-        
+        toast.error("Please Select A Zone")
+        return
     }
-    if(formData.WardName === ""){}
-        if(formData.SelectType === "0"){}
-        if(formData.Search){}
-    var response = await axiosInstance.get("BBMPCITZAPI/LOAD_BBD_RECORDS?ZoneId="+formData.ZoneName+"&WardId="+formData.WardName+"&SerachType="+formData.SelectType+"&Search="+formData.Search+"")
-      setPropertyData(response.data.Table || [])
+    if(formData.WardName === ""){
+      toast.error("Please Select A Ward");
+      return
+    }
+        if(formData.SelectType === ""){
+         toast.error("Please Enter Search Type")
+         return
+        }
+        else {
+          if(formData.Search.length === 0){
+            toast.error("Please Enter Search Text");
+            return
+          }
+          else 
+          {
+            var response = await axiosInstance.get("BBMPCITZAPI/LOAD_BBD_RECORDS?ZoneId="+formData.ZoneName+"&WardId="+formData.WardName+"&SerachType="+formData.SelectType+"&Search="+formData.Search+"")
+            setPropertyData(response.data.Table || [])
+          }
+        }
   }
-  const handleReset = (e) => {
-    const { name, value } = e.target;
+  const handleReset = () => {
+    
+   
     setPropertyData([]);
     setFormData({
         ...formData,
-        [name]: ""
+        ZoneName: "",
+    WardName: "",
+    SelectType: "",
+    Search:""
       });
   }
 
@@ -99,13 +124,8 @@ const BBDDraft = () => {
            }, 1000);
         }
         else {
-
-         
-
-          
           sessionStorage.setItem('P_BOOKS_PROP_APPNO', JSON.stringify(response3.data.P_BOOKS_PROP_APPNO || 0));
           sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(response3.data.PropertyId || 0));
-        
         try {
           const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&propertyid=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
           const response2 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');

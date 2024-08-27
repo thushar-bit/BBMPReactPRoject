@@ -48,6 +48,8 @@ const AreaDimension = () => {
     cal6: "",
     cal7: "",
     cal8: "",
+    cal9:"",
+    cal10:"",
     sqFt: "",
     sqMt: ""
   });
@@ -67,7 +69,7 @@ const AreaDimension = () => {
       return { areaFt: '', areaMt: '' }; // Return empty if any value is invalid
     }
   
-    let areaFt = 0;
+    let areaFt = 1;
   
     if (numberOfSides === 3) {
      
@@ -75,11 +77,12 @@ const AreaDimension = () => {
       const s = (a + b + c) / 2;
       areaFt = Math.sqrt(s * (s - a) * (s - b) * (s - c));
     } else {
+      debugger
       const s = values.reduce((acc, val) => acc + val, 0) / 2;
 
-areaFt = Math.sqrt(
-  values.reduce((acc, val) => acc * (s - val), 1)
-);     
+for (const side of values) {
+  areaFt *= (s - side);
+}
     }
   
     // Convert to meters (ft to m conversion)
@@ -189,6 +192,9 @@ const updatedFormData = {
         cal6: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE2FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
         cal7: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE3FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
         cal8: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE4FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
+        cal9: NCLTable3Data.length > 0 ? NCLTable3Data[0].SIDE9 || '' : Table3Data.length > 0 ? Table3Data[0].SIDE9 || '' : '',
+        cal10: NCLTable3Data.length > 0 ? NCLTable3Data[0].SIDE10 || '' : Table3Data.length > 0 ? Table3Data[0].SIDE10 || '' : '',
+        noofSides: NCLTable3Data.length > 0 ? NCLTable3Data[0].ODDSITENOOFSIDES || '' : Table3Data.length > 0 ? Table3Data[0].ODDSITENOOFSIDES || '' : '',
         oddSite: NCLTable3Data.length > 0 ? NCLTable3Data[0].ODDSITE || '' : Table3Data.length > 0 ? Table3Data[0].ODDSITE || '' : '',
       }));
       debugger
@@ -317,6 +323,9 @@ const updatedFormData = {
         nsoddsitE2FT: formData.cal6 || null,
         nsoddsitE3FT: formData.cal7 || null,
         nsoddsitE4FT: formData.cal8 || null,
+        sidE9:formData.cal9 || null,
+        sidE10:formData.cal10 || null,
+        oddSiteSides:formData.noofSides || null,
         loginId: "crc",
         p_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))
       };
@@ -1393,7 +1402,7 @@ debugger
                       sx={{backgroundColor: !isEditable? '' : "#ffff", width:"20%"}}
                     >
                       <MenuItem value="">--Select--</MenuItem>
-                      {[3,4,5,6,7,8,9].map((item) => (
+                      {[3,4,5,6,7,8,9,10].map((item) => (
                         <MenuItem key={item} value={item}>
                           {item}
                         </MenuItem>
@@ -1409,13 +1418,11 @@ debugger
             <Grid container spacing={3} alignItems="center" justifyContent="center">
               <Grid item>
                 <Grid container spacing={1} alignItems="center" justifyContent="center">
-                 
                   <Grid item>
                   {Array.from({ length: formData.noofSides }).map((_, index) => (
                     <TextField
                       key={index}
                       variant={isEditable ? "outlined" : "filled"}
-
                       placeholder={index + 1  === 1? `Road faced side length` : `Length ${index + 1}` }
                       name={`cal${index + 1}`}
                       type="number"

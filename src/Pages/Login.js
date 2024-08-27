@@ -129,7 +129,7 @@ const Login = () => {
           sessionStorage.clear();
           return
         }
-        toast.success("Login SuccessFull !!");
+        toast.success("Login Successfull !!");
         setTimeout(() => {
            navigate("/BBDDraft");
         }, 1000);

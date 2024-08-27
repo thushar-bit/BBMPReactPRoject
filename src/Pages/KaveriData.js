@@ -16,8 +16,9 @@ const KaveriData = () => {
     ECDocumentNumber:""
   });
   const [TableKavDocData,setTableKavDocData] = useState([]);
-  const [EcDocumentBase64,setEcDocumentBase64] = useState("");
- 
+  const [EcDocumentData,setEcDocumentData] = useState([]);
+  const [isAllow,setIsAllow] = useState(false);
+  const [isShowKaveriDocumentDetais,setisShowKaveriDocumentDetais] = useState(false)
   const navigate = useNavigate();
   
   const handleKaveriDocumentData = async () => {
@@ -26,19 +27,18 @@ const KaveriData = () => {
         return
     }
     try {
-       let response =  await axiosInstance.get(`KaveriAPI/GetKaveriDocData?RegistrationNoNumber=${formData.RegistrationNumber}&BOOKS_APP_NO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&PropertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&LoginId=32`)
+       let response =  await axiosInstance.get(`KaveriAPI/GetKaveriDocData?RegistrationNoNumber=${formData.RegistrationNumber}&BOOKS_APP_NO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&PropertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&LoginId=crc`)
        const result = response.data;
-       
+       debugger
        if(result.success)
         {
+          setisShowKaveriDocumentDetais(true);
             setTableKavDocData(result.data);
         }
         else {
             toast.error(result.message)
             return
         }
-   
-       
        toast.success("Details Fetched Successfully", {
         position: "top-right",
         autoClose: 5000,
@@ -82,21 +82,49 @@ const KaveriData = () => {
 
 
   const handleECPropertyData = async () => {
+    if(formData.RegistrationNumber.length === 0){
+      toast.error("Please Enter the Registration Number First");
+      return
+    }
     if(formData.ECDocumentNumber.length === 0){
       toast.error("Please Enter the EC Document Number")
+      return
     }
       try {
-        let response = await axiosInstance.get("KaveriAPI/GetKaveriECData?ECNumber=NMG-EC-A-000648-2023-24&BOOKS_APP_NO=23&PropertyCode=23&LoginId=asd")
-        setEcDocumentBase64(response.data)
-         toast.success("Details Fetched Successfully", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
+
+        let response = await axiosInstance.get
+        (`KaveriAPI/GetKaveriECData?ECNumber=${formData.ECDocumentNumber}&RegistrationNoNumber=${formData.RegistrationNumber}&BOOKS_APP_NO=
+          ${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&PropertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&LoginId=crc`)
+          debugger
+          const result = response.data;
+          debugger
+          if(result.success){
+            if(result.ecDataExists){
+              setEcDocumentData(result.data);
+              setIsAllow(true);
+              toast.success("Details Fetched Successfully", {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+              });
+              
+            }
+            else {
+              setIsAllow(false);
+              toast.error("The Given Registration Number Does Not Match With EC Details.\nPlease Provide Correct Registration Number");
+              return
+            }
+          }
+          else {
+            setIsAllow(false);
+            toast.error(result.message)
+            return
+        }
+        
       }
       catch (error) {
         toast.error("Error Getting EC Property data!" + error, {
@@ -122,8 +150,11 @@ const KaveriData = () => {
       if(TableKavDocData.length === 0)
         {
       navigate('/DocumentUploadPage');
-    }else {
+    }else if(isAllow){
       navigate("/ClassificationDocumentUploadPage")
+    }
+    else {
+      toast.error("The Given Registration Number Does Not Match With EC Details.\nPlease Provide Correct Registration Number");
     }
   }
     
@@ -186,143 +217,120 @@ const KaveriData = () => {
                     </Button>
                   </Grid>
               </Grid>
-              <TableContainer component={Paper} sx={{ mt: 5 }}>
+              {isShowKaveriDocumentDetais && 
+              <TableContainer component={Paper} style={{ marginTop: 16 }}>
   <Table>
     <TableHead>
       <TableRow>
-        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' , textAlignLast:"end",width:"55%"}}>Kaveri Document Data</TableCell>
-        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' ,align:"center",width:"50%" }}></TableCell>
+        <TableCell colSpan={4}>
+          <Typography variant="h6" >Document Information</Typography>
+        </TableCell>
+      </TableRow>
+      <TableRow>
+        <TableCell><strong>Application Number</strong></TableCell>
+        <TableCell><strong>Execution Date</strong></TableCell>
+        <TableCell><strong>Pending Document Number</strong></TableCell>
+        <TableCell><strong>Final Registration Number</strong></TableCell>
       </TableRow>
     </TableHead>
     <TableBody>
       {TableKavDocData.length === 0 ? (
         <TableRow>
-          <TableCell colSpan={2} align="center">
+          <TableCell colSpan={4} align="center">
             No data available
           </TableCell>
         </TableRow>
       ) : (
-         TableKavDocData.map((row) => (
-          <>
-            <TableRow key={`1-FinalRegistrationNumber`}>
-              <TableCell style={{paddingLeft:"35%",width:"50%" ,fontWeight: 'bold'}}>Final Registration Number :</TableCell>
-               <TableCell  style={{align:"center",width:"50%" }} >{row.finalregistrationnumber}</TableCell> 
-            </TableRow>
-            <TableRow key={`1-FinalRegistrationNumber`}>
-              <TableCell style={{paddingLeft:"35%",width:"50%" ,fontWeight: 'bold'}}>Application Number :</TableCell>
-               <TableCell  style={{align:"center",width:"50%"}} >{row.applicationnumber}</TableCell> 
-            </TableRow>
-            <TableRow key={`1-FinalRegistrationNumber`}>
-              <TableCell style={{paddingLeft:"35%",width:"50%" ,fontWeight: 'bold'}}>Nature Deed :</TableCell>
-               <TableCell  style={{align:"center",width:"50%"}} >{row.naturedeed}</TableCell> 
-            </TableRow>
-            <TableRow key={`1-FinalRegistrationNumber`}>
-              <TableCell style={{paddingLeft:"35%",width:"50%" ,fontWeight: 'bold'}}>Registration Date Time :</TableCell>
-               <TableCell  style={{align:"center",width:"50%"}} >{row.registrationdatetime}</TableCell> 
-            </TableRow>
-            </>
-))
-)}
- </TableBody>
+        TableKavDocData.map((row, index) => (
+          <TableRow key={index}>
+            <TableCell>{row.applicationnumber || 'N/A'}</TableCell>
+            <TableCell>{row.executedate || 'N/A'}</TableCell>
+            <TableCell>{row.pendingdocumentnumber || 'N/A'}</TableCell>
+            <TableCell>{row.finalregistrationnumber || 'N/A'}</TableCell>
+          </TableRow>
+        ))
+      )}
+    </TableBody>
+  </Table>
+
+      {/* Property Info Table */}
+      <TableContainer component={Paper} style={{ marginTop: 16 }}>
+  <Table>
     <TableHead>
       <TableRow>
-        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',textAlign:"end",width:"50%" }}>Property Details Data</TableCell>
-        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',align:"right",width:"50%" }}></TableCell>
+        <TableCell colSpan={4}>
+          <Typography variant="h6">Property Information</Typography>
+        </TableCell>
       </TableRow>
-      </TableHead>
-      {
-  TableKavDocData.length === 0 || 
-  TableKavDocData.some(record => !record.propertyinfo || record.propertyinfo.length === 0) ? (
-        <TableRow>
-          <TableCell colSpan={2} align="center">
-            No data available
-          </TableCell>
-        </TableRow>
-      ) : (
-      
-
-            TableKavDocData.length > 0 && TableKavDocData.map((record) => (
-                record.propertyinfo && record.propertyinfo.length > 0 && record.propertyinfo.map((row, rowIndex) => (
-          <>
-      <TableRow key={`1-FinalRegistrationNumber`}>
-              <TableCell style={{paddingLeft:"35%",width:"50%" ,fontWeight: 'bold'}}>Property Id :</TableCell>
-               <TableCell  style={{align:"center",width:"50%"}} >{row.propertyid}</TableCell> 
-            </TableRow>
-            <TableRow key={`1-FinalRegistrationNumber`}>
-              <TableCell style={{paddingLeft:"35%",width:"50%",fontWeight: 'bold'}}>DocumentId :</TableCell>
-               <TableCell  style={{align:"center",width:"50%"}} >{row.documentid}</TableCell> 
-            </TableRow>
-            <TableRow key={`1-FinalRegistrationNumber`}>
-              <TableCell style={{paddingLeft:"35%",width:"50%",fontWeight: 'bold'}}>VillageName :</TableCell>
-               <TableCell  style={{align:"center",width:"50%"}} >{row.villagenamee}</TableCell> 
-            </TableRow>
-            <TableRow key={`1-FinalRegistrationNumber`}>
-              <TableCell style={{paddingLeft:"35%",width:"50%",fontWeight: 'bold'}}>SRO Name :</TableCell>
-               <TableCell  style={{align:"center",width:"50%"}} >{row.sroname}</TableCell> 
-            </TableRow>
-            <TableRow key={`1-FinalRegistrationNumber`}>
-              <TableCell style={{paddingLeft:"35%",width:"50%",fontWeight: 'bold'}}>Hobli :</TableCell>
-               <TableCell  style={{align:"center",width:"50%"}} >{row.hobli}</TableCell> 
-            </TableRow>
-            <TableRow key={`1-FinalRegistrationNumber`}>
-              <TableCell style={{paddingLeft:"35%",width:"50%",fontWeight: 'bold'}}>ZoneName :</TableCell>
-               <TableCell  style={{align:"center",width:"50%"}} >{row.zonenamee}</TableCell> 
-            </TableRow>
-            </>
-))
-))
-)
-}
-            <TableHead>
       <TableRow>
-        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',textAlign:"end",width:"55%" }}>Document Owner Data</TableCell>
-        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',align:"right",width:"50%" }}></TableCell>
+        <TableCell><strong>Property ID</strong></TableCell>
+        <TableCell><strong>Document ID</strong></TableCell>
+        <TableCell><strong>Village Name</strong></TableCell>
+        <TableCell><strong>Property Type</strong></TableCell>
       </TableRow>
-      </TableHead>
-      {
-  TableKavDocData.length === 0 || 
-  TableKavDocData.some(record => !record.partyinfo || record.partyinfo.length === 0) ? (
-        <TableRow>
-          <TableCell colSpan={2} align="center">
-            No data available
-          </TableCell>
-        </TableRow>
-      ) : (
-        TableKavDocData.length > 0 && TableKavDocData.map((record, index) => (
-            record.partyinfo && record.partyinfo.length > 0 && record.partyinfo.map((row, rowIndex) => (
-          <>
-      <TableRow key={`1-FinalRegistrationNumber`}>
-              <TableCell style={{paddingLeft:"35%",width:"50%",fontWeight: 'bold'}}>Party Name :</TableCell>
-               <TableCell  style={{align:"center",width:"50%"}} >{row.partyname}</TableCell> 
+    </TableHead>
+    <TableBody>
+      {TableKavDocData.map((row, rowIndex) => (
+        row.propertyinfo && row.propertyinfo.length > 0 ? (
+          row.propertyinfo.map((property, index) => (
+            <TableRow key={`${rowIndex}-${index}`}>
+              <TableCell>{property.propertyid || 'N/A'}</TableCell>
+              <TableCell>{property.documentid || 'N/A'}</TableCell>
+              <TableCell>{property.villagenamee || 'N/A'}</TableCell>
+              <TableCell>{property.propertytype || 'N/A'}</TableCell>
             </TableRow>
-            <TableRow key={`1-FinalRegistrationNumber`}>
-              <TableCell style={{paddingLeft:"35%",width:"50%",fontWeight: 'bold'}}>Id ProofType :</TableCell>
-               <TableCell  style={{align:"center",width:"50%"}} >{row.idprooftypedesc}</TableCell> 
-            </TableRow>
-            <TableRow key={`1-FinalRegistrationNumber`}>
-              <TableCell style={{paddingLeft:"35%",width:"50%",fontWeight: 'bold'}}>Party Address :</TableCell>
-               <TableCell  style={{align:"center",width:"50%"}} >{row.address}</TableCell> 
-            </TableRow>
-            <TableRow key={`1-FinalRegistrationNumber`}>
-              <TableCell style={{paddingLeft:"35%",width:"50%",fontWeight: 'bold'}}>Id ProofNumber :</TableCell>
-               <TableCell  style={{align:"center",width:"70%"}} >{row.idproofnumber}</TableCell> 
-            </TableRow>
-            <TableRow key={`1-FinalRegistrationNumber`}>
-              <TableCell style={{paddingLeft:"35%",width:"50%",fontWeight: 'bold'}}>Party Type :</TableCell>
-               <TableCell  style={{align:"center",width:"50%"}} >{row.partytypename}</TableCell> 
-            </TableRow>
-            <TableRow key={`1-FinalRegistrationNumber`}>
-              <TableCell style={{paddingLeft:"35%",width:"50%",fontWeight: 'bold'}}>Admission Date :</TableCell>
-               <TableCell  style={{align:"center",width:"50%"}} >{row.admissiondate}</TableCell> 
-            </TableRow>
-            </>
-))
-))
-)
-}
-           
+          ))
+        ) : (
+          <TableRow key={rowIndex}>
+            <TableCell colSpan={4}>No property information available</TableCell>
+          </TableRow>
+        )
+      ))}
+    </TableBody>
   </Table>
 </TableContainer>
+
+
+      {/* Party Info Table */}
+      <TableContainer component={Paper} style={{ marginTop: 16 }}>
+  <Table>
+    <TableHead>
+      <TableRow>
+        <TableCell colSpan={4}>
+          <Typography variant="h6">Party Information</Typography>
+        </TableCell>
+      </TableRow>
+      <TableRow>
+        <TableCell><strong>Party ID</strong></TableCell>
+        <TableCell><strong>Party Name</strong></TableCell>
+        <TableCell><strong>Age</strong></TableCell>
+        <TableCell><strong>Address</strong></TableCell>
+      </TableRow>
+    </TableHead>
+    <TableBody>
+      {TableKavDocData.map((row, rowIndex) => (
+        row.partyinfo && row.partyinfo.length > 0 ? (
+          row.partyinfo.map((party, index) => (
+            <TableRow key={`${rowIndex}-${index}`}>
+              <TableCell>{party.partyid || 'N/A'}</TableCell>
+              <TableCell>{party.partyname || 'N/A'}</TableCell>
+              <TableCell>{party.age || 'N/A'}</TableCell>
+              <TableCell>{party.address || 'N/A'}</TableCell>
+            </TableRow>
+          ))
+        ) : (
+          <TableRow key={rowIndex}>
+            <TableCell colSpan={4}>No party information available</TableCell>
+          </TableRow>
+        )
+      ))}
+    </TableBody>
+  </Table>
+</TableContainer>
+
+    </TableContainer>
+    
+}
 <br></br>
 <br></br>
 <br></br>
@@ -358,6 +366,64 @@ const KaveriData = () => {
                     </Button>
                   </Grid>
               </Grid>
+              <TableContainer component={Paper}>
+      {EcDocumentData && EcDocumentData.length === 0 ? (
+        <TableRow>
+          <TableCell colSpan={2} align="center">
+            <Typography>No data available</Typography>
+          </TableCell>
+        </TableRow>
+      ) : (
+        <Table>
+          <TableBody>
+            <TableRow>
+            <TableCell>
+  <Typography variant="subtitle1"><strong>Description</strong></Typography>
+  <Typography style={{ whiteSpace: 'pre-line' }}>
+    {EcDocumentData.description ? EcDocumentData.description.join('\n') : 'No description available'}
+  </Typography>
+</TableCell>
+              <TableCell>
+                <Typography variant="subtitle1"><strong>Document Summary</strong></Typography>
+                <Typography>{EcDocumentData.docSummary || 'No document summary available'}</Typography>
+              </TableCell>
+            </TableRow>
+
+            <TableRow>
+              <TableCell>
+                <Typography variant="subtitle1"><strong>Document Valuation</strong></Typography>
+                <Typography>{EcDocumentData.documentValuation || 'No document valuation available'}</Typography>
+              </TableCell>
+              <TableCell>
+                <Typography variant="subtitle1"><strong>Execution Date</strong></Typography>
+                <Typography>
+                  {EcDocumentData.executionDate 
+                    ? new Date(EcDocumentData.executionDate).toLocaleString() 
+                    : 'No execution date available'}
+                </Typography>
+              </TableCell>
+            </TableRow>
+
+            <TableRow>
+              <TableCell>
+                <Typography variant="subtitle1"><strong>Executants</strong></Typography>
+                {EcDocumentData.executants && EcDocumentData.executants.length > 0 ? (
+                  EcDocumentData.executants.map((item, index) => (
+                    <Typography key={index}>{item}</Typography>
+                  ))
+                ) : (
+                  <Typography variant="body2" color="textSecondary">No executants available</Typography>
+                )}
+              </TableCell>
+              <TableCell />
+            </TableRow>
+          </TableBody>
+        </Table>
+      )}
+    </TableContainer>
+<br></br>
+<br></br>
+<br></br>
               <Box display="flex" justifyContent="center" gap={2} mt={3}>
                 <Button variant="contained" color="primary" onClick={back}>
                   Previous

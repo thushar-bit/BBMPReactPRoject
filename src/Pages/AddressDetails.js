@@ -81,8 +81,8 @@ const AddressDetails = () => {
   const [fieldvalue,setFieldValue] = useState("")
   const [lat2, setlat1] = useState(0);
   const [long2, setlong1] = useState(0);
-  const [wardlat,setWardLat] = useState(123);
-  const [wardLong,setWardLong] = useState(123)
+  const [wardlat,setWardLat] = useState(12.9141);
+  const [wardLong,setWardLong] = useState(74.8560)
   
   const [tableData, setTableData] = useState([
   ]);
@@ -739,7 +739,7 @@ const CopyBookData = async () => {
               >
                 {t("PostalAddressofProperty")}
               </Typography>
-              <GoogleMaps lat={wardlat} long={wardLong} onLocationChange={handleAddressChange} />
+              <GoogleMaps lat={13.0074} long={77.5688} onLocationChange={handleAddressChange} />
               <Formik
           initialValues={formData}
           validationSchema={validationSchema}

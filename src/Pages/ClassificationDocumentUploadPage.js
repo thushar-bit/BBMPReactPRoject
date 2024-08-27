@@ -49,7 +49,7 @@ const ClassificationDocumentUploadPage = () => {
   const validationSchema = Yup.object().shape({
     DocumentType: Yup.string().required('Document Type is required'),
     DocumentNumber: Yup.string().required('Document Number is required'),
-    AKatha: Yup.string().required('This is required').test('not-zero', 'A Katha Claim cannot be Select', value => value !== "0")
+ //   AKatha: Yup.string().required('This is required').test('not-zero', 'A Katha Claim cannot be Select', value => value !== "0")
   });
   const [tableData, setTableData] = useState([
   ]);
@@ -61,10 +61,12 @@ const ClassificationDocumentUploadPage = () => {
   const [isEditable, setIsEditable] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isClassificationEditable,setIsClassificationEditable] = useState(false);
   const handleDateChange = (date) => {
     setSelectedDate(date);
   };
   const handleAkathaDropdownValueChange = async (e) => {
+    debugger
     try {
       const { name, value } = e.target;
       let updatedClassification = "";
@@ -72,7 +74,7 @@ const ClassificationDocumentUploadPage = () => {
       if (name === "AKatha") {
        
         if (value !== "") {
-          if (value !== "48") {
+          if (value !== "51") {
             updatedClassification = "4";
           } else {
             updatedClassification = "5";
@@ -80,10 +82,12 @@ const ClassificationDocumentUploadPage = () => {
         } else {
           updatedClassification = "0";
         }
-        if (value === "47") {
+        if (value === "51") {
           setIsEditable(true);
+       
         } else {
           setIsEditable(false);
+         
         }
 
         const response = await axiosInstance.get(`BBMPCITZAPI/GET_NPM_MST_CLASS_DOCUMENT_CLASSANDSUBCLASS?CLASSIFICATIONID=1&SUBCLASSIFICATIONID1=${value}&SUBCLASSIFICATIONID2=0`)
@@ -157,7 +161,17 @@ const ClassificationDocumentUploadPage = () => {
         ...prevFormData,
         PropertyClasssficationAsperBooks: BBDTable1.length > 0 ? BBDTable1[0].PROPERTYCLASSIFICATIONID : "",
         PropertyClassification: NCLTable1.length > 0 ? NCLTable1[0].PROPERTYCLASSIFICATIONID : '',
+        DocumentDetails:NCLTable1.length > 0 ? NCLTable1[0].SUBCLASSIFICATION === null ? "":NCLTable1[0].SUBCLASSIFICATION   : "",
+        AKatha:NCLTable1.length > 0 ?NCLTable1[0].SUBCLASSIFICATIONID : ""
       }));
+      debugger
+      if(NCLTable1.length > 0){
+        if(NCLTable1[0].SUBCLASSIFICATIONID === null){
+          setIsClassificationEditable(false)
+        }else {
+          setIsClassificationEditable(true)
+        }
+      }
     } catch (error) {
       toast.error("Error saving data ", error, {
         position: "top-right",
@@ -205,6 +219,48 @@ const ClassificationDocumentUploadPage = () => {
   const handleFileDelete = () => {
     setSelectedFile(null);
     setfileExtension('');
+  }
+  const onClassifySave = async () => {
+    debugger
+    if(formData.AKatha === "0"){
+      toast.error("Please Select A Katha Claim")
+      return
+    }
+    if(String(formData.AKatha) === "51"){
+      if(formData.DocumentDetails.length === 0){
+        toast.error("Please Enter Document Details")
+        return
+      }
+    }
+    const data = {
+      BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')),
+      propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
+      CLASSIFICATIONID: formData.PropertyClassification,
+      SUBCLASSIFICATIONID: formData.AKatha,
+      CREATEDBY:'crc',
+      SUBCLASSIFICATION: formData.AKatha === "51" ? formData.DocumentDetails: ""
+    }
+    const filteredData = Object.fromEntries(
+      Object.entries(data).filter(([value]) => value !== '' && value !== null)
+    );
+    
+    
+    const queryString = new URLSearchParams(filteredData).toString();
+  
+     await axiosInstance.post(`BBMPCITZAPI/INS_NCL_PROPERTY_SUBCLASS?${queryString}`);
+     
+     const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
+     sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
+    setIsClassificationEditable(true);
+    setIsEditable(false);
+    toast.success("Classification Details Saved Successfully");
+    setTimeout(async () => {
+      await fetchData();
+    }, 2000);
+  }
+  const isEditClassification = () => {
+    setIsClassificationEditable(false);
+ 
   }
   const handleSubmit = async (e) => {
 
@@ -456,6 +512,7 @@ const ClassificationDocumentUploadPage = () => {
                     error={touched.AKatha && !!errors.AKatha}
                     sx={{ marginBottom: 3 }}
                     className={touched.AKatha && !!errors.AKatha ? 'shake' : ''}
+                
                   >
                     <InputLabel>A-Khatha claim based on :</InputLabel>
                     <Select
@@ -463,19 +520,15 @@ const ClassificationDocumentUploadPage = () => {
                       value={formData.AKatha}
                       onChange={handleAkathaDropdownValueChange}
                       onBlur={handleBlur}
-                      sx={{ backgroundColor: '#ffff' }}
+                      sx={{backgroundColor: isClassificationEditable? '' : "#ffff"}}
+                      inputProps={{ readOnly: isClassificationEditable }}
                     >
                       <MenuItem value="0">--Select--</MenuItem>
-                      <MenuItem value="20">A-Khata in south/East/West Zone</MenuItem>
-                      <MenuItem value="28">A-Khata in MAR-19 Register of Old Municipality</MenuItem>
-                      <MenuItem value="2">ESwathu Form-9 Of Old GP from where property came</MenuItem>
-                      <MenuItem value="45">Old GP Form-9</MenuItem>
-                      <MenuItem value="25">BDA/KHB/Other Govt. Development Authority Allotted</MenuItem>
-                      <MenuItem value="26">BDA/KHB/Other Competent Authority Approved Layout</MenuItem>
-                      <MenuItem value="27">BDA Reconveyed AreaTitle Deeds</MenuItem>
-                      <MenuItem value="29">Layout Approved by the Competent Authority</MenuItem>
-                      <MenuItem value="47">Other Cases</MenuItem>
-                      <MenuItem value="48">B-Katha</MenuItem>
+                      <MenuItem value="47">Private Layout Or Apartment-duly approved</MenuItem>
+                      <MenuItem value="48">House/Site granted/alloted by Govt or Govt-Agency</MenuItem>
+                      <MenuItem value="49">Own Layout Of BDA/Development Authority</MenuItem>
+                      <MenuItem value="50">GP/Municipality A-Khata before merger with BBMP</MenuItem>
+                      <MenuItem value="51">Others - (Specify)</MenuItem>
                     </Select>
                     <FormHelperText>
                       {touched.AKatha && errors.AKatha ? errors.AKatha : ''}
@@ -504,7 +557,15 @@ const ClassificationDocumentUploadPage = () => {
                     }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={4}></Grid>
+                {!isClassificationEditable ? 
+                <Grid item xs={12} sm={4}><Button variant="contained" color="success" onClick={onClassifySave}>
+                  Save Classification Details
+                </Button></Grid>
+                :
+                <Grid item xs={12} sm={4}><Button variant="contained" color="secondary" onClick={isEditClassification}>
+                  Edit Classification Details
+                </Button></Grid>
+}
                 <Grid item xs={12} sm={4}></Grid>
                 <Grid item xs={12} sm={4}>
                   <FormControl
@@ -521,6 +582,7 @@ const ClassificationDocumentUploadPage = () => {
                       onBlur={handleBlur}
                       sx={{ backgroundColor: '#ffff' }}
                     >
+                      
                       <MenuItem value="">--Select--</MenuItem>
                       {tablesdata2.map((item) => (
                         <MenuItem key={item.DOCUMENTTYPEID} value={item.DOCUMENTTYPEID}>
@@ -533,6 +595,7 @@ const ClassificationDocumentUploadPage = () => {
                     </FormHelperText>
                   </FormControl>
                 </Grid>
+                
                 <Grid item xs={12} sm={4}>
                   <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
                     <DatePicker
