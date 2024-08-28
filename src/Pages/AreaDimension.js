@@ -59,6 +59,7 @@ const AreaDimension = () => {
   const navigate = useNavigate();
   const [isOddSiteEnabled, setIsOddSiteEnabled] = useState(false);
   const calculateArea = (numberOfSides, formData) => {
+    
     // Extract the cal values dynamically based on the number of sides
     const values = Array.from({ length: numberOfSides }, (_, i) =>
       parseFloat(formData[`cal${i + 1}`])
@@ -76,13 +77,15 @@ const AreaDimension = () => {
       const [a, b, c] = values;
       const s = (a + b + c) / 2;
       areaFt = Math.sqrt(s * (s - a) * (s - b) * (s - c));
+      areaFt=Math.round(areaFt * 100) / 100;
     } else {
       
       const s = values.reduce((acc, val) => acc + val, 0) / 2;
 
-for (const side of values) {
-  areaFt *= (s - side);
-}
+      for (const side of values) {
+          areaFt *= (s - side);
+        }
+      areaFt=Math.round(Math.sqrt(areaFt) * 100) / 100;
     }
   
     // Convert to meters (ft to m conversion)
@@ -201,7 +204,7 @@ const updatedFormData = {
       if(NCLTable3Data.length > 0){
         if(NCLTable3Data[0].ODDSITE === "Y"){
           setIsOddSiteEnabled(true)
-        //  handleCalulationNCL(NCLTable3Data[0])
+         
         }
         else {
           setIsOddSiteEnabled(false)
@@ -210,7 +213,7 @@ const updatedFormData = {
       else if(Table3Data.length > 0){
         if(Table3Data[0].ODDSITE === "Y"){
           setIsOddSiteEnabled(true)
-         // handleCalulationNCL(Table3Data[0])
+          
         }
         else {
           setIsOddSiteEnabled(false)
@@ -224,6 +227,12 @@ const updatedFormData = {
   useEffect(  () => {
     fetchData();
   }, []);
+  useEffect(() => {
+    if (isOddSiteEnabled) {
+      handleCalulationNCL(formData);
+    }
+  }, [formData, isOddSiteEnabled]);
+  
   const handleCalulation = () => {
    
     const { areaFt, areaMt } = calculateArea(formData.noofSides, formData);
@@ -233,10 +242,7 @@ const updatedFormData = {
    
     setFormData(prevData => ({
       ...prevData,
-     // sqFt: areaFt.toString(),
-     // sqMt: areaMt.toString()
-      // sqFt: "",
-      // sqMt: ""
+     
     }));
 
   }
@@ -245,10 +251,6 @@ const updatedFormData = {
     const { areaFt, areaMt } = calculateArea(formData.noofSides, TableData);
     formData.sqFt = areaFt;
     formData.sqMt = areaMt;
-       
-        
-        // formData.sqFt = "";
-        // formData.sqMt = "";
         setFormData(prevData => ({
           ...prevData,
           sqFt: areaFt.toString(),

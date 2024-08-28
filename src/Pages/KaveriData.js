@@ -115,7 +115,7 @@ const KaveriData = () => {
             }
             else {
               setIsAllow(false);
-              toast.error("The Given Registration Number Does Not Match With EC Details.\nPlease Provide Correct Registration Number");
+              toast.error("The Given Registration Number Does Not Exist With EC Details.\nPlease Provide Correct Registration Number");
               return
             }
           }

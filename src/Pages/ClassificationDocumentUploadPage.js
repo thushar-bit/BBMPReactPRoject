@@ -170,6 +170,9 @@ const ClassificationDocumentUploadPage = () => {
           setIsClassificationEditable(false)
         }else {
           setIsClassificationEditable(true)
+          const response = await axiosInstance.get(`BBMPCITZAPI/GET_NPM_MST_CLASS_DOCUMENT_CLASSANDSUBCLASS?CLASSIFICATIONID=1&SUBCLASSIFICATIONID1=${NCLTable1[0].SUBCLASSIFICATIONID}&SUBCLASSIFICATIONID2=0`)
+          const { Table } = response.data;
+          setTablesData2(Table.length > 0 ? Table : []);
         }
       }
     } catch (error) {
@@ -269,6 +272,11 @@ const ClassificationDocumentUploadPage = () => {
     if (selectedFile) {
       propertyphoto2 = await getPropertyphoto(selectedFile);
     }
+    
+    if(!isClassificationEditable){
+      toast.error("Please Save Classification Details Before Uploading the Document");
+      return
+    }
     if(fileExtension.length === 0)
       {
         toast.error("Please Upload the Required Document");
@@ -305,7 +313,7 @@ const ClassificationDocumentUploadPage = () => {
 
       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
       sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
-      await toast.success("Details Saved Successfully", {
+      await toast.success("Document Uploaded Successfully", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -643,7 +651,8 @@ const ClassificationDocumentUploadPage = () => {
                     }}
                   />
                 </Grid>
-              
+                <Grid item xs={12} sm={4}>
+                  </Grid>
                 <Grid item xs={12} sm={4}>
                   <Box display="flex" alignItems="center">
                     <Typography variant="body1" sx={{ ml: 1 }}>
@@ -673,7 +682,13 @@ const ClassificationDocumentUploadPage = () => {
                     Maximum File Size should not exceed 5 MB
                   </Typography>
                 </Grid>
+                <Grid item xs={12} sm={4}>
+              <Button variant="contained" color="success" type="submit">
+                  Add Document +
+                </Button>
+                </Grid>
               </Grid>
+            
               <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
                 Documents Uploaded
               </Typography>
@@ -732,9 +747,7 @@ const ClassificationDocumentUploadPage = () => {
                 <Button variant="contained" color="primary" onClick={back}>
                   Previous
                 </Button>
-                <Button variant="contained" color="success" type="submit">
-                  Save
-                </Button>
+              
                 <Button variant="contained" color="primary" onClick={handleOpenDialog}>
                   Finish
                 </Button>
