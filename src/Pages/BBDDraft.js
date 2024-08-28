@@ -233,7 +233,7 @@ const BBDDraft = () => {
               >
                 <MenuItem value="">--Select--</MenuItem>
                 {WardData.map((item) => (
-                  <MenuItem key={item.WARDID2} value={item.WARDID2}>
+                  <MenuItem key={item.WARDID} value={item.WARDID}>
                     {item.WARDNAME}
                   </MenuItem>
                 ))}
