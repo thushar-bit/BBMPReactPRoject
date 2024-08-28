@@ -238,8 +238,6 @@ const updatedFormData = {
     const { areaFt, areaMt } = calculateArea(formData.noofSides, formData);
    formData.sqFt = areaFt;
    formData.sqMt = areaMt;
-    
-   
     setFormData(prevData => ({
       ...prevData,
      
@@ -259,20 +257,66 @@ const updatedFormData = {
         }));
     
       }
+      const validateFormData = (formData) => {
+        const errors = {};
+      
+        const isInvalid = (value) => value === '' || value === '0';
+        if(formData.propertyType !== 3)
+          {
+        if (isInvalid(formData.east) || isInvalid(formData.west) || isInvalid(formData.north) || isInvalid(formData.south)) {
+          errors.checkbandhi = 'Please ensure all Checkbandhi values are Entered.';
+        }
+      }
+        if(formData.propertyType == 3){
+        if (isInvalid(formData.ApartCarpetArea) || isInvalid(formData.ApartAddtionalArea) || isInvalid(formData.ApartSuperBuiltArea)) {
+          errors.apartmentValues = 'Please ensure all Apartment values are Entered and More than 0.';
+        }
+      }
+      
+        if (formData.oddSite === "Y" && formData.propertyType !== 3) {
+          for (let i = 1; i <= 10; i++) {
+            if (isInvalid(formData[`cal${i}`])) {
+              if(i == 1){
+                errors[`cal${i}`] = `Please ensure Road Side Length is Entered and More than 0.`;
+              }else {
+                errors[`cal${i}`] = `Please ensure Length${i} value is Entered and More than 0.`;
+
+              }
+            }
+          }
+        } else {
+          // Validate ns and ew
+          if (isInvalid(formData.ns)) {
+            errors.nsEw = 'Please ensure N-S (ft) values are Entered and More than 0.';
+          }
+          else if(isInvalid(formData.ew)) {
+            errors.nsEw = 'Please ensure E-W (ft) values are Entered and More than 0.';
+          }
+        }
+      
+        return errors;
+      };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+    const validationErrors = validateFormData(formData);
+
+    if (Object.keys(validationErrors).length > 0) {
+      const errorMessages = Object.values(validationErrors).join('\n');
+      toast.error(errorMessages);
+      return;
+    }
     if (isEditablecheckbandhi === true && formData.propertyType !== 3) //only checkbandhi data
     {
-      const checkbandhidata = {
+      
+      const checkbandhidata =
+       {
         propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
-        checkbandI_NORTH: formData.east,
+        checkbandI_NORTH: formData.north,
         checkbandI_SOUTH: formData.south,
         checkbandI_EAST: formData.east,
         checkbandI_WEST: formData.west,
         loginId: "crc",
         p_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))
-
       }
 
       try {
@@ -281,10 +325,7 @@ const updatedFormData = {
 
         const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
         sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
-       
         setIsEditablecheckbandi(false);
-        
-       
         setFormData({
           ...formData,
           modifycheckbandi: 'no',
@@ -305,9 +346,8 @@ const updatedFormData = {
       }
     }
    
-    if ((formData.propertyType === 1 || formData.propertyType === 2)  && (isEditable)
-      //only below data
-    ) {
+    if ((formData.propertyType === 1 || formData.propertyType === 2)  && (isEditable))
+     {
       const data = {
         propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
         evenoroddsite: formData.oddSite === "Y" ? "ODD" : "EVEN",
@@ -341,8 +381,7 @@ const updatedFormData = {
 
       
         setTimeout(async () => {
-         // await fetchData();
-          //    handleNavigation()
+        
           setIsEditable(false);
           setIsEditablecheckbandi(false);
           setFormData({
@@ -353,7 +392,7 @@ const updatedFormData = {
         }, 1000);
 
       } catch (error) {
-        await toast.error("Error saving data!" + error, {
+         toast.error("Error saving data!" + error, {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -371,9 +410,9 @@ const updatedFormData = {
     {
       const data = {
         propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
-        carpetarea: formData.ApartCarpetArea || "0",
-        additionalarea: formData.ApartAddtionalArea || "0",
-        superbuiltuparea: formData.ApartSuperBuiltArea || "0",
+        carpetarea: formData.ApartCarpetArea || null,
+        additionalarea: formData.ApartAddtionalArea ||null,
+        superbuiltuparea: formData.ApartSuperBuiltArea ||null,
         loginId: "crc",
         p_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))
       };
@@ -385,7 +424,7 @@ const updatedFormData = {
         sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
       
         setTimeout(async () => {
-         // await fetchData();
+        
           setIsEditable(false);
           setFormData({
             ...formData,
@@ -394,7 +433,7 @@ const updatedFormData = {
         }, 2000);
 
       } catch (error) {
-        await toast.error("Error saving data!" + error, {
+         toast.error("Error saving data!" + error, {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -409,7 +448,7 @@ const updatedFormData = {
       }
     }
     else if ((isEditable === false) && (isEditablecheckbandhi === false)) {
-      await toast.warning("There is no changes to save!", {
+       toast.warning("There is no changes to save!", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -419,7 +458,7 @@ const updatedFormData = {
         progress: undefined,
       });
     }
-    await toast.success("Details Saved Successfully", {
+     toast.success("Details Saved Successfully", {
       position: "top-right",
       autoClose: 5000,
       hideProgressBar: false,
@@ -437,6 +476,12 @@ const updatedFormData = {
     if(isEditable && isEditablecheckbandhi){
       toast.error("Please Save the Details Before Going to Next Section")
       return
+    }
+    const validationErrors = validateFormData(formData);
+    if (Object.keys(validationErrors).length > 0) {
+      const errorMessages = Object.values(validationErrors).join('\n');
+      toast.error(errorMessages);
+      return;
     }
     if (formData.propertyType === 1) {
       navigate('/SiteDetails')
@@ -586,7 +631,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="East"
+                    label="Check Bandhi East"
                     name="Bookeast"
                     value={formData.Bookeast}
                     onChange={handleChange}
@@ -606,7 +651,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="West"
+                    label="Check Bandhi West"
                     name="Bookwest"
                   
                     value={formData.Bookwest}
@@ -627,7 +672,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="North"
+                    label="Check Bandhi North"
                     name="Booknorth"
               
                     value={formData.Booknorth}
@@ -648,7 +693,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="South"
+                    label="Check Bandhi South"
                     name="Booksouth"
                    
                     value={formData.Booksouth}
@@ -672,7 +717,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="East"
+                    label="Check Bandhi East"
                     name="east"
                     value={formData.east}
                     onChange={handleChange}
@@ -693,7 +738,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="West"
+                    label="Check Bandhi West"
                     name="west"
                   
                     value={formData.west}
@@ -715,7 +760,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="North"
+                    label="Check Bandhi North"
                     name="north"
               
                     value={formData.north}
@@ -737,7 +782,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="South"
+                    label="Check Bandhi South"
                     name="south"
                     value={formData.south}
                     onChange={handleChange}
@@ -972,7 +1017,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="East"
+                    label="Check Bandhi East"
                     name="Bookeast"
                    
                     value={formData.Bookeast}
@@ -994,7 +1039,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="West"
+                    label="Check Bandhi West"
                     name="Bookwest"
                   
                     value={formData.Bookwest}
@@ -1016,7 +1061,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="North"
+                    label="Check Bandhi North"
                     name="Booknorth"
                   
                     value={formData.Booknorth}
@@ -1038,7 +1083,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="South"
+                    label="Check Bandhi South"
                     name="Booksouth"
                    
                     value={formData.Booksouth}
@@ -1063,9 +1108,8 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="East"
+                    label="Check Bandhi East"
                     name="east"
-                   
                     value={formData.east}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "outlined" : "filled"}
@@ -1085,7 +1129,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="West"
+                    label="Check Bandhi West"
                     name="west"
                   
                     value={formData.west}
@@ -1107,7 +1151,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="North"
+                    label="Check Bandhi North"
                     name="north"
                   
                     value={formData.north}
@@ -1129,7 +1173,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="South"
+                    label="Check Bandhi South"
                     name="south"
                    
                     value={formData.south}
@@ -1247,7 +1291,7 @@ const updatedFormData = {
                       type="number"
                       variant={"filled"}
                       InputProps={{
-                        readOnly: false,
+                        readOnly: true,
                         endAdornment: (
                           <Tooltip title="Converted from Sq.ft">
                             <IconButton>

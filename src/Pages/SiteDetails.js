@@ -11,7 +11,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import '../components/Shake.css';
-import Loaders from '../components/Loader';
 const SiteDetails = () => {
   const [formData, setFormData] = useState({
     features: "",
@@ -20,16 +19,17 @@ const SiteDetails = () => {
   });
   
   const validationSchema = Yup.object().shape({
-    features: Yup.string().required('Type of Feature is required'),
-    Typeofuse: Yup.string().required('Type Of Use is required'),
+    features: Yup.string().required('Type of Feature is required').notOneOf(['0'], 'Type of Feature cannot be Select'),
+    Typeofuse: Yup.string().required('Type Of Use is required').notOneOf(['0'], 'Type of Use cannot be Select'),
     yearOfConstruction: Yup.string()
-      .required('Year of Construction is required')
-      .matches(/^\d{4}$/, 'Year of Construction must be a 4-digit number'),
+      .required('Year of Construction is required').notOneOf(['0000'], 'Year of Construction cannot be all 0')
+      .matches(/^[1-9]\d{3}$/, 'Year of Construction must be a 4-digit number and cannot start with 0'),
 
   });
   const navigate = useNavigate();
   const [tablesdata2, setTablesData2] = useState([]);
   const [tablesdata3, setTablesData3] = useState([]);
+  const [fieldvalue,setFieldValue] = useState("")
   const [isInitialEditable,setInitialEditable] = useState(false);
   const [loading, setLoading] = useState(false);
   const handleChange = async (e) => {
@@ -184,7 +184,17 @@ const SiteDetails = () => {
         <Formik
           initialValues={formData}
           validationSchema={validationSchema}
-          onSubmit={handleSubmit}
+          onSubmit={(values, { setSubmitting }) => {
+            
+            if (fieldvalue === 'save') {
+             handleSubmit()
+
+            } else if (fieldvalue === 'next') {
+            
+              handleNavigation();
+            }
+            setSubmitting(false);
+          }}
           validateOnChange={handleChange}
           enableReinitialize
         >
@@ -221,10 +231,11 @@ const SiteDetails = () => {
                   name="features"
                   value={formData.features}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   sx={{ backgroundColor: !isInitialEditable?  '':"#ffff" }}
                       inputProps={{ readOnly: !isInitialEditable }}
                 >
-                  <MenuItem value="">--Select--</MenuItem>
+                  <MenuItem value="0">--Select--</MenuItem>
                   {tablesdata2.map((item) => (
                     <MenuItem key={item.FEATUREHEADID} value={item.FEATUREHEADID}>
                       {item.FEATUREHEADNAME_EN}
@@ -250,7 +261,7 @@ const SiteDetails = () => {
                   sx={{ backgroundColor: !isInitialEditable?  '':"#ffff" }}
                       inputProps={{ readOnly: !isInitialEditable }}
                 >
-                  <MenuItem value="">--Select--</MenuItem>
+                  <MenuItem value="0">--Select--</MenuItem>
                   {tablesdata3.map((item) => (
                     <MenuItem key={item.FEATUREID} value={item.FEATUREID}>
                       {item.FEATURENAME_EN}
@@ -287,10 +298,10 @@ const SiteDetails = () => {
                 <Button variant="contained" color="primary" onClick={handleEdit}>
                   Edit
                 </Button>
-                <Button variant="contained" color="success" type="submit">
+                <Button variant="contained" color="success" type="submit" onClick={() => setFieldValue('save')}>
                   Save
                 </Button>
-                <Button variant="contained" color="primary" onClick={handleNavigation}>
+                <Button variant="contained" color="primary" type="submit"  onClick={() => setFieldValue('next')}>
                   Next
                 </Button>
               </Box>

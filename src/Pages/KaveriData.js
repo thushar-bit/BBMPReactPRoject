@@ -149,8 +149,10 @@ const KaveriData = () => {
     if(TableKavDocData !== undefined && TableKavDocData !== null){
       if(TableKavDocData.length === 0)
         {
+          sessionStorage.setItem('KaveriVerified', isAllow);
       navigate('/DocumentUploadPage');
     }else if(isAllow){
+      sessionStorage.setItem('KaveriVerified', isAllow);
       navigate("/ClassificationDocumentUploadPage")
     }
     else {

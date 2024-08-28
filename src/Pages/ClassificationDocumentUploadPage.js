@@ -343,7 +343,15 @@ const ClassificationDocumentUploadPage = () => {
 
   };
   const back = () => {
-    navigate('/DocumentUploadPage')
+    if(sessionStorage.getItem('KaveriVerified'))
+    {
+      sessionStorage.removeItem("KaveriVerified");
+      navigate('/KaveriData')
+
+    }else {
+      navigate('/DocumentUploadPage')
+
+    }
   }
 
   const handleDownload = (base64Data, fileExtension, documentdescription) => {
