@@ -7,7 +7,7 @@ import {
   InputLabel
 } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
-//import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -53,7 +53,7 @@ const AreaDimension = () => {
     sqFt: "",
     sqMt: ""
   });
-  
+  const { t } = useTranslation();
   const [isEditable, setIsEditable] = useState(false);
   const [isEditablecheckbandhi, setIsEditablecheckbandi] = useState(false);
   const navigate = useNavigate();
@@ -274,7 +274,7 @@ const updatedFormData = {
       }
       
         if (formData.oddSite === "Y" && formData.propertyType !== 3) {
-          for (let i = 1; i <= 10; i++) {
+          for (let i = 1; i <= formData.noofSides ; i++) {
             if (isInvalid(formData[`cal${i}`])) {
               if(i == 1){
                 errors[`cal${i}`] = `Please ensure Road Side Length is Entered and More than 0.`;
@@ -447,17 +447,7 @@ const updatedFormData = {
         }, 2000);
       }
     }
-    else if ((isEditable === false) && (isEditablecheckbandhi === false)) {
-       toast.warning("There is no changes to save!", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-    }
+    if(isEditable || isEditablecheckbandhi){
      toast.success("Details Saved Successfully", {
       position: "top-right",
       autoClose: 5000,
@@ -467,7 +457,10 @@ const updatedFormData = {
       draggable: true,
       progress: undefined,
     });
-    await fetchData();
+  }
+    setTimeout(() => {
+    handleNavigation();
+  }, 2000);
   };
   const back = () => {
     navigate('/AddressDetails')
@@ -631,7 +624,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="Check Bandhi East"
+                    label="East"
                     name="Bookeast"
                     value={formData.Bookeast}
                     onChange={handleChange}
@@ -651,7 +644,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="Check Bandhi West"
+                    label="West"
                     name="Bookwest"
                   
                     value={formData.Bookwest}
@@ -672,7 +665,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="Check Bandhi North"
+                    label="North"
                     name="Booknorth"
               
                     value={formData.Booknorth}
@@ -693,7 +686,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="Check Bandhi South"
+                    label="South"
                     name="Booksouth"
                    
                     value={formData.Booksouth}
@@ -717,7 +710,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="Check Bandhi East"
+                    label="East"
                     name="east"
                     value={formData.east}
                     onChange={handleChange}
@@ -738,7 +731,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="Check Bandhi West"
+                    label=" West"
                     name="west"
                   
                     value={formData.west}
@@ -760,7 +753,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="Check Bandhi North"
+                    label="North"
                     name="north"
               
                     value={formData.north}
@@ -782,7 +775,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="Check Bandhi South"
+                    label="South"
                     name="south"
                     value={formData.south}
                     onChange={handleChange}
@@ -871,7 +864,7 @@ const updatedFormData = {
                   <Grid item xs={6} sm={3}>
                     <TextField
                       fullWidth
-                      label="PLOT AREA(N-S*E-W)"
+                      label="PLOT AREA(N-S*E-W) (Sq.ft)"
                       name="BookplotAreaSqFt"
                       value={formData.BookplotAreaSqFt}
                       onChange={handleChange}
@@ -892,7 +885,7 @@ const updatedFormData = {
                   <Grid item xs={6} sm={3}>
                     <TextField
                       fullWidth
-                      label="Plot Area (Sq.Mt)"
+                      label="(Sq.Mt)"
                       name="BookplotAreaSqMt"
                       value={formData.BookplotAreaSqMt}
                       onChange={handleChange}
@@ -958,7 +951,7 @@ const updatedFormData = {
                   <Grid item xs={6} sm={3}>
                     <TextField
                       fullWidth
-                      label="PLOT AREA(N-S*E-W)"
+                      label="PLOT AREA(N-S*E-W) (Sq.ft)"
                       name="plotAreaSqFt"
                       value={formData.plotAreaSqFt}
                       onChange={handleChange}
@@ -979,7 +972,7 @@ const updatedFormData = {
                   <Grid item xs={6} sm={3}>
                     <TextField
                       fullWidth
-                      label="Plot Area (Sq.Mt)"
+                      label="(Sq.Mt)"
                       name="plotAreaSqMt"
                       value={formData.plotAreaSqMt}
                       onChange={handleChange}
@@ -1017,7 +1010,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="Check Bandhi East"
+                    label="East"
                     name="Bookeast"
                    
                     value={formData.Bookeast}
@@ -1039,7 +1032,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="Check Bandhi West"
+                    label="West"
                     name="Bookwest"
                   
                     value={formData.Bookwest}
@@ -1061,7 +1054,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="Check Bandhi North"
+                    label="North"
                     name="Booknorth"
                   
                     value={formData.Booknorth}
@@ -1083,7 +1076,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="Check Bandhi South"
+                    label="South"
                     name="Booksouth"
                    
                     value={formData.Booksouth}
@@ -1108,7 +1101,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="Check Bandhi East"
+                    label="East"
                     name="east"
                     value={formData.east}
                     onChange={handleChange}
@@ -1129,7 +1122,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="Check Bandhi West"
+                    label="West"
                     name="west"
                   
                     value={formData.west}
@@ -1151,7 +1144,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="Check Bandhi North"
+                    label="North"
                     name="north"
                   
                     value={formData.north}
@@ -1173,7 +1166,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="Check Bandhi South"
+                    label="South"
                     name="south"
                    
                     value={formData.south}
@@ -1412,7 +1405,7 @@ const updatedFormData = {
                   <Grid item xs={6} sm={3}>
                     <TextField
                       fullWidth
-                      label="Built-Up Area (Sq.Mt)"
+                      label="(Sq.Mt)"
                       name="builtUpAreaSqMt"
                       value={formData.builtUpAreaSqMt}
                       onChange={handleChange}
@@ -1469,7 +1462,7 @@ const updatedFormData = {
                     <TextField
                       key={index}
                       variant={isEditable ? "outlined" : "filled"}
-                      placeholder={index + 1  === 1? `Road faced side length` : `Length ${index + 1}` }
+                      placeholder={index + 1  === 1? `Road faced side length (Ft)` : `Length ${index + 1} (Ft)` }
                       name={`cal${index + 1}`}
                       type="number"
                       value={formData[`cal${index + 1}`] || ''}
@@ -1488,7 +1481,7 @@ const updatedFormData = {
               <Grid item>
                 <Grid container spacing={1} alignItems="center">
                   <Grid item>
-                    <Typography>Area Sq.Ft.</Typography>
+                    <Typography>Sq.Ft.</Typography>
                   </Grid>
                   <Grid item>
                   <TextField
@@ -1508,7 +1501,7 @@ const updatedFormData = {
                     <Typography>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</Typography>
                   </Grid>
                   <Grid item>
-                     <Typography>Area Sq.Mt.</Typography>
+                     <Typography>Sq.Mt.</Typography>
                   </Grid>
                   <Grid item>
                      <TextField
@@ -1536,11 +1529,9 @@ const updatedFormData = {
               Previous
             </Button>
             <Button variant="contained" color="success" type="submit">
-              Save
+              {t("save")}
             </Button>
-            <Button variant="contained" color="primary" onClick={handleNavigation}>
-              Next
-            </Button>
+            
           </Box>
         </form>
       </Box>

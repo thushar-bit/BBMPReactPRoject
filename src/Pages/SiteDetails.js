@@ -3,7 +3,7 @@ import {
   TextField, Button, Box, Container, Typography,
   FormControl, MenuItem, Select, InputLabel, FormHelperText,Skeleton 
 } from '@mui/material';
-//import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../components/Axios';
 import { toast, ToastContainer } from 'react-toastify';
@@ -22,8 +22,8 @@ const SiteDetails = () => {
     features: Yup.string().required('Type of Feature is required').notOneOf(['0'], 'Type of Feature cannot be Select'),
     Typeofuse: Yup.string().required('Type Of Use is required').notOneOf(['0'], 'Type of Use cannot be Select'),
     yearOfConstruction: Yup.string()
-      .required('Year of Construction is required').notOneOf(['0000'], 'Year of Construction cannot be all 0')
-      .matches(/^[1-9]\d{3}$/, 'Year of Construction must be a 4-digit number and cannot start with 0'),
+      .required('Year Usage is required').notOneOf(['0000'], 'Year Usage cannot be all 0')
+      .matches(/^[1-9]\d{3}$/, 'Year Usage must be a 4-digit number and cannot start with 0'),
 
   });
   const navigate = useNavigate();
@@ -64,10 +64,10 @@ const SiteDetails = () => {
   };
 
 
-  // const { t } = useTranslation();
+   const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
-
+if(isInitialEditable){
     const data = {
       propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
       featureheadid: formData.features,
@@ -96,7 +96,7 @@ const SiteDetails = () => {
       setTimeout(async () => {
         await fetchData();
         setInitialEditable(false);
-        //    handleNavigation()
+        handleNavigation()
       }, 2000);
     } catch (error) {
       await toast.error("Error saving data!" + error, {
@@ -112,6 +112,9 @@ const SiteDetails = () => {
         navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
       }, 2000);
     }
+  }else{
+    handleNavigation()
+  }
   };
   const handleEdit = () => {
     if(isInitialEditable)
@@ -226,7 +229,7 @@ const SiteDetails = () => {
                 sx={{ marginBottom: 3 }}
                 className={touched.features && !!errors.features ? 'shake' : ''}
               >
-                <InputLabel>Features :</InputLabel>
+                <InputLabel>Usage Category :</InputLabel>
                 <Select
                   name="features"
                   value={formData.features}
@@ -277,7 +280,7 @@ const SiteDetails = () => {
                 <InputLabel></InputLabel>
                 <TextField
                 
-                  label="Year Of Construction/Usage Started"
+                  label="Year Usage"
                   name="yearOfConstruction"
                   value={formData.yearOfConstruction}
                   onChange={handleChange}
@@ -295,15 +298,17 @@ const SiteDetails = () => {
                 <Button variant="contained" color="primary" onClick={back}>
                   Previous
                 </Button>
+                {isInitialEditable && 
                 <Button variant="contained" color="primary" onClick={handleEdit}>
                   Edit
                 </Button>
-                <Button variant="contained" color="success" type="submit" onClick={() => setFieldValue('save')}>
-                  Save
+}
+                <Button variant="contained" color="success" type="submit" onClick={handleSubmit}>
+                  {t("save")}
                 </Button>
-                <Button variant="contained" color="primary" type="submit"  onClick={() => setFieldValue('next')}>
+                {/* <Button variant="contained" color="primary" type="submit"  onClick={() => setFieldValue('next')}>
                   Next
-                </Button>
+                </Button> */}
               </Box>
               </>
         )}

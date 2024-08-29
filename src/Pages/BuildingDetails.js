@@ -26,6 +26,9 @@ const BuildingDetails = () => {
     SelfuseArea: "",
     RentedArea: "",
     TotalArea: '',
+    SelfuseAreaMts: "",
+    RentedAreaMts: "",
+    TotalAreaMts: '',
     BesomCustomerID: '',
     BWSSBMeterNumber: ''
   });
@@ -33,15 +36,15 @@ const BuildingDetails = () => {
     BuildingNumber: Yup.string().required('Building Number is required'),
     BuildingName: Yup.string().required('Building Name is required'),
     floornumber: Yup.string().required('Floor Number is required'),
-    features: Yup.string().required('Features is required'),
+    features: Yup.string().required('Usage Category is required'),
     yearOfConstruction: Yup.string()
-      .required('Year of Construction is required')
-      .matches(/^\d{4}$/, 'Year of Construction must be a 4-digit number'),
+      .required('Year Usage is required')
+      .matches(/^\d{4}$/, 'Year Usage must be a 4-digit number'),
     Typeofuse: Yup.string().required('Type of Use(subcategory) is required'),
     SelfuseArea: Yup.string().required('Self Use Area is required'),
     RentedArea: Yup.string().required('Rented Area is required'),
-    BWSSBMeterNumber: Yup.string().required('BWSSB Meter Number is required'),
-    BesomCustomerID: Yup.string().required('Bescom Customer ID is required'),
+  //  BWSSBMeterNumber: Yup.string().required('BWSSB Meter Number is required'),
+  //  BesomCustomerID: Yup.string().required('Bescom Customer ID is required'),
 
   });
   const [tableData, setTableData] = useState([
@@ -79,8 +82,12 @@ const BuildingDetails = () => {
     if (name === 'SelfuseArea' || name === 'RentedArea') {
       const selfuseAreaValue = name === 'SelfuseArea' ? value : formData.SelfuseArea;
       const RentedAreaValue = name === 'RentedArea' ? value : formData.RentedArea;
-      const totalArea = Math.round(parseInt(selfuseAreaValue) + parseInt(RentedAreaValue));
+      const totalArea = Math.round(parseFloat(selfuseAreaValue) + parseFloat(RentedAreaValue));
       formData.TotalArea = totalArea;
+      formData.SelfuseAreaMts =(parseFloat(selfuseAreaValue) * 0.092903).toFixed(2).toString()
+      formData.RentedAreaMts =     (parseFloat(RentedAreaValue) * 0.092903).toFixed(2).toString()
+      formData.TotalAreaMts = (parseFloat(totalArea) * 0.092903).toFixed(2).toString()
+      
     }
     if (name === "yearOfConstruction") {
       if (/^\d{0,4}$/.test(value)) {
@@ -91,6 +98,7 @@ const BuildingDetails = () => {
       }
       return
     }
+   
     setFormData({
       ...formData,
       [name]: value
@@ -405,7 +413,7 @@ const BuildingDetails = () => {
                     sx={{ marginBottom: 3 }}
                     className={touched.features && !!errors.features ? 'shake' : ''}
                   >
-                    <InputLabel>Features :</InputLabel>
+                    <InputLabel>Usage Category :</InputLabel>
                     <Select
                       name="features"
                       value={formData.features}
@@ -456,7 +464,7 @@ const BuildingDetails = () => {
                   <TextField
                     fullWidth
                     type="number"
-                    label={"Year Of Construction/Usage Started :"}
+                    label={"Year Usage :"}
                     placeholder='yyyy'
 
                     name="yearOfConstruction"
@@ -487,7 +495,7 @@ const BuildingDetails = () => {
                 <Grid item xs={12} sm={4}>
                   <TextField
                     fullWidth
-                    label={"Self Use Area:"}
+                    label={"Self Use Area (in Sq.fts.):"}
                     name="SelfuseArea"
                     type="number"
                     value={formData.SelfuseArea}
@@ -511,7 +519,7 @@ const BuildingDetails = () => {
                 <Grid item xs={12} sm={4}>
                   <TextField
                     fullWidth
-                    label={"Rented Area:"}
+                    label={"Rented Area (in Sq.fts.):"}
                     name="RentedArea"
                     type="number"
                     value={formData.RentedArea}
@@ -536,7 +544,7 @@ const BuildingDetails = () => {
                   <TextField
                     fullWidth
                     variant='filled'
-                    label={"Total Area"}
+                    label={"Total Area (in Sq.fts.)"}
                     name="TotalArea"
                     value={formData.TotalArea}
                     onChange={handleChange}
@@ -553,6 +561,66 @@ const BuildingDetails = () => {
                   />
                 </Grid>
                 <Grid item xs={12} sm={4}>
+                  <TextField
+                    fullWidth
+                    variant='filled'
+                    label={"Self Use Area(in Sq.mts.)"}
+                    name="SelfuseAreaMts"
+                    value={formData.SelfuseAreaMts}
+                    onChange={handleChange}
+                    InputProps={{
+                      readOnly: true,
+                      endAdornment: (
+                        <Tooltip title={t("nearestLandmarkInfo")}>
+                          <IconButton color="primary">
+                            <InfoIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    fullWidth
+                    variant='filled'
+                    label={"Rented Area(in Sq.mts.)"}
+                    name="RentedAreaMts"
+                    value={formData.RentedAreaMts}
+                    onChange={handleChange}
+                    InputProps={{
+                      readOnly: true,
+                      endAdornment: (
+                        <Tooltip title={t("nearestLandmarkInfo")}>
+                          <IconButton color="primary">
+                            <InfoIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    fullWidth
+                    variant='filled'
+                    label={"Total Area (in Sq.mts.)"}
+                    name="TotalAreaMts"
+                    value={formData.TotalAreaMts}
+                    onChange={handleChange}
+                    InputProps={{
+                      readOnly: true,
+                      endAdornment: (
+                        <Tooltip title={t("nearestLandmarkInfo")}>
+                          <IconButton color="primary">
+                            <InfoIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )
+                    }}
+                  />
+                </Grid>
+                {/* <Grid item xs={12} sm={4}>
                   <TextField
                     fullWidth
                     label={"BESCOM Customer ID :"}
@@ -597,11 +665,17 @@ const BuildingDetails = () => {
                       )
                     }}
                   />
+                </Grid> */}
+                
+              
+              <Grid item xs={20} sm={4}></Grid>
+              <Grid item xs={16} sm={4}>
+              <Button variant="contained" color="success" type="submit">
+                  Save +
+                </Button>
                 </Grid>
-              </Grid>
-              <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                Data Available In BBMP Books
-              </Typography>
+                <Grid item xs={12} sm={4}></Grid>
+                </Grid>
               <TableContainer component={Paper} sx={{ mt: 4 }}>
                 <Table>
                   <TableHead>
@@ -611,12 +685,12 @@ const BuildingDetails = () => {
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Floor Number</TableCell>
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Usage Category</TableCell>
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Type of use(Sub Category)</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Year of Construction</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Year Usage</TableCell>
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Self Use Area</TableCell>
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Rented Area</TableCell>
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Total Area</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>BESCOM Customer ID :</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>ಬಿ ಡಬ್ಲ್ಯೂ ಎಸ್ ಎಸ್ ಬಿ ಮೀಟರ್ ಸಂಖ್ಯೆ :</TableCell>
+                      {/* <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>BESCOM Customer ID :</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>ಬಿ ಡಬ್ಲ್ಯೂ ಎಸ್ ಎಸ್ ಬಿ ಮೀಟರ್ ಸಂಖ್ಯೆ :</TableCell> */}
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Edit</TableCell>
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Delete</TableCell>
                     </TableRow>
@@ -640,8 +714,8 @@ const BuildingDetails = () => {
                           <TableCell>{row.AREA}</TableCell>
                           <TableCell>{row.RENTEDAREA}</TableCell>
                           <TableCell>{row.TOTALAREA}</TableCell>
-                          <TableCell>{row.ACCOUNTID}</TableCell>
-                          <TableCell>{row.WATERMETERNO}</TableCell>
+                          {/* <TableCell>{row.ACCOUNTID}</TableCell>
+                          <TableCell>{row.WATERMETERNO}</TableCell> */}
                           <TableCell>
                             <Tooltip title="Edit">
                               <IconButton color="primary" onClick={() => handleEdit(row)}>
@@ -667,9 +741,7 @@ const BuildingDetails = () => {
                 <Button variant="contained" color="primary" onClick={back}>
                   Previous
                 </Button>
-                <Button variant="contained" color="success" type="submit">
-                  Save
-                </Button>
+                
 
                 <Button variant="contained" color="primary" onClick={handleNavigation}>
                   Next

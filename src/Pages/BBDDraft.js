@@ -48,7 +48,7 @@ const BBDDraft = () => {
     
     if (name === "WardName") {
         setLoading(true);
-        var response = await axiosInstance.get(`BBMPCITZAPI/LOAD_BBD_RECORDS?ZoneId=${formData.ZoneName}&WardId=${value}&SerachType=${0}&Search=${"thushar"}`)
+        var response = await axiosInstance.get(`BBMPCITZAPI/LOAD_BBD_RECORDS?ZoneId=${formData.ZoneName}&WardId=${424057}&SerachType=${0}&Search=${"thushar"}`)
         setPropertyData(response.data.Table || [])
         
       setLoading(false);

@@ -359,7 +359,7 @@ const CopyBookData = async () => {
         setSelectedFile(null);
         const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
         sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
-        setTimeout(() => {
+     
          toast.success("Details Saved Successfully", {
           position: "top-right",
           autoClose: 5000,
@@ -369,11 +369,15 @@ const CopyBookData = async () => {
           draggable: true,
           progress: undefined,
         });
-      }, 1000);
-
         setIsEditable(false);
-        await fetchData(); 
         setLoading(false);
+        
+        if(propertyPhoto.length === 0){
+          toast.error("Please Save the Address Details Before Going to Next Step");
+          return;
+          }
+          navigate('/AreaDimension')
+       
       } catch (error) {
         await toast.error("Error saving data ", error, {
           position: "top-right",
@@ -389,15 +393,13 @@ const CopyBookData = async () => {
         }, 2000);
       }
     } else {
-      await toast.warning("No changes to save", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      setTimeout(() => {
+      if(propertyPhoto.length === 0){
+        toast.error("Please Save the Address Details Before Going to Next Step");
+        return;
+        }
+        navigate('/AreaDimension')
+      }, 1000)
     }
     setLoading(false);
   }
@@ -500,13 +502,7 @@ const CopyBookData = async () => {
     }
   };
 
-  const handleNavigation = async () => {
-    if(propertyPhoto.length === 0){
-      toast.error("Please Save the Address Details Before Going to Next Step");
-      return;
-      }
-      navigate('/AreaDimension')
-    }
+ 
    
    
     
@@ -743,18 +739,18 @@ const CopyBookData = async () => {
               <Formik
           initialValues={formData}
           validationSchema={validationSchema}
-          //onSubmit={handleSubmit}
-          onSubmit={(values, { setSubmitting }) => {
+          onSubmit={handleSubmit}
+          // onSubmit={(values, { setSubmitting }) => {
             
-            if (fieldvalue === 'save') {
-             handleSubmit()
+          //   if (fieldvalue === 'save') {
+          //    handleSubmit()
 
-            } else if (fieldvalue === 'next') {
+          //   } else if (fieldvalue === 'next') {
             
-              handleNavigation();
-            }
-            setSubmitting(false);
-          }}
+          //     handleNavigation();
+          //   }
+          //   setSubmitting(false);
+          // }}
           validateOnChange={false}
           enableReinitialize
         >
@@ -1015,7 +1011,7 @@ const CopyBookData = async () => {
                   <TextField
                     fullWidth
                     variant={isEditable ? "outlined" : "filled"}
-                    label="SAS Application Number"
+                    label={t("SASBaseApplicationNo")}
                     name="verifySASNUM"
                     value={formData.verifySASNUM}
                     onChange={handleChange}
@@ -1056,6 +1052,7 @@ const CopyBookData = async () => {
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>KHATHA SURVEY NO</TableCell>
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Owner Name</TableCell>
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Property Address</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Property Nature</TableCell>
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Site Area</TableCell>
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Built Up Area</TableCell>
                     </TableRow>
@@ -1075,6 +1072,7 @@ const CopyBookData = async () => {
                           <TableCell>{row.KHATHA_SURVEY_NO}</TableCell>
                           <TableCell>{row.OWNERNAME}</TableCell>
                           <TableCell>{row.PROPERTYADDRESS}</TableCell>
+                          <TableCell>{row.NATUREOFPROPERTY}</TableCell>
                           <TableCell>{row.SITEAREA}</TableCell>
                           <TableCell>{row.BUILTUPAREA}</TableCell>
                         </TableRow>
@@ -1095,13 +1093,16 @@ const CopyBookData = async () => {
                     Edit
                   </Button>
                   )}
-                  <Button variant="contained" color="success" type="submit"  onClick={() => setFieldValue('save')}>
+                  {/* <Button variant="contained" color="success" type="submit"  onClick={() => setFieldValue('save')}>
                     {t("save")}
                   </Button>
 
                   <Button variant="contained" color="primary"  type="submit"
         onClick={() => setFieldValue('next')} >
                     Next
+                  </Button> */}
+                  <Button variant="contained" color="success" type="submit"  onClick={handleSubmit}>
+                    {t("save")}
                   </Button>
                 </Box>
               </Grid>

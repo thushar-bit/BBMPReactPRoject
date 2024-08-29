@@ -335,7 +335,10 @@ const KaveriData = () => {
 }
 <br></br>
 <br></br>
+<Typography variant='h6'>20-years EC of property from Sub-Register with effect from 01.04.2004 until now</Typography>
+
 <br></br>
+<Typography>Enter EC Number of EC from 01.04.2004 until now</Typography>
               <Grid container spacing={2} alignItems="center">
                 <Grid item xs={9}>
                   <TextField
@@ -357,6 +360,7 @@ const KaveriData = () => {
                     }}
                   />
                 </Grid>
+                
                   <Grid item xs={3} style={{ display: 'flex', alignItems: 'center' }}>
                     <Button
                       variant="contained"
@@ -364,7 +368,7 @@ const KaveriData = () => {
                       onClick={handleECPropertyData}
                       style={{ height: '100%' }}
                     >
-                      Get EC Document Download
+                      Fetch EC Data
                     </Button>
                   </Grid>
               </Grid>

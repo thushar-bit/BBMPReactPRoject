@@ -477,6 +477,11 @@ const DocumentUploadPage = () => {
                     Maximum File Size should not exceed 5 MB
                   </Typography>
                 </Grid>
+                <Grid item xs={12} sm={4}>
+                <Button variant="contained" color="success" type="submit">
+                  Save +
+                </Button>
+                </Grid>
               </Grid>
               <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
                 Documents Uploaded
@@ -536,9 +541,7 @@ const DocumentUploadPage = () => {
                 <Button variant="contained" color="primary" onClick={back}>
                   Previous
                 </Button>
-                <Button variant="contained" color="success" type="submit">
-                  Save
-                </Button>
+              
 
                 <Button variant="contained" color="primary" onClick={handleNavigation}>
                   Next

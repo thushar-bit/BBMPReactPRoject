@@ -446,7 +446,7 @@ const OwnerDetails = () => {
               }
             }}
           >
-            Owner Details
+            OwnerShip  Details
           </Typography>
 
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>

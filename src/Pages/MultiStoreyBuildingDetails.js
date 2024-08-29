@@ -35,15 +35,15 @@ const MultiStoreyBuildingDetails = () => {
     BlockName: Yup.string().required('Block Number is required'),
     FlatNos: Yup.string().required('Flat No is required'),
     floornumber: Yup.string().required('Floor Number is required'),
-    features: Yup.string().required('Features is required'),
+    features: Yup.string().required('Usage Category is required'),
     yearOfConstruction: Yup.string()
-      .required('Year of Construction is required')
-      .matches(/^\d{4}$/, 'Year of Construction must be a 4-digit number'),
+      .required('Year Usage is required')
+      .matches(/^\d{4}$/, 'Year Usage must be a 4-digit number'),
     Typeofuse: Yup.string().required('Type of Use(subcategory) is required'),
     Occupancy: Yup.string().required('Occupancy is required'),
     OwnersShareAreaSqmts: Yup.string().required('Owner Share Area is required'),
     SelectOwnerShareType: Yup.string().required('Owner Share Type is required'),
-    BesomCustomerID: Yup.string().required('Bescom Customer ID is required'),
+  //  BesomCustomerID: Yup.string().required('Bescom Customer ID is required'),
   });
   const [tableData, setTableData] = useState([
   ]);
@@ -220,7 +220,7 @@ const handleEdit = () => {
   }, []);
   const handleSubmit = async (e) => {
 
-
+if(isEditable || isInitialEditable){
     const data = {
       propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
       plotareaownersharE_AREA: formData.SelectOwnerShareType === "1" ? formData.OwnersShareAreaSqmts : 0,
@@ -261,6 +261,7 @@ const handleEdit = () => {
         await fetchData();
         setIsEditable(false);
         setInitialEditable(false);
+        handleNavigation();
       }, 2000);
     } catch (error) {
       await toast.error("Error saving data!" + error, {
@@ -276,6 +277,10 @@ const handleEdit = () => {
         navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
       }, 2000);
     }
+  }
+  else {
+    handleNavigation()
+  }
   }
   const back = () => {
     navigate('/AreaDimension');
@@ -347,30 +352,6 @@ const handleEdit = () => {
                   />
                 </Grid>
                 <Grid item xs={12} sm={4}>
-                  <TextField
-                    fullWidth
-                    label="Flat No"
-                    name="FlatNos"
-                    value={formData.FlatNos}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    className={touched.FlatNos && !!errors.FlatNos ? 'shake' : ''}
-                    error={touched.FlatNos && !!errors.FlatNos}
-                    helperText={touched.FlatNos && errors.FlatNos}
-                    InputProps={{
-                      style: { backgroundColor:  !isInitialEditable ? '': "#ffff" } ,
-                      readOnly: !isInitialEditable,
-                      endAdornment: (
-                        <Tooltip title={t("propertyEIDInfo")}>
-                          <IconButton color="primary">
-                            <InfoIcon />
-                          </IconButton>
-                        </Tooltip>
-                      )
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={4}>
                   <FormControl
                     fullWidth
                     error={touched.floornumber && !!errors.floornumber}
@@ -398,6 +379,31 @@ const handleEdit = () => {
                     </FormHelperText>
                   </FormControl>
                 </Grid>
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    fullWidth
+                    label="Flat No"
+                    name="FlatNos"
+                    value={formData.FlatNos}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    className={touched.FlatNos && !!errors.FlatNos ? 'shake' : ''}
+                    error={touched.FlatNos && !!errors.FlatNos}
+                    helperText={touched.FlatNos && errors.FlatNos}
+                    InputProps={{
+                      style: { backgroundColor:  !isInitialEditable ? '': "#ffff" } ,
+                      readOnly: !isInitialEditable,
+                      endAdornment: (
+                        <Tooltip title={t("propertyEIDInfo")}>
+                          <IconButton color="primary">
+                            <InfoIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )
+                    }}
+                  />
+                </Grid>
+                
                 <Grid item xs={12} sm={4}>
                   <FormControl
                     fullWidth
@@ -458,7 +464,7 @@ const handleEdit = () => {
                   <TextField
                     fullWidth
                     type="number"
-                    label={"Year Of Construction/Usage Started :"}
+                    label={"Year Usage :"}
                     name="yearOfConstruction"
                     value={formData.yearOfConstruction}
                     onChange={handleChange}
@@ -482,6 +488,17 @@ const handleEdit = () => {
               </Grid>
 
               <Grid container spacing={4}>
+                <Grid item xs={12} sm={4}>
+                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                    Parking Facility
+                  </Typography>
+                  <FormControl component="ParkingFacility" sx={{ marginBottom: 3 }}>
+                    <RadioGroup row name="ParkingFacility" value={formData.ParkingFacility} onChange={handleChange}>
+                      <FormControlLabel value="Y" control={<Radio />} label="Yes" />
+                      <FormControlLabel value="N" control={<Radio />} label="No" />
+                    </RadioGroup>
+                  </FormControl>
+                </Grid>
                 <Grid item xs={12} sm={4}>
                   <TextField
                     fullWidth
@@ -554,7 +571,7 @@ const handleEdit = () => {
                     </FormHelperText>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                {/* <Grid item xs={12} sm={4}>
                   <TextField
                     fullWidth
                     label={"BESCOM Customer ID :"}
@@ -578,7 +595,7 @@ const handleEdit = () => {
                       )
                     }}
                   />
-                </Grid>
+                </Grid> */}
                 <Grid item xs={12} sm={4}>
                   <FormControl
                     fullWidth
@@ -630,7 +647,7 @@ const handleEdit = () => {
                     }}
                   />
                 </Grid>
-                <Grid item xs={8} sm={6}>
+                {/* <Grid item xs={8} sm={6}>
                   <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
                     Parking Facility
                   </Typography>
@@ -640,7 +657,7 @@ const handleEdit = () => {
                       <FormControlLabel value="N" control={<Radio />} label="No" />
                     </RadioGroup>
                   </FormControl>
-                </Grid>
+                </Grid> */}
               </Grid>
               <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
                 Data Available In BBMP Books
@@ -653,6 +670,7 @@ const handleEdit = () => {
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>BLOCK NO</TableCell>
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>FLOOR NO</TableCell>
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>FLATNO</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>CARPET AREA</TableCell>
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>ADDITIONALAREA</TableCell>
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>SUPERBUILTUPAREA</TableCell>
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>PARKINGAVAILABLE</TableCell>
@@ -697,12 +715,10 @@ const handleEdit = () => {
                   Edit
                 </Button>
                 <Button variant="contained" color="success" type="submit">
-                  Save
+                {t('save')}
                 </Button>
 
-                <Button variant="contained" color="primary" onClick={handleNavigation}>
-                  Next
-                </Button>
+               
            
               </Box>
             </Form>
