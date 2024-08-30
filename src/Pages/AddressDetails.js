@@ -56,8 +56,9 @@ const AddressDetails = () => {
     wardNumber:"",
     ownerName:""
   });
+  const { t } = useTranslation();
   const validationSchema = Yup.object().shape({
-    DoorPlotNo: Yup.string().required('Door/Plot Number is required').notOneOf(['0'], 'Door Name cannot be "0"'),
+    DoorPlotNo: Yup.string().required(`${t("doorPlotNumber")}`).notOneOf(['0'], 'Door Name cannot be "0"'),
     buildingname: Yup.string().required('Building/Land Name is required'),
     areaorlocality: Yup.string().required('Area/Locality is required'),
     NearestLandmark: Yup.string().required('Nearest Landmark is required'),
@@ -145,7 +146,7 @@ let table4Item = [];
       const { Table = [] } = responseSAS.data;
       
       if (Table.length === 0) {
-        toast.error("No SAS Applications Found");
+        toast.error(`${t("No SAS Applications Found")}`);
       }
       setSASTableData(Table);
       const GetWardCordinates = await axiosInstance.get("BBMPCITZAPI/GetWardCordinates?wardNumber="+table1Item.WARDNUMBER)
@@ -201,7 +202,7 @@ let table4Item = [];
     });
   };
 
-  const { t } = useTranslation();
+ 
   const [previewUrl, setPreviewUrl] = useState('');
   const [propertyPhoto, setPropertyPhoto] = useState('');
 
@@ -360,7 +361,7 @@ const CopyBookData = async () => {
         const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
         sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
      
-         toast.success("Details Saved Successfully", {
+         toast.success(`${t("detailsSavedSuccess")}`, {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -559,7 +560,7 @@ const CopyBookData = async () => {
                   <TextField
                     fullWidth
                     variant="filled"
-                    label="Property EID"
+                    label={t("PropertyEID")}
                     name="propertyEID"
                     value={formData.propertyEID}
                     onChange={handleChange}
@@ -699,7 +700,7 @@ const CopyBookData = async () => {
                 </Grid>
                 <Grid item xs={12} sm={12}>
                 <FormControl fullWidth >
-            <InputLabel>Select the Property Type</InputLabel>
+            <InputLabel>{t("SelectthePropertyType")}</InputLabel>
             <Select
               name="propertyType"
               value={formData.propertyType}
@@ -895,7 +896,7 @@ const CopyBookData = async () => {
                     sx={{ marginBottom: 3 }}
                     className={touched.streetid && !!errors.streetid ? 'shake' : ''}
                   >
-                    <InputLabel >Street Name :</InputLabel>
+                    <InputLabel >{t("streetName")}</InputLabel>
                     <Select
                       name="streetid"
                       value={formData.streetid}
@@ -919,7 +920,7 @@ const CopyBookData = async () => {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label={t("Lattitude")}
+                    label={t("lattitude")}
                     name="lat1"
                     value={formData.lat1}
                     onChange={handleChange}
@@ -998,7 +999,7 @@ const CopyBookData = async () => {
                     <Box display="flex" alignItems="center" mt={2}>
                       <Typography variant="body1">{selectedFile.name}</Typography>
                       <Button color="error" variant='outlined' onClick={handleFileDelete} sx={{ ml: 2 }}>
-                        Delete Image
+                        {t("DeleteImage")}
                       </Button>
                     </Box>
                   )}
@@ -1037,7 +1038,7 @@ const CopyBookData = async () => {
                    variant={"contained"} 
                     disabled={!isEditable} 
                      onClick={handleSASClick}>
-                       Verify SAS Application Number 
+                    {t("VerifySASApplicationNumber")}
                       </Button>
                       </Grid>
                 
@@ -1047,21 +1048,21 @@ const CopyBookData = async () => {
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Application Number</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("ApplicationNumber")}</TableCell>
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>PID</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>KHATHA SURVEY NO</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Owner Name</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Property Address</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Property Nature</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Site Area</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Built Up Area</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("KHATHASURVEYNO")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("OwnerName")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("PropertyAddress")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("PropertyNature")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("SiteArea")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("BuiltUpArea")}</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {SAStableData.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={12} align="center">
-                          No data available
+                        {t("Nodataavailable")}
                         </TableCell>
                       </TableRow>
                     ) : (
@@ -1086,11 +1087,11 @@ const CopyBookData = async () => {
               <Grid item xs={12}>
                 <Box display="flex" justifyContent="center" gap={2}>
                 <Button variant="contained" color="primary" onClick={handleBack}>
-                    Back
+                    {t("Previous")}
                   </Button>
                   {!isEditable && (
                   <Button variant="contained" color="primary" onClick={handleAddressEdit}>
-                    Edit
+                   {t("Edit")}
                   </Button>
                   )}
                   {/* <Button variant="contained" color="success" type="submit"  onClick={() => setFieldValue('save')}>

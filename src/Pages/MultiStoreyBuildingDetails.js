@@ -247,7 +247,7 @@ if(isEditable || isInitialEditable){
 
       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
       sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
-      await toast.success("Details Saved Successfully", {
+      await toast.success(`${t("detailsSavedSuccess")}`, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -323,13 +323,13 @@ if(isEditable || isInitialEditable){
                   }
                 }}
               >
-                Details Of Usage Of Multi-Storey Flat
+              {t("DetailsOfUsageOfFlat")}
               </Typography>
               <Grid container spacing={4}>
                 <Grid item xs={12} sm={4}>
                   <TextField
                     fullWidth
-                    label="Block Name"
+                    label={t("BlockName")}
                     name="BlockName"
                     value={formData.BlockName}
                     onChange={handleChange}
@@ -358,7 +358,7 @@ if(isEditable || isInitialEditable){
                     sx={{ marginBottom: 3 }}
                     className={touched.floornumber && !!errors.floornumber ? 'shake' : ''}
                   >
-                    <InputLabel>Floor Number :</InputLabel>
+                    <InputLabel>{t("floornumber")}</InputLabel>
                     <Select
                       name="floornumber"
                       value={formData.floornumber}
@@ -382,7 +382,7 @@ if(isEditable || isInitialEditable){
                 <Grid item xs={12} sm={4}>
                   <TextField
                     fullWidth
-                    label="Flat No"
+                    label={t("FlatNo")}
                     name="FlatNos"
                     value={formData.FlatNos}
                     onChange={handleChange}
@@ -411,7 +411,7 @@ if(isEditable || isInitialEditable){
                     sx={{ marginBottom: 3 }}
                     className={touched.features && !!errors.features ? 'shake' : ''}
                   >
-                    <InputLabel>Usage Category :</InputLabel>
+                    <InputLabel>{t("UsageCategory")}</InputLabel>
                     <Select
                       name="features"
                       value={formData.features}
@@ -439,7 +439,7 @@ if(isEditable || isInitialEditable){
                     sx={{ marginBottom: 3 }}
                     className={touched.Typeofuse && !!errors.Typeofuse ? 'shake' : ''}
                   >
-                    <InputLabel>Type of use(Sub Category) :</InputLabel>
+                    <InputLabel>{t("Typeofuse")}</InputLabel>
                     <Select
                       name="Typeofuse"
                       value={formData.Typeofuse}
@@ -464,7 +464,7 @@ if(isEditable || isInitialEditable){
                   <TextField
                     fullWidth
                     type="number"
-                    label={"Year Usage :"}
+                    label={t("YearUsage")}
                     name="yearOfConstruction"
                     value={formData.yearOfConstruction}
                     onChange={handleChange}
@@ -490,12 +490,12 @@ if(isEditable || isInitialEditable){
               <Grid container spacing={4}>
                 <Grid item xs={12} sm={4}>
                 <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                    Parking Facility
+                {t("ParkingFacility")} 
                   </Typography>
                   <FormControl component="ParkingFacility" sx={{ marginBottom: 3 }}>
                     <RadioGroup row name="ParkingFacility" value={formData.ParkingFacility} onChange={handleChange}>
-                      <FormControlLabel value="Y" control={<Radio />} label="Yes" />
-                      <FormControlLabel value="N" control={<Radio />} label="No" />
+                      <FormControlLabel value="Y" control={<Radio />} label={t("Yes")} />
+                      <FormControlLabel value="N" control={<Radio />} label={t("No")} />
                     </RadioGroup>
                   </FormControl>
                 </Grid>
@@ -503,7 +503,7 @@ if(isEditable || isInitialEditable){
                   <TextField
                     fullWidth
                     variant={isEditable ? "outlined" : "filled"}
-                    label={"Total number of parking units : "}
+                    label={t("Totalnumberofparkingunits")}
                     name="Totalnumberofparkingunits"
                     type='number'
                     value={formData.Totalnumberofparkingunits}
@@ -525,7 +525,7 @@ if(isEditable || isInitialEditable){
                   <TextField
                     fullWidth
                     variant={isEditable ? "outlined" : "filled"}
-                    label={"Total Parking Area(in Sq. mts.)"}
+                    label={t("TotalParkingArea")}
                     name="TotalParkingArea"
                     type='number'
                     value={formData.TotalParkingArea}
@@ -550,7 +550,7 @@ if(isEditable || isInitialEditable){
                     sx={{ marginBottom: 3 }}
                     className={touched.Occupancy && !!errors.Occupancy ? 'shake' : ''}
                   >
-                    <InputLabel>Occupancy :</InputLabel>
+                    <InputLabel>{t("Occupancy")}</InputLabel>
                     <Select
                       name="Occupancy"
                       value={formData.Occupancy}
@@ -603,7 +603,7 @@ if(isEditable || isInitialEditable){
                     sx={{ marginBottom: 3 }}
                     className={touched.SelectOwnerShareType && !!errors.SelectOwnerShareType ? 'shake' : ''}
                   >
-                    <InputLabel>Select Owner Share Type :</InputLabel>
+                    <InputLabel>{t("SelectOwnerShareType")}</InputLabel>
                     <Select
                       name="SelectOwnerShareType"
                       value={formData.SelectOwnerShareType}
@@ -653,38 +653,38 @@ if(isEditable || isInitialEditable){
                   </Typography>
                   <FormControl component="ParkingFacility" sx={{ marginBottom: 3 }}>
                     <RadioGroup row name="ParkingFacility" value={formData.ParkingFacility} onChange={handleChange}>
-                      <FormControlLabel value="Y" control={<Radio />} label="Yes" />
-                      <FormControlLabel value="N" control={<Radio />} label="No" />
+                      <FormControlLabel value="Y" control={<Radio />} label={t()}"Yes" />
+                      <FormControlLabel value="N" control={<Radio />} label={t()}"No" />
                     </RadioGroup>
                   </FormControl>
                 </Grid> */}
               </Grid>
               <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                Data Available In BBMP Books
+              {t("")} Data Available In BBMP Books
               </Typography>
               <TableContainer component={Paper} sx={{ mt: 4 }}>
                 <Table>
                   <TableHead>
                     <TableRow>
 
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>BLOCK NO</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>FLOOR NO</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>FLATNO</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>CARPET AREA</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>ADDITIONALAREA</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>SUPERBUILTUPAREA</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>PARKINGAVAILABLE</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>PARKINGUNITS</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>PARKINGAREA</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>OWNER SHARE TYPE</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>SHARE TYPE VALUE</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("BLOCKNO")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("FLOORNO")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("FlatNo")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("CARPETAREA")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("ADDITIONALAREA")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("SUPERBUILTUPAREA")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("PARKINGAVAILABLE")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("PARKINGUNITS")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("PARKINGAREA")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("OWNERSHARETYPE")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("SHARETYPEVALUE")}</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {tableData.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={12} align="center">
-                          No data available
+                        {t("Nodataavailable")}  
                         </TableCell>
                       </TableRow>
                     ) : (
@@ -709,10 +709,10 @@ if(isEditable || isInitialEditable){
 
               <Box display="flex" justifyContent="center" gap={2} mt={3}>
                 <Button variant="contained" color="primary" onClick={back}>
-                  Previous
+                {t("Previous")} 
                 </Button>
                 <Button variant="contained" color="primary" onClick={handleEdit}>
-                  Edit
+                {t("Edit")}
                 </Button>
                 <Button variant="contained" color="success" type="submit">
                 {t('save')}

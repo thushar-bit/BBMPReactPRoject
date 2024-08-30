@@ -84,7 +84,7 @@ if(isInitialEditable){
 
       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
       sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
-      await toast.success("Details Saved Successfully", {
+      await toast.success(`${t("detailsSavedSuccess")}`, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -212,7 +212,7 @@ if(isInitialEditable){
                   marginBottom: 3,
                 }}
               >
-                Details Of Usage Of Vacant Plot
+                {t("DetailsOfUsageOfVacantPlot")}
               </Typography>
               {loading ? (
           <>
@@ -229,7 +229,7 @@ if(isInitialEditable){
                 sx={{ marginBottom: 3 }}
                 className={touched.features && !!errors.features ? 'shake' : ''}
               >
-                <InputLabel>Usage Category :</InputLabel>
+                <InputLabel>{t("UsageCategory")}</InputLabel>
                 <Select
                   name="features"
                   value={formData.features}
@@ -255,7 +255,7 @@ if(isInitialEditable){
                 sx={{ marginBottom: 3 }}
                 className={touched.Typeofuse && !!errors.Typeofuse ? 'shake' : ''}
               >
-                <InputLabel>Type of use(Sub Category) :</InputLabel>
+                <InputLabel>{t("Typeofuse")}</InputLabel>
                 <Select
                   name="Typeofuse"
                   value={formData.Typeofuse}
@@ -280,7 +280,7 @@ if(isInitialEditable){
                 <InputLabel></InputLabel>
                 <TextField
                 
-                  label="Year Usage"
+                  label={t("YearUsage")}
                   name="yearOfConstruction"
                   value={formData.yearOfConstruction}
                   onChange={handleChange}
@@ -296,13 +296,13 @@ if(isInitialEditable){
               </FormControl>
               <Box display="flex" justifyContent="center" gap={2} mt={3}>
                 <Button variant="contained" color="primary" onClick={back}>
-                  Previous
+                  {t("Previous")}
                 </Button>
-                {isInitialEditable && 
+               
                 <Button variant="contained" color="primary" onClick={handleEdit}>
-                  Edit
+                  {t("Edit")}
                 </Button>
-}
+
                 <Button variant="contained" color="success" type="submit" onClick={handleSubmit}>
                   {t("save")}
                 </Button>

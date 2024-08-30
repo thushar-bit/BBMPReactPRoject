@@ -448,7 +448,7 @@ const updatedFormData = {
       }
     }
     if(isEditable || isEditablecheckbandhi){
-     toast.success("Details Saved Successfully", {
+     toast.success(`${t("detailsSavedSuccess")}`, {
       position: "top-right",
       autoClose: 5000,
       hideProgressBar: false,
@@ -523,7 +523,7 @@ const updatedFormData = {
               marginBottom: 3,
             }}
           >
-            Property Use Details
+            {t("PropertyUseDetails")}
           </Typography>
 
           {formData.propertyType === 3 && (
@@ -532,16 +532,16 @@ const updatedFormData = {
               <Grid item xs={6} sm={3}>
                 <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
                   <RadioGroup row name="modify" value={formData.modify} onChange={handleChange}>
-                    <FormControlLabel value="yes" control={<Radio />} label="Modify" />
-                    <FormControlLabel value="no" control={<Radio />} label="No Modifications" />
+                    <FormControlLabel value="yes" control={<Radio />} label={t("Modify")} />
+                    <FormControlLabel value="no" control={<Radio />} label={t("NoModifications")} />
                   </RadioGroup>
                 </FormControl>
               </Grid>
               <Grid item xs={6} sm={3}>
                 <TextField
                   fullWidth
-                  label="
-                        Carpet Area (in Sq.mts.)"
+                  label={t("CarpetArea")}
+                        
                   name="ApartCarpetArea"
                   value={formData.ApartCarpetArea}
                   onChange={handleChange}
@@ -563,8 +563,8 @@ const updatedFormData = {
               <Grid item xs={6} sm={3}>
                 <TextField
                   fullWidth
-                  label="
-                  Additional Area(in Sq.mts.)"
+                  label={t("AdditionalArea")}
+                  
                   name="ApartAddtionalArea"
                   value={formData.ApartAddtionalArea}
                   onChange={handleChange}
@@ -586,8 +586,8 @@ const updatedFormData = {
               <Grid item xs={6} sm={3}>
                 <TextField
                   fullWidth
-                  label="
-                    Super Built Area (in Sq.mts.)"
+                  label={t("SuperBuiltArea")}
+                    
                   name="ApartSuperBuiltArea"
                   value={formData.ApartSuperBuiltArea}
                   onChange={handleChange}
@@ -616,15 +616,15 @@ const updatedFormData = {
               </Typography>
               <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
                 <RadioGroup row name="modifycheckbandi" value={formData.modifycheckbandi} onChange={handleChange}>
-                  <FormControlLabel value="yes" control={<Radio />} label="Modify" />
-                  <FormControlLabel value="no" control={<Radio />} label="No Modifications" />
+                  <FormControlLabel value="yes" control={<Radio />} label={t("Modify")} />
+                  <FormControlLabel value="no" control={<Radio />} label={t("NoModifications")} />
                 </RadioGroup>
               </FormControl>
               <Grid container spacing={3}>
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="East"
+                    label={t("East")}
                     name="Bookeast"
                     value={formData.Bookeast}
                     onChange={handleChange}
@@ -644,7 +644,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="West"
+                    label={t("West")}
                     name="Bookwest"
                   
                     value={formData.Bookwest}
@@ -665,7 +665,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="North"
+                    label={t("North")}
                     name="Booknorth"
               
                     value={formData.Booknorth}
@@ -686,7 +686,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="South"
+                    label={t("South")}
                     name="Booksouth"
                    
                     value={formData.Booksouth}
@@ -710,7 +710,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="East"
+                    label={t("East")}
                     name="east"
                     value={formData.east}
                     onChange={handleChange}
@@ -731,7 +731,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label=" West"
+                    label={t("West")}
                     name="west"
                   
                     value={formData.west}
@@ -753,7 +753,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="North"
+                    label={t("North")}
                     name="north"
               
                     value={formData.north}
@@ -775,7 +775,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="South"
+                    label={t("South")}
                     name="south"
                     value={formData.south}
                     onChange={handleChange}
@@ -799,8 +799,8 @@ const updatedFormData = {
               </Typography>
               <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
                 <RadioGroup row name="modify" value={formData.modify} onChange={handleChange}>
-                  <FormControlLabel value="yes" control={<Radio />} label="Modify" />
-                  <FormControlLabel value="no" control={<Radio />} label="No Modifications" />
+                  <FormControlLabel value="yes" control={<Radio />} label={t("Modify")} />
+                  <FormControlLabel value="no" control={<Radio />} label={t("NoModifications")} />
                 </RadioGroup>
               </FormControl>
               <Typography variant="h6" sx={{ fontWeight: 'bold', marginY: 2 }}>
@@ -808,8 +808,8 @@ const updatedFormData = {
               </Typography>
               <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
                 <RadioGroup row name="oddSite" value={formData.oddSite} onChange={handleOddSiteChange}>
-                  <FormControlLabel value="Y" control={<Radio disabled={!isEditable} />} label="Yes" />
-                  <FormControlLabel value="N" control={<Radio disabled={!isEditable} />} label="No" />
+                  <FormControlLabel value="Y" control={<Radio disabled={!isEditable} />} label={t("Yes")} />
+                  <FormControlLabel value="N" control={<Radio disabled={!isEditable} />} label={t("No")} />
                 </RadioGroup>
               </FormControl>
               <Typography variant="h6" sx={{ fontWeight: 'bold', }}>
@@ -1002,15 +1002,15 @@ const updatedFormData = {
               </Typography>
               <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
                 <RadioGroup row name="modifycheckbandi" value={formData.modifycheckbandi} onChange={handleChange}>
-                  <FormControlLabel value="yes" control={<Radio />} label="Modify" />
-                  <FormControlLabel value="no" control={<Radio />} label="No Modifications" />
+                  <FormControlLabel value="yes" control={<Radio />} label={t("Modify")} />
+                  <FormControlLabel value="no" control={<Radio />} label={t("NoModifications")} />
                 </RadioGroup>
               </FormControl>
               <Grid container spacing={3}>
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="East"
+                    label={t("East")}
                     name="Bookeast"
                    
                     value={formData.Bookeast}
@@ -1032,7 +1032,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="West"
+                    label={t("West")}
                     name="Bookwest"
                   
                     value={formData.Bookwest}
@@ -1054,7 +1054,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="North"
+                    label={t("North")}
                     name="Booknorth"
                   
                     value={formData.Booknorth}
@@ -1076,7 +1076,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="South"
+                    label={t("South")}
                     name="Booksouth"
                    
                     value={formData.Booksouth}
@@ -1101,7 +1101,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="East"
+                    label={t("East")}
                     name="east"
                     value={formData.east}
                     onChange={handleChange}
@@ -1122,7 +1122,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="West"
+                    label={t("West")}
                     name="west"
                   
                     value={formData.west}
@@ -1144,7 +1144,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="North"
+                    label={t("North")}
                     name="north"
                   
                     value={formData.north}
@@ -1166,7 +1166,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label="South"
+                    label={t("South")}
                     name="south"
                    
                     value={formData.south}
@@ -1187,21 +1187,21 @@ const updatedFormData = {
                 </Grid>
               </Grid>
               <Typography variant="h6" sx={{ fontWeight: 'bold', marginY: 2 }}>
-                Additional Details
+                {t("AdditionalDetails")}
               </Typography>
               <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
                 <RadioGroup row name="modify" value={formData.modify} onChange={handleChange}>
-                  <FormControlLabel value="yes" control={<Radio />} label="Modify" />
-                  <FormControlLabel value="no" control={<Radio />} label="No Modifications" />
+                  <FormControlLabel value="yes" control={<Radio />} label={t("Modify" )}/>
+                  <FormControlLabel value="no" control={<Radio />} label={t("NoModifications")} />
                 </RadioGroup>
               </FormControl>
               <Typography variant="h6" sx={{ fontWeight: 'bold', marginY: 2 }}>
-                Odd Site
+                {t("OddSite")}
               </Typography>
               <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
                 <RadioGroup row name="oddSite" value={formData.oddSite} onChange={handleOddSiteChange}>
-                  <FormControlLabel value="Y" control={<Radio />} label="Yes" />
-                  <FormControlLabel value="N" control={<Radio />} label="No" />
+                  <FormControlLabel value="Y" control={<Radio />} label={t("Yes")} />
+                  <FormControlLabel value="N" control={<Radio />} label={t("No")} />
                 </RadioGroup>
               </FormControl>
               <Typography variant="h6" sx={{ fontWeight: 'bold', }}>
@@ -1384,7 +1384,7 @@ const updatedFormData = {
                   <Grid item xs={6} sm={3}>
                     <TextField
                       fullWidth
-                      label="Built-Up Area (Sq.ft)"
+                      label={t("Built-UpArea(ft)")}
                       name="builtUpAreaSqFt"
                       value={formData.builtUpAreaSqFt}
                       onChange={handleChange}
@@ -1432,7 +1432,7 @@ const updatedFormData = {
           <FormControl
                     fullWidth
                   >
-                    <InputLabel>No of Sides :</InputLabel>
+                    <InputLabel>{t("NoofSides")}</InputLabel>
                     <Select
                       name="noofSides"
                       value={formData.noofSides}
@@ -1462,7 +1462,7 @@ const updatedFormData = {
                     <TextField
                       key={index}
                       variant={isEditable ? "outlined" : "filled"}
-                      placeholder={index + 1  === 1? `Road faced side length (Ft)` : `Length ${index + 1} (Ft)` }
+                      placeholder={index + 1  === 1? `${t("RoadFacedSideLength")}` : `${t("Length")} ${index + 1} (Ft)` }
                       name={`cal${index + 1}`}
                       type="number"
                       value={formData[`cal${index + 1}`] || ''}
@@ -1526,7 +1526,7 @@ const updatedFormData = {
 
           <Box display="flex" justifyContent="center" gap={2} mt={3}>
             <Button variant="contained" color="primary" onClick={back}>
-              Previous
+            {t("Previous")}
             </Button>
             <Button variant="contained" color="success" type="submit">
               {t("save")}

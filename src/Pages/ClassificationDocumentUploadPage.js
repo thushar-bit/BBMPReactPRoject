@@ -481,12 +481,12 @@ const ClassificationDocumentUploadPage = () => {
                   }
                 }}
               >
-                Property Classification Documents
+                {t("PropertyClassificationDocuments")}
               </Typography>
               <Grid container spacing={4}>
                 <Grid item xs={12} sm={4}>
                   <FormControl fullWidth sx={{ marginBottom: 3 }}>
-                    <InputLabel>Property Classification As Per Books</InputLabel>
+                    <InputLabel>{t("PropertyClassificationAsPerBooks")}</InputLabel>
                     <Select
                       name="PropertyClasssficationAsperBooks"
                       value={formData.PropertyClasssficationAsperBooks}
@@ -505,7 +505,7 @@ const ClassificationDocumentUploadPage = () => {
                 </Grid>
                 <Grid item xs={12} sm={4}>
                   <FormControl fullWidth sx={{ marginBottom: 3 }}>
-                    <InputLabel>Property Classification</InputLabel>
+                    <InputLabel>{t("PropertyClassification")}</InputLabel>
                     <Select
                       name="PropertyClassification"
                       value={formData.PropertyClassification}
@@ -530,7 +530,7 @@ const ClassificationDocumentUploadPage = () => {
                     className={touched.AKatha && !!errors.AKatha ? 'shake' : ''}
                 
                   >
-                    <InputLabel>A-Khatha claim based on :</InputLabel>
+                    <InputLabel>{t("AKhathaclaimbasedon")}</InputLabel>
                     <Select
                       name="AKatha"
                       value={formData.AKatha}
@@ -540,11 +540,11 @@ const ClassificationDocumentUploadPage = () => {
                       inputProps={{ readOnly: isClassificationEditable }}
                     >
                       <MenuItem value="0">--Select--</MenuItem>
-                      <MenuItem value="47">Private Layout Or Apartment-duly approved</MenuItem>
-                      <MenuItem value="48">House/Site granted/alloted by Govt or Govt-Agency</MenuItem>
-                      <MenuItem value="49">Own Layout Of BDA/Development Authority</MenuItem>
-                      <MenuItem value="50">GP/Municipality A-Khata before merger with BBMP</MenuItem>
-                      <MenuItem value="51">Others - (Specify)</MenuItem>
+                      <MenuItem value="47">{t("PrivateLayout")}</MenuItem>
+                      <MenuItem value="48">{t("House/Site")}</MenuItem>
+                      <MenuItem value="49">{t("OwnLayoutOfBDA/DevelopmentAuthority")}</MenuItem>
+                      <MenuItem value="50">{t("GP/MunicipalityKhatabeforemergerwithBBMP")}</MenuItem>
+                      <MenuItem value="51">{t("Others")}</MenuItem>
                     </Select>
                     <FormHelperText>
                       {touched.AKatha && errors.AKatha ? errors.AKatha : ''}
@@ -555,7 +555,7 @@ const ClassificationDocumentUploadPage = () => {
                   <TextField
                     fullWidth
                     variant={isEditable ? "outlined" : "filled"}
-                    label={"Document Details:"}
+                    label={t("DocumentDetails")}
                     placeholder='Document Details'
                     name="DocumentDetails"
                     value={formData.DocumentDetails}
@@ -575,11 +575,11 @@ const ClassificationDocumentUploadPage = () => {
                 </Grid>
                 {!isClassificationEditable ? 
                 <Grid item xs={12} sm={4}><Button variant="contained" color="success" onClick={onClassifySave}>
-                  Save Classification Details
+                  {t("SaveClassificationDetails")}
                 </Button></Grid>
                 :
                 <Grid item xs={12} sm={4}><Button variant="contained" color="secondary" onClick={isEditClassification}>
-                  Edit Classification Details
+                 {t("EditClassificationDetails")}
                 </Button></Grid>
 }
                 <Grid item xs={12} sm={4}></Grid>
@@ -590,7 +590,7 @@ const ClassificationDocumentUploadPage = () => {
                     sx={{ marginBottom: 3 }}
                     className={touched.DocumentType && !!errors.DocumentType ? 'shake' : ''}
                   >
-                    <InputLabel>Document Type :</InputLabel>
+                    <InputLabel>{t("DocumentType")}</InputLabel>
                     <Select
                       name="DocumentType"
                       value={formData.DocumentType}
@@ -616,7 +616,7 @@ const ClassificationDocumentUploadPage = () => {
                   <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
                     <DatePicker
 
-                      label="Document Registered Date (dd-mm-yyyy)"
+                      label={t("DocumentRegisteredDate")}
                       name='documentregistereddate'
                       placeholder='dd-mm-yyyy'
                       value={selectedDate}
@@ -639,7 +639,7 @@ const ClassificationDocumentUploadPage = () => {
                   <TextField
                     fullWidth
 
-                    label={"Document Number :"}
+                    label={t("DocumentNumber :")}
                     name="DocumentNumber"
                     value={formData.DocumentNumber}
                     onChange={handleChange}
@@ -682,35 +682,35 @@ const ClassificationDocumentUploadPage = () => {
                     <Box display="flex" alignItems="center" mt={2}>
                       <Typography variant="body1">{selectedFile.name}</Typography>
                       <Button color="error" onClick={handleFileDelete} sx={{ ml: 2 }}>
-                        Delete
+                      {t("Delete")}
                       </Button>
                     </Box>
                   )}
                   <Typography variant="body1" sx={{ ml: 1, color: '#df1414' }}>
-                    Maximum File Size should not exceed 5 MB
+                   {t("MaximumFileSizeMB")}
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sm={4}>
               <Button variant="contained" color="success" type="submit">
-                  Add Document +
+                  {t("AddDocument+")}
                 </Button>
                 </Grid>
               </Grid>
             
               <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                Documents Uploaded
+               {t("DocumentsUploaded")}
               </Typography>
               <TableContainer component={Paper} sx={{ mt: 4 }}>
                 <Table>
                   <TableHead>
                     <TableRow>
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Sl No.</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Document</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Document Details</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Document Number</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Document Registered Date</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Uploaded Document</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Delete</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Document")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("DocumentDetails")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("DocumentNumber :")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("DocumentRegistered Date")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("UploadedDocument")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Delete")}</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -753,11 +753,11 @@ const ClassificationDocumentUploadPage = () => {
 
               <Box display="flex" justifyContent="center" gap={2} mt={3}>
                 <Button variant="contained" color="primary" onClick={back}>
-                  Previous
+                 {t("Previous")}
                 </Button>
               
                 <Button variant="contained" color="primary" onClick={handleOpenDialog}>
-                  Finish
+                  {t("Finish")}
                 </Button>
               </Box>
             </Form>

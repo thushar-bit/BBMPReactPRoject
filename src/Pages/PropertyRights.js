@@ -115,7 +115,7 @@ const PropertyRights = () => {
 
         const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
         sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
-        await toast.success("Details Saved Successfully", {
+        await toast.success(`${t("detailsSavedSuccess")}`, {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,

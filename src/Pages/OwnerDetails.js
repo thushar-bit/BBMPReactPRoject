@@ -446,15 +446,15 @@ const OwnerDetails = () => {
               }
             }}
           >
-            OwnerShip  Details
+         {t("OwnerShipDetails")}
           </Typography>
 
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
             <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-              Existing Owners As Per Digitization
+            {t("ExistingDigitization")} 
             </Typography>
             <Button variant="contained" color="warning" onClick={AddEKYCOwner}>
-              ADD NEW OWNER
+            {t("ADDNEWOWNER")}
             </Button>
           </Box>
           <TableContainer component={Paper} sx={{ mt: 4 }}>
@@ -462,13 +462,13 @@ const OwnerDetails = () => {
               <TableHead>
                 <TableRow>
 
-                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Owner No.</TableCell>
-                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Owner Name</TableCell>
-                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Father/ Mother/ Husband/ Spouse Name</TableCell>
-                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Address</TableCell>
-                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>E-KYC Status</TableCell>
-                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Owner Status</TableCell>
-                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Verify E-KYC</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("OwnerNo.")}</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("OwnerName")}</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Father/Mother/Husband/SpouseName")}</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Address")}</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("E-KYCStatus")}</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("OwnerStatus")}</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("VerifyE-KYC")}</TableCell>
                   <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}></TableCell>
 
                 </TableRow>
@@ -477,7 +477,7 @@ const OwnerDetails = () => {
                 {tableData.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={12} align="center">
-                      No data available
+                    {t("Nodataavailable")}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -488,10 +488,10 @@ const OwnerDetails = () => {
                       <TableCell>{row.IDENTIFIERTYPE} {row.IDENTIFIERNAME}</TableCell>
                       <TableCell>{row.OWNERADDRESS} {row.MOBILENUMBER}</TableCell>
                       <TableCell>{row.EKYCSTATUS}</TableCell>
-                      <TableCell>{OwnerExists(row.OWNERNUMBER) ? "RETAINED" : "DELETED"}</TableCell>
+                      <TableCell>{OwnerExists(row.OWNERNUMBER) ? `${t("RETAINED")}` : `${t("DELETED")}`}</TableCell>
                       <TableCell>{OwnerExists(row.OWNERNUMBER) ?
                         <Button variant="contained" color="primary" onClick={() =>VerfiyEKYC(row)}>
-                          Verfiy EKYC
+                            {t("VerifyE-KYC")}
                         </Button>
                         :
                         ""
@@ -501,7 +501,7 @@ const OwnerDetails = () => {
                         ""
                         :
                         <Button variant="contained" color="primary" onClick={() =>ReaddDeletedOwner(row)}>
-                          Re-Add Deleted Owner
+                          {t("Re-AddDeletedOwner")}
                         </Button>
                       }
                       </TableCell>
@@ -517,7 +517,7 @@ const OwnerDetails = () => {
               <Grid item xs={12} key={index}>
                 <Paper elevation={3} sx={{ padding: 4, borderRadius: 2, backgroundColor: '#f7f7f7' }}>
                   <Typography variant="h6" color="primary" gutterBottom>
-                    {t('Owners To Be Added in e-Khatha')}
+                    {t('OwnersToBeAddedine-Khatha')}
                   </Typography>
                   <Grid item xs={12} sm={2}>
                     <div style={{ marginLeft: '10px', position: 'relative', textAlign: 'center' }}>
@@ -539,7 +539,7 @@ const OwnerDetails = () => {
                     <Grid item xs={12} sm={6}>
                       <TextField
                         fullWidth
-                        label={t('Owner Name')}
+                        label={t('OwnerName')}
                         name="OwnerName"
                         value={owner.OWNERNAME}
                         InputProps={{
@@ -552,7 +552,7 @@ const OwnerDetails = () => {
                     <Grid item xs={12} sm={6}>
                       <TextField
                         fullWidth
-                        label={t('Name Match Score')}
+                        label={t('NAMEMATCHSTATUS')}
                         name="NameMatchscore"
                         value={nameMatchStatuses[owner.OWNERNUMBER] || "Loading..."}
                         InputProps={{
@@ -564,7 +564,7 @@ const OwnerDetails = () => {
                     <Grid item xs={12} sm={6}>
                       {editableIndex === index ? (
                         <FormControl fullWidth sx={{ marginBottom: 3 }}>
-                          <InputLabel>Relationship Type</InputLabel>
+                          <InputLabel>{t("RelationshipType")}</InputLabel>
                           <Select
                             name="IDENTIFIERTYPEID"
                             value={formData.IDENTIFIERTYPEID}
@@ -580,7 +580,7 @@ const OwnerDetails = () => {
                         </FormControl>
                       ) : (
                         <FormControl fullWidth sx={{ marginBottom: 3 }}>
-                          <InputLabel>Relationship Type</InputLabel>
+                          <InputLabel>{t("RelationshipType")}</InputLabel>
                           <Select
                             name="RelationShiptype"
                             value={owner.IDENTIFIERTYPEID}
@@ -602,7 +602,7 @@ const OwnerDetails = () => {
                       {editableIndex === index ? (
                         <TextField
                           fullWidth
-                          label={t('Relation Name')}
+                          label={t('RelationName')}
                           name="IDENTIFIERNAME"
                           value={formData.IDENTIFIERNAME}
                           onChange={handleChange}
@@ -611,7 +611,7 @@ const OwnerDetails = () => {
                       ) : (
                         <TextField
                           fullWidth
-                          label={t('Relation Name')}
+                          label={t('RelationName')}
                           name="RelationName"
                           value={owner.IDENTIFIERNAME}
                           InputProps={{
@@ -623,20 +623,20 @@ const OwnerDetails = () => {
                     </Grid>
                     <Grid item xs={12} sm={6}>
                       <Typography sx={{ fontWeight: 'bold' }}>
-                        Gender :
+                        {t("Gender")}
                       </Typography>
                       <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
                         <RadioGroup row name="Gender" value={owner.GENDER} onChange={handleChange}>
-                          <FormControlLabel value="M" control={<Radio disabled={true} />} label="Male" />
-                          <FormControlLabel value="F" control={<Radio disabled={true} />} label="Female" />
-                          <FormControlLabel value="O" control={<Radio disabled={true} />} label="Other" />
+                          <FormControlLabel value="M" control={<Radio disabled={true} />} label={t("Male")} />
+                          <FormControlLabel value="F" control={<Radio disabled={true} />} label={t("Female")} />
+                          <FormControlLabel value="O" control={<Radio disabled={true} />} label={t("Other")} />
                         </RadioGroup>
                       </FormControl>
                     </Grid>
                     <Grid item xs={12} sm={6}>
                       <TextField
                         fullWidth
-                        label={t('Date Of Birth')}
+                        label={t('DateOfBirth')}
                         name="DateOfBirth"
                         value={owner.DATEOFBIRTH}
                         InputProps={{
@@ -663,7 +663,7 @@ const OwnerDetails = () => {
                     <Grid item xs={12} sm={6}>
                       <TextField
                         fullWidth
-                        label={t('Owner Masked Aadhar')}
+                        label={t('OwnerMaskedAadhar')}
                         name="OwnerAadhar"
                         value={owner.OWNERIDENTITYSLNO || ""}
                         InputProps={{
@@ -677,7 +677,7 @@ const OwnerDetails = () => {
                         <>
                           <TextField
                             fullWidth
-                            label={t('Mobile Number')}
+                            label={t('MobileNumber')}
                             name="MOBILENUMBER"
                             value={formData.MOBILENUMBER}
                             onChange={handleChange}
@@ -690,7 +690,7 @@ const OwnerDetails = () => {
                               {!otpButtonDisabled && (
                                 <>
                                   <Button variant="contained" color="primary" onClick={() => handleGenerateOtp(index)}>
-                                    Generate OTP
+                                  {t("GenerateOTP")} 
                                   </Button>
                                 </>
                               )}
@@ -719,7 +719,7 @@ const OwnerDetails = () => {
                       ) : (
                         <TextField
                           fullWidth
-                          label={t('Mobile Number')}
+                          label={t('MobileNumber')}
                           name="MobileNumber"
                           value={owner.MOBILENUMBER}
                           InputProps={{
@@ -735,7 +735,7 @@ const OwnerDetails = () => {
                       {editableIndex === index ? (
                         <TextField
                           fullWidth
-                          label={t('Mobile Verify')}
+                          label={t('MobileVerification')}
                           name="MOBILEVERIFY"
                           value={formData.MOBILEVERIFY === null ? "NOT VERIFIED" : formData.MOBILEVERIFY}
                           onChange={handleChange}
@@ -747,7 +747,7 @@ const OwnerDetails = () => {
                       ) : (
                         <TextField
                           fullWidth
-                          label={t('Mobile Verify')}
+                          label={t('MobileVerification')}
                           name="MOBILEVERIFY"
                           value={owner.MOBILEVERIFY || "NOT VERIFIED"}
                           InputProps={{
@@ -768,15 +768,15 @@ const OwnerDetails = () => {
                     <Box display="flex" justifyContent="center" gap={2}>
                       {editableIndex === index ? (
                         <Button variant="contained" color="primary" onClick={handleSave}>
-                          SAVE
+                           {t("Save")}  
                         </Button>
                       ) : (
                         <Button variant="contained" color="secondary" onClick={() => handleEdit(index)}>
-                          EDIT
+                           {t("Edit")}  
                         </Button>
                       )}
                       <Button variant="contained" color="error" onClick={() => handleDelete(index)}>
-                        DELETE OWNER
+                      {t("DELETEOWNER")}
                       </Button>
                     </Box>
                   </Grid>
@@ -794,22 +794,22 @@ const OwnerDetails = () => {
               <TableHead>
                 <TableRow>
 
-                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Owner No.</TableCell>
-                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Owner Name</TableCell>
-                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Father/ Mother/ Husband/ Spouse Name</TableCell>
-                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Address</TableCell>
-                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Mobile Number</TableCell>
-                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Owner Photo</TableCell>
-                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Mobile Verification</TableCell>
-                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>E-KYC</TableCell>
-                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>NAME MATCH STATUS</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("OwnerNo.")}</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("OwnerName")}</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("Father/Mother/Husband/SpouseName")}</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("Address")}</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("MobileNumber")}</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("OwnerPhoto")}</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("MobileVerification")}</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("E-KYCStatus")}</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("NAMEMATCHSTATUS")}</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {tablesdata9.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={12} align="center">
-                      No data available
+                    {t("Nodataavailable")}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -854,10 +854,10 @@ const OwnerDetails = () => {
           </TableContainer>
           <Box display="flex" justifyContent="center" gap={2} mt={3}>
             <Button variant="contained" color="primary" onClick={back}>
-              Previous
+            {t("Previous")}
             </Button>
             <Button variant="contained" color="success" onClick={handleNavigation}>
-              Next
+              {t("next")}
             </Button>
           </Box>
         </form>

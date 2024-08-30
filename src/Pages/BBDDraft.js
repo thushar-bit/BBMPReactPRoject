@@ -197,7 +197,7 @@ const BBDDraft = () => {
             }
           }}
         >
-          ಅಪೂರ್ಣ ಆಸ್ತಿ ವಿವರಗಳ ಪಟ್ಟಿ
+          {t("PendingPropertyList")}
         </Typography>
         <Grid container spacing={4} alignItems={"center"}>
           <Grid item xs={12} sm={4} md={3}>
@@ -205,7 +205,7 @@ const BBDDraft = () => {
               fullWidth
               sx={{ marginBottom: 3 }}
             >
-              <InputLabel>Zone Name :</InputLabel>
+              <InputLabel>{t("ZoneName")}</InputLabel>
               <Select
                 name="ZoneName"
                 value={formData.ZoneName}
@@ -225,7 +225,7 @@ const BBDDraft = () => {
               fullWidth
               sx={{ marginBottom: 3 }}
             >
-              <InputLabel>Ward Name :</InputLabel>
+              <InputLabel>{t("WardName")}</InputLabel>
               <Select
                 name="WardName"
                 value={formData.WardName}
@@ -245,7 +245,7 @@ const BBDDraft = () => {
               fullWidth
               sx={{ marginBottom: 3 }}
             >
-              <InputLabel>Search Type :</InputLabel>
+              <InputLabel>{t("SearchType")}</InputLabel>
               <Select
                 name="SelectType"
                 value={formData.SelectType}
@@ -262,7 +262,7 @@ const BBDDraft = () => {
           </Grid>
           <Grid item xs={12} sm={4} md={3}>
   <TextField
-    label="Search"
+    label={t("Search")}
     name="Search"
     value={formData.Search}
     onChange={handleChange}
@@ -272,10 +272,10 @@ const BBDDraft = () => {
 </Grid>
           <Box display="flex" justifyContent="center" gap={2} mt={6} width="100%">
   <Button variant="contained" color="success" onClick={handleSearch}>
-    Search
+  {t("Search")}
   </Button>
   <Button variant="contained" color="primary" onClick={handleReset}>
-    Reset
+  {t("Reset")}
   </Button>
 </Box>
         </Grid>
@@ -284,19 +284,19 @@ const BBDDraft = () => {
             <TableHead>
               <TableRow>
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Sl No</TableCell>
-                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Property Id</TableCell>
-                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Assessment No</TableCell>
-                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Address</TableCell>
-                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>SAS ApplicationNo</TableCell>
-                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Owner Name</TableCell>
-                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Open Property</TableCell>
+                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("PropertyID")}</TableCell>
+                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("AssessmentNo")}</TableCell>
+                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Address")}</TableCell>
+                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("SASApplicationNo")}</TableCell>
+                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("OwnerName")}</TableCell>
+                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("OpenProperty")}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {propertyData.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={12} align="center">
-                    No data available
+                   {t("Nodataavailable")}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -310,7 +310,7 @@ const BBDDraft = () => {
                       <TableCell>{row.ADDRESS}</TableCell>
                       <TableCell>{row.SASAPPLICATIONNO}</TableCell>
                       <TableCell>{row.OWNERNAME}</TableCell>
-                      <TableCell><Button color="primary" onClick={() => handleNavigation(row)}>Click Here</Button></TableCell>
+                      <TableCell><Button color="primary" onClick={() => handleNavigation(row)}>{t("ClickHere")}</Button></TableCell>
                     </TableRow>
                   ))
               )}

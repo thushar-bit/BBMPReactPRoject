@@ -190,7 +190,7 @@ const DocumentUploadPage = () => {
 
       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
       sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
-      await toast.success("Details Saved Successfully", {
+      await toast.success(`${t("detailsSavedSuccess")}`, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -333,7 +333,7 @@ const DocumentUploadPage = () => {
                   }
                 }}
               >
-                Eligibility Documents
+             {t("EligibilityDocuments")} 
               </Typography>
               <Typography variant="h6"
                 align="center"
@@ -348,7 +348,7 @@ const DocumentUploadPage = () => {
                     sm: '1rem',
                     md: '1.3rem',
                   }
-                }}> (* One of the accompanying documents must be uploaded)</Typography>
+                }}>{t('Oneoftheaccompany')}</Typography>
               <Grid container spacing={4}>
 
 
@@ -359,7 +359,7 @@ const DocumentUploadPage = () => {
                     sx={{ marginBottom: 3 }}
                     className={touched.DocumentType && !!errors.DocumentType ? 'shake' : ''}
                   >
-                    <InputLabel>Document Type :</InputLabel>
+                    <InputLabel>{t("DocumentType")}</InputLabel>
                     <Select
                       name="DocumentType"
                       value={formData.DocumentType}
@@ -383,7 +383,7 @@ const DocumentUploadPage = () => {
                   <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
                     <DatePicker
 
-                      label="Document Registered Date (dd-mm-yyyy)"
+                      label={t("DocumentRegisteredDate")}
                       name='documentregistereddate'
                       placeholder='dd-mm-yyyy'
                       value={selectedDate}
@@ -398,8 +398,8 @@ const DocumentUploadPage = () => {
                   <TextField
                     fullWidth
                     variant={isEditable ? "outlined" : "filled"}
-                    label={"Document Details:"}
-                    placeholder='Document Details'
+                    label={t("DocumentDetails")}
+                    placeholder={t("DocumentDetails")}
                     name="DocumentDetails"
                     value={formData.DocumentDetails}
                     onChange={handleChange}
@@ -427,7 +427,7 @@ const DocumentUploadPage = () => {
                   <TextField
                     fullWidth
 
-                    label={"Document Number :"}
+                    label={t("DocumentNumber :")}
                     name="DocumentNumber"
                     value={formData.DocumentNumber}
                     onChange={handleChange}
@@ -469,34 +469,34 @@ const DocumentUploadPage = () => {
                     <Box display="flex" alignItems="center" mt={2}>
                       <Typography variant="body1">{selectedFile.name}</Typography>
                       <Button color="error" onClick={handleFileDelete} sx={{ ml: 2 }}>
-                        Delete
+                       {t("Delete")}
                       </Button>
                     </Box>
                   )}
                   <Typography variant="body1" sx={{ ml: 1, color: '#df1414' }}>
-                    Maximum File Size should not exceed 5 MB
+                  {t("MaximumFileSizeMB")}
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sm={4}>
                 <Button variant="contained" color="success" type="submit">
-                  Save +
+                {t("Save+")}
                 </Button>
                 </Grid>
               </Grid>
               <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                Documents Uploaded
+              {t("UploadedDocument")}
               </Typography>
               <TableContainer component={Paper} sx={{ mt: 4 }}>
                 <Table>
                   <TableHead>
                     <TableRow>
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Sl No.</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Document</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Document Details</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Document Number</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Document Registered Date</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Uploaded Document</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Delete</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Document")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("DocumentDetails")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("DocumentNumber :")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("DocumentRegistered Date")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("UploadedDocument")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Delete")}</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -539,12 +539,12 @@ const DocumentUploadPage = () => {
 
               <Box display="flex" justifyContent="center" gap={2} mt={3}>
                 <Button variant="contained" color="primary" onClick={back}>
-                  Previous
+              {t("Previous")}
                 </Button>
               
 
                 <Button variant="contained" color="primary" onClick={handleNavigation}>
-                  Next
+                 {t("next")}
                 </Button>
               </Box>
             </Form>

@@ -185,13 +185,13 @@ const KaveriData = () => {
                   }
                 }}
               >
-                KAVERI SERVICES DATA
+               {t("KAVERISERVICESDATA")}
               </Typography>
               <Grid container spacing={2} alignItems="center">
                 <Grid item xs={9}>
                   <TextField
                     fullWidth
-                    label="Registration Number"
+                    label={t("RegistrationNumber")}
                     placeholder='NMG-X-XXXX-XXXX-XX'
                     name="RegistrationNumber"
                     value={formData.RegistrationNumber}
@@ -215,7 +215,7 @@ const KaveriData = () => {
                         onClick={handleKaveriDocumentData}
                       style={{ height: '100%' }}
                     >
-                      Get Kaveri Document Data
+                     {t("KaveriDocumentData")}
                     </Button>
                   </Grid>
               </Grid>
@@ -225,21 +225,21 @@ const KaveriData = () => {
     <TableHead>
       <TableRow>
         <TableCell colSpan={4}>
-          <Typography variant="h6" >Document Information</Typography>
+          <Typography variant="h6" >{t("DocumentInformation")}</Typography>
         </TableCell>
       </TableRow>
       <TableRow>
-        <TableCell><strong>Application Number</strong></TableCell>
-        <TableCell><strong>Execution Date</strong></TableCell>
-        <TableCell><strong>Pending Document Number</strong></TableCell>
-        <TableCell><strong>Final Registration Number</strong></TableCell>
+        <TableCell><strong>{t("ApplicationNumber")}</strong></TableCell>
+        <TableCell><strong>{t("ExecutionDate")}</strong></TableCell>
+        <TableCell><strong>{t("PendingDocumentNumber")}</strong></TableCell>
+        <TableCell><strong>{t("FinalRegistrationNumber")}</strong></TableCell>
       </TableRow>
     </TableHead>
     <TableBody>
       {TableKavDocData.length === 0 ? (
         <TableRow>
           <TableCell colSpan={4} align="center">
-            No data available
+          {t("")}  No data available
           </TableCell>
         </TableRow>
       ) : (
@@ -261,14 +261,14 @@ const KaveriData = () => {
     <TableHead>
       <TableRow>
         <TableCell colSpan={4}>
-          <Typography variant="h6">Property Information</Typography>
+          <Typography variant="h6">{t("PropertyInformation")}</Typography>
         </TableCell>
       </TableRow>
       <TableRow>
-        <TableCell><strong>Property ID</strong></TableCell>
-        <TableCell><strong>Document ID</strong></TableCell>
-        <TableCell><strong>Village Name</strong></TableCell>
-        <TableCell><strong>Property Type</strong></TableCell>
+        <TableCell><strong>{t("PropertyID")}</strong></TableCell>
+        <TableCell><strong>{t("DocumentID")}</strong></TableCell>
+        <TableCell><strong>{t("VillageName")}</strong></TableCell>
+        <TableCell><strong>{t("PropertyType")}</strong></TableCell>
       </TableRow>
     </TableHead>
     <TableBody>
@@ -284,7 +284,7 @@ const KaveriData = () => {
           ))
         ) : (
           <TableRow key={rowIndex}>
-            <TableCell colSpan={4}>No property information available</TableCell>
+            <TableCell colSpan={4}> {t("Nopropertyinformationavailable")}</TableCell>
           </TableRow>
         )
       ))}
@@ -299,14 +299,14 @@ const KaveriData = () => {
     <TableHead>
       <TableRow>
         <TableCell colSpan={4}>
-          <Typography variant="h6">Party Information</Typography>
+          <Typography variant="h6">{t("PartyInformation")}</Typography>
         </TableCell>
       </TableRow>
       <TableRow>
-        <TableCell><strong>Party ID</strong></TableCell>
-        <TableCell><strong>Party Name</strong></TableCell>
-        <TableCell><strong>Age</strong></TableCell>
-        <TableCell><strong>Address</strong></TableCell>
+        <TableCell><strong>{t("PartyID")}</strong></TableCell>
+        <TableCell><strong>{t("PartyName")}</strong></TableCell>
+        <TableCell><strong>{t("Age")}</strong></TableCell>
+        <TableCell><strong>{t("Address")}</strong></TableCell>
       </TableRow>
     </TableHead>
     <TableBody>
@@ -322,7 +322,7 @@ const KaveriData = () => {
           ))
         ) : (
           <TableRow key={rowIndex}>
-            <TableCell colSpan={4}>No party information available</TableCell>
+            <TableCell colSpan={4}>{t("")}No party information available</TableCell>
           </TableRow>
         )
       ))}
@@ -335,15 +335,15 @@ const KaveriData = () => {
 }
 <br></br>
 <br></br>
-<Typography variant='h6'>20-years EC of property from Sub-Register with effect from 01.04.2004 until now</Typography>
+<Typography variant='h6'>{t("KaveriMessage1")}</Typography>
 
 <br></br>
-<Typography>Enter EC Number of EC from 01.04.2004 until now</Typography>
+<Typography>{t("KaveriMessage2")}</Typography>
               <Grid container spacing={2} alignItems="center">
                 <Grid item xs={9}>
                   <TextField
                     fullWidth
-                    label="EC Document Number"
+                    label={t("ECDocumentNumber")}
                     name="ECDocumentNumber"
                      placeholder='NMG-EC-A-XXXXXX-XXXX-XX'
                     value={formData.ECDocumentNumber}
@@ -368,7 +368,7 @@ const KaveriData = () => {
                       onClick={handleECPropertyData}
                       style={{ height: '100%' }}
                     >
-                      Fetch EC Data
+                      {t("FetchECData")}
                     </Button>
                   </Grid>
               </Grid>
@@ -376,7 +376,7 @@ const KaveriData = () => {
       {EcDocumentData && EcDocumentData.length === 0 ? (
         <TableRow>
           <TableCell colSpan={2} align="center">
-            <Typography>No data available</Typography>
+            <Typography>{t("Nodataavailable")}</Typography>
           </TableCell>
         </TableRow>
       ) : (
@@ -384,24 +384,24 @@ const KaveriData = () => {
           <TableBody>
             <TableRow>
             <TableCell>
-  <Typography variant="subtitle1"><strong>Description</strong></Typography>
+  <Typography variant="subtitle1"><strong>{t("Description")}</strong></Typography>
   <Typography style={{ whiteSpace: 'pre-line' }}>
     {EcDocumentData.description ? EcDocumentData.description.join('\n') : 'No description available'}
   </Typography>
 </TableCell>
               <TableCell>
-                <Typography variant="subtitle1"><strong>Document Summary</strong></Typography>
+                <Typography variant="subtitle1"><strong>{t("DocumentSummary")}</strong></Typography>
                 <Typography>{EcDocumentData.docSummary || 'No document summary available'}</Typography>
               </TableCell>
             </TableRow>
 
             <TableRow>
               <TableCell>
-                <Typography variant="subtitle1"><strong>Document Valuation</strong></Typography>
+                <Typography variant="subtitle1"><strong>{t("DocumentValuation")}</strong></Typography>
                 <Typography>{EcDocumentData.documentValuation || 'No document valuation available'}</Typography>
               </TableCell>
               <TableCell>
-                <Typography variant="subtitle1"><strong>Execution Date</strong></Typography>
+                <Typography variant="subtitle1"><strong>{t("ExecutionDate")}</strong></Typography>
                 <Typography>
                   {EcDocumentData.executionDate 
                     ? new Date(EcDocumentData.executionDate).toLocaleString() 
@@ -432,10 +432,10 @@ const KaveriData = () => {
 <br></br>
               <Box display="flex" justifyContent="center" gap={2} mt={3}>
                 <Button variant="contained" color="primary" onClick={back}>
-                  Previous
+                {t("Previous")}
                 </Button>
                 <Button variant="contained" color="primary" onClick={handleNavigation}>
-                  Next
+                {t("next")} 
                 </Button>
               </Box>
             </form>

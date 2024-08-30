@@ -174,7 +174,7 @@ const BuildingDetails = () => {
 
       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
       sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
-      await toast.success("Details Saved Successfully", {
+      await toast.success(`${t("detailsSavedSuccess")}`, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -328,14 +328,14 @@ const BuildingDetails = () => {
                   }
                 }}
               >
-                Details Of Usage Of Built-up Area
+                {t("DetailsOfUsageOfBuilt-upArea")}
               </Typography>
               <Grid container spacing={4}>
                 <Grid item xs={12} sm={4}>
                   <TextField
                     fullWidth
                     type='number'
-                    label="Building Number:"
+                    label={t("BuildingNumber")}
                     name="BuildingNumber"
                     value={formData.BuildingNumber}
                     onChange={handleChange}
@@ -369,7 +369,7 @@ const BuildingDetails = () => {
                         </Tooltip>
                       )
                     }}
-                    label={"Building Name :"}
+                    label={t("BuildingName")}
                     name="BuildingName"
                     value={formData.BuildingName}
                     onChange={handleChange}
@@ -386,7 +386,7 @@ const BuildingDetails = () => {
                     sx={{ marginBottom: 3 }}
                     className={touched.floornumber && !!errors.floornumber ? 'shake' : ''}
                   >
-                    <InputLabel>Floor Number :</InputLabel>
+                    <InputLabel>{t("floornumber")}</InputLabel>
                     <Select
                       name="floornumber"
                       value={formData.floornumber}
@@ -413,7 +413,7 @@ const BuildingDetails = () => {
                     sx={{ marginBottom: 3 }}
                     className={touched.features && !!errors.features ? 'shake' : ''}
                   >
-                    <InputLabel>Usage Category :</InputLabel>
+                    <InputLabel>{t("UsageCategory")}</InputLabel>
                     <Select
                       name="features"
                       value={formData.features}
@@ -440,7 +440,7 @@ const BuildingDetails = () => {
                     sx={{ marginBottom: 3 }}
                     className={touched.Typeofuse && !!errors.Typeofuse ? 'shake' : ''}
                   >
-                    <InputLabel>Type of use(Sub Category) :</InputLabel>
+                    <InputLabel>{t("Typeofuse")}</InputLabel>
                     <Select
                       name="Typeofuse"
                       value={formData.Typeofuse}
@@ -464,7 +464,7 @@ const BuildingDetails = () => {
                   <TextField
                     fullWidth
                     type="number"
-                    label={"Year Usage :"}
+                    label={t("YearUsage")}
                     placeholder='yyyy'
 
                     name="yearOfConstruction"
@@ -495,7 +495,7 @@ const BuildingDetails = () => {
                 <Grid item xs={12} sm={4}>
                   <TextField
                     fullWidth
-                    label={"Self Use Area (in Sq.fts.):"}
+                    label={t("SelfUseAreafts")}
                     name="SelfuseArea"
                     type="number"
                     value={formData.SelfuseArea}
@@ -519,7 +519,7 @@ const BuildingDetails = () => {
                 <Grid item xs={12} sm={4}>
                   <TextField
                     fullWidth
-                    label={"Rented Area (in Sq.fts.):"}
+                    label={t("RentedAreafts")}
                     name="RentedArea"
                     type="number"
                     value={formData.RentedArea}
@@ -544,7 +544,7 @@ const BuildingDetails = () => {
                   <TextField
                     fullWidth
                     variant='filled'
-                    label={"Total Area (in Sq.fts.)"}
+                    label={t("TotalAreafts")}
                     name="TotalArea"
                     value={formData.TotalArea}
                     onChange={handleChange}
@@ -564,7 +564,7 @@ const BuildingDetails = () => {
                   <TextField
                     fullWidth
                     variant='filled'
-                    label={"Self Use Area(in Sq.mts.)"}
+                    label={t("SelfUseAreamts")}
                     name="SelfuseAreaMts"
                     value={formData.SelfuseAreaMts}
                     onChange={handleChange}
@@ -584,7 +584,7 @@ const BuildingDetails = () => {
                   <TextField
                     fullWidth
                     variant='filled'
-                    label={"Rented Area(in Sq.mts.)"}
+                    label={t("RentedAreamts")}
                     name="RentedAreaMts"
                     value={formData.RentedAreaMts}
                     onChange={handleChange}
@@ -604,7 +604,7 @@ const BuildingDetails = () => {
                   <TextField
                     fullWidth
                     variant='filled'
-                    label={"Total Area (in Sq.mts.)"}
+                    label={t("TotalAreamts")}
                     name="TotalAreaMts"
                     value={formData.TotalAreaMts}
                     onChange={handleChange}
@@ -671,7 +671,7 @@ const BuildingDetails = () => {
               <Grid item xs={20} sm={4}></Grid>
               <Grid item xs={16} sm={4}>
               <Button variant="contained" color="success" type="submit">
-                  Save +
+                 {t("Save+")}
                 </Button>
                 </Grid>
                 <Grid item xs={12} sm={4}></Grid>
@@ -680,26 +680,26 @@ const BuildingDetails = () => {
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Building Number</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Building Name</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Floor Number</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Usage Category</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Type of use(Sub Category)</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Year Usage</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Self Use Area</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Rented Area</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Total Area</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("BuildingNumber")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("BuildingName")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("floornumber")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("UsageCategory")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Typeofuse")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("YearUsage")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("SelfUseArea")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("RentedArea")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("TotalArea")}</TableCell>
                       {/* <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>BESCOM Customer ID :</TableCell>
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>ಬಿ ಡಬ್ಲ್ಯೂ ಎಸ್ ಎಸ್ ಬಿ ಮೀಟರ್ ಸಂಖ್ಯೆ :</TableCell> */}
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Edit</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Delete</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Edit")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Delete")}</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {tableData.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={12} align="center">
-                          No data available
+                         {t("Nodataavailable")}
                         </TableCell>
                       </TableRow>
                     ) : (
@@ -739,12 +739,12 @@ const BuildingDetails = () => {
 
               <Box display="flex" justifyContent="center" gap={2} mt={3}>
                 <Button variant="contained" color="primary" onClick={back}>
-                  Previous
+                {t("Previous")}
                 </Button>
                 
 
                 <Button variant="contained" color="primary" onClick={handleNavigation}>
-                  Next
+                {t("next")}
                 </Button>
               </Box>
             </Form>
