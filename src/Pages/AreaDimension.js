@@ -331,7 +331,7 @@ const updatedFormData = {
           modifycheckbandi: 'no',
         });
       } catch (error) {
-        await toast.error("Error saving data!" + error, {
+        await toast.error(`${t("errorSavingData")}` + error, {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -392,7 +392,7 @@ const updatedFormData = {
         }, 1000);
 
       } catch (error) {
-         toast.error("Error saving data!" + error, {
+         toast.error(`${t("errorSavingData")}` + error, {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -433,7 +433,7 @@ const updatedFormData = {
         }, 2000);
 
       } catch (error) {
-         toast.error("Error saving data!" + error, {
+         toast.error(`${t("errorSavingData")}` + error, {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -467,7 +467,7 @@ const updatedFormData = {
   }
   const handleNavigation = () => {
     if(isEditable && isEditablecheckbandhi){
-      toast.error("Please Save the Details Before Going to Next Section")
+      toast.error(`${t("Please Save the Details Before Going to Next Section")}`)
       return
     }
     const validationErrors = validateFormData(formData);
@@ -486,7 +486,7 @@ const updatedFormData = {
       navigate('/MultiStoreyBuildingDetails')
     } else {
 
-      toast.error("Property Type Not Found");
+      toast.error(`${t("propertyTypeNotFound")}`);
       setTimeout(() => {
         navigate("/AddressDetails")
       }, 1000);

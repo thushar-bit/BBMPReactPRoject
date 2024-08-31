@@ -42,8 +42,8 @@ const DocumentUploadPage = () => {
     DocumentNumber: '',
   });
   const validationSchema = Yup.object().shape({
-    DocumentType: Yup.string().required('Document Type is required'),
-    DocumentNumber: Yup.string().required('Document Number is required'),
+    DocumentType: Yup.string().required(`${t('documentNumberRequired')}`),
+    DocumentNumber: Yup.string().required(`${t('documentNumberRequired')}`),
   });
   const [tableData, setTableData] = useState([
   ]);
@@ -100,7 +100,7 @@ const DocumentUploadPage = () => {
       setTableData(NCLTable9.length > 0 ? NCLTable9 : []);
       setTablesData2(Table1.length > 0 ? Table1 : []);
     } catch (error) {
-      toast.error("Error saving data ", error, {
+      toast.error(`${t("errorSavingData")}`, error, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -120,7 +120,7 @@ const DocumentUploadPage = () => {
     const file = e.target.files[0];
     const maxSize = 5 * 1024 * 1024;
     if (file && file.size > maxSize) {
-      toast.error('File size exceeds 5 MB limit');
+      toast.error(`${t('fileSizeExceeded')}`);
       e.target.value = null;
       setSelectedFile(null);
       return;
@@ -128,7 +128,7 @@ const DocumentUploadPage = () => {
     const fileName = file.name;
     const fileExtension = fileName.split('.').pop().toLowerCase();
     if(!['pdf'].includes(fileExtension)){
-      toast.error("Please Select Only '.pdf' File ");
+      toast.error(`${t("selectPdfFileOnly ")}`);
       e.target.value = null;
       setSelectedFile(null);
       return
@@ -155,17 +155,17 @@ const DocumentUploadPage = () => {
     }
     if(fileExtension.length === 0)
       {
-        toast.error("Please Upload the Required Document");
+        toast.error(`${t("uploadRequiredDocument")}`);
         return
       }
       if(selectedDate === null)
         {
-        toast.error("Please Provide Document Registed Date");
+        toast.error(`${t("Please Provide Document Registed Date")}`);
         return
       }
       const today = new Date();
       if (new Date(selectedDate) > today) {
-        toast.error("Document Registered Date cannot be greater than today");
+        toast.error(`${t("Document Registered Date cannot be greater than today")}`);
         return;
       }
     const data = {
@@ -204,7 +204,7 @@ const DocumentUploadPage = () => {
         //    handleNavigation()
       }, 2000);
     } catch (error) {
-      await toast.error("Error saving data!" + error, {
+      await toast.error(`${t("errorSavingData")}` + error, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -269,7 +269,7 @@ const DocumentUploadPage = () => {
       )
       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
       sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
-      await toast.success("Details Delete Successfully", {
+      await toast.succss(`${t("detailsDeletedSuccess")}`, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -283,7 +283,7 @@ const DocumentUploadPage = () => {
         //    handleNavigation()
       }, 2000);
     } catch (error) {
-      await toast.error("Error Deleting data!" + error, {
+      await toast.error(`${t("Error Deleting data!")}` + error, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,

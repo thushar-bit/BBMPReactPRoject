@@ -46,9 +46,10 @@ const ClassificationDocumentUploadPage = () => {
     AKatha: "",
 
   });
+  const { t } = useTranslation();
   const validationSchema = Yup.object().shape({
-    DocumentType: Yup.string().required('Document Type is required'),
-    DocumentNumber: Yup.string().required('Document Number is required'),
+    DocumentType: Yup.string().required(`${t('documentTypeRequired')}`),
+    DocumentNumber: Yup.string().required(`${t('documentNumberRequired')}`),
  //   AKatha: Yup.string().required('This is required').test('not-zero', 'A Katha Claim cannot be Select', value => value !== "0")
   });
   const [tableData, setTableData] = useState([
@@ -100,7 +101,7 @@ const ClassificationDocumentUploadPage = () => {
         PropertyClassification: updatedClassification,
       }));
     } catch (error) {
-      toast.error("Error saving data ", error, {
+      toast.error(`${t("errorSavingData")}`, error, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -144,7 +145,7 @@ const ClassificationDocumentUploadPage = () => {
     });
   };
 
-  const { t } = useTranslation();
+ 
   const fetchData = async () => {
     try {
       const responeMaster = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
@@ -176,7 +177,7 @@ const ClassificationDocumentUploadPage = () => {
         }
       }
     } catch (error) {
-      toast.error("Error saving data ", error, {
+      toast.error(`${t("errorSavingData")}`, error, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -197,7 +198,7 @@ const ClassificationDocumentUploadPage = () => {
     const file = e.target.files[0];
     const maxSize = 5 * 1024 * 1024;
     if (file && file.size > maxSize) {
-      toast.error('File size exceeds 5 MB limit');
+      toast.error(`${t('fileSizeExceeded')}`);
       e.target.value = null;
       setSelectedFile(null);
       return;
@@ -205,7 +206,7 @@ const ClassificationDocumentUploadPage = () => {
     const fileName = file.name;
     const fileExtension = fileName.split('.').pop().toLowerCase();
     if(!['pdf'].includes(fileExtension)){
-      toast.error("Please Select Only '.pdf' File ");
+      toast.error(`${t("selectPdfFileOnly ")}`);
       e.target.value = null;
       setSelectedFile(null);
       return
@@ -226,12 +227,12 @@ const ClassificationDocumentUploadPage = () => {
   const onClassifySave = async () => {
     
     if(formData.AKatha === "0"){
-      toast.error("Please Select A Katha Claim")
+      toast.error(`${t("selectKathaClaim")}`)
       return
     }
     if(String(formData.AKatha) === "51"){
       if(formData.DocumentDetails.length === 0){
-        toast.error("Please Enter Document Details")
+        toast.error(`${t("enterDocumentDetails")}`)
         return
       }
     }
@@ -256,7 +257,7 @@ const ClassificationDocumentUploadPage = () => {
      sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
     setIsClassificationEditable(true);
     setIsEditable(false);
-    toast.success("Classification Details Saved Successfully");
+    toast.success(`${t("classificationSavedSuccess")}`);
     setTimeout(async () => {
       await fetchData();
     }, 2000);
@@ -274,22 +275,22 @@ const ClassificationDocumentUploadPage = () => {
     }
     
     if(!isClassificationEditable){
-      toast.error("Please Save Classification Details Before Uploading the Document");
+      toast.error(`${t("saveClassificationBeforeUpload")}`);
       return
     }
     if(fileExtension.length === 0)
       {
-        toast.error("Please Upload the Required Document");
+        toast.error(`${t("uploadRequiredDocument")}`);
         return
       }
       if(selectedDate === null)
         {
-        toast.error("Please Provide Document Registed Date");
+        toast.error(`${t("Please Provide Document Registed Date")}`);
         return
       }
       const today = new Date();
       if (new Date(selectedDate) > today) {
-        toast.error("Document Registered Date cannot be greater than today");
+        toast.error(`${t("Document Registered Date cannot be greater than today")}`);
         return;
       }
     const data = {
@@ -313,7 +314,7 @@ const ClassificationDocumentUploadPage = () => {
 
       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
       sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
-      await toast.success("Document Uploaded Successfully", {
+      await toast.success(`${t("Document Uploaded Successfully")}`, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -327,7 +328,7 @@ const ClassificationDocumentUploadPage = () => {
         //    handleNavigation()
       }, 2000);
     } catch (error) {
-      await toast.error("Error saving data!" + error, {
+      await toast.error(`${t("errorSavingData")}` + error, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -396,7 +397,7 @@ const ClassificationDocumentUploadPage = () => {
       )
       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
       sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
-      await toast.success("Details Delete Successfully", {
+      await toast.succss(`${t("detailsDeletedSuccess")}`, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -411,7 +412,7 @@ const ClassificationDocumentUploadPage = () => {
       }, 2000);
 
     } catch (error) {
-      await toast.error("Error Deleting data!" + error, {
+      await toast.error(`${t("Error Deleting data!")}` + error, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,

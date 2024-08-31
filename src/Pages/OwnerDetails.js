@@ -72,7 +72,7 @@ const OwnerDetails = () => {
   const handleGenerateOtp = async (index) => {
     try {
       const response = await axiosInstance.get("E-KYCAPI/SendOTP?OwnerMobileNo=" + formData.MOBILENUMBER);
-      toast.success("OTP Sent Successfully");
+      toast.success(`${t("otpSentSuccess")}`);
       setOtpData(response.data.otpResponseMessage);
       setOtpNumber(response.data.otp);
       formData.MOBILEVERIFY = "NOT VERIFIED";
@@ -98,7 +98,7 @@ const OwnerDetails = () => {
 
   const handleVerifyOtp = (index) => {
     if (formData.OwnerOTP === otpNumber.toString()) {
-      toast.success("OTP Verified Successfully");
+      toast.success(`${t("otpVerifiedSuccess")}`);
       formData.MOBILEVERIFY = "Verfied";
       setOtpFieldsVisible(false);
     } else {
@@ -113,7 +113,7 @@ const OwnerDetails = () => {
     try {
       const ownerToDelete = tablesdata9[index];
       await axiosInstance.get(`BBMPCITZAPI/DEL_SEL_NCL_PROP_OWNER_TEMP?P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&propertyCode=${ownerToDelete.PROPERTYCODE}&ownerNumber=${ownerToDelete.OWNERNUMBER}`);
-      toast.error("Owner Deleted Successfully");
+      toast.error(`${t("ownerDeletedSuccess")}`);
       await fetchData();
     } catch (error) {
       console.log(error)
@@ -170,19 +170,19 @@ const OwnerDetails = () => {
       //     alert("All owner numbers must have EKYCVERIFIED set to VERIFIED.");
       // }
       if (!allNameMatchVerified) {
-        toast.error("All Retaining Owners Should Have there Name Matching with the existing Owners.");
+        toast.error(`${t("retainingOwnersNameMismatch")}`);
       }
       if (!atLeastOneMobileVerified) {
-        toast.error("All Owners Should Have there mobile Number Verified.");
+        toast.error(`${t("ownersMobileNotVerified")}`);
       }
       if (!relationname) {
-        toast.error("All Owners Should Have there Relation Name.");
+        toast.error(`${t("ownersRelationNameMissing")}`);
       }
       if (!relationshiptype) {
-        toast.error("All Owners Should Have there Relation Type.");
+        toast.error(`${t("ownersRelationTypeMissing")}`);
       }
       if (tablesdata9.length === 0) {
-        toast.error("Atleast One Owner should be Added for E-Katha Verification");
+        toast.error(`${t("atleastOneOwnerRequired")}`);
       }
 
     }
@@ -195,35 +195,35 @@ const OwnerDetails = () => {
     try {
 
       if (otpFieldsVisible) {
-        toast.error("Verify the OTP!")
+        toast.error(`${t("verifyOtp")}`)
         return
       }
       if (formData.IDENTIFIERTYPEID === null || formData.IDENTIFIERTYPEID === undefined) 
         {
-          toast.error("Please Select RelationShip Type")
+          toast.error(`${t("selectRelationshipType")}`)
           return
       }
       if (formData.IDENTIFIERTYPEID.length === 0) {
-        toast.error("Please Select RelationShip Type")
+        toast.error(`${t("selectRelationshipType")}`)
         return
       }
       if (formData.IDENTIFIERNAME === null || formData.IDENTIFIERNAME === undefined) 
         {
-          toast.error("Please enter the Relation Name")
+          toast.error(`${t("enterRelationName")}`)
           return
         }
       if (formData.IDENTIFIERNAME.length <= 0) {
-        toast.error("Please enter the Relation Name")
+        toast.error(`${t("enterRelationName")}`)
         return
       }
       
       if (formData.MOBILENUMBER === null || formData.MOBILENUMBER === undefined) 
         {
-          toast.error("Please enter a valid Mobile Number")
+          toast.error(`${t("enterValidMobileNumber")}`)
           return
       }
       if (formData.MOBILENUMBER.length <= 0 && formData.MOBILENUMBER.length < 10) {
-        toast.error("Please enter a valid Mobile Number")
+        toast.error(`${t("enterValidMobileNumber")}`)
         return
       }
 
@@ -245,10 +245,10 @@ const OwnerDetails = () => {
 
       const response = await axiosInstance.get(`BBMPCITZAPI/UPD_NCL_PROPERTY_OWNER_TEMP_MOBILEVERIFY?${queryString}`);
       console.log(response.data);
-      toast.success("Owner Edited Successfully")
+      toast.success(`${t("ownerEditedSuccess")}`)
       await fetchData();
     } catch (error) {
-      toast.error("Error Saving Data ", error)
+      toast.error(`${t("errorSavingData")}`, error)
     }
 
   };
@@ -266,7 +266,7 @@ const OwnerDetails = () => {
       setTablesData9(NCLTable5.length > 0 ? NCLTable5 : []);
       setLoading(false);
     } catch (error) {
-      toast.error("Error Getting data!" + error, {
+      toast.error(`${t("Error Getting data!")}` + error, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,

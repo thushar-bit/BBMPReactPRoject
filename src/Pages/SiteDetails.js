@@ -17,12 +17,12 @@ const SiteDetails = () => {
     Typeofuse: "",
     yearOfConstruction: ""
   });
-  
+  const { t } = useTranslation();
   const validationSchema = Yup.object().shape({
-    features: Yup.string().required('Type of Feature is required').notOneOf(['0'], 'Type of Feature cannot be Select'),
-    Typeofuse: Yup.string().required('Type Of Use is required').notOneOf(['0'], 'Type of Use cannot be Select'),
+    features: Yup.string().required(`${t('usageCategoryRequired')}`).notOneOf(['0'], `${t('Type of Feature cannot be Select')}`),
+    Typeofuse: Yup.string().required(`${t('typeOfUseRequired')}`).notOneOf(['0'], `${t('Type of Use cannot be Select')}`),
     yearOfConstruction: Yup.string()
-      .required('Year Usage is required').notOneOf(['0000'], 'Year Usage cannot be all 0')
+      .required(`${t('yearUsageRequired')}`).notOneOf(['0000'], 'Year Usage cannot be all 0')
       .matches(/^[1-9]\d{3}$/, 'Year Usage must be a 4-digit number and cannot start with 0'),
 
   });
@@ -41,7 +41,7 @@ const SiteDetails = () => {
           setTablesData3(response.data.Table);
         }
       } catch (error) {
-        toast.error("error Fetching data", error)
+        toast.error(`${t("error Fetching data")}`, error)
         setTimeout(() => {
           navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
         }, 2000);
@@ -64,7 +64,7 @@ const SiteDetails = () => {
   };
 
 
-   const { t } = useTranslation();
+   
 
   const handleSubmit = async (e) => {
 if(isInitialEditable){
@@ -99,7 +99,7 @@ if(isInitialEditable){
         handleNavigation()
       }, 2000);
     } catch (error) {
-      await toast.error("Error saving data!" + error, {
+      await toast.error(`${t("errorSavingData")}` + error, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,

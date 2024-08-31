@@ -27,7 +27,7 @@ const BBDDraft = () => {
   const [WardData, setWardData] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-
+  const { t } = useTranslation();
   const fetchData = async () => {
     var response = await axiosInstance.get("BBMPCITZAPI/GetMasterZone")
     setZoneData(response.data.Table || [])
@@ -66,20 +66,20 @@ const BBDDraft = () => {
   const handleSearch = async () => {
     
     if(formData.ZoneName === ""){
-        toast.error("Please Select A Zone")
+        toast.error(`${t("selectZone")}`)
         return
     }
     if(formData.WardName === ""){
-      toast.error("Please Select A Ward");
+      toast.error(`${t("selectWard")}`);
       return
     }
         if(formData.SelectType === ""){
-         toast.error("Please Enter Search Type")
+         toast.error(`${t("enterSearchType")}`)
          return
         }
         else {
           if(formData.Search.length === 0){
-            toast.error("Please Enter Search Text");
+            toast.error(`${t("enterSearchText")}`);
             return
           }
           else 
@@ -102,7 +102,7 @@ const BBDDraft = () => {
       });
   }
 
-  const { t } = useTranslation();
+ 
 
   const handleNavigation = async (row) => {
   //  navigate('/AddressDetails')

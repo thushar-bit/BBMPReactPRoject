@@ -20,10 +20,10 @@ const KaveriData = () => {
   const [isAllow,setIsAllow] = useState(false);
   const [isShowKaveriDocumentDetais,setisShowKaveriDocumentDetais] = useState(false)
   const navigate = useNavigate();
-  
+  const { t } = useTranslation();
   const handleKaveriDocumentData = async () => {
     if(formData.RegistrationNumber.length === 0){
-        toast.error("Please Enter the Registration Number");
+        toast.error(`${t("Please Enter the Registration Number")}`);
         return
     }
     try {
@@ -39,7 +39,7 @@ const KaveriData = () => {
             toast.error(result.message)
             return
         }
-       toast.success("Details Fetched Successfully", {
+       toast.success(`${t("detailsFetchedSuccess")}`, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -51,7 +51,7 @@ const KaveriData = () => {
    
     }
     catch (error) {
-      toast.error("Error saving data!" + error, {
+      toast.error(`${t("errorSavingData")}` + error, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -67,7 +67,7 @@ const KaveriData = () => {
   };
 
 
-  const { t } = useTranslation();
+  
 
 
   const handleChange = async (e) => {
@@ -83,11 +83,11 @@ const KaveriData = () => {
 
   const handleECPropertyData = async () => {
     if(formData.RegistrationNumber.length === 0){
-      toast.error("Please Enter the Registration Number First");
+      toast.error(`${t("enterRegistrationNumberFirst")}`);
       return
     }
     if(formData.ECDocumentNumber.length === 0){
-      toast.error("Please Enter the EC Document Number")
+      toast.error(`${t("enterEcDocumentNumber")}`)
       return
     }
       try {
@@ -102,7 +102,7 @@ const KaveriData = () => {
             if(result.ecDataExists){
               setEcDocumentData(result.data);
               setIsAllow(true);
-              toast.success("Details Fetched Successfully", {
+              toast.success(`${t("detailsFetchedSuccess")}`, {
                 position: "top-right",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -115,7 +115,7 @@ const KaveriData = () => {
             }
             else {
               setIsAllow(false);
-              toast.error("The Given Registration Number Does Not Exist With EC Details.\nPlease Provide Correct Registration Number");
+              toast.error(`${t("registrationNumberNotExist")}`);
               return
             }
           }
@@ -127,7 +127,7 @@ const KaveriData = () => {
         
       }
       catch (error) {
-        toast.error("Error Getting EC Property data!" + error, {
+        toast.error(`${t("errorFetchingEcData")}` + error, {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -156,7 +156,7 @@ const KaveriData = () => {
       navigate("/ClassificationDocumentUploadPage")
     }
     else {
-      toast.error("The Given Registration Number Does Not Match With EC Details.\nPlease Provide Correct Registration Number");
+      toast.error(`${t("The Given Registration Number Does Not Match With EC Details.\nPlease Provide Correct Registration Number")}`);
     }
   }
     

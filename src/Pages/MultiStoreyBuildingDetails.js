@@ -31,18 +31,19 @@ const MultiStoreyBuildingDetails = () => {
     OwnersShareAreaSqmts: "",
     ParkingFacility: 'N',
   });
+  const { t } = useTranslation();
   const validationSchema = Yup.object().shape({
-    BlockName: Yup.string().required('Block Number is required'),
-    FlatNos: Yup.string().required('Flat No is required'),
-    floornumber: Yup.string().required('Floor Number is required'),
-    features: Yup.string().required('Usage Category is required'),
+    BlockName: Yup.string().required(`${t('blockNumberRequired')}`),
+    FlatNos: Yup.string().required(`${t('flatNumberRequired')}`),
+    floornumber: Yup.string().required(`${t('floorNumberRequired')}`),
+    features: Yup.string().required(`${t('usageCategoryRequired')}`),
     yearOfConstruction: Yup.string()
-      .required('Year Usage is required')
+      .required(`${t('yearUsageRequired')}`)
       .matches(/^\d{4}$/, 'Year Usage must be a 4-digit number'),
-    Typeofuse: Yup.string().required('Type of Use(subcategory) is required'),
-    Occupancy: Yup.string().required('Occupancy is required'),
-    OwnersShareAreaSqmts: Yup.string().required('Owner Share Area is required'),
-    SelectOwnerShareType: Yup.string().required('Owner Share Type is required'),
+    Typeofuse: Yup.string().required(`${t('typeOfUseRequired')}`),
+    Occupancy: Yup.string().required(`${t('occupancyRequired')}`),
+    OwnersShareAreaSqmts: Yup.string().required(`${t('ownerShareAreaRequired')}`),
+    SelectOwnerShareType: Yup.string().required(`${t('ownerShareTypeRequired')}`),
   //  BesomCustomerID: Yup.string().required('Bescom Customer ID is required'),
   });
   const [tableData, setTableData] = useState([
@@ -56,7 +57,7 @@ const MultiStoreyBuildingDetails = () => {
   const [tablesdata4, setTablesData4] = useState([]);
   const [tablesdata6, setTablesData6] = useState([]);
 
-  const { t } = useTranslation();
+
 
   const handleChange = async (e) => {
 
@@ -90,7 +91,7 @@ const MultiStoreyBuildingDetails = () => {
           }
         }
       } catch (error) {
-        toast.error("Error saving data ", error, {
+        toast.error(`${t("errorSavingData")}`, error, {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -198,7 +199,7 @@ const handleEdit = () => {
         ParkingFacility: table13Item.PARKINGAVAILABLE || 'N',
       });
     } catch (error) {
-      toast.error("Error saving data ", error, {
+      toast.error(`${t("errorSavingData")}`, error, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -264,7 +265,7 @@ if(isEditable || isInitialEditable){
         handleNavigation();
       }, 2000);
     } catch (error) {
-      await toast.error("Error saving data!" + error, {
+      await toast.error(`${t("errorSavingData")}` + error, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,

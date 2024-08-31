@@ -58,18 +58,18 @@ const AddressDetails = () => {
   });
   const { t } = useTranslation();
   const validationSchema = Yup.object().shape({
-    DoorPlotNo: Yup.string().required(`${t("doorPlotNumber")}`).notOneOf(['0'], 'Door Name cannot be "0"'),
-    buildingname: Yup.string().required('Building/Land Name is required'),
-    areaorlocality: Yup.string().required('Area/Locality is required'),
-    NearestLandmark: Yup.string().required('Nearest Landmark is required'),
+    DoorPlotNo: Yup.string().required(`${t("doorPlotNumber")}`).notOneOf(['0'], `${t('doorName')}`),
+    buildingname: Yup.string().required(`${t('buildingLandName')}`),
+    areaorlocality: Yup.string().required(`${t('areaLocality')}`),
+    NearestLandmark: Yup.string().required(`${t('nearestLandmark')}`),
     pincode: Yup.string()
-      .required('Pincode is required')
+      .required(`${t('pincodeRequired')}`)
       .matches(/^\d{6}$/, 'Pincode must be a 6-digit number'),
-    verifySASNUM: Yup.string().required('SAS Application Number is required').notOneOf(['0'], 'SAS Number cannot be "0"'),
-    streetid: Yup.string().required('Street Name is required').notOneOf(['0'], 'Street Name cannot be "0"'),
+    verifySASNUM: Yup.string().required(`${t('sasApplicationNumber')}`).notOneOf(['0'], `${t('sasNumberInvalid')}`),
+    streetid: Yup.string().required(`${t('streetNameRequired')}`).notOneOf(['0'], `${t('streetNameInvalid')}`),
    // propertyType:Yup.string().required('Property Type is required').notOneOf(['0'], 'Property Type cannot be Select'),
-    lat1:Yup.string().required('latitude is required').notOneOf(['0'], 'latitude cannot be "0"'),
-    long1:Yup.string().required('longitude is required').notOneOf(['0'], 'longitude cannot be "0"'),
+    lat1:Yup.string().required(`${t('latitudeRequired')}`).notOneOf(['0'], `${t('latitudeInvalid')}`),
+    long1:Yup.string().required(`${t('longitudeRequired')}`).notOneOf(['0'], `${t('longitudeInvalid')}`),
   });
 
   const navigate = useNavigate();
@@ -215,7 +215,7 @@ let table4Item = [];
    
     
     if(!['jpg', 'jpeg', 'png'].includes(fileExtension)){
-      toast.error("Please Select Only '.jpg','.jpeg','.png' File ");
+      toast.error(`${t("Please Select Only '.jpg','.jpeg','.png' File")}`);
       e.target.value = null;
       setSelectedFile(null);
       return
@@ -223,7 +223,7 @@ let table4Item = [];
     setfileExtension(fileExtension);
     const maxSize = 500 * 1024;
     if (file && file.size > maxSize) {
-      toast.error('File size exceeds 500 KB limit');
+      toast.error(`${t("File size exceeds 500 KB limit")}`);
       e.target.value = null;
       setSelectedFile(null);
       return;
@@ -291,7 +291,7 @@ const CopyBookData = async () => {
       const response4 = await axiosInstance.get(`BBMPCITZAPI/COPY_DATA_FROM_BBDDRAFT_NCLTEMP?LoginId=crc&propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&propertyid=${JSON.parse(sessionStorage.getItem('SETPROPERYID'))}`);
       const response3 = await axiosInstance.get(`BBMPCITZAPI/Get_Ctz_ObjectionModPendingAppl?LoginId=crc&propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&propertyid=${JSON.parse(sessionStorage.getItem('SETPROPERYID'))}`);
       if (response3.data === "There is a issue while copying the data from Book Module.No Data Found") {
-       toast.error("There is a issue while copying the data from Book Module.No Data Found")
+       toast.error(`${t("There is a issue while copying the data from Book Module.No Data Found")}`)
        return false
          }
          sessionStorage.setItem('P_BOOKS_PROP_APPNO', JSON.stringify(response3.data.P_BOOKS_PROP_APPNO));
@@ -317,24 +317,24 @@ const CopyBookData = async () => {
       }
       if(propertyPhoto.length === 0){
         if(propertyphoto2.length === 0){
-        toast.error("Please Upload the New Property Photo");
+        toast.error(`${t("Please Upload the New Property Photo")}`);
         return;
         }
         if(formData.propertyType === "0"){
-          toast.error("Please Select the Property Type")
+          toast.error(`${t("Please Select the Property Type")}`)
           return
         }
       }
       setLoading(true);
       const copy = await CopyBookData();
       if(copy){
-        toast.success("Copy From BBMP Books Data Was Successfull.")
+        toast.success(`${t("copySuccess")}`)
       }else{
-        toast.error("Something Went wrong.Copy of Book Data was Not SuccessFull")
+        toast.error(`${t("copyFailed")}`)
       }
       
      if(formData.DoorPlotNo === "" || formData.DoorPlotNo === null || formData.DoorPlotNo === undefined){
-      toast.error("Please Enter the Door No")
+      toast.error(`${t("enterDoorNo")}`)
       return
      }
         
@@ -374,13 +374,13 @@ const CopyBookData = async () => {
         setLoading(false);
         
         if(propertyPhoto.length === 0){
-          toast.error("Please Save the Address Details Before Going to Next Step");
+          toast.error(`${t("saveAddressFirst")}`);
           return;
           }
           navigate('/AreaDimension')
        
       } catch (error) {
-        await toast.error("Error saving data ", error, {
+        await toast.error(`${t("errorSavingData")}`, error, {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -396,7 +396,7 @@ const CopyBookData = async () => {
     } else {
       setTimeout(() => {
       if(propertyPhoto.length === 0){
-        toast.error("Please Save the Address Details Before Going to Next Step");
+        toast.error(`${t("saveAddressFirst")}`);
         return;
         }
         navigate('/AreaDimension')
@@ -459,7 +459,7 @@ const CopyBookData = async () => {
 
   const handleSASClick = async () => {
     if (!formData.verifySASNUM || formData.verifySASNUM.length === 0) {
-      toast.error("Please Provide SAS Application Number");
+      toast.error(`${t("provideSasAppNumber")}`);
       return;
     }
   
@@ -471,7 +471,7 @@ const CopyBookData = async () => {
         if (copy) {
        //   toast.success("Copy From BBMP Books Data Was Successful.");
         } else {
-          toast.error("Something went wrong. Copy of Book Data was not successful.");
+          toast.error(`${t("copyFailed")}`);
           sethandleSASClicks(false);
           return;
         }
@@ -489,11 +489,11 @@ const CopyBookData = async () => {
   
         const { Table = [] } = response.data;
         if (Table.length === 0) {
-          toast.error("No SAS Applications Found");
+          toast.error(`${t("No SAS Applications Found")}`);
         }
         setSASTableData(Table);
       } catch (error) {
-        toast.error("An error occurred while fetching the SAS details.");
+        toast.error(`${t("errorFetchingSasDetails")}`);
       } finally {
         sethandleSASClicks(false);
       }

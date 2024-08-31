@@ -59,7 +59,7 @@ const PropertyRights = () => {
       }, 2000);
     }
     catch (error) {
-      toast.error("Error saving data!" + error, {
+      toast.error("errorSavingData" + error, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -131,7 +131,7 @@ const PropertyRights = () => {
         }, 2000);
       }
       catch (error) {
-        toast.error("Error saving data!" + error, {
+        toast.error("errorSavingData" + error, {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -175,7 +175,7 @@ const PropertyRights = () => {
         }, 2000);
       }
       catch (error) {
-        toast.error("Error saving data!" + error, {
+        toast.error("errorSavingData" + error, {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,

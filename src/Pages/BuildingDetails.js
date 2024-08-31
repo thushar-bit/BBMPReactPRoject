@@ -32,17 +32,18 @@ const BuildingDetails = () => {
     BesomCustomerID: '',
     BWSSBMeterNumber: ''
   });
+  const { t } = useTranslation();
   const validationSchema = Yup.object().shape({
-    BuildingNumber: Yup.string().required('Building Number is required'),
-    BuildingName: Yup.string().required('Building Name is required'),
-    floornumber: Yup.string().required('Floor Number is required'),
-    features: Yup.string().required('Usage Category is required'),
+    BuildingNumber: Yup.string().required(`${t('buildingNumberRequired')}`),
+    BuildingName: Yup.string().required(`${t('buildingNameRequired')}`),
+    floornumber: Yup.string().required(`${t('floorNumberRequired')}`),
+    features: Yup.string().required(`${t('usageCategoryRequired')}`),
     yearOfConstruction: Yup.string()
-      .required('Year Usage is required')
+      .required(`${t('yearUsageRequired')}`)
       .matches(/^\d{4}$/, 'Year Usage must be a 4-digit number'),
-    Typeofuse: Yup.string().required('Type of Use(subcategory) is required'),
-    SelfuseArea: Yup.string().required('Self Use Area is required'),
-    RentedArea: Yup.string().required('Rented Area is required'),
+    Typeofuse: Yup.string().required(`${t('typeOfUseRequired')}`),
+    SelfuseArea: Yup.string().required(`${t('selfUseAreaRequired')}`),
+    RentedArea: Yup.string().required(`${t('rentedAreaRequired')}`),
   //  BWSSBMeterNumber: Yup.string().required('BWSSB Meter Number is required'),
   //  BesomCustomerID: Yup.string().required('Bescom Customer ID is required'),
 
@@ -65,7 +66,7 @@ const BuildingDetails = () => {
           }
         }
       } catch (error) {
-        toast.error("Error saving data!" + error, {
+        toast.error(`${t("errorSavingData")}` + error, {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -105,7 +106,7 @@ const BuildingDetails = () => {
     });
   };
 
-  const { t } = useTranslation();
+ 
   const fetchData = async () => {
     try {
       const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
@@ -120,7 +121,7 @@ const BuildingDetails = () => {
       setTablesData2(table16Item);
       setTablesData4(table15Item);
     } catch (error) {
-      toast.error("Error saving data!" + error, {
+      toast.error(`${t("errorSavingData")}` + error, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -189,7 +190,7 @@ const BuildingDetails = () => {
         //    handleNavigation()
       }, 2000);
     } catch (error) {
-      await toast.error("Error saving data!" + error, {
+      await toast.error(`${t("errorSavingData")}` + error, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -225,7 +226,7 @@ const BuildingDetails = () => {
       )
       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
       sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
-      await toast.success("Details Delete Successfully", {
+      await toast.succss(`${t("detailsDeletedSuccess")}`, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -241,7 +242,7 @@ const BuildingDetails = () => {
 
 
     } catch (error) {
-      await toast.error("Error Deleting data!" + error, {
+      await toast.error(`${t("Error Deleting data!")}` + error, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -278,7 +279,7 @@ const BuildingDetails = () => {
         BWSSBMeterNumber: row.WATERMETERNO || ''
       });
     } catch (error) {
-      toast.error("Error Getting data!" + error, {
+      toast.error(`${t("Error Getting data!")}` + error, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
