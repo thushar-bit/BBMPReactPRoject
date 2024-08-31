@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import CssBaseline from '@mui/joy/CssBaseline';
 import Typography from '@mui/joy/Typography';
 import FormControl from '@mui/joy/FormControl';
@@ -29,6 +29,7 @@ const Login = () => {
   }
   const [captcha, setCaptcha] = useState(generateCaptcha());
   const [otpNumber, setOtpNumber] = useState(0);
+  const [ipAddress,setipAddress] = useState("")
   const [otpButtonDisabled, setOtpButtonDisabled] = useState(false);
   const [timer, setTimer] = useState(30);
   const { setToken } = useAuth();
@@ -64,6 +65,13 @@ const Login = () => {
       toast.error(error.message);
     }
   };
+  const fetchIPAddress = async () => {
+    const response = await axiosInstance.get("Auth/GetServerIpAddress")
+    setipAddress(response.data.ip)
+  }
+  React.useEffect(() => {
+    fetchIPAddress()
+  }, [])
   const handleChange = async (e) => {
     const { name, value } = e.target;
 
@@ -200,7 +208,7 @@ const Login = () => {
           >
             Welcome Back!
           </Typography>
-
+          
           <FormControl sx={{ width: '100%', maxWidth: '500px' }}>
             <FormLabel>User Id</FormLabel>
             <Input
@@ -273,8 +281,13 @@ const Login = () => {
             />
           </FormControl>
           <Button sx={{ mt: 3 }} onClick={handleLogin}>Log in</Button>
+          <br></br>
+          <br></br>
+          <Typography variant='solid'>IP Connected:{ipAddress}</Typography>
         </Box>
+        
       </Box>
+     
     </main>
   );
 }
