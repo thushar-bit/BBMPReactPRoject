@@ -20,6 +20,7 @@ const OwnerDetails = () => {
   const location = useLocation();
   const [tablesdata9, setTablesData9] = useState([]);
   const [tablesdata8, setTableData8] = useState([]);
+  const [propertytype,setPropertyType] = useState()
   const [OwnerNumber, setOwnerNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const [editableIndex, setEditableIndex] = useState(-1);
@@ -45,7 +46,7 @@ const OwnerDetails = () => {
       } else {
         setOtpFieldsVisible(true);
         if (!alertShown) {
-          alert("If the mobile number is changed, then it needs to be verified with the OTP");
+          alert(`${t("MobileValidation")}`);
           setAlertShown(true);
         }
       }
@@ -259,8 +260,9 @@ const OwnerDetails = () => {
       const response2 = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
       const response3 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
       const { Table5 = [] } = response2.data;
-      const { Table5: NCLTable5 = [] } = response3.data;
+      const { Table5: NCLTable5 = [], Table1: NCLTable1Data = [], } = response3.data;
       const { Table8 = [] } = response1.data;
+      setPropertyType(NCLTable1Data.length > 0 ? NCLTable1Data[0].PROPERTYCATEGORYID || "0":"0")
       setTableData8(Table8.length > 0 ? Table8 : [])
       setTableData(Table5.length > 0 ? Table5 : []);
       setTablesData9(NCLTable5.length > 0 ? NCLTable5 : []);
@@ -324,7 +326,22 @@ const OwnerDetails = () => {
 
   };
   const back = () => {
-    navigate('/AreaDimension');
+    if (propertytype === 1) {
+      navigate('/SiteDetails')
+    } else if (propertytype === 2) {
+      navigate('/BuildingDetails')
+    }
+    else if (propertytype === 3) {
+
+      navigate('/MultiStoreyBuildingDetails')
+    } else {
+
+      toast.error(`${t("propertyTypeNotFound")}`);
+      setTimeout(() => {
+        navigate("/AddressDetails")
+      }, 1000);
+
+    }
   };
   const AddEKYCOwner = async () => {
     var ownerNumber = 1;

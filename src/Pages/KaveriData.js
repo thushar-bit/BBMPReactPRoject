@@ -146,17 +146,24 @@ const KaveriData = () => {
   };
 
   const handleNavigation = () => {
+    sessionStorage.setItem('KaveriVerified', isAllow);
     if(TableKavDocData !== undefined && TableKavDocData !== null){
       if(TableKavDocData.length === 0)
         {
-          sessionStorage.setItem('KaveriVerified', isAllow);
-      navigate('/DocumentUploadPage');
-    }else if(isAllow){
+          if(sessionStorage.getItem('KaveriVerified')){
+            navigate("/ClassificationDocumentUploadPage")
+          }
+          else {
+            navigate('/DocumentUploadPage');
+          }
+    }
+    else if(isAllow)
+      {
       sessionStorage.setItem('KaveriVerified', isAllow);
       navigate("/ClassificationDocumentUploadPage")
     }
     else {
-      toast.error(`${t("The Given Registration Number Does Not Match With EC Details.\nPlease Provide Correct Registration Number")}`);
+      toast.error(`${t("ECError")}`);
     }
   }
     

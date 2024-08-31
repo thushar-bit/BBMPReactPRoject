@@ -63,11 +63,11 @@ const AddressDetails = () => {
     areaorlocality: Yup.string().required(`${t('areaLocality')}`),
     NearestLandmark: Yup.string().required(`${t('nearestLandmark')}`),
     pincode: Yup.string()
-      .required(`${t('pincodeRequired')}`)
-      .matches(/^\d{6}$/, 'Pincode must be a 6-digit number'),
+      .required(`${t('pincodeRequired')}`),
+      
     verifySASNUM: Yup.string().required(`${t('sasApplicationNumber')}`).notOneOf(['0'], `${t('sasNumberInvalid')}`),
     streetid: Yup.string().required(`${t('streetNameRequired')}`).notOneOf(['0'], `${t('streetNameInvalid')}`),
-   // propertyType:Yup.string().required('Property Type is required').notOneOf(['0'], 'Property Type cannot be Select'),
+   // propertyType:Yup.string().required(`${t("PropertyTypeInvalid")}`).notOneOf(['0'], `${t("PropertyTypeCannotBeZero")}`),
     lat1:Yup.string().required(`${t('latitudeRequired')}`).notOneOf(['0'], `${t('latitudeInvalid')}`),
     long1:Yup.string().required(`${t('longitudeRequired')}`).notOneOf(['0'], `${t('longitudeInvalid')}`),
   });
@@ -308,7 +308,7 @@ const CopyBookData = async () => {
 }
 
   const handleSubmit = async () => {
-  
+   
     
     let propertyphoto2 = "";
     if (isEditable) {
@@ -320,10 +320,11 @@ const CopyBookData = async () => {
         toast.error(`${t("Please Upload the New Property Photo")}`);
         return;
         }
-        if(formData.propertyType === "0"){
-          toast.error(`${t("Please Select the Property Type")}`)
-          return
-        }
+        
+      }
+      if(formData.propertyType === "0"){
+        toast.error(`${t("Please Select the Property Type")}`)
+        return
       }
       setLoading(true);
       const copy = await CopyBookData();
@@ -706,7 +707,7 @@ const CopyBookData = async () => {
               value={formData.propertyType}
               onChange={handleChange}
               inputProps={{ readOnly: !isEditable }}
-           
+             
               sx={{backgroundColor: !isEditable? '' : "#ffff"}}
             >
               <MenuItem value="0">Select</MenuItem>
@@ -716,6 +717,7 @@ const CopyBookData = async () => {
             </Select>
             
           </FormControl>
+         
           </Grid>
               </Grid>
               <Typography
@@ -1102,7 +1104,7 @@ const CopyBookData = async () => {
         onClick={() => setFieldValue('next')} >
                     Next
                   </Button> */}
-                  <Button variant="contained" color="success" type="submit"  onClick={handleSubmit}>
+                  <Button variant="contained" color="success" type="submit" >
                     {t("save")}
                   </Button>
                 </Box>

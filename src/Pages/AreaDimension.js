@@ -264,12 +264,12 @@ const updatedFormData = {
         if(formData.propertyType !== 3)
           {
         if (isInvalid(formData.east) || isInvalid(formData.west) || isInvalid(formData.north) || isInvalid(formData.south)) {
-          errors.checkbandhi = 'Please ensure all Checkbandhi values are Entered.';
+          errors.checkbandhi = `${t("Please ensure all Checkbandhi values are Entered")}`;
         }
       }
         if(formData.propertyType == 3){
         if (isInvalid(formData.ApartCarpetArea) || isInvalid(formData.ApartAddtionalArea) || isInvalid(formData.ApartSuperBuiltArea)) {
-          errors.apartmentValues = 'Please ensure all Apartment values are Entered and More than 0.';
+          errors.apartmentValues = `${t("Please ensure all Apartment values are Entered and More than 0")}`
         }
       }
       
@@ -298,6 +298,7 @@ const updatedFormData = {
       };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    debugger
     const validationErrors = validateFormData(formData);
 
     if (Object.keys(validationErrors).length > 0) {
@@ -342,7 +343,7 @@ const updatedFormData = {
         });
         setTimeout(() => {
           navigate('/ErrorPage', { state: { errorMessage: error.message } });
-        }, 2000);
+        }, 1000);
       }
     }
    
@@ -379,11 +380,11 @@ const updatedFormData = {
         const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
         sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
 
-      
+        setIsEditable(false);
+        setIsEditablecheckbandi(false);
         setTimeout(async () => {
         
-          setIsEditable(false);
-          setIsEditablecheckbandi(false);
+          
           setFormData({
             ...formData,
             modify: 'no',
@@ -403,7 +404,7 @@ const updatedFormData = {
         });
         setTimeout(() => {
           navigate('/ErrorPage', { state: { errorMessage: error.message } });
-        }, 2000);
+        }, 1000);
       }
     }
     else if (formData.propertyType === 3 && isEditable === true) //only 3
@@ -422,15 +423,15 @@ const updatedFormData = {
         )
         const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
         sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
-      
+        setIsEditable(false);
         setTimeout(async () => {
         
-          setIsEditable(false);
+         
           setFormData({
             ...formData,
             modify: 'no',
           });
-        }, 2000);
+        }, 1000);
 
       } catch (error) {
          toast.error(`${t("errorSavingData")}` + error, {
@@ -444,7 +445,7 @@ const updatedFormData = {
         });
         setTimeout(() => {
           navigate('/ErrorPage', { state: { errorMessage: error.message } });
-        }, 2000);
+        }, 1000);
       }
     }
     if(isEditable || isEditablecheckbandhi){
@@ -459,17 +460,16 @@ const updatedFormData = {
     });
   }
     setTimeout(() => {
+     
     handleNavigation();
-  }, 2000);
+  }, 1000);
   };
   const back = () => {
     navigate('/AddressDetails')
   }
   const handleNavigation = () => {
-    if(isEditable && isEditablecheckbandhi){
-      toast.error(`${t("Please Save the Details Before Going to Next Section")}`)
-      return
-    }
+    debugger
+    
     const validationErrors = validateFormData(formData);
     if (Object.keys(validationErrors).length > 0) {
       const errorMessages = Object.values(validationErrors).join('\n');
@@ -612,7 +612,7 @@ const updatedFormData = {
           {(formData.propertyType === 1) && (
             <div>
               <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
-                Schedule Of The Property
+                {t("ScheduleOfTheProperty")}
               </Typography>
               <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
                 <RadioGroup row name="modifycheckbandi" value={formData.modifycheckbandi} onChange={handleChange}>
@@ -795,7 +795,7 @@ const updatedFormData = {
                 </Grid>
               </Grid>
               <Typography variant="h6" sx={{ fontWeight: 'bold', marginY: 2 }}>
-                Additional Details
+              {t("Additional Details")}
               </Typography>
               <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
                 <RadioGroup row name="modify" value={formData.modify} onChange={handleChange}>
@@ -804,7 +804,7 @@ const updatedFormData = {
                 </RadioGroup>
               </FormControl>
               <Typography variant="h6" sx={{ fontWeight: 'bold', marginY: 2 }}>
-                Odd Site
+              {t("OddSite")}
               </Typography>
               <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
                 <RadioGroup row name="oddSite" value={formData.oddSite} onChange={handleOddSiteChange}>
@@ -998,7 +998,7 @@ const updatedFormData = {
           {(formData.propertyType === 2) && (
             <div>
               <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
-                Schedule Of The Property
+              {t("ScheduleOfTheProperty")}
               </Typography>
               <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
                 <RadioGroup row name="modifycheckbandi" value={formData.modifycheckbandi} onChange={handleChange}>
@@ -1187,7 +1187,7 @@ const updatedFormData = {
                 </Grid>
               </Grid>
               <Typography variant="h6" sx={{ fontWeight: 'bold', marginY: 2 }}>
-                {t("AdditionalDetails")}
+                {t("Additional Details")}
               </Typography>
               <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
                 <RadioGroup row name="modify" value={formData.modify} onChange={handleChange}>

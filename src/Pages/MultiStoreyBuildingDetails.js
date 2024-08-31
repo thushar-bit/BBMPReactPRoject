@@ -38,8 +38,8 @@ const MultiStoreyBuildingDetails = () => {
     floornumber: Yup.string().required(`${t('floorNumberRequired')}`),
     features: Yup.string().required(`${t('usageCategoryRequired')}`),
     yearOfConstruction: Yup.string()
-      .required(`${t('yearUsageRequired')}`)
-      .matches(/^\d{4}$/, 'Year Usage must be a 4-digit number'),
+    .required(`${t('yearUsageRequired')}`).notOneOf(['0000'], 'Year Usage cannot be all 0')
+    .matches(/^[1-9]\d{3}$/, `${t("yearUsageRequiredInvalid")}`),
     Typeofuse: Yup.string().required(`${t('typeOfUseRequired')}`),
     Occupancy: Yup.string().required(`${t('occupancyRequired')}`),
     OwnersShareAreaSqmts: Yup.string().required(`${t('ownerShareAreaRequired')}`),
@@ -648,20 +648,10 @@ if(isEditable || isInitialEditable){
                     }}
                   />
                 </Grid>
-                {/* <Grid item xs={8} sm={6}>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                    Parking Facility
-                  </Typography>
-                  <FormControl component="ParkingFacility" sx={{ marginBottom: 3 }}>
-                    <RadioGroup row name="ParkingFacility" value={formData.ParkingFacility} onChange={handleChange}>
-                      <FormControlLabel value="Y" control={<Radio />} label={t()}"Yes" />
-                      <FormControlLabel value="N" control={<Radio />} label={t()}"No" />
-                    </RadioGroup>
-                  </FormControl>
-                </Grid> */}
+                
               </Grid>
               <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-              {t("")} Data Available In BBMP Books
+              {t("DataAvailableInBBMPBooks")} 
               </Typography>
               <TableContainer component={Paper} sx={{ mt: 4 }}>
                 <Table>

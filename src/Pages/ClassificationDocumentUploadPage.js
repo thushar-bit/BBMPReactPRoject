@@ -285,7 +285,7 @@ const ClassificationDocumentUploadPage = () => {
       }
       if(selectedDate === null)
         {
-        toast.error(`${t("Please Provide Document Registed Date")}`);
+          toast.error(`${t("provideRegisteredDate")}`);
         return
       }
       const today = new Date();
@@ -346,7 +346,7 @@ const ClassificationDocumentUploadPage = () => {
   const back = () => {
     if(sessionStorage.getItem('KaveriVerified'))
     {
-      sessionStorage.removeItem("KaveriVerified");
+     // sessionStorage.removeItem("KaveriVerified");
       navigate('/KaveriData')
 
     }else {
@@ -397,7 +397,7 @@ const ClassificationDocumentUploadPage = () => {
       )
       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
       sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
-      await toast.succss(`${t("detailsDeletedSuccess")}`, {
+      await toast.success(`${t("detailsDeletedSuccess")}`, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,

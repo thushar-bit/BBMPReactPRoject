@@ -39,8 +39,8 @@ const BuildingDetails = () => {
     floornumber: Yup.string().required(`${t('floorNumberRequired')}`),
     features: Yup.string().required(`${t('usageCategoryRequired')}`),
     yearOfConstruction: Yup.string()
-      .required(`${t('yearUsageRequired')}`)
-      .matches(/^\d{4}$/, 'Year Usage must be a 4-digit number'),
+    .required(`${t('yearUsageRequired')}`).notOneOf(['0000'], 'Year Usage cannot be all 0')
+    .matches(/^[1-9]\d{3}$/, `${t("yearUsageRequiredInvalid")}`),
     Typeofuse: Yup.string().required(`${t('typeOfUseRequired')}`),
     SelfuseArea: Yup.string().required(`${t('selfUseAreaRequired')}`),
     RentedArea: Yup.string().required(`${t('rentedAreaRequired')}`),
@@ -226,7 +226,7 @@ const BuildingDetails = () => {
       )
       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
       sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
-      await toast.succss(`${t("detailsDeletedSuccess")}`, {
+      await toast.success(`${t("detailsDeletedSuccess")}`, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,

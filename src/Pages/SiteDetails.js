@@ -19,11 +19,11 @@ const SiteDetails = () => {
   });
   const { t } = useTranslation();
   const validationSchema = Yup.object().shape({
-    features: Yup.string().required(`${t('usageCategoryRequired')}`).notOneOf(['0'], `${t('Type of Feature cannot be Select')}`),
-    Typeofuse: Yup.string().required(`${t('typeOfUseRequired')}`).notOneOf(['0'], `${t('Type of Use cannot be Select')}`),
+    features: Yup.string().required(`${t('usageCategoryRequired')}`).notOneOf(['0'], `${t('UsageCategoryInvalid')}`),
+    Typeofuse: Yup.string().required(`${t('typeOfUseRequired')}`).notOneOf(['0'], `${t('typeOfUseRequiredInvalid')}`),
     yearOfConstruction: Yup.string()
       .required(`${t('yearUsageRequired')}`).notOneOf(['0000'], 'Year Usage cannot be all 0')
-      .matches(/^[1-9]\d{3}$/, 'Year Usage must be a 4-digit number and cannot start with 0'),
+      .matches(/^[1-9]\d{3}$/, `${t('yearUsageRequiredInvalid')}`),
 
   });
   const navigate = useNavigate();
@@ -67,6 +67,7 @@ const SiteDetails = () => {
    
 
   const handleSubmit = async (e) => {
+    debugger
 if(isInitialEditable){
     const data = {
       propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
@@ -187,17 +188,7 @@ if(isInitialEditable){
         <Formik
           initialValues={formData}
           validationSchema={validationSchema}
-          onSubmit={(values, { setSubmitting }) => {
-            
-            if (fieldvalue === 'save') {
-             handleSubmit()
-
-            } else if (fieldvalue === 'next') {
-            
-              handleNavigation();
-            }
-            setSubmitting(false);
-          }}
+          onSubmit={handleSubmit}
           validateOnChange={handleChange}
           enableReinitialize
         >
@@ -285,6 +276,7 @@ if(isInitialEditable){
                   value={formData.yearOfConstruction}
                   onChange={handleChange}
                   type="number"
+                  onBlur={handleBlur}
                   className={touched.yearOfConstruction && !!errors.yearOfConstruction ? 'shake' : ''}
                   error={touched.yearOfConstruction && !!errors.yearOfConstruction}
                   helperText={touched.yearOfConstruction && errors.yearOfConstruction}
@@ -303,7 +295,7 @@ if(isInitialEditable){
                   {t("Edit")}
                 </Button>
 
-                <Button variant="contained" color="success" type="submit" onClick={handleSubmit}>
+                <Button variant="contained" color="success" type="submit" >
                   {t("save")}
                 </Button>
                 {/* <Button variant="contained" color="primary" type="submit"  onClick={() => setFieldValue('next')}>

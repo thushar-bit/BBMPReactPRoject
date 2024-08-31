@@ -41,6 +41,7 @@ const DocumentUploadPage = () => {
     DocumentDetails: '',
     DocumentNumber: '',
   });
+  const { t } = useTranslation();
   const validationSchema = Yup.object().shape({
     DocumentType: Yup.string().required(`${t('documentNumberRequired')}`),
     DocumentNumber: Yup.string().required(`${t('documentNumberRequired')}`),
@@ -90,7 +91,7 @@ const DocumentUploadPage = () => {
     });
   };
 
-  const { t } = useTranslation();
+ 
   const fetchData = async () => {
     try {
       const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterDocByCategoryOrClaimType?ULBCODE=555&CATEGORYID=1');
@@ -160,7 +161,7 @@ const DocumentUploadPage = () => {
       }
       if(selectedDate === null)
         {
-        toast.error(`${t("Please Provide Document Registed Date")}`);
+        toast.error(`${t("provideRegisteredDate")}`);
         return
       }
       const today = new Date();
@@ -269,7 +270,7 @@ const DocumentUploadPage = () => {
       )
       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
       sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
-      await toast.succss(`${t("detailsDeletedSuccess")}`, {
+      await toast.success(`${t("detailsDeletedSuccess")}`, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
