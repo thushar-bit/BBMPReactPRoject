@@ -338,7 +338,19 @@ const resources = {
 
 
       //error messages
-      
+      //disclamer
+"disclamerMessage1":"Do you confirm that the provided details are correct and that you wish to submit the application?",
+"disclamerMessage2":"In case of core wards [south, east + west zones], the existing A-katha properties will be issued A-katha upon submission of UpToDate information of existing owners along with their Aadhaar etc. Registered deed and other supporting documents are optional.",
+"disclamerMessage3":"In case of any additional owner or change in name etc., registered deed or other supporting documents are mandatory.",
+"disclamerMessage4":"In case of MAR 19 properties for old ULBs merged with BBMP, the relevant MAR 19 register scan must be cited for approval of A-katha.",
+"disclamerMessage5":"In case old GP properties either eswathu registration of Form 9 or original Form 9 scan of register of GP is mandatory for A-katha.",
+"disclamerMessage6":"In every other case, registered deed or allotment by govt Authority Agency with conversion of other approvals by KTCP Act 1961 is mandatory for A-katha.",
+"disclamerMessage7":"Properties on Govt lands / rajakaluve / lakes / etc. will not get final ekatha in general.",
+"disclamerMessage8":"I understand",
+"disclamerMessage9":"Submit",
+"disclamerMessage10":"Cancel",
+"disclamer":"Disclamer"
+
     }
   },
   kn: {
@@ -665,7 +677,20 @@ const resources = {
 "flatNumberRequired": "ಫ್ಲ್ಯಾಟ್ ಸಂಖ್ಯೆ ಅಗತ್ಯವಿದೆ",
 "occupancyRequired": "ಆಕ್ಯುಪೆನ್ಸಿ ಅಗತ್ಯವಿದೆ",
 "ownerShareAreaRequired": "ಮಾಲಿಕರ ಹಂಚಿಕೆ ಪ್ರದೇಶ ಅಗತ್ಯವಿದೆ",
-"ownerShareTypeRequired": "ಮಾಲಿಕರ ಹಂಚಿಕೆ ಪ್ರಕಾರ ಅಗತ್ಯವಿದೆ"
+"ownerShareTypeRequired": "ಮಾಲಿಕರ ಹಂಚಿಕೆ ಪ್ರಕಾರ ಅಗತ್ಯವಿದೆ",
+//disclamer
+"disclamerMessage1":"ಒದಗಿಸಿದ ವಿವರಗಳು ಸರಿಯಾಗಿವೆ ಮತ್ತು ನೀವು ಅರ್ಜಿಯನ್ನು ಸಲ್ಲಿಸಲು ಬಯಸುವಿರಾ?",
+"disclamerMessage2":"ಕೋರ್ ವಾರ್ಡ್‌ಗಳ ಸಂದರ್ಭದಲ್ಲಿ [ದಕ್ಷಿಣ, ಪೂರ್ವ + ಪಶ್ಚಿಮ ವಲಯಗಳು], ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಮಾಲೀಕರ ಅಪ್‌ಟುಡೇಟ್ ಮಾಹಿತಿಯನ್ನು ಅವರ ಆಧಾರ್ ಇತ್ಯಾದಿಗಳೊಂದಿಗೆ ಸಲ್ಲಿಸಿದ ನಂತರ ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಎ-ಕಥಾ ಆಸ್ತಿಗಳನ್ನು ಎ-ಕಥಾ ನೀಡಲಾಗುತ್ತದೆ.",
+"disclamerMessage3":"ಯಾವುದೇ ಹೆಚ್ಚುವರಿ ಮಾಲೀಕರು ಅಥವಾ ಹೆಸರು ಇತ್ಯಾದಿ ಬದಲಾವಣೆಯ ಸಂದರ್ಭದಲ್ಲಿ, ನೋಂದಾಯಿತ ಪತ್ರ ಅಥವಾ ಇತರ ಪೋಷಕ ದಾಖಲೆಗಳು ಕಡ್ಡಾಯವಾಗಿರುತ್ತವೆ.",
+"disclamerMessage4":"BBMP ಯೊಂದಿಗೆ ವಿಲೀನಗೊಂಡ ಹಳೆಯ ULB ಗಳಿಗೆ MAR 19 ಆಸ್ತಿಗಳ ಸಂದರ್ಭದಲ್ಲಿ, A-ಕಥಾ ಅನುಮೋದನೆಗಾಗಿ ಸಂಬಂಧಿತ MAR 19 ರಿಜಿಸ್ಟರ್ ಸ್ಕ್ಯಾನ್ ಅನ್ನು ಉಲ್ಲೇಖಿಸಬೇಕು.",
+"disclamerMessage5":"ಹಳೆಯ GP ಆಸ್ತಿಗಳಿದ್ದಲ್ಲಿ ಫಾರ್ಮ್ 9 ರ ಎಸ್ವಾತು ನೋಂದಣಿ ಅಥವಾ ಜಿಪಿಯ ರಿಜಿಸ್ಟರ್‌ನ ಮೂಲ ಫಾರ್ಮ್ 9 ಸ್ಕ್ಯಾನ್ ಎ-ಕಥಾಗೆ ಕಡ್ಡಾಯವಾಗಿದೆ.",
+"disclamerMessage6":"ಇತರ ಪ್ರತಿಯೊಂದು ಪ್ರಕರಣದಲ್ಲಿ, KTCP ಕಾಯಿದೆ 1961 ರ ಮೂಲಕ ಇತರ ಅನುಮೋದನೆಗಳ ಪರಿವರ್ತನೆಯೊಂದಿಗೆ ಸರ್ಕಾರಿ ಪ್ರಾಧಿಕಾರದ ಏಜೆನ್ಸಿಯಿಂದ ನೋಂದಾಯಿತ ಪತ್ರ ಅಥವಾ ಹಂಚಿಕೆ ಎ-ಕಥಾಗೆ ಕಡ್ಡಾಯವಾಗಿದೆ.",
+"disclamerMessage7":"ಸರ್ಕಾರಿ ಜಮೀನು/ರಾಜಕಾಲುವೆ/ಕೆರೆ/ಇತ್ಯಾದಿಗಳ ಮೇಲಿನ ಆಸ್ತಿಗಳು ಸಾಮಾನ್ಯವಾಗಿ ಅಂತಿಮ ಏಕತಾ ಪಡೆಯುವುದಿಲ್ಲ.",
+"disclamerMessage8":"ನಾನು ಅರ್ಥಮಾಡಿಕೊಂಡಿದ್ದೇನೆ",
+"disclamerMessage9":"ಸಲ್ಲಿಸಿ",
+"disclamerMessage10":"ರದ್ದುಮಾಡು",
+"disclamer":"ಹಕ್ಕು ನಿರಾಕರಣೆ",
+
 
 
     }
@@ -676,7 +701,7 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: 'kn', // default language
+    lng: 'en', // default language
     interpolation: {
       escapeValue: false
     }

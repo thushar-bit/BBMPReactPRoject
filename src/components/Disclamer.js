@@ -1,8 +1,10 @@
 import React, {  useRef,useState } from 'react';
 import { Dialog, DialogContent, DialogActions, Button, Typography,Box } from '@mui/material';
 import Switch from '@mui/material/Switch';
+import { useTranslation } from 'react-i18next';
 const DisclaimerDialog = ({ open, onClose, onAgree }) => {
     const contentRef = useRef(null);
+    const { t } = useTranslation();
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [disabled,setDisabled] = useState(false)
     const handleAgree = () => {
@@ -37,32 +39,32 @@ const handleConfirmNo = () => {
     <Dialog open={open} onClose={onClose} maxWidth="xl" fullWidth>
       <Dialog open={confirmOpen} onClose={handleConfirmNo} maxWidth="md" fullWidth>
     <DialogContent>
-        <Typography variant="h5">Do you confirm that the provided details are correct and that you wish to submit the application?</Typography>
+        <Typography variant="h5">{t("disclamerMessage1")}</Typography>
     </DialogContent>
     <DialogActions>
-        <Button onClick={handleConfirmYes} color="primary">Yes</Button>
-        <Button onClick={handleConfirmNo} color="secondary">No</Button>
+        <Button onClick={handleConfirmYes} color="primary">{t("Yes")}</Button>
+        <Button onClick={handleConfirmNo} color="secondary">{t("No")}</Button>
     </DialogActions>
 </Dialog>
       <DialogContent dividers style={{ maxHeight: '500px' }} ref={contentRef}>
         <Typography variant="h3" gutterBottom>
-          Disclaimer
+           {t("disclamer")}
         </Typography>
         <Typography variant="h5">
          
           <ol>
-            <li>In case of core wards [south, east + west zones], the existing A-katha properties will be issued A-katha upon submission of UpToDate information of existing owners along with their Aadhaar etc. Registered deed and other supporting documents are optional.</li>
-            <li>In case of any additional owner or change in name etc., registered deed or other supporting documents are mandatory.</li>
-            <li>In case of MAR 19 properties for old ULBs merged with BBMP, the relevant MAR 19 register scan must be cited for approval of A-katha.</li>
-            <li>In case old GP properties either eswathu registration of Form 9 or original Form 9 scan of register of GP is mandatory for A-katha.</li>
-            <li>In every other case, registered deed or allotment by govt Authority Agency with conversion of other approvals by KTCP Act 1961 is mandatory for A-katha.</li>
-            <li>Properties on Govt lands / rajakaluve / lakes / etc. will not get final ekatha in general.</li>
+            <li>{t("disclamerMessage2")}</li>
+            <li>{t("disclamerMessage3")}</li>
+            <li>{t("disclamerMessage4")}</li>
+            <li>{t("disclamerMessage5")}</li>
+            <li>{t("disclamerMessage6")}</li>
+            <li>{t("disclamerMessage7")}</li>
           </ol>
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <Switch defaultChecked={disabled} color="warning" onClick={handleSwtich} />
         <Typography variant="h5" sx={{ marginLeft: 1 }}>
-          I understand
+          {t("disclamerMessage8")}
         </Typography>
       </Box>
        
@@ -72,10 +74,10 @@ const handleConfirmNo = () => {
       <DialogActions>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
         <Button onClick={handleConfirmNo} color="primary" style={{ float: 'left' }}>
-          Cancel
+           {t("disclamerMessage10")}
         </Button>
         <Button onClick={handleAgree} disabled={!disabled} color="primary" style={{ float: 'right' }}>
-          Submit
+           {t("disclamerMessage9")}
         </Button>
       </Box>
     
