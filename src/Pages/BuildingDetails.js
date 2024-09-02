@@ -295,6 +295,11 @@ const BuildingDetails = () => {
     }
 
   };
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault(); 
+    }
+  };
   useEffect(() => {
 
     fetchData();
@@ -313,7 +318,7 @@ const BuildingDetails = () => {
           enableReinitialize
         >
           {({ errors, touched, handleBlur }) => (
-            <Form>
+             <Form onKeyDown={handleKeyDown}>
               <Typography
                 variant="h3"
                 align="center"

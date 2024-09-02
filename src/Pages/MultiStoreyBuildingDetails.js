@@ -293,7 +293,11 @@ if(isEditable || isInitialEditable){
     navigate('/OwnerDetails');
 
   };
-
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault(); 
+    }
+  };
  
 
   return (
@@ -308,7 +312,7 @@ if(isEditable || isInitialEditable){
           enableReinitialize
         >
           {({ errors, touched, handleBlur }) => (
-            <Form>
+             <Form onKeyDown={handleKeyDown}>
               <Typography
                 variant="h3"
                 align="center"

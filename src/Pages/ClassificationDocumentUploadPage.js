@@ -449,6 +449,11 @@ const ClassificationDocumentUploadPage = () => {
     // Navigate to the next page or perform any action
     // navigate('/ClassificationDocumentUploadPage');
   };
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault(); 
+    }
+  };
   useEffect(() => {
 
     fetchData();
@@ -471,7 +476,7 @@ const ClassificationDocumentUploadPage = () => {
           enableReinitialize
         >
           {({ errors, touched, handleBlur }) => (
-            <Form>
+             <Form onKeyDown={handleKeyDown}>
               <Typography
                 variant="h3"
                 align="center"

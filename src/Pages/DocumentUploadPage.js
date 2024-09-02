@@ -304,7 +304,11 @@ const DocumentUploadPage = () => {
       }, 2000);
     }
   };
-
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault(); 
+    }
+  };
 
   useEffect(() => {
 
@@ -323,7 +327,7 @@ const DocumentUploadPage = () => {
           enableReinitialize
         >
           {({ errors, touched, handleBlur }) => (
-            <Form>
+             <Form onKeyDown={handleKeyDown}>
               <Typography
                 variant="h3"
                 align="center"

@@ -64,8 +64,8 @@ const AddressDetails = () => {
     areaorlocality: Yup.string().required(`${t('areaLocalityRequired')}`),
    // NearestLandmark: Yup.string().required(`${t('nearestLandmarkRequired')}`),
     pincode: Yup.string()
-      .required(`${t('pincodeRequired')}`),
-      
+      .required(`${t('pincodeRequired')}`)
+      .matches(/^\d{6}$/, `${t('pincodeInvalid')}`),
     verifySASNUM: Yup.string().required(`${t('sasApplicationNumber')}`).notOneOf(['0'], `${t('sasNumberInvalid')}`),
     streetid: Yup.string().required(`${t('streetNameRequired')}`).notOneOf(['0'], `${t('streetNameInvalid')}`),
    // propertyType:Yup.string().required(`${t("PropertyTypeInvalid")}`).notOneOf(['0'], `${t("PropertyTypeCannotBeZero")}`),
@@ -253,6 +253,11 @@ let table4Item = [];
     sessionStorage.removeItem("SETPROPERYID");
     navigate("/BBDDraft");
   }
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault(); 
+    }
+  };
   const handleAddressEdit = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -290,7 +295,7 @@ let table4Item = [];
 const CopyBookData = async () => {
   try {
     if(JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) === null){
-      const response4 = await axiosInstance.get(`BBMPCITZAPI/COPY_DATA_FROM_BBDDRAFT_NCLTEMP?LoginId=crc&propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&propertyid=${JSON.parse(sessionStorage.getItem('SETPROPERYID'))}`);
+       await axiosInstance.get(`BBMPCITZAPI/COPY_DATA_FROM_BBDDRAFT_NCLTEMP?LoginId=crc&propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&propertyid=${JSON.parse(sessionStorage.getItem('SETPROPERYID'))}`);
       const response3 = await axiosInstance.get(`BBMPCITZAPI/Get_Ctz_ObjectionModPendingAppl?LoginId=crc&propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&propertyid=${JSON.parse(sessionStorage.getItem('SETPROPERYID'))}`);
       if (response3.data === "There is a issue while copying the data from Book Module.No Data Found") {
        toast.error(`${t("There is a issue while copying the data from Book Module.No Data Found")}`)
@@ -309,8 +314,11 @@ const CopyBookData = async () => {
   
 }
 
-  const handleSubmit = async () => {
-   
+  const handleSubmit = async (e) => {
+    debugger
+    if (e.key === 'Enter') {
+      e.preventDefault();
+    }
     
     let propertyphoto2 = "";
     if (isEditable) {
@@ -757,22 +765,12 @@ const CopyBookData = async () => {
           initialValues={formData}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
-          // onSubmit={(values, { setSubmitting }) => {
-            
-          //   if (fieldvalue === 'save') {
-          //    handleSubmit()
-
-          //   } else if (fieldvalue === 'next') {
-            
-          //     handleNavigation();
-          //   }
-          //   setSubmitting(false);
-          // }}
+       
           validateOnChange={false}
           enableReinitialize
         >
           {({ errors, touched, handleBlur }) => (
-            <Form>
+            <Form onKeyDown={handleKeyDown}>
               <br></br>
               <br></br>
               
@@ -800,7 +798,6 @@ const CopyBookData = async () => {
                         </Tooltip>
                       )
                     }}
-               
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>

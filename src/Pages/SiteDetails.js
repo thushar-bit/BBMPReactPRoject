@@ -175,6 +175,11 @@ if(isInitialEditable){
     }
 
   }
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault(); 
+    }
+  };
   React.useEffect(() => {
 
     fetchData();
@@ -194,7 +199,7 @@ if(isInitialEditable){
           enableReinitialize
         >
           {({ errors, touched, handleBlur }) => (
-            <Form>
+             <Form onKeyDown={handleKeyDown}>
               <Typography
                 variant="h5"
                 align="center"

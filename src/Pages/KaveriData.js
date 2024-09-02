@@ -170,14 +170,18 @@ const KaveriData = () => {
   }
     
   };
-
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault(); 
+    }
+  };
 
 
   return (
     <Container maxWidth="lg">
       <ToastContainer />
       <Box sx={{ backgroundColor: '#f0f0f0', padding: 4, borderRadius: 2, mt: 8 }}>
-            <form>
+            <form onKeyDown={handleKeyDown}>
               <Typography
                 variant="h3"
                 align="center"
