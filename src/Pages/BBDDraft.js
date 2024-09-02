@@ -27,7 +27,7 @@ const BBDDraft = () => {
   const [WardData, setWardData] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const { t } = useTranslation();
+ const { t } = useTranslation();
   const fetchData = async () => {
     var response = await axiosInstance.get("BBMPCITZAPI/GetMasterZone")
     setZoneData(response.data.Table || [])

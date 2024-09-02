@@ -10,6 +10,7 @@ import axiosInstance from '../components/Axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '../components/Shake.css';
+import LabelWithAsterisk   from '../components/LabelWithAsterisk'
 const KaveriData = () => {
   const [formData, setFormData] = useState({
     RegistrationNumber: "",
@@ -146,11 +147,12 @@ const KaveriData = () => {
   };
 
   const handleNavigation = () => {
+    debugger
     sessionStorage.setItem('KaveriVerified', isAllow);
     if(TableKavDocData !== undefined && TableKavDocData !== null){
       if(TableKavDocData.length === 0)
         {
-          if(sessionStorage.getItem('KaveriVerified')){
+          if(sessionStorage.getItem('KaveriVerified') === true){
             navigate("/ClassificationDocumentUploadPage")
           }
           else {
@@ -198,7 +200,8 @@ const KaveriData = () => {
                 <Grid item xs={9}>
                   <TextField
                     fullWidth
-                    label={t("RegistrationNumber")}
+                   
+                    label={< LabelWithAsterisk text={t("RegistrationNumber")} />}
                     placeholder='NMG-X-XXXX-XXXX-XX'
                     name="RegistrationNumber"
                     value={formData.RegistrationNumber}
@@ -350,7 +353,8 @@ const KaveriData = () => {
                 <Grid item xs={9}>
                   <TextField
                     fullWidth
-                    label={t("ECDocumentNumber")}
+                 
+                    label={< LabelWithAsterisk text={t("ECDocumentNumber")} />}
                     name="ECDocumentNumber"
                      placeholder='NMG-EC-A-XXXXXX-XXXX-XX'
                     value={formData.ECDocumentNumber}

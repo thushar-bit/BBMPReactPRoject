@@ -16,6 +16,7 @@ import GoogleMaps from '../components/GoogleMaps';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import '../components/Shake.css';
+import LabelWithAsterisk   from '../components/LabelWithAsterisk'
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
   clipPath: 'inset(50%)',
@@ -59,9 +60,9 @@ const AddressDetails = () => {
   const { t } = useTranslation();
   const validationSchema = Yup.object().shape({
     DoorPlotNo: Yup.string().required(`${t("doorPlotNumber")}`).notOneOf(['0'], `${t('doorName')}`),
-    buildingname: Yup.string().required(`${t('buildingLandName')}`),
-    areaorlocality: Yup.string().required(`${t('areaLocality')}`),
-    NearestLandmark: Yup.string().required(`${t('nearestLandmark')}`),
+  //  buildingname: Yup.string().required(`${t('buildingLandNameRequired')}`),
+    areaorlocality: Yup.string().required(`${t('areaLocalityRequired')}`),
+   // NearestLandmark: Yup.string().required(`${t('nearestLandmarkRequired')}`),
     pincode: Yup.string()
       .required(`${t('pincodeRequired')}`),
       
@@ -73,12 +74,13 @@ const AddressDetails = () => {
   });
 
   const navigate = useNavigate();
+  
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileExtension, setfileExtension] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
   const [handlemapClicks, sethandlemapClicks] = useState(false);
-  const [handleSASClicks, sethandleSASClicks] = useState(true);
+  const [handleSASClicks, sethandleSASClicks] = useState(false);
   const [fieldvalue,setFieldValue] = useState("")
   const [lat2, setlat1] = useState(0);
   const [long2, setlong1] = useState(0);
@@ -115,7 +117,7 @@ let table4Item = [];
      
       const table5Item = Table5.length > 0 ? Table5[0] : [];
       
-
+      debugger
       const filteredData = Table2.filter(item =>
         item.STREETID !== 99999 && item.WARDID === table1Item.WARDID
       );
@@ -126,7 +128,7 @@ let table4Item = [];
         propertyEID: table1Item.PROPERTYID || '',
         address: table1Item.ADDRESS || '',
         district: table1Item.DISTRICTNAME || '',
-        wardNumber: table1Item.WARDNUMBER || '',
+        wardNumber: table1Item.WARDID || '',
         propertyNumber: table1Item.PROPERTYCODE || '',
         ulbname: table1Item.ULBNAME || '',
         ownerName: table5Item.OWNERNAME || '',
@@ -237,7 +239,7 @@ let table4Item = [];
       reader.readAsDataURL(file);
     }
   };
-
+ 
   const handleFileDelete = () => {
     setSelectedFile(null);
     setPreviewUrl(null);
@@ -334,10 +336,7 @@ const CopyBookData = async () => {
         toast.error(`${t("copyFailed")}`)
       }
       
-     if(formData.DoorPlotNo === "" || formData.DoorPlotNo === null || formData.DoorPlotNo === undefined){
-      toast.error(`${t("enterDoorNo")}`)
-      return
-     }
+    
         
       const data = {
         propertyCode: formData.propertyNumber,
@@ -378,8 +377,9 @@ const CopyBookData = async () => {
           toast.error(`${t("saveAddressFirst")}`);
           return;
           }
+          setTimeout(() => {
           navigate('/AreaDimension')
-       
+        }, 1000)
       } catch (error) {
         await toast.error(`${t("errorSavingData")}`, error, {
           position: "top-right",
@@ -395,7 +395,9 @@ const CopyBookData = async () => {
         }, 2000);
       }
     } else {
+      await fetchData();
       setTimeout(() => {
+       
       if(propertyPhoto.length === 0){
         toast.error(`${t("saveAddressFirst")}`);
         return;
@@ -414,7 +416,10 @@ const CopyBookData = async () => {
       sethandlemapClicks(true)
     }
   };
+  
 
+
+ 
   const handleAddressChange = (newAddress) => {
     
    
@@ -459,6 +464,7 @@ const CopyBookData = async () => {
   };
 
   const handleSASClick = async () => {
+    
     if (!formData.verifySASNUM || formData.verifySASNUM.length === 0) {
       toast.error(`${t("provideSasAppNumber")}`);
       return;
@@ -466,7 +472,8 @@ const CopyBookData = async () => {
   
     if (!handleSASClicks) {
       sethandleSASClicks(true);
-  
+   
+
       try {
         const copy = await CopyBookData();
         if (copy) {
@@ -474,6 +481,7 @@ const CopyBookData = async () => {
         } else {
           toast.error(`${t("copyFailed")}`);
           sethandleSASClicks(false);
+          setLoading(false)
           return;
         }
   
@@ -491,14 +499,18 @@ const CopyBookData = async () => {
         const { Table = [] } = response.data;
         if (Table.length === 0) {
           toast.error(`${t("No SAS Applications Found")}`);
+          return
         }
         setSASTableData(Table);
+      toast.success("Details Fetched")
       } catch (error) {
         toast.error(`${t("errorFetchingSasDetails")}`);
       } finally {
         sethandleSASClicks(false);
+      
       }
     } else {
+      setLoading(false)
       sethandleSASClicks(false);
       setSASTableData([]);
     }
@@ -700,8 +712,10 @@ const CopyBookData = async () => {
                   />
                 </Grid>
                 <Grid item xs={12} sm={12}>
-                <FormControl fullWidth >
-            <InputLabel>{t("SelectthePropertyType")}</InputLabel>
+                <FormControl fullWidth  >
+            <InputLabel>
+            <LabelWithAsterisk text={t('SelectthePropertyType')} />
+            </InputLabel>
             <Select
               name="propertyType"
               value={formData.propertyType}
@@ -766,7 +780,7 @@ const CopyBookData = async () => {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label={t("doorPlotNo")}
+                    label={<LabelWithAsterisk text={t('doorPlotNo')} />}
                     name="DoorPlotNo"
                     value={formData.DoorPlotNo}
                     onChange={handleChange}
@@ -786,6 +800,7 @@ const CopyBookData = async () => {
                         </Tooltip>
                       )
                     }}
+               
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -796,10 +811,10 @@ const CopyBookData = async () => {
                     value={formData.buildingname}
                     onChange={handleChange}
                     variant={isEditable ? "outlined" : "filled"}
-                    onBlur={handleBlur}
-                    className={touched.buildingname && !!errors.buildingname ? 'shake' : ''}
-                    error={touched.buildingname && !!errors.buildingname}
-                    helperText={touched.buildingname && errors.buildingname}
+                    // onBlur={handleBlur}
+                    // className={touched.buildingname && !!errors.buildingname ? 'shake' : ''}
+                    // error={touched.buildingname && !!errors.buildingname}
+                    // helperText={touched.buildingname && errors.buildingname}
                     InputProps={{
                       readOnly: !isEditable,
                       style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
@@ -822,9 +837,9 @@ const CopyBookData = async () => {
                     value={formData.NearestLandmark}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className={touched.NearestLandmark && !!errors.NearestLandmark ? 'shake' : ''}
-                    error={touched.NearestLandmark && !!errors.NearestLandmark}
-                    helperText={touched.NearestLandmark && errors.NearestLandmark}
+                    // className={touched.NearestLandmark && !!errors.NearestLandmark ? 'shake' : ''}
+                    // error={touched.NearestLandmark && !!errors.NearestLandmark}
+                    // helperText={touched.NearestLandmark && errors.NearestLandmark}
                     variant={isEditable ? "outlined" : "filled"}
                     InputProps={{
                       readOnly: !isEditable,
@@ -842,7 +857,8 @@ const CopyBookData = async () => {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label={t("pincode")}
+                    label={<LabelWithAsterisk text={t('pincode')} />}
+          
                     name="pincode"
                     type="number"
                     value={formData.pincode}
@@ -868,7 +884,7 @@ const CopyBookData = async () => {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label={t("areaLocality")}
+                    label={<LabelWithAsterisk text={t('areaLocality')} />}
                     name="areaorlocality"
                     value={formData.areaorlocality}
                     onChange={handleChange}
@@ -894,11 +910,13 @@ const CopyBookData = async () => {
 
                   <FormControl
                     fullWidth
+                   
                     error={touched.streetid && !!errors.streetid}
                     sx={{ marginBottom: 3 }}
                     className={touched.streetid && !!errors.streetid ? 'shake' : ''}
                   >
-                    <InputLabel >{t("streetName")}</InputLabel>
+                    <InputLabel > {t("streetName")} <span style={{ color: 'red' }}> *</span>
+                  </InputLabel>
                     <Select
                       name="streetid"
                       value={formData.streetid}
@@ -922,7 +940,8 @@ const CopyBookData = async () => {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label={t("lattitude")}
+                    label={<LabelWithAsterisk text={t('lattitude')} />}
+                 
                     name="lat1"
                     value={formData.lat1}
                     onChange={handleChange}
@@ -945,7 +964,8 @@ const CopyBookData = async () => {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label={t("Longitude")}
+                    label={<LabelWithAsterisk text={t('Longitude')} />}
+                
                     name="long1"
                     value={formData.long1}
                     onChange={handleChange}
@@ -1046,6 +1066,7 @@ const CopyBookData = async () => {
                 
               
               </Grid>
+              
               <TableContainer component={Paper} sx={{ mt: 4 }}>
                 <Table>
                   <TableHead>
@@ -1084,6 +1105,7 @@ const CopyBookData = async () => {
                   </TableBody>
                 </Table>
               </TableContainer>
+
               <br></br>
               <br></br>
               <Grid item xs={12}>

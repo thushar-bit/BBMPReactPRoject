@@ -11,6 +11,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import '../components/Shake.css';
+import LabelWithAsterisk   from '../components/LabelWithAsterisk'
 const SiteDetails = () => {
   const [formData, setFormData] = useState({
     features: "",
@@ -220,7 +221,9 @@ if(isInitialEditable){
                 sx={{ marginBottom: 3 }}
                 className={touched.features && !!errors.features ? 'shake' : ''}
               >
-                <InputLabel>{t("UsageCategory")}</InputLabel>
+                <InputLabel>
+                <LabelWithAsterisk text={t('UsageCategory')} />
+                </InputLabel>
                 <Select
                   name="features"
                   value={formData.features}
@@ -246,7 +249,8 @@ if(isInitialEditable){
                 sx={{ marginBottom: 3 }}
                 className={touched.Typeofuse && !!errors.Typeofuse ? 'shake' : ''}
               >
-                <InputLabel>{t("Typeofuse")}</InputLabel>
+                <InputLabel>
+                    <LabelWithAsterisk text={t('Typeofuse')} /></InputLabel>
                 <Select
                   name="Typeofuse"
                   value={formData.Typeofuse}
@@ -270,8 +274,8 @@ if(isInitialEditable){
               <FormControl  sx={{ marginBottom: 3 }}>
                 <InputLabel></InputLabel>
                 <TextField
-                
-                  label={t("YearUsage")}
+                label={<LabelWithAsterisk text={t('YearUsage')} />}
+                  
                   name="yearOfConstruction"
                   value={formData.yearOfConstruction}
                   onChange={handleChange}

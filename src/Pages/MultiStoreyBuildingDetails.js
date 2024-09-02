@@ -13,6 +13,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import '../components/Shake.css';
+import LabelWithAsterisk   from '../components/LabelWithAsterisk'
 const MultiStoreyBuildingDetails = () => {
   const [ownersharetype, setOwnerSharetype] = useState("")
   const [formData, setFormData] = useState({
@@ -330,7 +331,8 @@ if(isEditable || isInitialEditable){
                 <Grid item xs={12} sm={4}>
                   <TextField
                     fullWidth
-                    label={t("BlockName")}
+                    
+                    label={<LabelWithAsterisk text={t('BlockName')} />}
                     name="BlockName"
                     value={formData.BlockName}
                     onChange={handleChange}
@@ -359,7 +361,7 @@ if(isEditable || isInitialEditable){
                     sx={{ marginBottom: 3 }}
                     className={touched.floornumber && !!errors.floornumber ? 'shake' : ''}
                   >
-                    <InputLabel>{t("floornumber")}</InputLabel>
+                    <InputLabel><LabelWithAsterisk text={t('floornumber')} /></InputLabel>
                     <Select
                       name="floornumber"
                       value={formData.floornumber}
@@ -383,7 +385,8 @@ if(isEditable || isInitialEditable){
                 <Grid item xs={12} sm={4}>
                   <TextField
                     fullWidth
-                    label={t("FlatNo")}
+                  
+                    label={<LabelWithAsterisk text={t('FlatNo')} />}
                     name="FlatNos"
                     value={formData.FlatNos}
                     onChange={handleChange}
@@ -412,7 +415,7 @@ if(isEditable || isInitialEditable){
                     sx={{ marginBottom: 3 }}
                     className={touched.features && !!errors.features ? 'shake' : ''}
                   >
-                    <InputLabel>{t("UsageCategory")}</InputLabel>
+                    <InputLabel><LabelWithAsterisk text={t('UsageCategory')} /></InputLabel>
                     <Select
                       name="features"
                       value={formData.features}
@@ -440,7 +443,7 @@ if(isEditable || isInitialEditable){
                     sx={{ marginBottom: 3 }}
                     className={touched.Typeofuse && !!errors.Typeofuse ? 'shake' : ''}
                   >
-                    <InputLabel>{t("Typeofuse")}</InputLabel>
+                    <InputLabel> <LabelWithAsterisk text={t('Typeofuse')} /></InputLabel>
                     <Select
                       name="Typeofuse"
                       value={formData.Typeofuse}
@@ -465,7 +468,8 @@ if(isEditable || isInitialEditable){
                   <TextField
                     fullWidth
                     type="number"
-                    label={t("YearUsage")}
+                   
+                    label={<LabelWithAsterisk text={t('YearUsage')} />}
                     name="yearOfConstruction"
                     value={formData.yearOfConstruction}
                     onChange={handleChange}
@@ -506,6 +510,7 @@ if(isEditable || isInitialEditable){
                     variant={isEditable ? "outlined" : "filled"}
                     label={t("Totalnumberofparkingunits")}
                     name="Totalnumberofparkingunits"
+                  
                     type='number'
                     value={formData.Totalnumberofparkingunits}
                     onChange={handleChange}
@@ -527,6 +532,7 @@ if(isEditable || isInitialEditable){
                     fullWidth
                     variant={isEditable ? "outlined" : "filled"}
                     label={t("TotalParkingArea")}
+                    
                     name="TotalParkingArea"
                     type='number'
                     value={formData.TotalParkingArea}
@@ -551,7 +557,7 @@ if(isEditable || isInitialEditable){
                     sx={{ marginBottom: 3 }}
                     className={touched.Occupancy && !!errors.Occupancy ? 'shake' : ''}
                   >
-                    <InputLabel>{t("Occupancy")}</InputLabel>
+                    <InputLabel><LabelWithAsterisk text={t('Occupancy')} /></InputLabel>
                     <Select
                       name="Occupancy"
                       value={formData.Occupancy}
@@ -604,7 +610,7 @@ if(isEditable || isInitialEditable){
                     sx={{ marginBottom: 3 }}
                     className={touched.SelectOwnerShareType && !!errors.SelectOwnerShareType ? 'shake' : ''}
                   >
-                    <InputLabel>{t("SelectOwnerShareType")}</InputLabel>
+                    <InputLabel><LabelWithAsterisk text={t('SelectOwnerShareType')} /></InputLabel>
                     <Select
                       name="SelectOwnerShareType"
                       value={formData.SelectOwnerShareType}
@@ -626,7 +632,8 @@ if(isEditable || isInitialEditable){
                 <Grid item xs={12} sm={4}>
                   <TextField
                     fullWidth
-                    label={ownersharetype}
+                  
+                    label={<LabelWithAsterisk text={ownersharetype} />}
                     name="OwnersShareAreaSqmts"
                     value={formData.OwnersShareAreaSqmts}
                     onChange={handleChange}

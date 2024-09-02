@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axiosInstance from '../components/Axios';
 import { toast, ToastContainer } from 'react-toastify';
+import LabelWithAsterisk   from '../components/LabelWithAsterisk'
 const OwnerDetails = () => {
   const [formData, setFormData] = useState({
     relato: "0"
@@ -581,7 +582,7 @@ const OwnerDetails = () => {
                     <Grid item xs={12} sm={6}>
                       {editableIndex === index ? (
                         <FormControl fullWidth sx={{ marginBottom: 3 }}>
-                          <InputLabel>{t("RelationshipType")}</InputLabel>
+                          <InputLabel>< LabelWithAsterisk text={t("RelationshipType")} /></InputLabel>
                           <Select
                             name="IDENTIFIERTYPEID"
                             value={formData.IDENTIFIERTYPEID}
@@ -597,7 +598,7 @@ const OwnerDetails = () => {
                         </FormControl>
                       ) : (
                         <FormControl fullWidth sx={{ marginBottom: 3 }}>
-                          <InputLabel>{t("RelationshipType")}</InputLabel>
+                          <InputLabel>< LabelWithAsterisk text={t("RelationshipType")} /></InputLabel>
                           <Select
                             name="RelationShiptype"
                             value={owner.IDENTIFIERTYPEID}
@@ -619,7 +620,8 @@ const OwnerDetails = () => {
                       {editableIndex === index ? (
                         <TextField
                           fullWidth
-                          label={t('RelationName')}
+                          label={< LabelWithAsterisk text={t("RelationName")} />}
+                      
                           name="IDENTIFIERNAME"
                           value={formData.IDENTIFIERNAME}
                           onChange={handleChange}
@@ -628,7 +630,7 @@ const OwnerDetails = () => {
                       ) : (
                         <TextField
                           fullWidth
-                          label={t('RelationName')}
+                          label={< LabelWithAsterisk text={t("RelationName")} />}
                           name="RelationName"
                           value={owner.IDENTIFIERNAME}
                           InputProps={{
@@ -694,7 +696,8 @@ const OwnerDetails = () => {
                         <>
                           <TextField
                             fullWidth
-                            label={t('MobileNumber')}
+                            label={< LabelWithAsterisk text={t("MobileNumber")} />}
+                           
                             name="MOBILENUMBER"
                             value={formData.MOBILENUMBER}
                             onChange={handleChange}
@@ -736,7 +739,7 @@ const OwnerDetails = () => {
                       ) : (
                         <TextField
                           fullWidth
-                          label={t('MobileNumber')}
+                          label={< LabelWithAsterisk text={t("MobileNumber")} />}
                           name="MobileNumber"
                           value={owner.MOBILENUMBER}
                           InputProps={{

@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axiosInstance from '../components/Axios';
+import LabelWithAsterisk   from '../components/LabelWithAsterisk'
 const AreaDimension = () => {
   const [formData, setFormData] = useState({
     east: '',
@@ -349,6 +350,13 @@ const updatedFormData = {
    
     if ((formData.propertyType === 1 || formData.propertyType === 2)  && (isEditable))
      {
+      debugger
+      if(formData.oddSite === "Y"){
+        if(formData.noofSides === "0" || formData.noofSides === ""){
+          toast.error("Please Select the no of Sides")
+          return
+        }
+      }
       const data = {
         propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
         evenoroddsite: formData.oddSite === "Y" ? "ODD" : "EVEN",
@@ -540,8 +548,8 @@ const updatedFormData = {
               <Grid item xs={6} sm={3}>
                 <TextField
                   fullWidth
-                  label={t("CarpetArea")}
-                        
+                
+                  label={<LabelWithAsterisk text={t('CarpetArea')} />}    
                   name="ApartCarpetArea"
                   value={formData.ApartCarpetArea}
                   onChange={handleChange}
@@ -563,8 +571,8 @@ const updatedFormData = {
               <Grid item xs={6} sm={3}>
                 <TextField
                   fullWidth
-                  label={t("AdditionalArea")}
-                  
+              
+                  label={<LabelWithAsterisk text={t('AdditionalArea')} />}
                   name="ApartAddtionalArea"
                   value={formData.ApartAddtionalArea}
                   onChange={handleChange}
@@ -586,8 +594,8 @@ const updatedFormData = {
               <Grid item xs={6} sm={3}>
                 <TextField
                   fullWidth
-                  label={t("SuperBuiltArea")}
-                    
+                 
+                  label={<LabelWithAsterisk text={t('SuperBuiltArea')} />}
                   name="ApartSuperBuiltArea"
                   value={formData.ApartSuperBuiltArea}
                   onChange={handleChange}
@@ -710,7 +718,8 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label={t("East")}
+                 
+                    label={<LabelWithAsterisk text={t('East')} />}
                     name="east"
                     value={formData.east}
                     onChange={handleChange}
@@ -731,9 +740,9 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label={t("West")}
-                    name="west"
                   
+                    name="west"
+                    label={<LabelWithAsterisk text={t('West')} />}
                     value={formData.west}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "outlined" : "filled"}
@@ -753,9 +762,9 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label={t("North")}
+                  
                     name="north"
-              
+                    label={<LabelWithAsterisk text={t('North')} />}
                     value={formData.north}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "outlined" : "filled"}
@@ -775,7 +784,8 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label={t("South")}
+                   
+                    label={<LabelWithAsterisk text={t('South')} />}
                     name="south"
                     value={formData.south}
                     onChange={handleChange}
@@ -907,7 +917,8 @@ const updatedFormData = {
                   <Grid item xs={6} sm={3}>
                     <TextField
                       fullWidth
-                      label="N-S (ft)"
+                   
+                      label={<LabelWithAsterisk text={t('N-S (ft)')} />}
                       name="ns"
                       value={formData.ns}
                       onChange={handleChange}
@@ -929,7 +940,8 @@ const updatedFormData = {
                   <Grid item xs={6} sm={3}>
                     <TextField
                       fullWidth
-                      label="E-W (ft)"
+                   
+                      label={<LabelWithAsterisk text={"E-W (ft)"} />}
                       name="ew"
                       value={formData.ew}
                       onChange={handleChange}
@@ -1101,7 +1113,8 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label={t("East")}
+                   
+                    label={<LabelWithAsterisk text={t('East')} />}
                     name="east"
                     value={formData.east}
                     onChange={handleChange}
@@ -1122,7 +1135,8 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label={t("West")}
+                  
+                    label={<LabelWithAsterisk text={t('West')} />}
                     name="west"
                   
                     value={formData.west}
@@ -1144,7 +1158,8 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label={t("North")}
+                  
+                    label={<LabelWithAsterisk text={t('North')} />}
                     name="north"
                   
                     value={formData.north}
@@ -1166,7 +1181,8 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                    label={t("South")}
+                   
+                    label={<LabelWithAsterisk text={t('South')} />}
                     name="south"
                    
                     value={formData.south}
@@ -1298,7 +1314,8 @@ const updatedFormData = {
                   <Grid item xs={6} sm={3}>
                     <TextField
                       fullWidth
-                      label="N-S (ft)"
+                    
+                      label={<LabelWithAsterisk text={"N-S (ft)"} />}
                       name="ns"
                       value={formData.ns}
                       onChange={handleChange}
@@ -1320,7 +1337,8 @@ const updatedFormData = {
                   <Grid item xs={6} sm={3}>
                     <TextField
                       fullWidth
-                      label="E-W (ft)"
+                    
+                      label={<LabelWithAsterisk text={"E-W (ft)"} />}
                       name="ew"
                       value={formData.ew}
                       onChange={handleChange}
@@ -1432,7 +1450,9 @@ const updatedFormData = {
           <FormControl
                     fullWidth
                   >
-                    <InputLabel>{t("NoofSides")}</InputLabel>
+                    <InputLabel>
+                    <LabelWithAsterisk text={t('NoofSides')} />
+                   </InputLabel>
                     <Select
                       name="noofSides"
                       value={formData.noofSides}
@@ -1477,7 +1497,7 @@ const updatedFormData = {
                   </Grid>
                 </Grid>
               </Grid>
-{formData.noofSides && (
+{formData.noofSides  && (
               <Grid item>
                 <Grid container spacing={1} alignItems="center">
                   <Grid item>

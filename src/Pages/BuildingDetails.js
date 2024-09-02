@@ -15,6 +15,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import '../components/Shake.css';
+import LabelWithAsterisk   from '../components/LabelWithAsterisk'
 const BuildingDetails = () => {
   const [formData, setFormData] = useState({
     BuildingNumber: "",
@@ -336,7 +337,8 @@ const BuildingDetails = () => {
                   <TextField
                     fullWidth
                     type='number'
-                    label={t("BuildingNumber")}
+                    label={<LabelWithAsterisk text={t('BuildingNumber')} />}
+                   
                     name="BuildingNumber"
                     value={formData.BuildingNumber}
                     onChange={handleChange}
@@ -370,7 +372,8 @@ const BuildingDetails = () => {
                         </Tooltip>
                       )
                     }}
-                    label={t("BuildingName")}
+                    label={<LabelWithAsterisk text={t('BuildingName')} />}
+                    
                     name="BuildingName"
                     value={formData.BuildingName}
                     onChange={handleChange}
@@ -387,7 +390,7 @@ const BuildingDetails = () => {
                     sx={{ marginBottom: 3 }}
                     className={touched.floornumber && !!errors.floornumber ? 'shake' : ''}
                   >
-                    <InputLabel>{t("floornumber")}</InputLabel>
+                    <InputLabel>     < LabelWithAsterisk text={t('floornumber')} /></InputLabel>
                     <Select
                       name="floornumber"
                       value={formData.floornumber}
@@ -414,7 +417,7 @@ const BuildingDetails = () => {
                     sx={{ marginBottom: 3 }}
                     className={touched.features && !!errors.features ? 'shake' : ''}
                   >
-                    <InputLabel>{t("UsageCategory")}</InputLabel>
+                    <InputLabel>  <LabelWithAsterisk text={t('UsageCategory')} /></InputLabel>
                     <Select
                       name="features"
                       value={formData.features}
@@ -441,7 +444,7 @@ const BuildingDetails = () => {
                     sx={{ marginBottom: 3 }}
                     className={touched.Typeofuse && !!errors.Typeofuse ? 'shake' : ''}
                   >
-                    <InputLabel>{t("Typeofuse")}</InputLabel>
+                    <InputLabel>      <LabelWithAsterisk text={t('Typeofuse')} /></InputLabel>
                     <Select
                       name="Typeofuse"
                       value={formData.Typeofuse}
@@ -465,7 +468,8 @@ const BuildingDetails = () => {
                   <TextField
                     fullWidth
                     type="number"
-                    label={t("YearUsage")}
+                    label={<LabelWithAsterisk text={t('YearUsage')} />}
+                   
                     placeholder='yyyy'
 
                     name="yearOfConstruction"
@@ -496,7 +500,8 @@ const BuildingDetails = () => {
                 <Grid item xs={12} sm={4}>
                   <TextField
                     fullWidth
-                    label={t("SelfUseAreafts")}
+                    label={<LabelWithAsterisk text={t('SelfUseAreafts')} />}
+                   
                     name="SelfuseArea"
                     type="number"
                     value={formData.SelfuseArea}
@@ -520,7 +525,8 @@ const BuildingDetails = () => {
                 <Grid item xs={12} sm={4}>
                   <TextField
                     fullWidth
-                    label={t("RentedAreafts")}
+                    label={<LabelWithAsterisk text={t('RentedAreafts')} />}
+                   
                     name="RentedArea"
                     type="number"
                     value={formData.RentedArea}

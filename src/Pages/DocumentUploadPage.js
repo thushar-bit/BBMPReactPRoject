@@ -21,6 +21,7 @@ import 'dayjs/locale/en-gb';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import '../components/Shake.css';
+import LabelWithAsterisk   from '../components/LabelWithAsterisk'
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
   clipPath: 'inset(50%)',
@@ -150,7 +151,12 @@ const DocumentUploadPage = () => {
   const handleSubmit = async (e) => {
 
     var propertyphoto2 = "";
-
+    if(isEditable){
+      if(formData.DocumentDetails.length ===0){
+        toast.error("Please Provide Document Details")
+        return
+      }
+    }
     if (selectedFile) {
       propertyphoto2 = await getPropertyphoto(selectedFile);
     }
@@ -360,7 +366,7 @@ const DocumentUploadPage = () => {
                     sx={{ marginBottom: 3 }}
                     className={touched.DocumentType && !!errors.DocumentType ? 'shake' : ''}
                   >
-                    <InputLabel>{t("DocumentType")}</InputLabel>
+                    <InputLabel>  <LabelWithAsterisk text={t("DocumentType")} /></InputLabel>
                     <Select
                       name="DocumentType"
                       value={formData.DocumentType}
@@ -384,7 +390,8 @@ const DocumentUploadPage = () => {
                   <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
                     <DatePicker
 
-                      label={t("DocumentRegisteredDate")}
+                     // label={t("DocumentRegisteredDate")}
+                      label={<LabelWithAsterisk text={t("DocumentRegisteredDate")} />}
                       name='documentregistereddate'
                       placeholder='dd-mm-yyyy'
                       value={selectedDate}
@@ -399,7 +406,8 @@ const DocumentUploadPage = () => {
                   <TextField
                     fullWidth
                     variant={isEditable ? "outlined" : "filled"}
-                    label={t("DocumentDetails")}
+                   // label={t("DocumentDetails")}
+                    label={isEditable ? <LabelWithAsterisk text={t("DocumentDetails")} />: t("DocumentDetails")}
                     placeholder={t("DocumentDetails")}
                     name="DocumentDetails"
                     value={formData.DocumentDetails}
@@ -428,7 +436,8 @@ const DocumentUploadPage = () => {
                   <TextField
                     fullWidth
 
-                    label={t("DocumentNumber :")}
+                   // label={t("DocumentNumber :")}
+                    label={<LabelWithAsterisk text={t("DocumentNumber")} />}
                     name="DocumentNumber"
                     value={formData.DocumentNumber}
                     onChange={handleChange}
@@ -452,7 +461,7 @@ const DocumentUploadPage = () => {
                 <Grid item xs={12} sm={4}>
                   <Box display="flex" alignItems="center">
                     <Typography variant="body1" sx={{ ml: 1 }}>
-                      {t("uploadPropertyPhoto")}
+                      {t("EligibilityDocuments")}
                     </Typography>
                     <Button
                       component="label"
