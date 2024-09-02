@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Container,  Paper, Button } from '@mui/material';
+import { Typography, Container, Paper, Button } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { styled } from '@mui/system';
 import Warning from '../assets/warning.png';
@@ -47,10 +47,10 @@ const ErrorPage = () => {
           Oops! Something went wrong.
         </Typography>
         <Typography variant="h3" gutterBottom>
-         The Error is : {errorMessage}
+          The Error is : {errorMessage}
         </Typography>
         <Typography variant="h3" gutterBottom>
-         The Error Location is : {errorLocation}
+          The Error Location is : {errorLocation}
         </Typography>
         <Button variant="text" color="primary" onClick={handleSupport} style={{ marginRight: '10px' }}>
           Contact Support
