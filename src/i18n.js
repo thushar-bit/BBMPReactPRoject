@@ -121,7 +121,7 @@ const resources = {
        //Multistorey
        "DetailsOfUsageOfFlat":"Details Of Usage Of Multi-Storey Flat",
        "BlockName":"Block Name",
-       "floornumber":"Floor Number :",
+    
        "FlatNo":"Flat No",
         "ParkingFacility":"Parking Facility",
        "Totalnumberofparkingunits":"Total number of parking units :",
