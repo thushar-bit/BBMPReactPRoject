@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { GoogleMap, useJsApiLoader, MarkerF  } from '@react-google-maps/api';
 
 const containerStyle = {
   width: '100%',
@@ -11,10 +11,10 @@ const libraries = ['places'];
 const GoogleMaps = ({ lat,long,onLocationChange }) => {
   
   
-  const center = {
+  const [center, setCenter] = useState({
     lat: parseFloat(lat),
     lng: parseFloat(long)
-  };
+  });
   
 
   const { isLoaded } = useJsApiLoader({
@@ -26,15 +26,17 @@ const GoogleMaps = ({ lat,long,onLocationChange }) => {
  
   const [markerPosition, setMarkerPosition] = useState(center);
   const [address, setAddress] = useState('');
+  const inputRef = useRef(null);
+  const mapRef = useRef(null);
 
   const onLoad = useCallback(function callback(map) {
+    mapRef.current = map;
     const bounds = new window.google.maps.LatLngBounds(center);
     map.fitBounds(bounds);
-   
-  }, []);
+  }, [center]);
 
   const onUnmount = useCallback(function callback(map) {
-   
+    // Clean up function when map unmounts
   }, []);
 
   const handleMapClick = async (event) => {
@@ -42,31 +44,25 @@ const GoogleMaps = ({ lat,long,onLocationChange }) => {
     const lat = clickedLocation.lat();
     const lng = clickedLocation.lng();
     setMarkerPosition({ lat, lng });
-  
-    alert(`GPS Coordinates: ${lat}, ${lng}`);
-   
-  
+    setCenter({ lat, lng });
+    alert(`Lattitude:${lat},Longitude: ${lng}`);
     try {
       const address = await getPlaceDetails(lat, lng);
       setAddress(address);
-      alert(`Address: ${address}`);
-      
-      // Call the onLocationChange callback with all values
+      alert(`Address ${address}`);
       if (onLocationChange) onLocationChange({ lat, lng, address });
     } catch (error) {
       alert('Failed to fetch place details');
     }
   };
-  
-  
 
   const getPlaceDetails = (lat, lng) => {
     return new Promise((resolve, reject) => {
       const request = {
         location: { lat, lng },
-        radius: '50'
+        radius: '50',
       };
-  
+
       const service = new window.google.maps.places.PlacesService(document.createElement('div'));
       service.nearbySearch(request, (results, status) => {
         if (status === window.google.maps.places.PlacesServiceStatus.OK && results[0]) {
@@ -78,14 +74,13 @@ const GoogleMaps = ({ lat,long,onLocationChange }) => {
       });
     });
   };
-  
 
   const getPlaceAddress = (placeId, resolve, reject) => {
     const request = {
       placeId,
-      fields: ['formatted_address']
+      fields: ['formatted_address'],
     };
-  
+
     const service = new window.google.maps.places.PlacesService(document.createElement('div'));
     service.getDetails(request, (place, status) => {
       if (status === window.google.maps.places.PlacesServiceStatus.OK) {
@@ -95,10 +90,38 @@ const GoogleMaps = ({ lat,long,onLocationChange }) => {
       }
     });
   };
-  
+
+  useEffect(() => {
+    if (isLoaded && inputRef.current) {
+      const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current);
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        if (!place.geometry) {
+          alert("Cannot locate the place on the map.");
+          return;
+        }
+
+        const lat = place.geometry.location.lat();
+        const lng = place.geometry.location.lng();
+        setMarkerPosition({ lat, lng });
+        setAddress(place.formatted_address);
+        setCenter({ lat, lng });
+        alert(`Lattitude:${lat},Longitude:${lng}`);
+        alert(`Address ${place.formatted_address}`);
+        if (onLocationChange) onLocationChange({ lat, lng, address: place.formatted_address });
+      });
+    }
+  }, [isLoaded]);
 
   return isLoaded ? (
     <div>
+      <input
+        id="pac-input"
+        type="text"
+        placeholder="Enter a location"
+        ref={inputRef}
+        style={{ width: "90%", margin: "15px", height: "30px" }}
+      />
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={center}
@@ -108,11 +131,11 @@ const GoogleMaps = ({ lat,long,onLocationChange }) => {
         onClick={handleMapClick}
         mapTypeId='hybrid'
       >
-        <Marker position={markerPosition} />
+        <MarkerF position={markerPosition} />
       </GoogleMap>
       <div id="place-address">{address}</div>
     </div>
-  ) : <></>
+  ) : <></>;
 };
 
 export default GoogleMaps;

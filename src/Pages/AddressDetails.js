@@ -79,13 +79,13 @@ const AddressDetails = () => {
   const [fileExtension, setfileExtension] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
-  const [handlemapClicks, sethandlemapClicks] = useState(false);
   const [handleSASClicks, sethandleSASClicks] = useState(false);
   const [fieldvalue,setFieldValue] = useState("")
   const [lat2, setlat1] = useState(0);
   const [long2, setlong1] = useState(0);
-  const [wardlat,setWardLat] = useState(12.9141);
-  const [wardLong,setWardLong] = useState(74.8560)
+  const [GoogleMapLoad,setGoogleMapLoad] = useState(false);
+  const [wardlat,setWardLat] = useState(13.0074);
+  const [wardLong,setWardLong] = useState(77.5688)
   
   const [tableData, setTableData] = useState([
   ]);
@@ -151,17 +151,20 @@ let table4Item = [];
         toast.error(`${t("No SAS Applications Found")}`);
       }
       setSASTableData(Table);
-      const GetWardCordinates = await axiosInstance.get("BBMPCITZAPI/GetWardCordinates?wardNumber="+table1Item.WARDNUMBER)
+      setGoogleMapLoad(false)
+      const GetWardCordinates = await axiosInstance.get("BBMPCITZAPI/GetWardCordinates?wardNumber="+table1Item.WARDID)
       const { Table:ward = [] } = GetWardCordinates.data;
-      
+     
       if(table4Item.length > 0){
         setWardLat(table4Item.LATITUDE);
         setWardLong(table4Item.LONGITUDE);
+        setGoogleMapLoad(true)
       }
       else 
       {
         setWardLat(ward[0].WARDLATITUDE);
         setWardLong(ward[0].WARDLONGITUDE);
+        setGoogleMapLoad(true)
       }
     
       setLoading(false);
@@ -416,14 +419,7 @@ const CopyBookData = async () => {
     setLoading(false);
   }
 
-  const handleMapClick = () => {
-    if (handleMapClick === true) {
-      sethandlemapClicks(false)
-    }
-    else {
-      sethandlemapClicks(true)
-    }
-  };
+
   
 
 
@@ -760,7 +756,9 @@ const CopyBookData = async () => {
               >
                 {t("PostalAddressofProperty")}
               </Typography>
-              <GoogleMaps lat={13.0074} long={77.5688} onLocationChange={handleAddressChange} />
+              {GoogleMapLoad &&
+              <GoogleMaps lat={wardlat} long={wardLong} onLocationChange={handleAddressChange} />
+}
               <Formik
           initialValues={formData}
           validationSchema={validationSchema}
