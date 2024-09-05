@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Button, Box, Container, Typography, Tooltip, IconButton, Grid, TextField,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
@@ -17,12 +17,50 @@ const KaveriData = () => {
     OldRegistrationNumber: "",
     ECDocumentNumber: ""
   });
-  const [TableKavDocData, setTableKavDocData] = useState([]);
-  const [EcDocumentData, setEcDocumentData] = useState([]);
+  
+  const [KAVERI_DOC_DETAILS, setKAVERI_DOC_DETAILS] = useState([]);
+  const [KAVERI_PROP_DETAILS, setKAVERI_PROP_DETAILS] = useState([]);
+  const [KAVERI_PARTIES_DETAILS, setKAVERI_PARTIES_DETAILS] = useState([]);
+  const [KAVERIEC_PROP_DETAILS, setKAVERIEC_PROP_DETAILS] = useState([]);
+  const [KAVERIEC_PARTIES_DETAILS, setKAVERIEC_PARTIES_DETAILS] = useState([]);
   const [isAllow, setIsAllow] = useState(false);
   const [isShowKaveriDocumentDetais, setisShowKaveriDocumentDetais] = useState(false)
   const navigate = useNavigate();
   const { t } = useTranslation();
+const fetchData = async (TypeOfLoad) => {
+
+  const response = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
+  const {Table14=[],Table15=[],Table16=[],Table17=[],Table18=[]} = response.data;
+  debugger
+  if(TypeOfLoad === "KAVERI_DOC_DATA"){
+    setKAVERI_DOC_DETAILS(Table14.length > 0 ? Table14 : []);
+    setKAVERI_PROP_DETAILS(Table15.length > 0 ? Table15 : []);
+    setKAVERI_PARTIES_DETAILS(Table16.length > 0? Table16 : []);
+  }
+  else if(TypeOfLoad === "KAVERI_EC_DATA"){
+    setKAVERIEC_PROP_DETAILS(Table17.length > 0? Table17 : []);
+    setKAVERIEC_PARTIES_DETAILS(Table18.length > 0 ? Table18 : []);
+  }
+  else {
+    setKAVERI_DOC_DETAILS(Table14.length > 0 ? Table14 : []);
+    setKAVERI_PROP_DETAILS(Table15.length > 0 ? Table15 : []);
+    setKAVERI_PARTIES_DETAILS(Table16.length > 0? Table16 : []);
+    setKAVERIEC_PROP_DETAILS(Table17.length > 0? Table17 : []);
+    setKAVERIEC_PARTIES_DETAILS(Table18.length > 0 ? Table18 : []);
+  }
+  
+  
+
+}
+
+useEffect(()=> {
+  let k = sessionStorage.getItem('KaveriVerified')
+  if(k === "true"){
+    setisShowKaveriDocumentDetais(true);
+fetchData("Initial")
+  }
+},[])
+
   const handleKaveriDocumentData = async () => {
     if (formData.RegistrationNumber.length === 0) {
       if (formData.OldRegistrationNumber.length === 0) {
@@ -53,7 +91,7 @@ const KaveriData = () => {
 
       if (result.success) {
         setisShowKaveriDocumentDetais(true);
-        setTableKavDocData(result.data);
+        fetchData("KAVERI_DOC_DATA")
       }
       else {
         toast.error(result.message)
@@ -137,7 +175,7 @@ const KaveriData = () => {
 
       if (result.success) {
         if (result.ecDataExists) {
-          setEcDocumentData(result.data);
+          fetchData("KAVERI_EC_DATA")
           setIsAllow(true);
           toast.success(`${t("detailsFetchedSuccess")}`, {
             position: "top-right",
@@ -182,11 +220,15 @@ const KaveriData = () => {
     navigate('/OwnerDetails');
   };
   const handleReset = () => {
-
+    sessionStorage.setItem('KaveriVerified', false);
     setIsAllow(false);
     setisShowKaveriDocumentDetais(false);
-    setEcDocumentData([]);
-    setTableKavDocData([]);
+    setKAVERI_DOC_DETAILS([]);
+    setKAVERI_PROP_DETAILS([]);
+    setKAVERI_PARTIES_DETAILS([]);
+    setKAVERIEC_PROP_DETAILS([]);
+    setKAVERIEC_PARTIES_DETAILS([]);
+   
     setFormData({
       ...formData,
       RegistrationNumber: "",
@@ -196,26 +238,25 @@ const KaveriData = () => {
   }
   const handleNavigation = () => {
     debugger
-    sessionStorage.setItem('KaveriVerified', isAllow);
+   // sessionStorage.setItem('KaveriVerified', isAllow);
     let k = sessionStorage.getItem('KaveriVerified')
-    if (TableKavDocData !== undefined && TableKavDocData !== null) {
-      if (TableKavDocData.length === 0) {
+    
         if (k === "true") {
           navigate("/ClassificationDocumentUploadPage")
         }
         else {
           navigate('/DocumentUploadPage');
         }
-      }
-      else if (isAllow) {
+  
+       if (isAllow) {
         sessionStorage.setItem('KaveriVerified', isAllow);
         navigate("/ClassificationDocumentUploadPage")
       }
       else {
         toast.error(`${t("ECError")}`);
       }
-    }
-
+    
+  
   };
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
@@ -342,24 +383,24 @@ const KaveriData = () => {
                   <TableRow>
                     <TableCell><strong>{t("ApplicationNumber")}</strong></TableCell>
                     <TableCell><strong>{t("ExecutionDate")}</strong></TableCell>
-                    <TableCell><strong>{t("PendingDocumentNumber")}</strong></TableCell>
+                    {/* <TableCell><strong>{t("PendingDocumentNumber")}</strong></TableCell> */}
                     <TableCell><strong>{t("FinalRegistrationNumber")}</strong></TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {TableKavDocData.length === 0 ? (
+                  {KAVERI_DOC_DETAILS.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={4} align="center">
                         {t("")}  No data available
                       </TableCell>
                     </TableRow>
                   ) : (
-                    TableKavDocData.map((row, index) => (
+                    KAVERI_DOC_DETAILS.map((row, index) => (
                       <TableRow key={index}>
-                        <TableCell>{row.applicationnumber || 'N/A'}</TableCell>
-                        <TableCell>{row.executedate || 'N/A'}</TableCell>
-                        <TableCell>{row.pendingdocumentnumber || 'N/A'}</TableCell>
-                        <TableCell>{row.finalregistrationnumber || 'N/A'}</TableCell>
+                        <TableCell>{row.APPLICATIONNUMBER || 'N/A'}</TableCell>
+                        <TableCell>{row.REGISTRATIONDATETIME || 'N/A'}</TableCell>
+                        {/* <TableCell>{row.pendingdocumentnumber || 'N/A'}</TableCell> */}
+                        <TableCell>{row.REGISTRATIONNUMBER || 'N/A'}</TableCell>
                       </TableRow>
                     ))
                   )}
@@ -379,26 +420,23 @@ const KaveriData = () => {
                       <TableCell><strong>{t("PropertyID")}</strong></TableCell>
                       <TableCell><strong>{t("DocumentID")}</strong></TableCell>
                       <TableCell><strong>{t("VillageName")}</strong></TableCell>
-                      <TableCell><strong>{t("PropertyType")}</strong></TableCell>
+                      {/* <TableCell><strong>{t("PropertyType")}</strong></TableCell> */}
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {TableKavDocData.map((row, rowIndex) => (
-                      row.propertyinfo && row.propertyinfo.length > 0 ? (
-                        row.propertyinfo.map((property, index) => (
-                          <TableRow key={`${rowIndex}-${index}`}>
-                            <TableCell>{property.propertyid || 'N/A'}</TableCell>
-                            <TableCell>{property.documentid || 'N/A'}</TableCell>
-                            <TableCell>{property.villagenamee || 'N/A'}</TableCell>
-                            <TableCell>{property.propertytype || 'N/A'}</TableCell>
+                    {KAVERI_PROP_DETAILS.map((property,index) => (
+                    
+                        
+                          <TableRow key={index}>
+                            <TableCell>{property.PROPERTYID || 'N/A'}</TableCell>
+                            <TableCell>{property.DOCUMENTID || 'N/A'}</TableCell>
+                            <TableCell>{property.VILLAGENAME || 'N/A'}</TableCell>
+                            {/* <TableCell>{property.propertytype || 'N/A'}</TableCell> */}
                           </TableRow>
-                        ))
-                      ) : (
-                        <TableRow key={rowIndex}>
-                          <TableCell colSpan={4}> {t("Nopropertyinformationavailable")}</TableCell>
-                        </TableRow>
-                      )
-                    ))}
+                        )
+                      )}
+                      
+              
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -414,33 +452,27 @@ const KaveriData = () => {
                       </TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell><strong>{t("PartyID")}</strong></TableCell>
+                      {/* <TableCell><strong>{t("PartyID")}</strong></TableCell> */}
                       <TableCell><strong>{t("PartyName")}</strong></TableCell>
-                      <TableCell><strong>{t("Age")}</strong></TableCell>
+                      {/* <TableCell><strong>{t("Age")}</strong></TableCell> */}
                       <TableCell><strong>{t("Address")}</strong></TableCell>
                       <TableCell><strong>{t("EKYC Owner Name")}</strong></TableCell>
                       <TableCell><strong>{t("Name Match Status")}</strong></TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {TableKavDocData.map((row, rowIndex) => (
-                      row.partyinfo && row.partyinfo.length > 0 ? (
-                        row.partyinfo.map((party, index) => (
-                          <TableRow key={`${rowIndex}-${index}`}>
-                            <TableCell>{party.partyid || 'N/A'}</TableCell>
-                            <TableCell>{party.partyname || 'N/A'}</TableCell>
-                            <TableCell>{party.age || 'N/A'}</TableCell>
-                            <TableCell>{party.address || 'N/A'}</TableCell>
-                            <TableCell>{party.ekycOwnerName || 'N/A'}</TableCell>
-                            <TableCell>{party.nameMatchScore || 'N/A'}</TableCell>
+                    {KAVERI_PARTIES_DETAILS.map((party, index) => (
+                      
+                          <TableRow key={index}>
+                            {/* <TableCell>{party.partyid || 'N/A'}</TableCell> */}
+                            <TableCell>{party.PARTYNAME || 'N/A'}</TableCell>
+                            {/* <TableCell>{party.age || 'N/A'}</TableCell> */}
+                            <TableCell>{party.PARTYADDRESS || 'N/A'}</TableCell>
+                            <TableCell>{party.EKYC_OWNERNAME || 'N/A'}</TableCell>
+                            <TableCell>{party.NAMEMATCH_SCORE > 60 ? "Matched" : "Not Matched" || 'N/A'}</TableCell>
                           </TableRow>
-                        ))
-                      ) : (
-                        <TableRow key={rowIndex}>
-                          <TableCell colSpan={4}>{t("")}No party information available</TableCell>
-                        </TableRow>
-                      )
-                    ))}
+                        )
+                      )}
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -489,7 +521,7 @@ const KaveriData = () => {
             </Grid>
           </Grid>
           <TableContainer component={Paper}>
-            {EcDocumentData && EcDocumentData.length === 0 ? (
+            {KAVERIEC_PROP_DETAILS && KAVERIEC_PROP_DETAILS.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={2} align="center">
                   <Typography>{t("Nodataavailable")}</Typography>
@@ -499,58 +531,71 @@ const KaveriData = () => {
               <Table>
                 <TableBody>
                   <TableRow>
+                    {/* <TableCell>
+                      <Typography variant="subtitle1"><strong>{t("Description")}</strong></Typography>
+                      <Typography style={{ whiteSpace: 'pre-line' }}>
+                        {KAVERIEC_PROP_DETAILS ? KAVERIEC_PROP_DETAILS.description.join('\n') : 'No description available'}
+                      </Typography>
+                    </TableCell> */}
                     <TableCell>
                       <Typography variant="subtitle1"><strong>{t("Description")}</strong></Typography>
                       <Typography style={{ whiteSpace: 'pre-line' }}>
-                        {EcDocumentData.description ? EcDocumentData.description.join('\n') : 'No description available'}
+                        { KAVERIEC_PROP_DETAILS[0].DISTRICTNAME }
+                      </Typography>
+                      <Typography style={{ whiteSpace: 'pre-line' }}>
+                        { KAVERIEC_PROP_DETAILS[0].TALUKANAME }
+                      </Typography>
+                      <Typography style={{ whiteSpace: 'pre-line' }}>
+                        { KAVERIEC_PROP_DETAILS[0].VILLAGENAME }
+                      </Typography>
+                      <Typography style={{ whiteSpace: 'pre-line' }}>
+                        { KAVERIEC_PROP_DETAILS[0].HOBLINAME }
+                      </Typography>
+                      <Typography style={{ whiteSpace: 'pre-line' }}>
+                        { KAVERIEC_PROP_DETAILS[0].ARTICLENAME }
                       </Typography>
                     </TableCell>
                     <TableCell>
                       <Typography variant="subtitle1"><strong>{t("DocumentSummary")}</strong></Typography>
-                      <Typography>{EcDocumentData.docSummary || 'No document summary available'}</Typography>
+                      <Typography>{KAVERIEC_PROP_DETAILS[0].LATEST_REGISTRATIONNO || 'No document summary available'}</Typography>
                     </TableCell>
                     <TableCell>
                     </TableCell>
                   </TableRow>
 
                   <TableRow>
-                    <TableCell>
+                    {/* <TableCell>
                       <Typography variant="subtitle1"><strong>{t("DocumentValuation")}</strong></Typography>
-                      <Typography>{EcDocumentData.documentValuation || 'No document valuation available'}</Typography>
-                    </TableCell>
+                      <Typography>{KAVERIEC_PROP_DETAILS.documentValuation || 'No document valuation available'}</Typography>
+                    </TableCell> */}
                     <TableCell>
                       <Typography variant="subtitle1"><strong>{t("ExecutionDate")}</strong></Typography>
                       <Typography>
-                        {EcDocumentData.executionDate
-                          ? new Date(EcDocumentData.executionDate).toLocaleString()
+                        {KAVERIEC_PROP_DETAILS[0].EXECUTIONDATE
+                          ? new Date(KAVERIEC_PROP_DETAILS[0].EXECUTIONDATE).toLocaleString()
                           : 'No execution date available'}
                       </Typography>
                     </TableCell>
                     <TableCell>
-                    </TableCell>
-                  </TableRow>
-
-                  <TableRow>
-                    <TableCell>
                       <Typography variant="subtitle1"><strong>Executants</strong></Typography>
-                      {EcDocumentData.executants && EcDocumentData.executants.length > 0 ? (
-                        EcDocumentData.executants.map((item, index) => (
-                          <Typography key={index}>{item}</Typography>
+                      {KAVERIEC_PARTIES_DETAILS && KAVERIEC_PARTIES_DETAILS.length > 0 ? (
+                        KAVERIEC_PARTIES_DETAILS.map((item, index) => (
+                          <Typography key={index}>{item.ISCLAIMANTOREXECUTANT === 'E' ? item.OWNERNAME : ""}</Typography>
                         ))
                       ) : (
                         <Typography variant="body2" color="textSecondary">No executants available</Typography>
                       )}
                     </TableCell>
-                    <TableCell />
                     <TableCell>
                     </TableCell>
+                  
                   </TableRow>
                   <TableRow>
                     <TableCell>
                       <Typography variant="subtitle1"><strong>Claimants</strong></Typography>
-                      {EcDocumentData.claimants && EcDocumentData.claimants.length > 0 ? (
-                        EcDocumentData.claimants.map((item, index) => (
-                          <Typography key={index}>{item}</Typography>
+                      {KAVERIEC_PARTIES_DETAILS && KAVERIEC_PARTIES_DETAILS.length > 0 ? (
+                        KAVERIEC_PARTIES_DETAILS.map((item, index) => (
+                          <Typography key={index}>{item.ISCLAIMANTOREXECUTANT === 'C' ? item.OWNERNAME : ""}</Typography>
                         ))
                       ) : (
                         <Typography variant="body2" color="textSecondary">No Claimants available</Typography>
@@ -559,17 +604,25 @@ const KaveriData = () => {
                     <TableCell>
                       <Typography variant="subtitle1"><strong>{t("EKYC Owner Name")}</strong></Typography>
                       <Typography>
-                        {EcDocumentData.ekycOwnerName
-                          ? EcDocumentData.ekycOwnerName
-                          : 'No Ekyc Owner Name available'}
+                      {KAVERIEC_PARTIES_DETAILS && KAVERIEC_PARTIES_DETAILS.length > 0 ? (
+                        KAVERIEC_PARTIES_DETAILS.map((item, index) => (
+                          <Typography key={index}>{item.ISCLAIMANTOREXECUTANT === 'C' ? item.EKYC_OWNERNAME: ""}</Typography>
+                        ))
+                      ) : (
+                        <Typography variant="body2" color="textSecondary">No Claimants available</Typography>
+                      )}
                       </Typography>
                     </TableCell>
                     <TableCell>
                       <Typography variant="subtitle1"><strong>{t("Name Match Status")}</strong></Typography>
                       <Typography>
-                        {EcDocumentData.nameMatchScore
-                          ? EcDocumentData.nameMatchScore
-                          : 'No Name Match Score available'}
+                      {KAVERIEC_PARTIES_DETAILS && KAVERIEC_PARTIES_DETAILS.length > 0 ? (
+                        KAVERIEC_PARTIES_DETAILS.map((item, index) => (
+                          <Typography key={index}>{item.ISCLAIMANTOREXECUTANT === 'C' ? item.NAMEMATCH_SCORE > 60 ? "Matched" : "Not Matched": ""}</Typography>
+                        ))
+                      ) : (
+                        <Typography variant="body2" color="textSecondary">No Claimants available</Typography>
+                      )}
                       </Typography>
                     </TableCell>
 

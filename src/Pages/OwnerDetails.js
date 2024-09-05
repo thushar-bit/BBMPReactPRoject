@@ -358,7 +358,7 @@ const OwnerDetails = () => {
       const maxOwnerNumber = Math.max(...tabledata5EkycVerifed.map(item => item.OWNERNUMBER));
       ownerNumber = maxOwnerNumber + 1;
     }
-    sessionStorage.setItem("OWNERTYPE", "NEWOWNER")
+    sessionStorage.setItem("OWNERTYPE", JSON.stringify("NEWOWNER"))
     var response = await axiosInstance.post("E-KYCAPI/RequestEKYC?OwnerNumber=" + ownerNumber + "&BOOK_APP_NO=" + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + "&PROPERTY_CODE=" + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')))
 
 
@@ -372,7 +372,7 @@ const OwnerDetails = () => {
     } else {
       ownerNumber = row.SLNO;
     }
-    sessionStorage.setItem("OWNERTYPE", "OLDOWNER")
+    sessionStorage.setItem("OWNERTYPE", JSON.stringify("OLDOWNER"))
     var response = await axiosInstance.post("E-KYCAPI/RequestEKYC?OwnerNumber=" + ownerNumber + "&BOOK_APP_NO=" + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + "&PROPERTY_CODE=" + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')))
     window.location.href = response.data;
   }
