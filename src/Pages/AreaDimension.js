@@ -12,12 +12,12 @@ import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axiosInstance from '../components/Axios';
-import LabelWithAsterisk   from '../components/LabelWithAsterisk'
+import LabelWithAsterisk from '../components/LabelWithAsterisk'
 const AreaDimension = () => {
   const [formData, setFormData] = useState({
     east: '',
-    Bookeast:'',
-    noofSides:"",
+    Bookeast: '',
+    noofSides: "",
     west: '',
     north: '',
     south: '',
@@ -49,8 +49,8 @@ const AreaDimension = () => {
     cal6: "",
     cal7: "",
     cal8: "",
-    cal9:"",
-    cal10:"",
+    cal9: "",
+    cal10: "",
     sqFt: "",
     sqMt: ""
   });
@@ -60,49 +60,49 @@ const AreaDimension = () => {
   const navigate = useNavigate();
   const [isOddSiteEnabled, setIsOddSiteEnabled] = useState(false);
   const calculateArea = (numberOfSides, formData) => {
-    
+
     // Extract the cal values dynamically based on the number of sides
     const values = Array.from({ length: numberOfSides }, (_, i) =>
       parseFloat(formData[`cal${i + 1}`])
     );
-  
+
     // Check if all relevant values are greater than 0 and not NaN
     if (values.some(val => val <= 0 || isNaN(val))) {
       return { areaFt: "Invalid Data", areaMt: "Invalid Data" }; // Return empty if any value is invalid
     }
-  
+
     let areaFt = 1;
-  
+
     if (numberOfSides === 3) {
-     
+
       const [a, b, c] = values;
       const s = (a + b + c) / 2;
       areaFt = Math.sqrt(s * (s - a) * (s - b) * (s - c));
-      areaFt=Math.round(areaFt * 100) / 100;
+      areaFt = Math.round(areaFt * 100) / 100;
     } else {
-      
+
       const s = values.reduce((acc, val) => acc + val, 0) / 2;
 
       for (const side of values) {
-          areaFt *= (s - side);
-        }
-      areaFt=Math.round(Math.sqrt(areaFt) * 100) / 100;
+        areaFt *= (s - side);
+      }
+      areaFt = Math.round(Math.sqrt(areaFt) * 100) / 100;
     }
-  
+
     // Convert to meters (ft to m conversion)
     const areaMt = areaFt > 0 ? Math.round(areaFt * 0.092903 * 100) / 100 : "Invalid Data";
-    if(areaMt === "Invalid Data"){
+    if (areaMt === "Invalid Data") {
       areaFt = "Invalid Data"
     }
     return { areaFt, areaMt };
 
   };
-  
+
   const handleChange = (e) => {
 
     const { name, value } = e.target;
     const updatedValue = parseFloat(value) || 0;
-    
+
     if (name === 'ns' || name === 'ew') {
       const nsValue = name === 'ns' ? updatedValue : formData.ns;
       const ewValue = name === 'ew' ? updatedValue : formData.ew;
@@ -119,20 +119,20 @@ const AreaDimension = () => {
     }
     if (name.startsWith('cal')) {
 
-const updatedFormData = {
-  ...formData,
-  [name]: value,
-};
+      const updatedFormData = {
+        ...formData,
+        [name]: value,
+      };
       const { areaFt, areaMt } = calculateArea(formData.noofSides, updatedFormData);
 
-    
-     formData.sqFt = areaFt;
-     formData.sqMt = areaMt;
-      
+
+      formData.sqFt = areaFt;
+      formData.sqMt = areaMt;
+
       setFormData(prevData => ({
         ...prevData,
-       // sqFt: areaFt.toString(),
-      //  sqMt: areaMt.toString()
+        // sqFt: areaFt.toString(),
+        //  sqMt: areaMt.toString()
       }));
     }
     if (name === 'modify' && value === 'yes') {
@@ -151,7 +151,7 @@ const updatedFormData = {
     });
   };
   const fetchData = async () => {
-    
+
     try {
       const response = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
       const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
@@ -173,19 +173,19 @@ const updatedFormData = {
         east: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_EAST : "",
         west: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_WEST || '' : '',
         north: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_NORTH || '' : '',
-        south: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_SOUTH || ''  : '',
+        south: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_SOUTH || '' : '',
         ns: NCLTable3Data.length > 0 ? NCLTable3Data[0].NORTHSOUTH || '' : '',
         ew: NCLTable3Data.length > 0 ? NCLTable3Data[0].EASTWEST || '' : '',
-        plotAreaSqFt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREAFT || '' :  '',
+        plotAreaSqFt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREAFT || '' : '',
         plotAreaSqMt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREA || '' : '',
-        Bookeast:  Table1Data.length > 0 ? Table1Data.CHECKBANDI_EAST || '' : '',
+        Bookeast: Table1Data.length > 0 ? Table1Data.CHECKBANDI_EAST || '' : '',
         Bookwest: Table1Data.length > 0 ? Table1Data.CHECKBANDI_WEST || '' : '',
         Booknorth: Table1Data.length > 0 ? Table1Data.CHECKBANDI_NORTH || '' : '',
-        Booksouth:  Table1Data.length > 0 ? Table1Data.CHECKBANDI_SOUTH || '' : '',
-        Bookns:  Table3Data.length > 0 ? Table3Data[0].NORTHSOUTH || '' : '',
-        Bookew:  Table3Data.length > 0 ? Table3Data[0].EASTWEST || '' : '',
-        BookplotAreaSqFt:  Table2Data.length > 0 ? Table2Data[0].SITEAREAFT || '' : '',
-        BookplotAreaSqMt:  Table2Data.length > 0 ? Table2Data[0].SITEAREA || '' : '',
+        Booksouth: Table1Data.length > 0 ? Table1Data.CHECKBANDI_SOUTH || '' : '',
+        Bookns: Table3Data.length > 0 ? Table3Data[0].NORTHSOUTH || '' : '',
+        Bookew: Table3Data.length > 0 ? Table3Data[0].EASTWEST || '' : '',
+        BookplotAreaSqFt: Table2Data.length > 0 ? Table2Data[0].SITEAREAFT || '' : '',
+        BookplotAreaSqMt: Table2Data.length > 0 ? Table2Data[0].SITEAREA || '' : '',
         builtUpAreaSqFt: NCLTable2Data.length > 0 ? NCLTable2Data[0].BUILDINGAREAFT || '' : Table2Data.length > 0 ? Table2Data[0].BUILDINGAREAFT || '' : '',
         builtUpAreaSqMt: NCLTable2Data.length > 0 ? NCLTable2Data[0].BUILDINGAREA || '' : Table2Data.length > 0 ? Table2Data[0].BUILDINGAREA || '' : '',
         ApartCarpetArea: NCLTable7Data.length > 0 ? NCLTable7Data[0].CARPETAREA || '' : Table7Data.length > 0 ? Table7Data[0].CARPETAREA || '' : '',
@@ -193,7 +193,7 @@ const updatedFormData = {
         ApartSuperBuiltArea: NCLTable7Data.length > 0 ? NCLTable7Data[0].SUPERBUILTUPAREA || 0 : Table7Data.length > 0 ? Table7Data[0].SUPERBUILTUPAREA || '' : '',
         cal1: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE1FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
         cal2: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE2FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
-        cal3: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE3FT || '': Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
+        cal3: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE3FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
         cal4: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE4FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
         cal5: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE1FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
         cal6: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE2FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
@@ -204,20 +204,20 @@ const updatedFormData = {
         noofSides: NCLTable3Data.length > 0 ? NCLTable3Data[0].ODDSITENOOFSIDES || '' : Table3Data.length > 0 ? Table3Data[0].ODDSITENOOFSIDES || '' : '',
         oddSite: NCLTable3Data.length > 0 ? NCLTable3Data[0].ODDSITE || '' : Table3Data.length > 0 ? Table3Data[0].ODDSITE || '' : '',
       }));
-      
-      if(NCLTable3Data.length > 0){
-        if(NCLTable3Data[0].ODDSITE === "Y"){
+
+      if (NCLTable3Data.length > 0) {
+        if (NCLTable3Data[0].ODDSITE === "Y") {
           setIsOddSiteEnabled(true)
-         
+
         }
         else {
           setIsOddSiteEnabled(false)
         }
       }
-      else if(Table3Data.length > 0){
-        if(Table3Data[0].ODDSITE === "Y"){
+      else if (Table3Data.length > 0) {
+        if (Table3Data[0].ODDSITE === "Y") {
           setIsOddSiteEnabled(true)
-          
+
         }
         else {
           setIsOddSiteEnabled(false)
@@ -228,7 +228,7 @@ const updatedFormData = {
       navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
     }
   }
-  useEffect(  () => {
+  useEffect(() => {
     fetchData();
   }, []);
   useEffect(() => {
@@ -236,70 +236,69 @@ const updatedFormData = {
       handleCalulationNCL(formData);
     }
   }, [formData, isOddSiteEnabled]);
-  
+
   const handleCalulation = () => {
-   
+
     const { areaFt, areaMt } = calculateArea(formData.noofSides, formData);
-   formData.sqFt = areaFt;
-   formData.sqMt = areaMt;
+    formData.sqFt = areaFt;
+    formData.sqMt = areaMt;
     setFormData(prevData => ({
       ...prevData,
-     
+
     }));
 
   }
   const handleCalulationNCL = (TableData) => {
-    
+
     const { areaFt, areaMt } = calculateArea(formData.noofSides, TableData);
     formData.sqFt = areaFt;
     formData.sqMt = areaMt;
-        setFormData(prevData => ({
-          ...prevData,
-         // sqFt: areaFt.toString(),
-        //  sqMt: areaMt.toString()
-         
-        }));
-    
-      }
-      const validateFormData = (formData) => {
-        const errors = {};
-      
-        const isInvalid = (value) => value === '' || value === '0';
-        if(formData.propertyType !== 3)
-          {
-        if (isInvalid(formData.east) || isInvalid(formData.west) || isInvalid(formData.north) || isInvalid(formData.south)) {
-          errors.checkbandhi = `${t("Please ensure all Checkbandhi values are Entered")}`;
-        }
-      }
-        if(formData.propertyType == 3){
-        if (isInvalid(formData.ApartCarpetArea) || isInvalid(formData.ApartAddtionalArea) || isInvalid(formData.ApartSuperBuiltArea)) {
-          errors.apartmentValues = `${t("Please ensure all Apartment values are Entered and More than 0")}`
-        }
-      }
-      
-        if (formData.oddSite === "Y" && formData.propertyType !== 3) {
-          for (let i = 1; i <= formData.noofSides ; i++) {
-            if (isInvalid(formData[`cal${i}`])) {
-              if(i == 1){
-                errors[`cal${i}`] = `Please ensure Road Side Length is Entered and More than 0.`;
-              }else {
-                errors[`cal${i}`] = `Please ensure Length${i} value is Entered and More than 0.`;
+    setFormData(prevData => ({
+      ...prevData,
+      // sqFt: areaFt.toString(),
+      //  sqMt: areaMt.toString()
 
-              }
-            }
-          }
-        } else {
-          // Validate ns and ew
-          if (isInvalid(formData.ns)) {
-            errors.nsEw = 'Please ensure N-S (ft) values are Entered and More than 0.';
-          }
-          else if(isInvalid(formData.ew)) {
-            errors.nsEw = 'Please ensure E-W (ft) values are Entered and More than 0.';
+    }));
+
+  }
+  const validateFormData = (formData) => {
+    const errors = {};
+
+    const isInvalid = (value) => value === '' || value === '0';
+    if (formData.propertyType !== 3) {
+      if (isInvalid(formData.east) || isInvalid(formData.west) || isInvalid(formData.north) || isInvalid(formData.south)) {
+        errors.checkbandhi = `${t("Please ensure all Checkbandhi values are Entered")}`;
+      }
+    }
+    if (formData.propertyType == 3) {
+      if (isInvalid(formData.ApartCarpetArea) || isInvalid(formData.ApartAddtionalArea) || isInvalid(formData.ApartSuperBuiltArea)) {
+        errors.apartmentValues = `${t("Please ensure all Apartment values are Entered and More than 0")}`
+      }
+    }
+
+    if (formData.oddSite === "Y" && formData.propertyType !== 3) {
+      for (let i = 1; i <= formData.noofSides; i++) {
+        if (isInvalid(formData[`cal${i}`])) {
+          if (i == 1) {
+            errors[`cal${i}`] = `Please ensure Road Side Length is Entered and More than 0.`;
+          } else {
+            errors[`cal${i}`] = `Please ensure Length${i} value is Entered and More than 0.`;
+
           }
         }
-      
-        return errors;
-      };
+      }
+    } else {
+      // Validate ns and ew
+      if (isInvalid(formData.ns)) {
+        errors.nsEw = 'Please ensure N-S (ft) values are Entered and More than 0.';
+      }
+      else if (isInvalid(formData.ew)) {
+        errors.nsEw = 'Please ensure E-W (ft) values are Entered and More than 0.';
+      }
+    }
+
+    return errors;
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     debugger
@@ -312,9 +311,9 @@ const updatedFormData = {
     }
     if (isEditablecheckbandhi === true && formData.propertyType !== 3) //only checkbandhi data
     {
-      
+
       const checkbandhidata =
-       {
+      {
         propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
         checkbandI_NORTH: formData.north,
         checkbandI_SOUTH: formData.south,
@@ -350,12 +349,11 @@ const updatedFormData = {
         }, 1000);
       }
     }
-   
-    if ((formData.propertyType === 1 || formData.propertyType === 2)  && (isEditable))
-     {
+
+    if ((formData.propertyType === 1 || formData.propertyType === 2) && (isEditable)) {
       debugger
-      if(formData.oddSite === "Y"){
-        if(formData.noofSides === "0" || formData.noofSides === ""){
+      if (formData.oddSite === "Y") {
+        if (formData.noofSides === "0" || formData.noofSides === "") {
           toast.error("Please Select the no of Sides")
           return
         }
@@ -377,9 +375,9 @@ const updatedFormData = {
         nsoddsitE2FT: formData.cal6 || null,
         nsoddsitE3FT: formData.cal7 || null,
         nsoddsitE4FT: formData.cal8 || null,
-        sidE9:formData.cal9 || null,
-        sidE10:formData.cal10 || null,
-        oddSiteSides:formData.noofSides || null,
+        sidE9: formData.cal9 || null,
+        sidE10: formData.cal10 || null,
+        oddSiteSides: formData.noofSides || null,
         loginId: "crc",
         p_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))
       };
@@ -394,8 +392,8 @@ const updatedFormData = {
         setIsEditable(false);
         setIsEditablecheckbandi(false);
         setTimeout(async () => {
-        
-          
+
+
           setFormData({
             ...formData,
             modify: 'no',
@@ -404,7 +402,7 @@ const updatedFormData = {
         }, 1000);
 
       } catch (error) {
-         toast.error(`${t("errorSavingData")}` + error, {
+        toast.error(`${t("errorSavingData")}` + error, {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -423,8 +421,8 @@ const updatedFormData = {
       const data = {
         propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
         carpetarea: formData.ApartCarpetArea || null,
-        additionalarea: formData.ApartAddtionalArea ||null,
-        superbuiltuparea: formData.ApartSuperBuiltArea ||null,
+        additionalarea: formData.ApartAddtionalArea || null,
+        superbuiltuparea: formData.ApartSuperBuiltArea || null,
         loginId: "crc",
         p_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))
       };
@@ -436,8 +434,8 @@ const updatedFormData = {
         sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
         setIsEditable(false);
         setTimeout(async () => {
-        
-         
+
+
           setFormData({
             ...formData,
             modify: 'no',
@@ -445,7 +443,7 @@ const updatedFormData = {
         }, 1000);
 
       } catch (error) {
-         toast.error(`${t("errorSavingData")}` + error, {
+        toast.error(`${t("errorSavingData")}` + error, {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -459,28 +457,28 @@ const updatedFormData = {
         }, 1000);
       }
     }
-    if(isEditable || isEditablecheckbandhi){
-     toast.success(`${t("detailsSavedSuccess")}`, {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-  }
+    if (isEditable || isEditablecheckbandhi) {
+      toast.success(`${t("detailsSavedSuccess")}`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
     setTimeout(() => {
-     
-    handleNavigation();
-  }, 1000);
+
+      handleNavigation();
+    }, 1000);
   };
   const back = () => {
     navigate('/AddressDetails')
   }
   const handleNavigation = () => {
     debugger
-    
+
     const validationErrors = validateFormData(formData);
     if (Object.keys(validationErrors).length > 0) {
       const errorMessages = Object.values(validationErrors).join('\n');
@@ -512,7 +510,7 @@ const updatedFormData = {
     });
     if (name === 'oddSite' && value === 'N') {
       setIsOddSiteEnabled(false);
-     
+
     } else if (name === 'oddSite' && value === 'Y') {
       setIsOddSiteEnabled(true);
       handleCalulation()
@@ -520,7 +518,7 @@ const updatedFormData = {
   }
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
-      e.preventDefault(); 
+      e.preventDefault();
     }
   };
 
@@ -556,8 +554,8 @@ const updatedFormData = {
               <Grid item xs={6} sm={3}>
                 <TextField
                   fullWidth
-                
-                  label={<LabelWithAsterisk text={t('CarpetArea')} />}    
+
+                  label={<LabelWithAsterisk text={t('CarpetArea')} />}
                   name="ApartCarpetArea"
                   value={formData.ApartCarpetArea}
                   onChange={handleChange}
@@ -579,7 +577,7 @@ const updatedFormData = {
               <Grid item xs={6} sm={3}>
                 <TextField
                   fullWidth
-              
+
                   label={<LabelWithAsterisk text={t('AdditionalArea')} />}
                   name="ApartAddtionalArea"
                   value={formData.ApartAddtionalArea}
@@ -602,7 +600,7 @@ const updatedFormData = {
               <Grid item xs={6} sm={3}>
                 <TextField
                   fullWidth
-                 
+
                   label={<LabelWithAsterisk text={t('SuperBuiltArea')} />}
                   name="ApartSuperBuiltArea"
                   value={formData.ApartSuperBuiltArea}
@@ -637,16 +635,16 @@ const updatedFormData = {
                 </RadioGroup>
               </FormControl>
               <Typography
-            variant="h6"
-            align="left"
-            gutterBottom
-            sx={{
-              fontWeight: 'bold',
-              marginBottom: 3,
-            }}
-          >
-           {t("AsPerBBMPBooks")}
-          </Typography>
+                variant="h6"
+                align="left"
+                gutterBottom
+                sx={{
+                  fontWeight: 'bold',
+                  marginBottom: 3,
+                }}
+              >
+                {t("AsPerBBMPBooks")}
+              </Typography>
               <Grid container spacing={3}>
                 <Grid item xs={6} sm={3}>
                   <TextField
@@ -675,7 +673,7 @@ const updatedFormData = {
                     name="Bookwest"
                     value={formData.Bookwest}
                     onChange={handleChange}
-                     variant={"filled"}
+                    variant={"filled"}
                     InputProps={{
                       readOnly: true,
                       endAdornment: (
@@ -695,7 +693,7 @@ const updatedFormData = {
                     name="Booknorth"
                     value={formData.Booknorth}
                     onChange={handleChange}
-                     variant={"filled"}
+                    variant={"filled"}
                     InputProps={{
                       readOnly: true,
                       endAdornment: (
@@ -715,7 +713,7 @@ const updatedFormData = {
                     name="Booksouth"
                     value={formData.Booksouth}
                     onChange={handleChange}
-                     variant={"filled"}
+                    variant={"filled"}
                     InputProps={{
                       readOnly: true,
                       endAdornment: (
@@ -776,7 +774,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                  
+
                     name="north"
                     label={<LabelWithAsterisk text={t('North')} />}
                     value={formData.north}
@@ -798,7 +796,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                   
+
                     label={<LabelWithAsterisk text={t('South')} />}
                     name="south"
                     value={formData.south}
@@ -819,7 +817,7 @@ const updatedFormData = {
                 </Grid>
               </Grid>
               <Typography variant="h6" sx={{ fontWeight: 'bold', marginY: 2 }}>
-              {t("Additional Details")}
+                {t("Additional Details")}
               </Typography>
               <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
                 <RadioGroup row name="modify" value={formData.modify} onChange={handleChange}>
@@ -828,7 +826,7 @@ const updatedFormData = {
                 </RadioGroup>
               </FormControl>
               <Typography variant="h6" sx={{ fontWeight: 'bold', marginY: 2 }}>
-              {t("OddSite")}
+                {t("OddSite")}
               </Typography>
               <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
                 <RadioGroup row name="oddSite" value={formData.oddSite} onChange={handleOddSiteChange}>
@@ -839,18 +837,18 @@ const updatedFormData = {
               <Typography variant="h6" sx={{ fontWeight: 'bold', }}>
               </Typography>
               <Typography
-            variant="h6"
-            align="left"
-            gutterBottom
-            sx={{
-              fontWeight: 'bold',
-              marginBottom: 3,
-            }}
-          >
-           {t("AsPerBBMPBooks")}
-          </Typography>
+                variant="h6"
+                align="left"
+                gutterBottom
+                sx={{
+                  fontWeight: 'bold',
+                  marginBottom: 3,
+                }}
+              >
+                {t("AsPerBBMPBooks")}
+              </Typography>
               {(isOddSiteEnabled === false) && (
-                
+
                 <Grid container spacing={3}>
                   <Grid item xs={6} sm={3}>
                     <TextField
@@ -860,7 +858,7 @@ const updatedFormData = {
                       value={formData.Bookns}
                       onChange={handleChange}
                       type="number"
-                      variant={ "filled"}
+                      variant={"filled"}
                       InputProps={{
                         readOnly: true,
                         endAdornment: (
@@ -884,7 +882,7 @@ const updatedFormData = {
                       variant={"filled"}
                       InputProps={{
                         readOnly: true,
-                       
+
                         endAdornment: (
                           <Tooltip title="Converted from Sq.ft">
                             <IconButton>
@@ -941,7 +939,7 @@ const updatedFormData = {
                   <Grid item xs={6} sm={3}>
                     <TextField
                       fullWidth
-                   
+
                       label={<LabelWithAsterisk text={t('N-S (ft)')} />}
                       name="ns"
                       value={formData.ns}
@@ -964,7 +962,7 @@ const updatedFormData = {
                   <Grid item xs={6} sm={3}>
                     <TextField
                       fullWidth
-                   
+
                       label={<LabelWithAsterisk text={"E-W (ft)"} />}
                       name="ew"
                       value={formData.ew}
@@ -1034,7 +1032,7 @@ const updatedFormData = {
           {(formData.propertyType === 2) && (
             <div>
               <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
-              {t("ScheduleOfTheProperty")}
+                {t("ScheduleOfTheProperty")}
               </Typography>
               <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
                 <RadioGroup row name="modifycheckbandi" value={formData.modifycheckbandi} onChange={handleChange}>
@@ -1043,29 +1041,29 @@ const updatedFormData = {
                 </RadioGroup>
               </FormControl>
               <Typography
-            variant="h6"
-            align="left"
-            gutterBottom
-            sx={{
-              fontWeight: 'bold',
-              marginBottom: 3,
-            }}
-          >
-           {t("AsPerBBMPBooks")}
-          </Typography>
+                variant="h6"
+                align="left"
+                gutterBottom
+                sx={{
+                  fontWeight: 'bold',
+                  marginBottom: 3,
+                }}
+              >
+                {t("AsPerBBMPBooks")}
+              </Typography>
               <Grid container spacing={3}>
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
                     label={t("East")}
                     name="Bookeast"
-                   
+
                     value={formData.Bookeast}
                     onChange={handleChange}
                     variant={"filled"}
                     InputProps={{
                       readOnly: true,
-                    
+
                       endAdornment: (
                         <Tooltip title="Converted from Sq.ft">
                           <IconButton>
@@ -1081,13 +1079,13 @@ const updatedFormData = {
                     fullWidth
                     label={t("West")}
                     name="Bookwest"
-                  
+
                     value={formData.Bookwest}
                     onChange={handleChange}
                     variant={"filled"}
                     InputProps={{
                       readOnly: true,
-                     
+
                       endAdornment: (
                         <Tooltip title="Converted from Sq.ft">
                           <IconButton>
@@ -1103,13 +1101,13 @@ const updatedFormData = {
                     fullWidth
                     label={t("North")}
                     name="Booknorth"
-                  
+
                     value={formData.Booknorth}
                     onChange={handleChange}
                     variant={"filled"}
                     InputProps={{
                       readOnly: true,
-                    
+
                       endAdornment: (
                         <Tooltip title="Converted from Sq.ft">
                           <IconButton>
@@ -1125,13 +1123,13 @@ const updatedFormData = {
                     fullWidth
                     label={t("South")}
                     name="Booksouth"
-                   
+
                     value={formData.Booksouth}
                     onChange={handleChange}
                     variant={"filled"}
                     InputProps={{
                       readOnly: true,
-                   
+
                       endAdornment: (
                         <Tooltip title="Converted from Sq.ft">
                           <IconButton>
@@ -1148,7 +1146,7 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                   
+
                     label={<LabelWithAsterisk text={t('East')} />}
                     name="east"
                     value={formData.east}
@@ -1170,10 +1168,10 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                  
+
                     label={<LabelWithAsterisk text={t('West')} />}
                     name="west"
-                  
+
                     value={formData.west}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "outlined" : "filled"}
@@ -1193,10 +1191,10 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                  
+
                     label={<LabelWithAsterisk text={t('North')} />}
                     name="north"
-                  
+
                     value={formData.north}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "outlined" : "filled"}
@@ -1216,10 +1214,10 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                   
+
                     label={<LabelWithAsterisk text={t('South')} />}
                     name="south"
-                   
+
                     value={formData.south}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "outlined" : "filled"}
@@ -1242,7 +1240,7 @@ const updatedFormData = {
               </Typography>
               <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
                 <RadioGroup row name="modify" value={formData.modify} onChange={handleChange}>
-                  <FormControlLabel value="yes" control={<Radio />} label={t("Modify" )}/>
+                  <FormControlLabel value="yes" control={<Radio />} label={t("Modify")} />
                   <FormControlLabel value="no" control={<Radio />} label={t("NoModifications")} />
                 </RadioGroup>
               </FormControl>
@@ -1258,16 +1256,16 @@ const updatedFormData = {
               <Typography variant="h6" sx={{ fontWeight: 'bold', }}>
               </Typography>
               <Typography
-            variant="h6"
-            align="left"
-            gutterBottom
-            sx={{
-              fontWeight: 'bold',
-              marginBottom: 3,
-            }}
-          >
-           {t("AsPerBBMPBooks")}
-          </Typography>
+                variant="h6"
+                align="left"
+                gutterBottom
+                sx={{
+                  fontWeight: 'bold',
+                  marginBottom: 3,
+                }}
+              >
+                {t("AsPerBBMPBooks")}
+              </Typography>
               {(isOddSiteEnabled === false) && (
                 <Grid container spacing={3}>
                   <Grid item xs={6} sm={3}>
@@ -1281,7 +1279,7 @@ const updatedFormData = {
                       variant={"filled"}
                       InputProps={{
                         readOnly: true,
-                       
+
                         endAdornment: (
                           <Tooltip title="Converted from Sq.ft">
                             <IconButton>
@@ -1303,7 +1301,7 @@ const updatedFormData = {
                       variant={"filled"}
                       InputProps={{
                         readOnly: true,
-                       
+
                         endAdornment: (
                           <Tooltip title="Converted from Sq.ft">
                             <IconButton>
@@ -1359,7 +1357,7 @@ const updatedFormData = {
                   <Grid item xs={6} sm={3}>
                     <TextField
                       fullWidth
-                    
+
                       label={<LabelWithAsterisk text={"N-S (ft)"} />}
                       name="ns"
                       value={formData.ns}
@@ -1382,7 +1380,7 @@ const updatedFormData = {
                   <Grid item xs={6} sm={3}>
                     <TextField
                       fullWidth
-                    
+
                       label={<LabelWithAsterisk text={"E-W (ft)"} />}
                       name="ew"
                       value={formData.ew}
@@ -1491,112 +1489,112 @@ const updatedFormData = {
             </div>
 
           )}
-            {isOddSiteEnabled && formData.propertyType !== 3 && (
-          <FormControl
-                    fullWidth
-                  >
-                    <InputLabel>
-                    <LabelWithAsterisk text={t('NoofSides')} />
-                   </InputLabel>
-                    <Select
-                      name="noofSides"
-                      value={formData.noofSides}
-                      onChange={handleChange}
-                      inputProps={{ readOnly: !isEditable }}
-                      sx={{backgroundColor: !isEditable? '' : "#ffff", width:"20%"}}
-                    >
-                      <MenuItem value="">--Select--</MenuItem>
-                      {[3,4,5,6,7,8,9,10].map((item) => (
-                        <MenuItem key={item} value={item}>
-                          {item}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                   
-                  </FormControl>
-            )}
-                  <br></br>
-                  <br></br>
-                  <br></br>
+          {isOddSiteEnabled && formData.propertyType !== 3 && (
+            <FormControl
+              fullWidth
+            >
+              <InputLabel>
+                <LabelWithAsterisk text={t('NoofSides')} />
+              </InputLabel>
+              <Select
+                name="noofSides"
+                value={formData.noofSides}
+                onChange={handleChange}
+                inputProps={{ readOnly: !isEditable }}
+                sx={{ backgroundColor: !isEditable ? '' : "#ffff", width: "20%" }}
+              >
+                <MenuItem value="">--Select--</MenuItem>
+                {[3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
+                  <MenuItem key={item} value={item}>
+                    {item}
+                  </MenuItem>
+                ))}
+              </Select>
+
+            </FormControl>
+          )}
+          <br></br>
+          <br></br>
+          <br></br>
           {isOddSiteEnabled && formData.propertyType !== 3 && (
             <Grid container spacing={3} alignItems="center" justifyContent="center">
               <Grid item>
                 <Grid container spacing={1} alignItems="center" justifyContent="center">
                   <Grid item>
-                  {Array.from({ length: formData.noofSides }).map((_, index) => (
-                    <TextField
-                      key={index}
-                      variant={isEditable ? "outlined" : "filled"}
-                      placeholder={index + 1  === 1? `${t("RoadFacedSideLength")}` : `${t("Length")} ${index + 1} (Ft)` }
-                      name={`cal${index + 1}`}
-                      type="number"
-                      value={formData[`cal${index + 1}`] || ''}
-                      onChange={handleChange}
-                      sx={{ width: '31.3%', borderColor: '#016767' ,paddingRight:'2%',paddingTop:"1%" }}
-                      InputProps={{
-                        readOnly: !isEditable,
-                        style: { backgroundColor: !isEditable ? '' : "#ffff" },
-                      }}
-                    />
-                  ))}
+                    {Array.from({ length: formData.noofSides }).map((_, index) => (
+                      <TextField
+                        key={index}
+                        variant={isEditable ? "outlined" : "filled"}
+                        placeholder={index + 1 === 1 ? `${t("RoadFacedSideLength")}` : `${t("Length")} ${index + 1} (Ft)`}
+                        name={`cal${index + 1}`}
+                        type="number"
+                        value={formData[`cal${index + 1}`] || ''}
+                        onChange={handleChange}
+                        sx={{ width: '31.3%', borderColor: '#016767', paddingRight: '2%', paddingTop: "1%" }}
+                        InputProps={{
+                          readOnly: !isEditable,
+                          style: { backgroundColor: !isEditable ? '' : "#ffff" },
+                        }}
+                      />
+                    ))}
                   </Grid>
                 </Grid>
               </Grid>
-{formData.noofSides  && (
-              <Grid item>
-                <Grid container spacing={1} alignItems="center">
-                  <Grid item>
-                    <Typography>Sq.Ft.</Typography>
-                  </Grid>
-                  <Grid item>
-                  <TextField
-                      variant="filled"
-                      size="medium"
-                      name="sqFt"
-                      
-                      value={formData.sqFt}
-                      onChange={handleChange}
-                      sx={{ width: '300px', borderColor: '#016767' }}
-                      InputProps={{
-                        readOnly: true,
-                      }}
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Typography>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</Typography>
-                  </Grid>
-                  <Grid item>
-                     <Typography>Sq.Mt.</Typography>
-                  </Grid>
-                  <Grid item>
-                     <TextField
-                      variant="filled"
-                      size="medium"
-                      name="sqMt"
-                     
-                      value={formData.sqMt}
-                      onChange={handleChange}
-                      InputProps={{
-                        readOnly: true,
-                      }}
-                      sx={{ width: '300px', borderColor: '#016767' }}
-                    />
+              {formData.noofSides && (
+                <Grid item>
+                  <Grid container spacing={1} alignItems="center">
+                    <Grid item>
+                      <Typography>Sq.Ft.</Typography>
+                    </Grid>
+                    <Grid item>
+                      <TextField
+                        variant="filled"
+                        size="medium"
+                        name="sqFt"
+
+                        value={formData.sqFt}
+                        onChange={handleChange}
+                        sx={{ width: '300px', borderColor: '#016767' }}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                      />
+                    </Grid>
+                    <Grid item>
+                      <Typography>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</Typography>
+                    </Grid>
+                    <Grid item>
+                      <Typography>Sq.Mt.</Typography>
+                    </Grid>
+                    <Grid item>
+                      <TextField
+                        variant="filled"
+                        size="medium"
+                        name="sqMt"
+
+                        value={formData.sqMt}
+                        onChange={handleChange}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                        sx={{ width: '300px', borderColor: '#016767' }}
+                      />
+                    </Grid>
                   </Grid>
                 </Grid>
-              </Grid>
               )}
             </Grid>
-                    
+
           )}
 
           <Box display="flex" justifyContent="center" gap={2} mt={3}>
             <Button variant="contained" color="primary" onClick={back}>
-            {t("Previous")}
+              {t("Previous")}
             </Button>
             <Button variant="contained" color="success" type="submit">
               {t("save")}
             </Button>
-            
+
           </Box>
         </form>
       </Box>

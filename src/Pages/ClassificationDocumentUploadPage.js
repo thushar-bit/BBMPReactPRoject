@@ -22,7 +22,7 @@ import DisclaimerDialog from '../components/Disclamer';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import '../components/Shake.css';
-import LabelWithAsterisk   from '../components/LabelWithAsterisk'
+import LabelWithAsterisk from '../components/LabelWithAsterisk'
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
   clipPath: 'inset(50%)',
@@ -51,7 +51,7 @@ const ClassificationDocumentUploadPage = () => {
   const validationSchema = Yup.object().shape({
     DocumentType: Yup.string().required(`${t('documentTypeRequired')}`),
     DocumentNumber: Yup.string().required(`${t('documentNumberRequired')}`),
- //   AKatha: Yup.string().required('This is required').test('not-zero', 'A Katha Claim cannot be Select', value => value !== "0")
+    //   AKatha: Yup.string().required('This is required').test('not-zero', 'A Katha Claim cannot be Select', value => value !== "0")
   });
   const [tableData, setTableData] = useState([
   ]);
@@ -63,18 +63,18 @@ const ClassificationDocumentUploadPage = () => {
   const [isEditable, setIsEditable] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isClassificationEditable,setIsClassificationEditable] = useState(false);
+  const [isClassificationEditable, setIsClassificationEditable] = useState(false);
   const handleDateChange = (date) => {
     setSelectedDate(date);
   };
   const handleAkathaDropdownValueChange = async (e) => {
-    
+
     try {
       const { name, value } = e.target;
       let updatedClassification = "";
-      
+
       if (name === "AKatha") {
-       
+
         if (value !== "") {
           if (value !== "51") {
             updatedClassification = "4";
@@ -86,10 +86,10 @@ const ClassificationDocumentUploadPage = () => {
         }
         if (value === "51") {
           setIsEditable(true);
-       
+
         } else {
           setIsEditable(false);
-         
+
         }
 
         const response = await axiosInstance.get(`BBMPCITZAPI/GET_NPM_MST_CLASS_DOCUMENT_CLASSANDSUBCLASS?CLASSIFICATIONID=1&SUBCLASSIFICATIONID1=${value}&SUBCLASSIFICATIONID2=0`)
@@ -139,14 +139,14 @@ const ClassificationDocumentUploadPage = () => {
   const handleChange = async (e) => {
 
     const { name, value } = e.target;
-    
+
     setFormData({
       ...formData,
       [name]: value
     });
   };
 
- 
+
   const fetchData = async () => {
     try {
       const responeMaster = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
@@ -163,14 +163,14 @@ const ClassificationDocumentUploadPage = () => {
         ...prevFormData,
         PropertyClasssficationAsperBooks: BBDTable1.length > 0 ? BBDTable1[0].PROPERTYCLASSIFICATIONID : "",
         PropertyClassification: NCLTable1.length > 0 ? NCLTable1[0].PROPERTYCLASSIFICATIONID : '',
-        DocumentDetails:NCLTable1.length > 0 ? NCLTable1[0].SUBCLASSIFICATION === null ? "":NCLTable1[0].SUBCLASSIFICATION   : "",
-        AKatha:NCLTable1.length > 0 ?NCLTable1[0].SUBCLASSIFICATIONID : ""
+        DocumentDetails: NCLTable1.length > 0 ? NCLTable1[0].SUBCLASSIFICATION === null ? "" : NCLTable1[0].SUBCLASSIFICATION : "",
+        AKatha: NCLTable1.length > 0 ? NCLTable1[0].SUBCLASSIFICATIONID : ""
       }));
-      
-      if(NCLTable1.length > 0){
-        if(NCLTable1[0].SUBCLASSIFICATIONID === null){
+
+      if (NCLTable1.length > 0) {
+        if (NCLTable1[0].SUBCLASSIFICATIONID === null) {
           setIsClassificationEditable(false)
-        }else {
+        } else {
           setIsClassificationEditable(true)
           const response = await axiosInstance.get(`BBMPCITZAPI/GET_NPM_MST_CLASS_DOCUMENT_CLASSANDSUBCLASS?CLASSIFICATIONID=1&SUBCLASSIFICATIONID1=${NCLTable1[0].SUBCLASSIFICATIONID}&SUBCLASSIFICATIONID2=0`)
           const { Table } = response.data;
@@ -206,7 +206,7 @@ const ClassificationDocumentUploadPage = () => {
     }
     const fileName = file.name;
     const fileExtension = fileName.split('.').pop().toLowerCase();
-    if(!['pdf'].includes(fileExtension)){
+    if (!['pdf'].includes(fileExtension)) {
       toast.error(`${t("selectPdfFileOnly ")}`);
       e.target.value = null;
       setSelectedFile(null);
@@ -226,13 +226,13 @@ const ClassificationDocumentUploadPage = () => {
     setfileExtension('');
   }
   const onClassifySave = async () => {
-    
-    if(formData.AKatha === "0"){
+
+    if (formData.AKatha === "0") {
       toast.error(`${t("selectKathaClaim")}`)
       return
     }
-    if(String(formData.AKatha) === "51"){
-      if(formData.DocumentDetails.length === 0){
+    if (String(formData.AKatha) === "51") {
+      if (formData.DocumentDetails.length === 0) {
         toast.error(`${t("enterDocumentDetails")}`)
         return
       }
@@ -242,20 +242,20 @@ const ClassificationDocumentUploadPage = () => {
       propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
       CLASSIFICATIONID: formData.PropertyClassification,
       SUBCLASSIFICATIONID: formData.AKatha,
-      CREATEDBY:'crc',
-      SUBCLASSIFICATION: formData.AKatha === "51" ? formData.DocumentDetails: ""
+      CREATEDBY: 'crc',
+      SUBCLASSIFICATION: formData.AKatha === "51" ? formData.DocumentDetails : ""
     }
     const filteredData = Object.fromEntries(
       Object.entries(data).filter(([value]) => value !== '' && value !== null)
     );
-    
-    
+
+
     const queryString = new URLSearchParams(filteredData).toString();
-  
-     await axiosInstance.post(`BBMPCITZAPI/INS_NCL_PROPERTY_SUBCLASS?${queryString}`);
-     
-     const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
-     sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
+
+    await axiosInstance.post(`BBMPCITZAPI/INS_NCL_PROPERTY_SUBCLASS?${queryString}`);
+
+    const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
+    sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
     setIsClassificationEditable(true);
     setIsEditable(false);
     toast.success(`${t("classificationSavedSuccess")}`);
@@ -265,13 +265,13 @@ const ClassificationDocumentUploadPage = () => {
   }
   const isEditClassification = () => {
     setIsClassificationEditable(false);
- 
+
   }
   const handleSubmit = async (e) => {
 
     var propertyphoto2 = "";
-    if(isEditable){
-      if(formData.DocumentDetails.length ===0){
+    if (isEditable) {
+      if (formData.DocumentDetails.length === 0) {
         toast.error("Please Provide Document Details")
         return
       }
@@ -279,26 +279,24 @@ const ClassificationDocumentUploadPage = () => {
     if (selectedFile) {
       propertyphoto2 = await getPropertyphoto(selectedFile);
     }
-    
-    if(!isClassificationEditable){
+
+    if (!isClassificationEditable) {
       toast.error(`${t("saveClassificationBeforeUpload")}`);
       return
     }
-    if(fileExtension.length === 0)
-      {
-        toast.error(`${t("uploadRequiredDocument")}`);
-        return
-      }
-      if(selectedDate === null)
-        {
-          toast.error(`${t("provideRegisteredDate")}`);
-        return
-      }
-      const today = new Date();
-      if (new Date(selectedDate) > today) {
-        toast.error(`${t("Document Registered Date cannot be greater than today")}`);
-        return;
-      }
+    if (fileExtension.length === 0) {
+      toast.error(`${t("uploadRequiredDocument")}`);
+      return
+    }
+    if (selectedDate === null) {
+      toast.error(`${t("provideRegisteredDate")}`);
+      return
+    }
+    const today = new Date();
+    if (new Date(selectedDate) > today) {
+      toast.error(`${t("Document Registered Date cannot be greater than today")}`);
+      return;
+    }
     const data = {
       documentnumber: formData.DocumentNumber,
       createdby: "crc",
@@ -353,14 +351,13 @@ const ClassificationDocumentUploadPage = () => {
     debugger
     const k = sessionStorage.getItem('KaveriVerified')
     const Owner = sessionStorage.getItem('OwnerKaveriSkip')
-    if(Owner)
-    {
-     // sessionStorage.removeItem("KaveriVerified");
-     navigate('/OwnerDetails')
+    if (Owner) {
+      // sessionStorage.removeItem("KaveriVerified");
+      navigate('/OwnerDetails')
 
     }
-    else if(k){
-    
+    else if (k) {
+
       navigate('/KaveriData')
     }
     else {
@@ -459,7 +456,7 @@ const ClassificationDocumentUploadPage = () => {
   };
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
-      e.preventDefault(); 
+      e.preventDefault();
     }
   };
   useEffect(() => {
@@ -484,7 +481,7 @@ const ClassificationDocumentUploadPage = () => {
           enableReinitialize
         >
           {({ errors, touched, handleBlur }) => (
-             <Form onKeyDown={handleKeyDown}>
+            <Form onKeyDown={handleKeyDown}>
               <Typography
                 variant="h3"
                 align="center"
@@ -548,7 +545,7 @@ const ClassificationDocumentUploadPage = () => {
                     error={touched.AKatha && !!errors.AKatha}
                     sx={{ marginBottom: 3 }}
                     className={touched.AKatha && !!errors.AKatha ? 'shake' : ''}
-                
+
                   >
                     <InputLabel> <LabelWithAsterisk text={t("AKhathaclaimbasedon")} /> </InputLabel>
                     <Select
@@ -556,7 +553,7 @@ const ClassificationDocumentUploadPage = () => {
                       value={formData.AKatha}
                       onChange={handleAkathaDropdownValueChange}
                       onBlur={handleBlur}
-                      sx={{backgroundColor: isClassificationEditable? '' : "#ffff"}}
+                      sx={{ backgroundColor: isClassificationEditable ? '' : "#ffff" }}
                       inputProps={{ readOnly: isClassificationEditable }}
                     >
                       <MenuItem value="0">--Select--</MenuItem>
@@ -575,8 +572,8 @@ const ClassificationDocumentUploadPage = () => {
                   <TextField
                     fullWidth
                     variant={isEditable ? "outlined" : "filled"}
-                   
-                    label={isEditable ? <LabelWithAsterisk text={t("DocumentDetails")} />: t("DocumentDetails")}
+
+                    label={isEditable ? <LabelWithAsterisk text={t("DocumentDetails")} /> : t("DocumentDetails")}
 
                     placeholder='Document Details'
                     name="DocumentDetails"
@@ -584,7 +581,7 @@ const ClassificationDocumentUploadPage = () => {
                     onChange={handleChange}
                     InputProps={{
                       readOnly: !isEditable,
-                      style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
+                      style: { backgroundColor: !isEditable ? '' : "#ffff" },
                       endAdornment: (
                         <Tooltip title={t("doorPlotNoInfo")}>
                           <IconButton color="primary">
@@ -595,15 +592,15 @@ const ClassificationDocumentUploadPage = () => {
                     }}
                   />
                 </Grid>
-                {!isClassificationEditable ? 
-                <Grid item xs={12} sm={4}><Button variant="contained" color="success" onClick={onClassifySave}>
-                  {t("SaveClassificationDetails")}
-                </Button></Grid>
-                :
-                <Grid item xs={12} sm={4}><Button variant="contained" color="secondary" onClick={isEditClassification}>
-                 {t("EditClassificationDetails")}
-                </Button></Grid>
-}
+                {!isClassificationEditable ?
+                  <Grid item xs={12} sm={4}><Button variant="contained" color="success" onClick={onClassifySave}>
+                    {t("SaveClassificationDetails")}
+                  </Button></Grid>
+                  :
+                  <Grid item xs={12} sm={4}><Button variant="contained" color="secondary" onClick={isEditClassification}>
+                    {t("EditClassificationDetails")}
+                  </Button></Grid>
+                }
                 <Grid item xs={12} sm={4}></Grid>
                 <Grid item xs={12} sm={4}>
                   <FormControl
@@ -620,7 +617,7 @@ const ClassificationDocumentUploadPage = () => {
                       onBlur={handleBlur}
                       sx={{ backgroundColor: '#ffff' }}
                     >
-                      
+
                       <MenuItem value="">--Select--</MenuItem>
                       {tablesdata2.map((item) => (
                         <MenuItem key={item.DOCUMENTTYPEID} value={item.DOCUMENTTYPEID}>
@@ -633,7 +630,7 @@ const ClassificationDocumentUploadPage = () => {
                     </FormHelperText>
                   </FormControl>
                 </Grid>
-                
+
                 <Grid item xs={12} sm={4}>
                   <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
                     <DatePicker
@@ -643,14 +640,14 @@ const ClassificationDocumentUploadPage = () => {
                       value={selectedDate}
                       onChange={date => handleDateChange(date)}
                       disableFuture
-                      sx={{ width: '100%',backgroundColor: '#ffff' }}
+                      sx={{ width: '100%', backgroundColor: '#ffff' }}
                     />
                   </LocalizationProvider>
                 </Grid>
 
-               
 
-              {/* </Grid>
+
+                {/* </Grid>
 
               <Grid container spacing={4}> */}
 
@@ -660,7 +657,7 @@ const ClassificationDocumentUploadPage = () => {
                   <TextField
                     fullWidth
                     label={<LabelWithAsterisk text={t("DocumentNumber :")} />}
-                  
+
                     name="DocumentNumber"
                     value={formData.DocumentNumber}
                     onChange={handleChange}
@@ -669,7 +666,7 @@ const ClassificationDocumentUploadPage = () => {
                     error={touched.DocumentNumber && !!errors.DocumentNumber}
                     helperText={touched.DocumentNumber && errors.DocumentNumber}
                     InputProps={{
-                      style:{backgroundColor:'#ffff'},
+                      style: { backgroundColor: '#ffff' },
                       endAdornment: (
                         <Tooltip title={t("nearestLandmarkInfo")}>
                           <IconButton color="primary">
@@ -681,7 +678,7 @@ const ClassificationDocumentUploadPage = () => {
                   />
                 </Grid>
                 <Grid item xs={12} sm={4}>
-                  </Grid>
+                </Grid>
                 <Grid item xs={12} sm={4}>
                   <Box display="flex" alignItems="center">
                     <Typography variant="body1" sx={{ ml: 1 }}>
@@ -703,23 +700,23 @@ const ClassificationDocumentUploadPage = () => {
                     <Box display="flex" alignItems="center" mt={2}>
                       <Typography variant="body1">{selectedFile.name}</Typography>
                       <Button color="error" onClick={handleFileDelete} sx={{ ml: 2 }}>
-                      {t("Delete")}
+                        {t("Delete")}
                       </Button>
                     </Box>
                   )}
                   <Typography variant="body1" sx={{ ml: 1, color: '#df1414' }}>
-                   {t("MaximumFileSizeMB")}
+                    {t("MaximumFileSizeMB")}
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sm={4}>
-              <Button variant="contained" color="success" type="submit">
-                  {t("AddDocument+")}
-                </Button>
+                  <Button variant="contained" color="success" type="submit">
+                    {t("AddDocument+")}
+                  </Button>
                 </Grid>
               </Grid>
-            
+
               <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-               {t("DocumentsUploaded")}
+                {t("DocumentsUploaded")}
               </Typography>
               <TableContainer component={Paper} sx={{ mt: 4 }}>
                 <Table>
@@ -774,9 +771,9 @@ const ClassificationDocumentUploadPage = () => {
 
               <Box display="flex" justifyContent="center" gap={2} mt={3}>
                 <Button variant="contained" color="primary" onClick={back}>
-                 {t("Previous")}
+                  {t("Previous")}
                 </Button>
-              
+
                 <Button variant="contained" color="primary" onClick={handleOpenDialog}>
                   {t("Finish")}
                 </Button>

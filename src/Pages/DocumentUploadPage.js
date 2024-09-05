@@ -21,7 +21,7 @@ import 'dayjs/locale/en-gb';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import '../components/Shake.css';
-import LabelWithAsterisk   from '../components/LabelWithAsterisk'
+import LabelWithAsterisk from '../components/LabelWithAsterisk'
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
   clipPath: 'inset(50%)',
@@ -92,7 +92,7 @@ const DocumentUploadPage = () => {
     });
   };
 
- 
+
   const fetchData = async () => {
     try {
       const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterDocByCategoryOrClaimType?ULBCODE=555&CATEGORYID=1');
@@ -129,7 +129,7 @@ const DocumentUploadPage = () => {
     }
     const fileName = file.name;
     const fileExtension = fileName.split('.').pop().toLowerCase();
-    if(!['pdf'].includes(fileExtension)){
+    if (!['pdf'].includes(fileExtension)) {
       toast.error(`${t("selectPdfFileOnly ")}`);
       e.target.value = null;
       setSelectedFile(null);
@@ -151,8 +151,8 @@ const DocumentUploadPage = () => {
   const handleSubmit = async (e) => {
 
     var propertyphoto2 = "";
-    if(isEditable){
-      if(formData.DocumentDetails.length ===0){
+    if (isEditable) {
+      if (formData.DocumentDetails.length === 0) {
         toast.error("Please Provide Document Details")
         return
       }
@@ -160,21 +160,19 @@ const DocumentUploadPage = () => {
     if (selectedFile) {
       propertyphoto2 = await getPropertyphoto(selectedFile);
     }
-    if(fileExtension.length === 0)
-      {
-        toast.error(`${t("uploadRequiredDocument")}`);
-        return
-      }
-      if(selectedDate === null)
-        {
-        toast.error(`${t("provideRegisteredDate")}`);
-        return
-      }
-      const today = new Date();
-      if (new Date(selectedDate) > today) {
-        toast.error(`${t("Document Registered Date cannot be greater than today")}`);
-        return;
-      }
+    if (fileExtension.length === 0) {
+      toast.error(`${t("uploadRequiredDocument")}`);
+      return
+    }
+    if (selectedDate === null) {
+      toast.error(`${t("provideRegisteredDate")}`);
+      return
+    }
+    const today = new Date();
+    if (new Date(selectedDate) > today) {
+      toast.error(`${t("Document Registered Date cannot be greater than today")}`);
+      return;
+    }
     const data = {
       ordernumber: formData.DocumentNumber,
       createdby: "crc",
@@ -306,7 +304,7 @@ const DocumentUploadPage = () => {
   };
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
-      e.preventDefault(); 
+      e.preventDefault();
     }
   };
 
@@ -327,7 +325,7 @@ const DocumentUploadPage = () => {
           enableReinitialize
         >
           {({ errors, touched, handleBlur }) => (
-             <Form onKeyDown={handleKeyDown}>
+            <Form onKeyDown={handleKeyDown}>
               <Typography
                 variant="h3"
                 align="center"
@@ -344,7 +342,7 @@ const DocumentUploadPage = () => {
                   }
                 }}
               >
-             {t("EligibilityDocuments")} 
+                {t("EligibilityDocuments")}
               </Typography>
               <Typography variant="h6"
                 align="center"
@@ -376,7 +374,7 @@ const DocumentUploadPage = () => {
                       value={formData.DocumentType}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      sx={{ backgroundColor:  "#ffff" }} 
+                      sx={{ backgroundColor: "#ffff" }}
                     >
                       <MenuItem value="">--Select--</MenuItem>
                       {tablesdata2.map((item) => (
@@ -394,14 +392,14 @@ const DocumentUploadPage = () => {
                   <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
                     <DatePicker
 
-                     // label={t("DocumentRegisteredDate")}
+                      // label={t("DocumentRegisteredDate")}
                       label={<LabelWithAsterisk text={t("DocumentRegisteredDate")} />}
                       name='documentregistereddate'
                       placeholder='dd-mm-yyyy'
                       value={selectedDate}
                       onChange={date => handleDateChange(date)}
                       disableFuture
-                      sx={{ width: '100%' ,backgroundColor:'#ffff'}}
+                      sx={{ width: '100%', backgroundColor: '#ffff' }}
                     />
                   </LocalizationProvider>
                 </Grid>
@@ -410,15 +408,15 @@ const DocumentUploadPage = () => {
                   <TextField
                     fullWidth
                     variant={isEditable ? "outlined" : "filled"}
-                   // label={t("DocumentDetails")}
-                    label={isEditable ? <LabelWithAsterisk text={t("DocumentDetails")} />: t("DocumentDetails")}
+                    // label={t("DocumentDetails")}
+                    label={isEditable ? <LabelWithAsterisk text={t("DocumentDetails")} /> : t("DocumentDetails")}
                     placeholder={t("DocumentDetails")}
                     name="DocumentDetails"
                     value={formData.DocumentDetails}
                     onChange={handleChange}
                     InputProps={{
                       readOnly: !isEditable,
-                      style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
+                      style: { backgroundColor: !isEditable ? '' : "#ffff" },
                       endAdornment: (
                         <Tooltip title={t("doorPlotNoInfo")}>
                           <IconButton color="primary">
@@ -440,7 +438,7 @@ const DocumentUploadPage = () => {
                   <TextField
                     fullWidth
 
-                   // label={t("DocumentNumber :")}
+                    // label={t("DocumentNumber :")}
                     label={<LabelWithAsterisk text={t("DocumentNumber")} />}
                     name="DocumentNumber"
                     value={formData.DocumentNumber}
@@ -450,7 +448,7 @@ const DocumentUploadPage = () => {
                     error={touched.DocumentNumber && !!errors.DocumentNumber}
                     helperText={touched.DocumentNumber && errors.DocumentNumber}
                     InputProps={{
-                      style: { backgroundColor:   "#ffff" } ,
+                      style: { backgroundColor: "#ffff" },
                       endAdornment: (
                         <Tooltip title={t("nearestLandmarkInfo")}>
                           <IconButton color="primary">
@@ -483,22 +481,22 @@ const DocumentUploadPage = () => {
                     <Box display="flex" alignItems="center" mt={2}>
                       <Typography variant="body1">{selectedFile.name}</Typography>
                       <Button color="error" onClick={handleFileDelete} sx={{ ml: 2 }}>
-                       {t("Delete")}
+                        {t("Delete")}
                       </Button>
                     </Box>
                   )}
                   <Typography variant="body1" sx={{ ml: 1, color: '#df1414' }}>
-                  {t("MaximumFileSizeMB")}
+                    {t("MaximumFileSizeMB")}
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sm={4}>
-                <Button variant="contained" color="success" type="submit">
-                {t("Save+")}
-                </Button>
+                  <Button variant="contained" color="success" type="submit">
+                    {t("Save+")}
+                  </Button>
                 </Grid>
               </Grid>
               <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-              {t("UploadedDocument")}
+                {t("UploadedDocument")}
               </Typography>
               <TableContainer component={Paper} sx={{ mt: 4 }}>
                 <Table>
@@ -553,12 +551,12 @@ const DocumentUploadPage = () => {
 
               <Box display="flex" justifyContent="center" gap={2} mt={3}>
                 <Button variant="contained" color="primary" onClick={back}>
-              {t("Previous")}
+                  {t("Previous")}
                 </Button>
-              
+
 
                 <Button variant="contained" color="primary" onClick={handleNavigation}>
-                 {t("next")}
+                  {t("next")}
                 </Button>
               </Box>
             </Form>

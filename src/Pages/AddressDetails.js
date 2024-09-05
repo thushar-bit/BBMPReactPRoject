@@ -16,7 +16,7 @@ import GoogleMaps from '../components/GoogleMaps';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import '../components/Shake.css';
-import LabelWithAsterisk   from '../components/LabelWithAsterisk'
+import LabelWithAsterisk from '../components/LabelWithAsterisk'
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
   clipPath: 'inset(50%)',
@@ -32,13 +32,13 @@ const VisuallyHiddenInput = styled('input')({
 const AddressDetails = () => {
   const [formData, setFormData] = useState({
     propertyCode: '',
-    propertyNumber:"",
-    propertyEID:"",
-    district:"",
-    ulbname:"",
-    buildingname:"",
-    NearestLandmark:"",
-    DoorPlotNo:"",
+    propertyNumber: "",
+    propertyEID: "",
+    district: "",
+    ulbname: "",
+    buildingname: "",
+    NearestLandmark: "",
+    DoorPlotNo: "",
     streetid: '',
     streetName: "",
     Street: "",
@@ -54,28 +54,28 @@ const AddressDetails = () => {
     verifySASNUM: "",
     lat1: 0,
     long1: 0,
-    wardNumber:"",
-    wardName:"",
-    ownerName:""
+    wardNumber: "",
+    wardName: "",
+    ownerName: ""
   });
   const { t } = useTranslation();
   const validationSchema = Yup.object().shape({
     DoorPlotNo: Yup.string().required(`${t("doorPlotNumber")}`).notOneOf(['0'], `${t('doorName')}`),
-  //  buildingname: Yup.string().required(`${t('buildingLandNameRequired')}`),
+    //  buildingname: Yup.string().required(`${t('buildingLandNameRequired')}`),
     areaorlocality: Yup.string().required(`${t('areaLocalityRequired')}`),
-   // NearestLandmark: Yup.string().required(`${t('nearestLandmarkRequired')}`),
+    // NearestLandmark: Yup.string().required(`${t('nearestLandmarkRequired')}`),
     pincode: Yup.string()
       .required(`${t('pincodeRequired')}`)
       .matches(/^\d{6}$/, `${t('pincodeInvalid')}`),
     verifySASNUM: Yup.string().required(`${t('sasApplicationNumber')}`).notOneOf(['0'], `${t('sasNumberInvalid')}`),
     streetid: Yup.string().required(`${t('streetNameRequired')}`).notOneOf(['0'], `${t('streetNameInvalid')}`),
-   // propertyType:Yup.string().required(`${t("PropertyTypeInvalid")}`).notOneOf(['0'], `${t("PropertyTypeCannotBeZero")}`),
-    lat1:Yup.string().required(`${t('latitudeRequired')}`).notOneOf(['0'], `${t('latitudeInvalid')}`),
-    long1:Yup.string().required(`${t('longitudeRequired')}`).notOneOf(['0'], `${t('longitudeInvalid')}`),
+    // propertyType:Yup.string().required(`${t("PropertyTypeInvalid")}`).notOneOf(['0'], `${t("PropertyTypeCannotBeZero")}`),
+    lat1: Yup.string().required(`${t('latitudeRequired')}`).notOneOf(['0'], `${t('latitudeInvalid')}`),
+    long1: Yup.string().required(`${t('longitudeRequired')}`).notOneOf(['0'], `${t('longitudeInvalid')}`),
   });
 
   const navigate = useNavigate();
-  
+
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileExtension, setfileExtension] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -83,48 +83,48 @@ const AddressDetails = () => {
   const [handleSASClicks, sethandleSASClicks] = useState(false);
   const [lat2, setlat1] = useState(0);
   const [long2, setlong1] = useState(0);
-  const [GoogleMapLoad,setGoogleMapLoad] = useState(false);
-  const [wardlat,setWardLat] = useState(13.0074);
-  const [wardLong,setWardLong] = useState(77.5688)
-  
+  const [GoogleMapLoad, setGoogleMapLoad] = useState(false);
+  const [wardlat, setWardLat] = useState(13.0074);
+  const [wardLong, setWardLong] = useState(77.5688)
+
   const [tableData, setTableData] = useState([
   ]);
   const [SAStableData, setSASTableData] = useState([]);
-  const fetchData = React.useCallback( async () => {
+  const fetchData = React.useCallback(async () => {
     setLoading(true);
     try {
       const response = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
       const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
       const response3 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
-      
+
       const { Table1 = [], Table5 = [], } = response.data;
-let NCLtable1Item = [];
-let Table11Item = [];
-let table4Item = [];
-      if(response2){
-      const { Table11 = [], Table1: NCLTABLE1 = [], Table4 = [] } = response2.data;
-       NCLtable1Item = NCLTABLE1.length > 0 ? NCLTABLE1[0] : [];
-       Table11Item = Table11.length > 0 ? Table11[0] : [];
-       table4Item = Table4.length > 0 ? Table4[0] : [];
-      setPreviewUrl(`data:image1/png;base64,${Table11Item.PROPERTYPHOTO || ""}`);
-      setPropertyPhoto(Table11Item.PROPERTYPHOTO || "");
-     
-      }else {
-      setIsEditable(true)
+      let NCLtable1Item = [];
+      let Table11Item = [];
+      let table4Item = [];
+      if (response2) {
+        const { Table11 = [], Table1: NCLTABLE1 = [], Table4 = [] } = response2.data;
+        NCLtable1Item = NCLTABLE1.length > 0 ? NCLTABLE1[0] : [];
+        Table11Item = Table11.length > 0 ? Table11[0] : [];
+        table4Item = Table4.length > 0 ? Table4[0] : [];
+        setPreviewUrl(`data:image1/png;base64,${Table11Item.PROPERTYPHOTO || ""}`);
+        setPropertyPhoto(Table11Item.PROPERTYPHOTO || "");
+
+      } else {
+        setIsEditable(true)
       }
       const { Table2 = [] } = response3.data;
       const table1Item = Table1.length > 0 ? Table1[0] : [];
-     
+
       const table5Item = Table5.length > 0 ? Table5[0] : [];
-      
+
       debugger
       const filteredData = Table2.filter(item =>
         item.STREETID !== 99999 && item.WARDID === table1Item.WARDID
       );
       setTableData(filteredData);
-  
+
       setFormData({
-        propertyType: NCLtable1Item.PROPERTYCATEGORYID || "0" ,
+        propertyType: NCLtable1Item.PROPERTYCATEGORYID || "0",
         propertyEID: table1Item.PROPERTYID || '',
         address: table1Item.ADDRESS || '',
         district: table1Item.DISTRICTNAME || '',
@@ -144,26 +144,25 @@ let table4Item = [];
         long1: table4Item.LONGITUDE || "",
         verifySASNUM: NCLtable1Item.PUID !== null ? NCLtable1Item.PUID || "" : table1Item.PUID ? table1Item.PUID : "",
       });
-      
+
       setGoogleMapLoad(false)
-      const GetWardCordinates = await axiosInstance.get("BBMPCITZAPI/GetWardCordinates?wardNumber="+table1Item.WARDID)
-      const { Table:ward = [] } = GetWardCordinates.data;
-     
-      if(table4Item.length > 0){
+      const GetWardCordinates = await axiosInstance.get("BBMPCITZAPI/GetWardCordinates?wardNumber=" + table1Item.WARDID)
+      const { Table: ward = [] } = GetWardCordinates.data;
+
+      if (table4Item.length > 0) {
         setWardLat(table4Item.LATITUDE);
         setWardLong(table4Item.LONGITUDE);
         setGoogleMapLoad(true)
       }
-      else 
-      {
+      else {
         setWardLat(ward[0].WARDLATITUDE);
         setWardLong(ward[0].WARDLONGITUDE);
         setGoogleMapLoad(true)
       }
       const sasNum = NCLtable1Item.PUID !== null ? NCLtable1Item.PUID || 0 : table1Item.PUID ? table1Item.PUID : 0;
-      const responseSAS = await axiosInstance.get('BBMPCITZAPI/GetTaxDetails?applicationNo=' + sasNum + '&propertycode='+JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+'&P_BOOKS_PROP_APPNO='+JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))+'&loginId=crc')
+      const responseSAS = await axiosInstance.get('BBMPCITZAPI/GetTaxDetails?applicationNo=' + sasNum + '&propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&loginId=crc')
       const { Table = [] } = responseSAS.data;
-      
+
       if (Table.length === 0) {
         toast.error(`${t("No SAS Applications Found")}`);
       }
@@ -175,14 +174,14 @@ let table4Item = [];
       return <ErrorPage errorMessage={error} />;
     }
     setLoading(false);
-  }, []); 
+  }, []);
 
   useEffect(() => {
     fetchData();
   }, []);
 
   const handleChange = (e) => {
-    
+
     const { name, value } = e.target;
     if (name === "pincode") {
       if (/^\d{0,6}$/.test(value)) {
@@ -208,7 +207,7 @@ let table4Item = [];
     });
   };
 
- 
+
   const [previewUrl, setPreviewUrl] = useState('');
   const [propertyPhoto, setPropertyPhoto] = useState('');
 
@@ -218,9 +217,9 @@ let table4Item = [];
     const file = e.target.files[0];
     const fileName = file.name;
     const fileExtension = fileName.split('.').pop().toLowerCase();
-   
-    
-    if(!['jpg', 'jpeg', 'png'].includes(fileExtension)){
+
+
+    if (!['jpg', 'jpeg', 'png'].includes(fileExtension)) {
       toast.error(`${t("Please Select Only '.jpg','.jpeg','.png' File")}`);
       e.target.value = null;
       setSelectedFile(null);
@@ -243,7 +242,7 @@ let table4Item = [];
       reader.readAsDataURL(file);
     }
   };
- 
+
   const handleFileDelete = () => {
     setSelectedFile(null);
     setPreviewUrl(null);
@@ -259,7 +258,7 @@ let table4Item = [];
   }
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
-      e.preventDefault(); 
+      e.preventDefault();
     }
   };
   const handleAddressEdit = (e) => {
@@ -296,63 +295,63 @@ let table4Item = [];
     });
   };
 
-const CopyBookData = async () => {
-  try {
-    if(JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) === null){
-       await axiosInstance.get(`BBMPCITZAPI/COPY_DATA_FROM_BBDDRAFT_NCLTEMP?LoginId=crc&propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&propertyid=${JSON.parse(sessionStorage.getItem('SETPROPERYID'))}`);
-      const response3 = await axiosInstance.get(`BBMPCITZAPI/Get_Ctz_ObjectionModPendingAppl?LoginId=crc&propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&propertyid=${JSON.parse(sessionStorage.getItem('SETPROPERYID'))}`);
-      if (response3.data === "There is a issue while copying the data from Book Module.No Data Found") {
-       toast.error(`${t("There is a issue while copying the data from Book Module.No Data Found")}`)
-       return false
-         }
-         sessionStorage.setItem('P_BOOKS_PROP_APPNO', JSON.stringify(response3.data.P_BOOKS_PROP_APPNO));
-         return true;
+  const CopyBookData = async () => {
+    try {
+      if (JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) === null) {
+        await axiosInstance.get(`BBMPCITZAPI/COPY_DATA_FROM_BBDDRAFT_NCLTEMP?LoginId=crc&propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&propertyid=${JSON.parse(sessionStorage.getItem('SETPROPERYID'))}`);
+        const response3 = await axiosInstance.get(`BBMPCITZAPI/Get_Ctz_ObjectionModPendingAppl?LoginId=crc&propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&propertyid=${JSON.parse(sessionStorage.getItem('SETPROPERYID'))}`);
+        if (response3.data === "There is a issue while copying the data from Book Module.No Data Found") {
+          toast.error(`${t("There is a issue while copying the data from Book Module.No Data Found")}`)
+          return false
+        }
+        sessionStorage.setItem('P_BOOKS_PROP_APPNO', JSON.stringify(response3.data.P_BOOKS_PROP_APPNO));
+        return true;
+      }
+      else {
+        return true;
+      }
+    } catch (error) {
+      <ErrorPage errorMessage={error} />
+      return false;
     }
-    else{
-      return true;
-    }
-  } catch (error) {
-    <ErrorPage errorMessage={error}/>
-    return false;
+
   }
-  
-}
 
   const handleSubmit = async (e) => {
     debugger
     if (e.key === 'Enter') {
       e.preventDefault();
     }
-    
+
     let propertyphoto2 = "";
     if (isEditable) {
       if (selectedFile != null) {
         propertyphoto2 = await getPropertyphoto(selectedFile);
       }
-      if(propertyPhoto.length === 0){
-        if(propertyphoto2.length === 0){
-        toast.error(`${t("Please Upload the New Property Photo")}`);
-        return;
+      if (propertyPhoto.length === 0) {
+        if (propertyphoto2.length === 0) {
+          toast.error(`${t("Please Upload the New Property Photo")}`);
+          return;
         }
-        
+
       }
-      if(formData.propertyType === "0"){
+      if (formData.propertyType === "0") {
         toast.error(`${t("Please Select the Property Type")}`)
         return
       }
       setLoading(true);
       const copy = await CopyBookData();
-      if(copy){
+      if (copy) {
         toast.success(`${t("copySuccess")}`)
-      }else{
+      } else {
         toast.error(`${t("copyFailed")}`)
       }
-      
-    
-        
+
+
+
       const data = {
         propertyCode: formData.propertyNumber,
-        categoryId:formData.propertyType,
+        categoryId: formData.propertyType,
         streetid: formData.streetid,
         doorno: formData.DoorPlotNo,
         buildingname: formData.buildingname,
@@ -372,8 +371,8 @@ const CopyBookData = async () => {
         setSelectedFile(null);
         const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
         sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
-     
-         toast.success(`${t("detailsSavedSuccess")}`, {
+
+        toast.success(`${t("detailsSavedSuccess")}`, {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -384,12 +383,12 @@ const CopyBookData = async () => {
         });
         setIsEditable(false);
         setLoading(false);
-        
-        if(propertyPhoto.length === 0){
+
+        if (propertyPhoto.length === 0) {
           toast.error(`${t("saveAddressFirst")}`);
           return;
-          }
-          setTimeout(() => {
+        }
+        setTimeout(() => {
           navigate('/AreaDimension')
         }, 1000)
       } catch (error) {
@@ -407,12 +406,12 @@ const CopyBookData = async () => {
         }, 2000);
       }
     } else {
-     
+
       setTimeout(() => {
-       
-      if(propertyPhoto.length === 0){
-        toast.error(`${t("saveAddressFirst")}`);
-        return;
+
+        if (propertyPhoto.length === 0) {
+          toast.error(`${t("saveAddressFirst")}`);
+          return;
         }
         navigate('/AreaDimension')
       }, 1000)
@@ -421,13 +420,13 @@ const CopyBookData = async () => {
   }
 
 
-  
 
 
- 
+
+
   const handleAddressChange = (newAddress) => {
-    
-   
+
+
     if (!newAddress || !newAddress.address) {
       console.error('Address is undefined');
       return;
@@ -436,8 +435,8 @@ const CopyBookData = async () => {
     var doorNo = "";
     var pincode = "";
     var area = "";
- 
-   
+
+
     if (parts.length === 3) {
       area = parts[0].trim();
       setFormData({
@@ -451,9 +450,9 @@ const CopyBookData = async () => {
       var pincodeRegex = /\b\d{6}\b/;
       var pincodes = newAddress.address.match(pincodeRegex);
       doorNo = parts[0].trim();
-      if(pincodes != null){
-      pincode = pincodes[0];
-    }
+      if (pincodes != null) {
+        pincode = pincodes[0];
+      }
       area = parts[0].trim();
       setFormData({
         ...formData,
@@ -469,50 +468,50 @@ const CopyBookData = async () => {
   };
 
   const handleSASClick = async () => {
-    
+
     if (!formData.verifySASNUM || formData.verifySASNUM.length === 0) {
       toast.error(`${t("provideSasAppNumber")}`);
       return;
     }
-  
+
     if (!handleSASClicks) {
       sethandleSASClicks(true);
-   
+
 
       try {
         const copy = await CopyBookData();
         if (copy) {
-       //   toast.success("Copy From BBMP Books Data Was Successful.");
+          //   toast.success("Copy From BBMP Books Data Was Successful.");
         } else {
           toast.error(`${t("copyFailed")}`);
           sethandleSASClicks(false);
           setLoading(false)
           return;
         }
-  
+
         const response = await axiosInstance.get(
           'BBMPCITZAPI/GetTaxDetails', {
-            params: {
-              applicationNo: formData.verifySASNUM,
-              propertycode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
-              P_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')),
-              loginId: 'crc'
-            }
+          params: {
+            applicationNo: formData.verifySASNUM,
+            propertycode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
+            P_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')),
+            loginId: 'crc'
           }
+        }
         );
-  
+
         const { Table = [] } = response.data;
         if (Table.length === 0) {
           toast.error(`${t("No SAS Applications Found")}`);
           return
         }
         setSASTableData(Table);
-      toast.success("Details Fetched")
+        toast.success("Details Fetched")
       } catch (error) {
         toast.error(`${t("errorFetchingSasDetails")}`);
       } finally {
         sethandleSASClicks(false);
-      
+
       }
     } else {
       setLoading(false)
@@ -521,11 +520,11 @@ const CopyBookData = async () => {
     }
   };
 
- 
-   
-   
-    
-  
+
+
+
+
+
   function GradientCircularProgress() {
     return (
       <React.Fragment>
@@ -554,217 +553,217 @@ const CopyBookData = async () => {
     <Container maxWidth="lg">
       <Box sx={{ backgroundColor: '#f0f0f0', padding: 4, borderRadius: 2, mt: 8 }}>
         <ToastContainer />
-        
-              <Typography
-                variant="h3"
-                align="center"
-                gutterBottom
-                sx={{
-                  fontWeight: 'bold',
-                  fontFamily: "sans-serif",
-                  marginBottom: 3,
-                  color: '#',
-                  fontSize: {
-                    xs: '1.5rem',
-                    sm: '2rem',
-                    md: '2.5rem',
-                  }
-                }}
-              >
-                {t("DataAvailableInBBMPBooks")}
-              </Typography>
-              <Grid container spacing={4}>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    variant="filled"
-                    label={t("PropertyEID")}
-                    name="propertyEID"
-                    value={formData.propertyEID}
-                    onChange={handleChange}
-                    InputProps={{
-                      readOnly: true,
-                      endAdornment: (
-                        <Tooltip title={t("propertyEIDInfo")}>
-                          <IconButton color="primary">
-                            <InfoIcon />
-                          </IconButton>
-                        </Tooltip>
-                      )
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    variant="filled"
-                    InputProps={{
-                      readOnly: true,
-                      endAdornment: (
-                        <Tooltip title={t("cityInfo")}>
-                          <IconButton color="primary">
-                            <InfoIcon />
-                          </IconButton>
-                        </Tooltip>
-                      )
-                    }}
-                    label={t("city")}
-                    name="ulbname"
-                    value={formData.ulbname}
-                    onChange={handleChange}
 
-                  />
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    variant="filled"
-                    InputProps={{
-                      readOnly: true,
-                      endAdornment: (
-                        <Tooltip title={t("districtInfo")}>
-                          <IconButton color="primary">
-                            <InfoIcon />
-                          </IconButton>
-                        </Tooltip>
-                      )
-                    }}
-                    label={t("district")}
-                    name="district"
-                    value={formData.district}
-                    onChange={handleChange}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    variant="filled"
-                    label={t("wardNumber")}
-                    name="wardNumber"
-                    value={formData.wardNumber +" ,"+ formData.wardName}
-                    onChange={handleChange}
-                    InputProps={{
-                      readOnly: true,
-                      endAdornment: (
-                        <Tooltip title={t("wardNumberInfo")}>
-                          <IconButton color="primary">
-                            <InfoIcon />
-                          </IconButton>
-                        </Tooltip>
-                      )
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    variant="filled"
-                    label={t("propertyNumber")}
-                    name="propertyNumber"
-                    value={formData.propertyNumber}
-                    onChange={handleChange}
-                    InputProps={{
-                      readOnly: true,
-                      endAdornment: (
-                        <Tooltip title={t("propertyNumberInfo")}>
-                          <IconButton color="primary">
-                            <InfoIcon />
-                          </IconButton>
-                        </Tooltip>
-                      )
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    variant="filled"
-                    label={t("ownerName")}
-                    name="ownerName"
-                    value={formData.ownerName}
-                    onChange={handleChange}
-                    InputProps={{
-                      readOnly: true,
-                      endAdornment: (
-                        <Tooltip title={t("ownerNameInfo")}>
-                          <IconButton color="primary">
-                            <InfoIcon />
-                          </IconButton>
-                        </Tooltip>
-                      )
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    variant="filled"
-                    label={t("streetName")}
-                    name="streetName"
-                    value={formData.streetName}
-                    onChange={handleChange}
-                    InputProps={{
-                      readOnly: true,
-                      endAdornment: (
-                        <Tooltip title={t("streetNameInfo")}>
-                          <IconButton color="primary">
-                            <InfoIcon />
-                          </IconButton>
-                        </Tooltip>
-                      )
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={12}>
-                <FormControl fullWidth  >
-            <InputLabel>
-            <LabelWithAsterisk text={t('SelectthePropertyType')} />
-            </InputLabel>
-            <Select
-              name="propertyType"
-              value={formData.propertyType}
+        <Typography
+          variant="h3"
+          align="center"
+          gutterBottom
+          sx={{
+            fontWeight: 'bold',
+            fontFamily: "sans-serif",
+            marginBottom: 3,
+            color: '#',
+            fontSize: {
+              xs: '1.5rem',
+              sm: '2rem',
+              md: '2.5rem',
+            }
+          }}
+        >
+          {t("DataAvailableInBBMPBooks")}
+        </Typography>
+        <Grid container spacing={4}>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              variant="filled"
+              label={t("PropertyEID")}
+              name="propertyEID"
+              value={formData.propertyEID}
               onChange={handleChange}
-              inputProps={{ readOnly: !isEditable }}
-             
-              sx={{backgroundColor: !isEditable? '' : "#ffff"}}
-            >
-              <MenuItem value="0">Select</MenuItem>
-              <MenuItem value="1">Vacant Site</MenuItem>
-              <MenuItem value="2">Site with Building</MenuItem>
-              <MenuItem value="3">Multistorey Flats</MenuItem>
-            </Select>
-            
-          </FormControl>
-         
+              InputProps={{
+                readOnly: true,
+                endAdornment: (
+                  <Tooltip title={t("propertyEIDInfo")}>
+                    <IconButton color="primary">
+                      <InfoIcon />
+                    </IconButton>
+                  </Tooltip>
+                )
+              }}
+            />
           </Grid>
-              </Grid>
-              <Typography
-                variant="h6"
-                align="center"
-                gutterBottom
-                sx={{
-                  fontWeight: 'bold',
-                  fontFamily: "sans-serif",
-                  marginBottom: 3,
-                  color: '#1565c0',
-                  fontSize: {
-                    xs: '1.5rem',
-                    sm: '2rem',
-                    md: '2.5rem',
-                  }
-                }}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              variant="filled"
+              InputProps={{
+                readOnly: true,
+                endAdornment: (
+                  <Tooltip title={t("cityInfo")}>
+                    <IconButton color="primary">
+                      <InfoIcon />
+                    </IconButton>
+                  </Tooltip>
+                )
+              }}
+              label={t("city")}
+              name="ulbname"
+              value={formData.ulbname}
+              onChange={handleChange}
+
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              variant="filled"
+              InputProps={{
+                readOnly: true,
+                endAdornment: (
+                  <Tooltip title={t("districtInfo")}>
+                    <IconButton color="primary">
+                      <InfoIcon />
+                    </IconButton>
+                  </Tooltip>
+                )
+              }}
+              label={t("district")}
+              name="district"
+              value={formData.district}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              variant="filled"
+              label={t("wardNumber")}
+              name="wardNumber"
+              value={formData.wardNumber + " ," + formData.wardName}
+              onChange={handleChange}
+              InputProps={{
+                readOnly: true,
+                endAdornment: (
+                  <Tooltip title={t("wardNumberInfo")}>
+                    <IconButton color="primary">
+                      <InfoIcon />
+                    </IconButton>
+                  </Tooltip>
+                )
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              variant="filled"
+              label={t("propertyNumber")}
+              name="propertyNumber"
+              value={formData.propertyNumber}
+              onChange={handleChange}
+              InputProps={{
+                readOnly: true,
+                endAdornment: (
+                  <Tooltip title={t("propertyNumberInfo")}>
+                    <IconButton color="primary">
+                      <InfoIcon />
+                    </IconButton>
+                  </Tooltip>
+                )
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              variant="filled"
+              label={t("ownerName")}
+              name="ownerName"
+              value={formData.ownerName}
+              onChange={handleChange}
+              InputProps={{
+                readOnly: true,
+                endAdornment: (
+                  <Tooltip title={t("ownerNameInfo")}>
+                    <IconButton color="primary">
+                      <InfoIcon />
+                    </IconButton>
+                  </Tooltip>
+                )
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              variant="filled"
+              label={t("streetName")}
+              name="streetName"
+              value={formData.streetName}
+              onChange={handleChange}
+              InputProps={{
+                readOnly: true,
+                endAdornment: (
+                  <Tooltip title={t("streetNameInfo")}>
+                    <IconButton color="primary">
+                      <InfoIcon />
+                    </IconButton>
+                  </Tooltip>
+                )
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={12}>
+            <FormControl fullWidth  >
+              <InputLabel>
+                <LabelWithAsterisk text={t('SelectthePropertyType')} />
+              </InputLabel>
+              <Select
+                name="propertyType"
+                value={formData.propertyType}
+                onChange={handleChange}
+                inputProps={{ readOnly: !isEditable }}
+
+                sx={{ backgroundColor: !isEditable ? '' : "#ffff" }}
               >
-                {t("PostalAddressofProperty")}
-              </Typography>
-              {GoogleMapLoad &&
-              <GoogleMaps lat={wardlat} long={wardLong} onLocationChange={handleAddressChange} />
-}
-              <Formik
+                <MenuItem value="0">Select</MenuItem>
+                <MenuItem value="1">Vacant Site</MenuItem>
+                <MenuItem value="2">Site with Building</MenuItem>
+                <MenuItem value="3">Multistorey Flats</MenuItem>
+              </Select>
+
+            </FormControl>
+
+          </Grid>
+        </Grid>
+        <Typography
+          variant="h6"
+          align="center"
+          gutterBottom
+          sx={{
+            fontWeight: 'bold',
+            fontFamily: "sans-serif",
+            marginBottom: 3,
+            color: '#1565c0',
+            fontSize: {
+              xs: '1.5rem',
+              sm: '2rem',
+              md: '2.5rem',
+            }
+          }}
+        >
+          {t("PostalAddressofProperty")}
+        </Typography>
+        {GoogleMapLoad &&
+          <GoogleMaps lat={wardlat} long={wardLong} onLocationChange={handleAddressChange} />
+        }
+        <Formik
           initialValues={formData}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
-       
+
           validateOnChange={false}
           enableReinitialize
         >
@@ -772,7 +771,7 @@ const CopyBookData = async () => {
             <Form onKeyDown={handleKeyDown}>
               <br></br>
               <br></br>
-              
+
               <Grid container spacing={4}>
                 <Grid item xs={12} sm={6}>
                   <TextField
@@ -788,7 +787,7 @@ const CopyBookData = async () => {
                     helperText={touched.DoorPlotNo && errors.DoorPlotNo}
                     InputProps={{
                       readOnly: !isEditable,
-                      style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
+                      style: { backgroundColor: !isEditable ? '' : "#ffff" },
                       endAdornment: (
                         <Tooltip title={t("doorPlotNoInfo")}>
                           <IconButton color="primary">
@@ -813,7 +812,7 @@ const CopyBookData = async () => {
                     // helperText={touched.buildingname && errors.buildingname}
                     InputProps={{
                       readOnly: !isEditable,
-                      style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
+                      style: { backgroundColor: !isEditable ? '' : "#ffff" },
                       endAdornment: (
                         <Tooltip title={t("buildingLandNameInfo")}>
                           <IconButton color="primary">
@@ -839,7 +838,7 @@ const CopyBookData = async () => {
                     variant={isEditable ? "outlined" : "filled"}
                     InputProps={{
                       readOnly: !isEditable,
-                      style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
+                      style: { backgroundColor: !isEditable ? '' : "#ffff" },
                       endAdornment: (
                         <Tooltip title={t("nearestLandmarkInfo")}>
                           <IconButton color="primary">
@@ -854,7 +853,7 @@ const CopyBookData = async () => {
                   <TextField
                     fullWidth
                     label={<LabelWithAsterisk text={t('pincode')} />}
-          
+
                     name="pincode"
                     type="number"
                     value={formData.pincode}
@@ -866,7 +865,7 @@ const CopyBookData = async () => {
                     variant={isEditable ? "outlined" : "filled"}
                     InputProps={{
                       readOnly: !isEditable,
-                      style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
+                      style: { backgroundColor: !isEditable ? '' : "#ffff" },
                       endAdornment: (
                         <Tooltip title={t("pincodeInfo")}>
                           <IconButton color="primary">
@@ -890,7 +889,7 @@ const CopyBookData = async () => {
                     helperText={touched.areaorlocality && errors.areaorlocality}
                     variant={isEditable ? "outlined" : "filled"}
                     InputProps={{
-                      style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
+                      style: { backgroundColor: !isEditable ? '' : "#ffff" },
                       readOnly: !isEditable,
                       endAdornment: (
                         <Tooltip title={t("areaLocalityInfo")}>
@@ -906,20 +905,20 @@ const CopyBookData = async () => {
 
                   <FormControl
                     fullWidth
-                   
+
                     error={touched.streetid && !!errors.streetid}
                     sx={{ marginBottom: 3 }}
                     className={touched.streetid && !!errors.streetid ? 'shake' : ''}
                   >
                     <InputLabel > {t("streetName")} <span style={{ color: 'red' }}> *</span>
-                  </InputLabel>
+                    </InputLabel>
                     <Select
                       name="streetid"
                       value={formData.streetid}
                       onChange={handleChange}
                       inputProps={{ readOnly: !isEditable }}
                       onBlur={handleBlur}
-                      sx={{backgroundColor: !isEditable? '' : "#ffff"}}
+                      sx={{ backgroundColor: !isEditable ? '' : "#ffff" }}
                     >
                       <MenuItem value="">--Select--</MenuItem>
                       {tableData.map((item) => (
@@ -937,7 +936,7 @@ const CopyBookData = async () => {
                   <TextField
                     fullWidth
                     label={<LabelWithAsterisk text={t('lattitude')} />}
-                 
+
                     name="lat1"
                     value={formData.lat1}
                     onChange={handleChange}
@@ -961,7 +960,7 @@ const CopyBookData = async () => {
                   <TextField
                     fullWidth
                     label={<LabelWithAsterisk text={t('Longitude')} />}
-                
+
                     name="long1"
                     value={formData.long1}
                     onChange={handleChange}
@@ -1026,7 +1025,7 @@ const CopyBookData = async () => {
               <br></br>
               <Grid container spacing={4} alignItems={"center"}>
                 <Grid item xs={12} sm={6}>
-                  
+
                   <TextField
                     fullWidth
                     variant={isEditable ? "outlined" : "filled"}
@@ -1040,7 +1039,7 @@ const CopyBookData = async () => {
                     helperText={touched.verifySASNUM && errors.verifySASNUM}
                     InputProps={{
                       readOnly: !isEditable,
-                      style: { backgroundColor:  !isEditable ? '': "#ffff" } ,
+                      style: { backgroundColor: !isEditable ? '' : "#ffff" },
                       endAdornment: (
                         <Tooltip title={t("streetNameInfo")}>
                           <IconButton color="primary">
@@ -1052,17 +1051,17 @@ const CopyBookData = async () => {
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                <Button color='success'
-                   variant={"contained"} 
-                    disabled={!isEditable} 
-                     onClick={handleSASClick}>
+                  <Button color='success'
+                    variant={"contained"}
+                    disabled={!isEditable}
+                    onClick={handleSASClick}>
                     {t("VerifySASApplicationNumber")}
-                      </Button>
-                      </Grid>
-                
-              
+                  </Button>
+                </Grid>
+
+
               </Grid>
-              
+
               <TableContainer component={Paper} sx={{ mt: 4 }}>
                 <Table>
                   <TableHead>
@@ -1081,7 +1080,7 @@ const CopyBookData = async () => {
                     {SAStableData.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={12} align="center">
-                        {t("Nodataavailable")}
+                          {t("Nodataavailable")}
                         </TableCell>
                       </TableRow>
                     ) : (
@@ -1106,13 +1105,13 @@ const CopyBookData = async () => {
               <br></br>
               <Grid item xs={12}>
                 <Box display="flex" justifyContent="center" gap={2}>
-                <Button variant="contained" color="primary" onClick={handleBack}>
+                  <Button variant="contained" color="primary" onClick={handleBack}>
                     {t("Previous")}
                   </Button>
                   {!isEditable && (
-                  <Button variant="contained" color="primary" onClick={handleAddressEdit}>
-                   {t("Edit")}
-                  </Button>
+                    <Button variant="contained" color="primary" onClick={handleAddressEdit}>
+                      {t("Edit")}
+                    </Button>
                   )}
                   {/* <Button variant="contained" color="success" type="submit"  onClick={() => setFieldValue('save')}>
                     {t("save")}

@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axiosInstance from '../components/Axios';
 import { toast, ToastContainer } from 'react-toastify';
-import LabelWithAsterisk   from '../components/LabelWithAsterisk'
+import LabelWithAsterisk from '../components/LabelWithAsterisk'
 const OwnerDetails = () => {
   const [formData, setFormData] = useState({
     relato: "0"
@@ -20,11 +20,11 @@ const OwnerDetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [tabledata5EkycVerifed, setTablesDataEKYCVerified] = useState([]);
-  const [tabledata5EkycNotVerifed,setTablesDataEkycNotVerifed] = useState([]);
+  const [tabledata5EkycNotVerifed, setTablesDataEkycNotVerifed] = useState([]);
   const [tablesdata8, setTableData8] = useState([]);
-  const [propertytype,setPropertyType] = useState();
-  const [coreArea,setCoreArea] = useState(0)
- 
+  const [propertytype, setPropertyType] = useState();
+  const [coreArea, setCoreArea] = useState(0)
+
   const [loading, setLoading] = useState(false);
   const [editableIndex, setEditableIndex] = useState(-1);
   const [otpFieldsVisible, setOtpFieldsVisible] = useState(false);
@@ -129,7 +129,7 @@ const OwnerDetails = () => {
 
     const tableDataOwnerNumbers = tableData.map(item => item.OWNERNUMBER);
     // Flags for the checks
-     //let allEKYCVerified = true;
+    //let allEKYCVerified = true;
     let allNameMatchVerified = true;
     let atLeastOneMobileVerified = true;
     let relationshiptype = true;
@@ -139,7 +139,7 @@ const OwnerDetails = () => {
     sessionStorage.setItem('OwnerKaveriSkip', false);
     for (let data of tabledata5EkycVerifed) {
       if (tableDataOwnerNumbers.includes(data.OWNERNUMBER)) { //retaining owners
-      
+
         if (tabledata5EkycVerifed.some(item => item.NAMEMATCHSCORE < 60)) {
           allNameMatchVerified = false;
         }
@@ -148,7 +148,7 @@ const OwnerDetails = () => {
         }
       }
       else {
-        
+
         if (data.MOBILEVERIFY !== "Verfied") {
           atLeastOneMobileVerified = false;
         }
@@ -161,32 +161,31 @@ const OwnerDetails = () => {
       }
     }
 
-    
-    if ( atLeastOneMobileVerified && relationname && relationshiptype && tabledata5EkycVerifed.length > 0 ) {
-      if(coreArea === 1){
-        if(!allNameMatchVerified){
+
+    if (atLeastOneMobileVerified && relationname && relationshiptype && tabledata5EkycVerifed.length > 0) {
+      if (coreArea === 1) {
+        if (!allNameMatchVerified) {
           debugger
           const ekycOwnerDetails = tabledata5EkycVerifed.map(({ OWNERNAME, OWNERNUMBER }) => ({
             ownerName: OWNERNAME || "",
             ownerNumber: OWNERNUMBER || 0
-        }));
-          sessionStorage.setItem("EKYC_OWNER_DETAILS",JSON.stringify(ekycOwnerDetails))
+          }));
+          sessionStorage.setItem("EKYC_OWNER_DETAILS", JSON.stringify(ekycOwnerDetails))
           navigate("/KaveriData")
-        }else if(allNameMatchVerified){
+        } else if (allNameMatchVerified) {
           sessionStorage.setItem('OwnerKaveriSkip', true);
           navigate("/ClassificationDocumentUploadPage")
         }
       }
-      else 
-      {
+      else {
         const ekycOwnerDetails = tabledata5EkycVerifed.map(({ OWNERNAME, OWNERNUMBER }) => ({
           ownerName: OWNERNAME || "",
           ownerNumber: OWNERNUMBER || 0
-      }));
-          sessionStorage.setItem("EKYC_OWNER_DETAILS",JSON.stringify(ekycOwnerDetails))
+        }));
+        sessionStorage.setItem("EKYC_OWNER_DETAILS", JSON.stringify(ekycOwnerDetails))
         navigate("/KaveriData")
       }
-    } 
+    }
     else {
       if (!atLeastOneMobileVerified) {
         toast.error(`${t("ownersMobileNotVerified")}`);
@@ -206,36 +205,33 @@ const OwnerDetails = () => {
 
 
   const handleSave = async () => {
-    
+
     try {
 
       if (otpFieldsVisible) {
         toast.error(`${t("verifyOtp")}`)
         return
       }
-      if (formData.IDENTIFIERTYPEID === null || formData.IDENTIFIERTYPEID === undefined) 
-        {
-          toast.error(`${t("selectRelationshipType")}`)
-          return
+      if (formData.IDENTIFIERTYPEID === null || formData.IDENTIFIERTYPEID === undefined) {
+        toast.error(`${t("selectRelationshipType")}`)
+        return
       }
       if (formData.IDENTIFIERTYPEID.length === 0) {
         toast.error(`${t("selectRelationshipType")}`)
         return
       }
-      if (formData.IDENTIFIERNAME === null || formData.IDENTIFIERNAME === undefined) 
-        {
-          toast.error(`${t("enterRelationName")}`)
-          return
-        }
+      if (formData.IDENTIFIERNAME === null || formData.IDENTIFIERNAME === undefined) {
+        toast.error(`${t("enterRelationName")}`)
+        return
+      }
       if (formData.IDENTIFIERNAME.length <= 0) {
         toast.error(`${t("enterRelationName")}`)
         return
       }
-      
-      if (formData.MOBILENUMBER === null || formData.MOBILENUMBER === undefined) 
-        {
-          toast.error(`${t("enterValidMobileNumber")}`)
-          return
+
+      if (formData.MOBILENUMBER === null || formData.MOBILENUMBER === undefined) {
+        toast.error(`${t("enterValidMobileNumber")}`)
+        return
       }
       if (formData.MOBILENUMBER.length <= 0 && formData.MOBILENUMBER.length < 10) {
         toast.error(`${t("enterValidMobileNumber")}`)
@@ -276,7 +272,7 @@ const OwnerDetails = () => {
       const { Table5 = [] } = response2.data;
       const { Table5: NCLTable5 = [], Table1: NCLTable1Data = [], } = response3.data;
       const { Table8 = [] } = response1.data;
-      setPropertyType(NCLTable1Data.length > 0 ? NCLTable1Data[0].PROPERTYCATEGORYID || "0":"0")
+      setPropertyType(NCLTable1Data.length > 0 ? NCLTable1Data[0].PROPERTYCATEGORYID || "0" : "0")
       setCoreArea(NCLTable1Data.length > 0 ? NCLTable1Data[0].AREA_TYPE : 2)
       setTableData8(Table8.length > 0 ? Table8 : [])
       setTableData(Table5.length > 0 ? Table5 : []);
@@ -300,36 +296,36 @@ const OwnerDetails = () => {
   React.useEffect(() => {
     const params = new URLSearchParams(location.search);
     const txnno = params.get('txnno');
-    
+
     if (txnno !== null && txnno !== undefined) {
       console.log('E-KYC completed successfully with txnno:', txnno);
       setTimeout(() => {
-      toast.success("E-KYC completed successfully");
-    }, 3000);
-    let ownerType = JSON.parse(sessionStorage.getItem('OWNERTYPE'));
+        toast.success("E-KYC completed successfully");
+      }, 3000);
+      let ownerType = JSON.parse(sessionStorage.getItem('OWNERTYPE'));
       const callEditEYCDate = async () => {
-        var ownerNumber = await EditOwnerDetailsFromEKYCData(txnno,ownerType); 
+        var ownerNumber = await EditOwnerDetailsFromEKYCData(txnno, ownerType);
         if (ownerNumber !== "") {
           console.log(ownerNumber)
         }
       }
       callEditEYCDate();
     }
-   
+
     fetchData();
   }, [location.search]);
- 
+
   const handleSubmit = (e) => {
 
     // Submit form data logic here
   };
-  const EditOwnerDetailsFromEKYCData = async (txno,ownerType) => {
+  const EditOwnerDetailsFromEKYCData = async (txno, ownerType) => {
     try {
-      const response = await axiosInstance.get("Name_Match/GET_BBD_NCL_OWNER_BYEKYCTRANSACTION?transactionNumber=" + txno + "&OwnerType=" +ownerType)
+      const response = await axiosInstance.get("Name_Match/GET_BBD_NCL_OWNER_BYEKYCTRANSACTION?transactionNumber=" + txno + "&OwnerType=" + ownerType)
       if (response.data.length > 0) {
         console.log(response.data)
         return response.data.Table[0].OWNERNUMBER || ""
-      
+
       }
       return ""
     } catch (error) {
@@ -357,39 +353,37 @@ const OwnerDetails = () => {
   };
   const AddEKYCOwner = async () => {
     var ownerNumber = 1;
-    
-    if(tabledata5EkycVerifed.length > 0){
+
+    if (tabledata5EkycVerifed.length > 0) {
       const maxOwnerNumber = Math.max(...tabledata5EkycVerifed.map(item => item.OWNERNUMBER));
       ownerNumber = maxOwnerNumber + 1;
     }
-    sessionStorage.setItem("OWNERTYPE","NEWOWNER")
-    var response = await axiosInstance.post("E-KYCAPI/RequestEKYC?OwnerNumber=" + ownerNumber + "&BOOK_APP_NO="+JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))+"&PROPERTY_CODE="+ JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')))
+    sessionStorage.setItem("OWNERTYPE", "NEWOWNER")
+    var response = await axiosInstance.post("E-KYCAPI/RequestEKYC?OwnerNumber=" + ownerNumber + "&BOOK_APP_NO=" + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + "&PROPERTY_CODE=" + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')))
 
-    
+
     window.location.href = response.data;
   };
   const VerfiyEKYC = async (row) => {
-    
+
     let ownerNumber = 0;
-    if(row.OWNERNUMBER !== ""){
+    if (row.OWNERNUMBER !== "") {
       ownerNumber = row.OWNERNUMBER;
-    }else
-     {
+    } else {
       ownerNumber = row.SLNO;
     }
-    sessionStorage.setItem("OWNERTYPE","OLDOWNER")
-    var response = await axiosInstance.post("E-KYCAPI/RequestEKYC?OwnerNumber=" + ownerNumber + "&BOOK_APP_NO="+JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))+"&PROPERTY_CODE="+ JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')))
+    sessionStorage.setItem("OWNERTYPE", "OLDOWNER")
+    var response = await axiosInstance.post("E-KYCAPI/RequestEKYC?OwnerNumber=" + ownerNumber + "&BOOK_APP_NO=" + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + "&PROPERTY_CODE=" + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')))
     window.location.href = response.data;
   }
   const ReaddDeletedOwner = async (row) => {
     let ownerNumber = 0;
-    if(row.OWNERNUMBER !== ""){
+    if (row.OWNERNUMBER !== "") {
       ownerNumber = row.OWNERNUMBER;
-    }else
-     {
+    } else {
       ownerNumber = row.SLNO;
     }
-    var response = await axiosInstance.get("BBMPCITZAPI/COPY_OWNER_FROM_BBDDRAFT_NCLTEMP?&P_BOOKS_PROP_APPNOAPPNO="+JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))+"&propertyCode="+ JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+"&ownerNumber="+ownerNumber)
+    var response = await axiosInstance.get("BBMPCITZAPI/COPY_OWNER_FROM_BBDDRAFT_NCLTEMP?&P_BOOKS_PROP_APPNOAPPNO=" + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + "&propertyCode=" + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + "&ownerNumber=" + ownerNumber)
     console.log(response.data)
     const { Table1 = [] } = response.data;
     setTablesDataEkycNotVerifed(Table1);
@@ -448,15 +442,15 @@ const OwnerDetails = () => {
               }
             }}
           >
-         {t("OwnerShipDetails")}
+            {t("OwnerShipDetails")}
           </Typography>
 
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
             <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-            {t("ExistingDigitization")} 
+              {t("ExistingDigitization")}
             </Typography>
             <Button variant="contained" color="warning" onClick={AddEKYCOwner}>
-            {t("ADDNEWOWNER")}
+              {t("ADDNEWOWNER")}
             </Button>
           </Box>
           <TableContainer component={Paper} sx={{ mt: 4 }}>
@@ -479,7 +473,7 @@ const OwnerDetails = () => {
                 {tableData.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={12} align="center">
-                    {t("Nodataavailable")}
+                      {t("Nodataavailable")}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -489,20 +483,20 @@ const OwnerDetails = () => {
                       <TableCell>{row.OWNERNAME}</TableCell>
                       <TableCell>{row.IDENTIFIERTYPE} {row.IDENTIFIERNAME}</TableCell>
                       <TableCell>{row.OWNERADDRESS} {row.MOBILENUMBER}</TableCell>
-                      <TableCell>{OwnerEKYCVerfiedExists(row.OWNERNUMBER) ? "Verifed":row.EKYCSTATUS}</TableCell>
+                      <TableCell>{OwnerEKYCVerfiedExists(row.OWNERNUMBER) ? "Verifed" : row.EKYCSTATUS}</TableCell>
                       <TableCell>{OwnerExists(row.OWNERNUMBER) ? `${t("RETAINED")}` : `${t("DELETED")}`}</TableCell>
                       <TableCell>{OwnerEKYCVerfiedExists(row.OWNERNUMBER) ?
-                      ""
+                        ""
                         :
-                        <Button variant="contained" color="primary" onClick={() =>VerfiyEKYC(row)}>
-                        {t("VerifyE-KYC")}
-                    </Button>
+                        <Button variant="contained" color="primary" onClick={() => VerfiyEKYC(row)}>
+                          {t("VerifyE-KYC")}
+                        </Button>
                       }
                       </TableCell>
                       <TableCell>{OwnerExists(row.OWNERNUMBER) ?
                         ""
                         :
-                        <Button variant="contained" color="primary" onClick={() =>ReaddDeletedOwner(row)}>
+                        <Button variant="contained" color="primary" onClick={() => ReaddDeletedOwner(row)}>
                           {t("Re-AddDeletedOwner")}
                         </Button>
                       }
@@ -557,7 +551,7 @@ const OwnerDetails = () => {
                         label={t('NAMEMATCHSTATUS')}
                         name="NameMatchscore"
                         value={owner.NAMEMATCHSCORE ? owner.NAMEMATCHSCORE > 60 ? OwnerEKYCVerfiedExists(owner.OWNERNUMBER) ?
-                         "Name Matching" : "New Owner" : "Name Not Matching": "EKYC Pending"}
+                          "Name Matching" : "New Owner" : "Name Not Matching" : "EKYC Pending"}
                         InputProps={{
                           readOnly: true,
                         }}
@@ -606,7 +600,7 @@ const OwnerDetails = () => {
                         <TextField
                           fullWidth
                           label={< LabelWithAsterisk text={t("RelationName")} />}
-                      
+
                           name="IDENTIFIERNAME"
                           value={formData.IDENTIFIERNAME}
                           onChange={handleChange}
@@ -682,7 +676,7 @@ const OwnerDetails = () => {
                           <TextField
                             fullWidth
                             label={< LabelWithAsterisk text={t("MobileNumber")} />}
-                           
+
                             name="MOBILENUMBER"
                             value={formData.MOBILENUMBER}
                             onChange={handleChange}
@@ -695,7 +689,7 @@ const OwnerDetails = () => {
                               {!otpButtonDisabled && (
                                 <>
                                   <Button variant="contained" color="primary" onClick={() => handleGenerateOtp(index)}>
-                                  {t("GenerateOTP")} 
+                                    {t("GenerateOTP")}
                                   </Button>
                                 </>
                               )}
@@ -773,15 +767,15 @@ const OwnerDetails = () => {
                     <Box display="flex" justifyContent="center" gap={2}>
                       {editableIndex === index ? (
                         <Button variant="contained" color="primary" onClick={handleSave}>
-                           {t("Save")}  
+                          {t("Save")}
                         </Button>
                       ) : (
                         <Button variant="contained" color="secondary" onClick={() => handleEdit(index)}>
-                           {t("Edit")}  
+                          {t("Edit")}
                         </Button>
                       )}
                       <Button variant="contained" color="error" onClick={() => handleDelete(index)}>
-                      {t("DELETEOWNER")}
+                        {t("DELETEOWNER")}
                       </Button>
                     </Box>
                   </Grid>
@@ -792,8 +786,8 @@ const OwnerDetails = () => {
 
 
 
-<br></br>
-<Typography>Actual Owners Applying For E-Khata</Typography>
+          <br></br>
+          <Typography>Actual Owners Applying For E-Khata</Typography>
 
           <TableContainer component={Paper} sx={{ mt: 4 }}>
             <Table>
@@ -815,7 +809,7 @@ const OwnerDetails = () => {
                 {tabledata5EkycVerifed.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={12} align="center">
-                    {t("Nodataavailable")}
+                      {t("Nodataavailable")}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -834,18 +828,18 @@ const OwnerDetails = () => {
                           style={{
                             maxWidth: '100%',
                             maxHeight: '200px',
-                            width: 'auto', 
-                            height: 'auto', 
+                            width: 'auto',
+                            height: 'auto',
                             borderRadius: '8px',
                           }}
                         /></TableCell>
                         <TableCell>{row.MOBILEVERIFY}</TableCell>
                         <TableCell>{row.EKYCSTATUS}</TableCell>
                         <TableCell>
-                       
-                          
-                            {row.NAMEMATCHSCORE > 60 ? OwnerEKYCVerfiedExists(row.OWNERNUMBER) ? "Name Matching"  : "New Owner": "Name Not Matching" }
-                           
+
+
+                          {row.NAMEMATCHSCORE > 60 ? OwnerEKYCVerfiedExists(row.OWNERNUMBER) ? "Name Matching" : "New Owner" : "Name Not Matching"}
+
                         </TableCell>
                       </TableRow>
                     );
@@ -856,7 +850,7 @@ const OwnerDetails = () => {
           </TableContainer>
           <Box display="flex" justifyContent="center" gap={2} mt={3}>
             <Button variant="contained" color="primary" onClick={back}>
-            {t("Previous")}
+              {t("Previous")}
             </Button>
             <Button variant="contained" color="success" onClick={handleNavigation}>
               {t("next")}

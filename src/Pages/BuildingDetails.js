@@ -15,7 +15,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import '../components/Shake.css';
-import LabelWithAsterisk   from '../components/LabelWithAsterisk'
+import LabelWithAsterisk from '../components/LabelWithAsterisk'
 const BuildingDetails = () => {
   const [formData, setFormData] = useState({
     BuildingNumber: "",
@@ -40,13 +40,13 @@ const BuildingDetails = () => {
     floornumber: Yup.string().required(`${t('floorNumberRequired')}`),
     features: Yup.string().required(`${t('usageCategoryRequired')}`),
     yearOfConstruction: Yup.string()
-    .required(`${t('yearUsageRequired')}`).notOneOf(['0000'], 'Year Usage cannot be all 0')
-    .matches(/^[1-9]\d{3}$/, `${t("yearUsageRequiredInvalid")}`),
+      .required(`${t('yearUsageRequired')}`).notOneOf(['0000'], 'Year Usage cannot be all 0')
+      .matches(/^[1-9]\d{3}$/, `${t("yearUsageRequiredInvalid")}`),
     Typeofuse: Yup.string().required(`${t('typeOfUseRequired')}`),
     SelfuseArea: Yup.string().required(`${t('selfUseAreaRequired')}`),
     RentedArea: Yup.string().required(`${t('rentedAreaRequired')}`),
-  //  BWSSBMeterNumber: Yup.string().required('BWSSB Meter Number is required'),
-  //  BesomCustomerID: Yup.string().required('Bescom Customer ID is required'),
+    //  BWSSBMeterNumber: Yup.string().required('BWSSB Meter Number is required'),
+    //  BesomCustomerID: Yup.string().required('Bescom Customer ID is required'),
 
   });
   const [tableData, setTableData] = useState([
@@ -86,10 +86,10 @@ const BuildingDetails = () => {
       const RentedAreaValue = name === 'RentedArea' ? value : formData.RentedArea;
       const totalArea = Math.round(parseFloat(selfuseAreaValue) + parseFloat(RentedAreaValue));
       formData.TotalArea = totalArea;
-      formData.SelfuseAreaMts =(parseFloat(selfuseAreaValue) * 0.092903).toFixed(2).toString()
-      formData.RentedAreaMts =     (parseFloat(RentedAreaValue) * 0.092903).toFixed(2).toString()
+      formData.SelfuseAreaMts = (parseFloat(selfuseAreaValue) * 0.092903).toFixed(2).toString()
+      formData.RentedAreaMts = (parseFloat(RentedAreaValue) * 0.092903).toFixed(2).toString()
       formData.TotalAreaMts = (parseFloat(totalArea) * 0.092903).toFixed(2).toString()
-      
+
     }
     if (name === "yearOfConstruction") {
       if (/^\d{0,4}$/.test(value)) {
@@ -100,14 +100,14 @@ const BuildingDetails = () => {
       }
       return
     }
-   
+
     setFormData({
       ...formData,
       [name]: value
     });
   };
 
- 
+
   const fetchData = async () => {
     try {
       const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
@@ -139,7 +139,7 @@ const BuildingDetails = () => {
   }
   const handleSubmit = async () => {
     // 
-    
+
 
     var BUILDINGUSAGETYPEID = 0;
     if (formData.RentedArea === 0) {
@@ -297,7 +297,7 @@ const BuildingDetails = () => {
   };
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
-      e.preventDefault(); 
+      e.preventDefault();
     }
   };
   useEffect(() => {
@@ -305,7 +305,7 @@ const BuildingDetails = () => {
     fetchData();
 
   }, []);
- 
+
   return (
     <Container maxWidth="xl">
       <ToastContainer />
@@ -318,7 +318,7 @@ const BuildingDetails = () => {
           enableReinitialize
         >
           {({ errors, touched, handleBlur }) => (
-             <Form onKeyDown={handleKeyDown}>
+            <Form onKeyDown={handleKeyDown}>
               <Typography
                 variant="h3"
                 align="center"
@@ -343,17 +343,17 @@ const BuildingDetails = () => {
                     fullWidth
                     type='number'
                     label={<LabelWithAsterisk text={t('BuildingNumber')} />}
-                   
+
                     name="BuildingNumber"
                     value={formData.BuildingNumber}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    
+
                     className={touched.BuildingNumber && !!errors.BuildingNumber ? 'shake' : ''}
                     error={touched.BuildingNumber && !!errors.BuildingNumber}
                     helperText={touched.BuildingNumber && errors.BuildingNumber}
                     InputProps={{
-                      style: { backgroundColor: '#ffff' } ,
+                      style: { backgroundColor: '#ffff' },
                       endAdornment: (
                         <Tooltip title={t("propertyEIDInfo")}>
                           <IconButton color="primary">
@@ -368,7 +368,7 @@ const BuildingDetails = () => {
                   <TextField
                     fullWidth
                     InputProps={{
-                      style: { backgroundColor: '#ffff' } ,
+                      style: { backgroundColor: '#ffff' },
                       endAdornment: (
                         <Tooltip title={t("cityInfo")}>
                           <IconButton color="primary">
@@ -378,7 +378,7 @@ const BuildingDetails = () => {
                       )
                     }}
                     label={<LabelWithAsterisk text={t('BuildingName')} />}
-                    
+
                     name="BuildingName"
                     value={formData.BuildingName}
                     onChange={handleChange}
@@ -474,7 +474,7 @@ const BuildingDetails = () => {
                     fullWidth
                     type="number"
                     label={<LabelWithAsterisk text={t('YearUsage')} />}
-                   
+
                     placeholder='yyyy'
 
                     name="yearOfConstruction"
@@ -486,7 +486,7 @@ const BuildingDetails = () => {
                     helperText={touched.yearOfConstruction && errors.yearOfConstruction}
                     InputProps={{
                       maxLength: 4,
-                      style: { backgroundColor: '#ffff' } ,
+                      style: { backgroundColor: '#ffff' },
                       endAdornment: (
                         <Tooltip title={t("doorPlotNoInfo")}>
                           <IconButton color="primary">
@@ -506,7 +506,7 @@ const BuildingDetails = () => {
                   <TextField
                     fullWidth
                     label={<LabelWithAsterisk text={t('SelfUseAreafts')} />}
-                   
+
                     name="SelfuseArea"
                     type="number"
                     value={formData.SelfuseArea}
@@ -516,7 +516,7 @@ const BuildingDetails = () => {
                     error={touched.SelfuseArea && !!errors.SelfuseArea}
                     helperText={touched.SelfuseArea && errors.SelfuseArea}
                     InputProps={{
-                      style: { backgroundColor: '#ffff' } ,
+                      style: { backgroundColor: '#ffff' },
                       endAdornment: (
                         <Tooltip title={t("buildingLandNameInfo")}>
                           <IconButton color="primary">
@@ -531,7 +531,7 @@ const BuildingDetails = () => {
                   <TextField
                     fullWidth
                     label={<LabelWithAsterisk text={t('RentedAreafts')} />}
-                   
+
                     name="RentedArea"
                     type="number"
                     value={formData.RentedArea}
@@ -541,7 +541,7 @@ const BuildingDetails = () => {
                     error={touched.RentedArea && !!errors.RentedArea}
                     helperText={touched.RentedArea && errors.RentedArea}
                     InputProps={{
-                      style: { backgroundColor: '#ffff' } ,
+                      style: { backgroundColor: '#ffff' },
                       endAdornment: (
                         <Tooltip title={t("streetInfo")}>
                           <IconButton color="primary">
@@ -678,16 +678,16 @@ const BuildingDetails = () => {
                     }}
                   />
                 </Grid> */}
-                
-              
-              <Grid item xs={20} sm={4}></Grid>
-              <Grid item xs={16} sm={4}>
-              <Button variant="contained" color="success" type="submit">
-                 {t("Save+")}
-                </Button>
+
+
+                <Grid item xs={20} sm={4}></Grid>
+                <Grid item xs={16} sm={4}>
+                  <Button variant="contained" color="success" type="submit">
+                    {t("Save+")}
+                  </Button>
                 </Grid>
                 <Grid item xs={12} sm={4}></Grid>
-                </Grid>
+              </Grid>
               <TableContainer component={Paper} sx={{ mt: 4 }}>
                 <Table>
                   <TableHead>
@@ -711,7 +711,7 @@ const BuildingDetails = () => {
                     {tableData.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={12} align="center">
-                         {t("Nodataavailable")}
+                          {t("Nodataavailable")}
                         </TableCell>
                       </TableRow>
                     ) : (
@@ -751,12 +751,12 @@ const BuildingDetails = () => {
 
               <Box display="flex" justifyContent="center" gap={2} mt={3}>
                 <Button variant="contained" color="primary" onClick={back}>
-                {t("Previous")}
+                  {t("Previous")}
                 </Button>
-                
+
 
                 <Button variant="contained" color="primary" onClick={handleNavigation}>
-                {t("next")}
+                  {t("next")}
                 </Button>
               </Box>
             </Form>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  TextField, Button, Grid, Box, Container, Typography, CircularProgress, 
+  TextField, Button, Grid, Box, Container, Typography, CircularProgress,
   FormControl, MenuItem, Select, InputLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
   TablePagination
 } from '@mui/material';
@@ -17,7 +17,7 @@ const BBDDraft = () => {
     ZoneName: "",
     WardName: "",
     SelectType: "",
-    Search:""
+    Search: ""
   });
 
   const navigate = useNavigate();
@@ -27,7 +27,7 @@ const BBDDraft = () => {
   const [WardData, setWardData] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
- const { t } = useTranslation();
+  const { t } = useTranslation();
   const fetchData = async () => {
     var response = await axiosInstance.get("BBMPCITZAPI/GetMasterZone")
     setZoneData(response.data.Table || [])
@@ -38,110 +38,109 @@ const BBDDraft = () => {
   }, []);
 
   const handleChange = async (e) => {
-    try{
-      
-    const { name, value } = e.target;
-    if (name === "ZoneName") {
-      var response = await axiosInstance.get("BBMPCITZAPI/GetMasterWard?ZoneId=" + value)
-      setWardData(response.data.Table)
-    }
-    
-    if (name === "WardName") {
+    try {
+
+      const { name, value } = e.target;
+      if (name === "ZoneName") {
+        var response = await axiosInstance.get("BBMPCITZAPI/GetMasterWard?ZoneId=" + value)
+        setWardData(response.data.Table)
+      }
+
+      if (name === "WardName") {
         setLoading(true);
         var response = await axiosInstance.get(`BBMPCITZAPI/LOAD_BBD_RECORDS?ZoneId=${formData.ZoneName}&WardId=${424057}&SerachType=${0}&Search=${"thushar"}`)
         setPropertyData(response.data.Table || [])
-        
+
+        setLoading(false);
+      }
+      setFormData({
+        ...formData,
+        [name]: value
+      });
+    } catch (error) {
       setLoading(false);
+      console.log(error)
     }
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-  }catch(error){
-    setLoading(false);
-    console.log(error)
-  }
   };
 
   const handleSearch = async () => {
-    
-    if(formData.ZoneName === ""){
-        toast.error(`${t("selectZone")}`)
-        return
+
+    if (formData.ZoneName === "") {
+      toast.error(`${t("selectZone")}`)
+      return
     }
-    if(formData.WardName === ""){
+    if (formData.WardName === "") {
       toast.error(`${t("selectWard")}`);
       return
     }
-        if(formData.SelectType === ""){
-         toast.error(`${t("enterSearchType")}`)
-         return
-        }
-        else {
-          if(formData.Search.length === 0){
-            toast.error(`${t("enterSearchText")}`);
-            return
-          }
-          else 
-          {
-            var response = await axiosInstance.get("BBMPCITZAPI/LOAD_BBD_RECORDS?ZoneId="+formData.ZoneName+"&WardId="+formData.WardName+"&SerachType="+formData.SelectType+"&Search="+formData.Search+"")
-            setPropertyData(response.data.Table || [])
-          }
-        }
+    if (formData.SelectType === "") {
+      toast.error(`${t("enterSearchType")}`)
+      return
+    }
+    else {
+      if (formData.Search.length === 0) {
+        toast.error(`${t("enterSearchText")}`);
+        return
+      }
+      else {
+        var response = await axiosInstance.get("BBMPCITZAPI/LOAD_BBD_RECORDS?ZoneId=" + formData.ZoneName + "&WardId=" + formData.WardName + "&SerachType=" + formData.SelectType + "&Search=" + formData.Search + "")
+        setPropertyData(response.data.Table || [])
+      }
+    }
   }
   const handleReset = () => {
-    
-   
+
+
     setPropertyData([]);
     setFormData({
-        ...formData,
-        ZoneName: "",
-    WardName: "",
-    SelectType: "",
-    Search:""
-      });
+      ...formData,
+      ZoneName: "",
+      WardName: "",
+      SelectType: "",
+      Search: ""
+    });
   }
 
- 
+
 
   const handleNavigation = async (row) => {
-  //  navigate('/AddressDetails')
-  
-  
+    //  navigate('/AddressDetails')
+
+
     const response3 = await axiosInstance.get(`BBMPCITZAPI/Get_Ctz_ObjectionModPendingAppl?LoginId=crc&propertycode=${row.PROPERTYCODE}&propertyid=${row.PROPERTYID}`);
-        
-        if (response3.data === "There is a issue while copying the data from Book Module.No Data Found") {
 
-        //future the propertyid will come from bbddraft page 
-        sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(row.PROPERTYCODE));
+    if (response3.data === "There is a issue while copying the data from Book Module.No Data Found") {
+
+      //future the propertyid will come from bbddraft page 
+      sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(row.PROPERTYCODE));
+      const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&propertyid=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
+      sessionStorage.setItem('BBD_DRAFT_API', JSON.stringify(response1));
+      sessionStorage.setItem('SETPROPERYID', row.PROPERTYID);
+      setTimeout(() => {
+        // navigate('/BBDDraft');
+
+        navigate('/AddressDetails')
+      }, 1000);
+    }
+    else {
+      sessionStorage.setItem('P_BOOKS_PROP_APPNO', JSON.stringify(response3.data.P_BOOKS_PROP_APPNO || 0));
+      sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(response3.data.PropertyId || 0));
+      try {
         const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&propertyid=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
+        const response2 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
+
         sessionStorage.setItem('BBD_DRAFT_API', JSON.stringify(response1));
-        sessionStorage.setItem('SETPROPERYID', row.PROPERTYID);
+        sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response2));
         setTimeout(() => {
-            // navigate('/BBDDraft');
-          
+          // navigate('/BBDDraft');
           navigate('/AddressDetails')
-           }, 1000);
-        }
-        else {
-          sessionStorage.setItem('P_BOOKS_PROP_APPNO', JSON.stringify(response3.data.P_BOOKS_PROP_APPNO || 0));
-          sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(response3.data.PropertyId || 0));
-        try {
-          const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&propertyid=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
-          const response2 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
+        }, 1000);
 
-          sessionStorage.setItem('BBD_DRAFT_API', JSON.stringify(response1));
-          sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response2));
-          setTimeout(() => {
-           // navigate('/BBDDraft');
-         navigate('/AddressDetails')
-          }, 1000);
+      } catch (error) {
 
-        } catch (error) {
-
-          navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
-        }
+        navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
       }
+    }
   }
 
   const handleChangePage = (event, newPage) => {
@@ -261,23 +260,23 @@ const BBDDraft = () => {
             </FormControl>
           </Grid>
           <Grid item xs={12} sm={4} md={3}>
-  <TextField
-    label={t("Search")}
-    name="Search"
-    value={formData.Search}
-    onChange={handleChange}
-    fullWidth
-    sx={{ marginBottom: 3 }}
-  />
-</Grid>
+            <TextField
+              label={t("Search")}
+              name="Search"
+              value={formData.Search}
+              onChange={handleChange}
+              fullWidth
+              sx={{ marginBottom: 3 }}
+            />
+          </Grid>
           <Box display="flex" justifyContent="center" gap={2} mt={6} width="100%">
-  <Button variant="contained" color="success" onClick={handleSearch}>
-  {t("Search")}
-  </Button>
-  <Button variant="contained" color="primary" onClick={handleReset}>
-  {t("Reset")}
-  </Button>
-</Box>
+            <Button variant="contained" color="success" onClick={handleSearch}>
+              {t("Search")}
+            </Button>
+            <Button variant="contained" color="primary" onClick={handleReset}>
+              {t("Reset")}
+            </Button>
+          </Box>
         </Grid>
         <TableContainer component={Paper} sx={{ mt: 4 }}>
           <Table>
@@ -296,7 +295,7 @@ const BBDDraft = () => {
               {propertyData.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={12} align="center">
-                   {t("Nodataavailable")}
+                    {t("Nodataavailable")}
                   </TableCell>
                 </TableRow>
               ) : (
