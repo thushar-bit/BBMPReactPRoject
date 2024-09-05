@@ -55,6 +55,7 @@ const AddressDetails = () => {
     lat1: 0,
     long1: 0,
     wardNumber:"",
+    wardName:"",
     ownerName:""
   });
   const { t } = useTranslation();
@@ -80,7 +81,6 @@ const AddressDetails = () => {
   const [loading, setLoading] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
   const [handleSASClicks, sethandleSASClicks] = useState(false);
-  const [fieldvalue,setFieldValue] = useState("")
   const [lat2, setlat1] = useState(0);
   const [long2, setlong1] = useState(0);
   const [GoogleMapLoad,setGoogleMapLoad] = useState(false);
@@ -129,6 +129,7 @@ let table4Item = [];
         address: table1Item.ADDRESS || '',
         district: table1Item.DISTRICTNAME || '',
         wardNumber: table1Item.WARDID || '',
+        wardName: table1Item.WARDNAME || "",
         propertyNumber: table1Item.PROPERTYCODE || '',
         ulbname: table1Item.ULBNAME || '',
         ownerName: table5Item.OWNERNAME || '',
@@ -143,14 +144,7 @@ let table4Item = [];
         long1: table4Item.LONGITUDE || "",
         verifySASNUM: NCLtable1Item.PUID !== null ? NCLtable1Item.PUID || "" : table1Item.PUID ? table1Item.PUID : "",
       });
-      const sasNum = NCLtable1Item.PUID !== null ? NCLtable1Item.PUID || 0 : table1Item.PUID ? table1Item.PUID : 0;
-      const responseSAS = await axiosInstance.get('BBMPCITZAPI/GetTaxDetails?applicationNo=' + sasNum + '&propertycode='+JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+'&P_BOOKS_PROP_APPNO='+JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))+'&loginId=crc')
-      const { Table = [] } = responseSAS.data;
       
-      if (Table.length === 0) {
-        toast.error(`${t("No SAS Applications Found")}`);
-      }
-      setSASTableData(Table);
       setGoogleMapLoad(false)
       const GetWardCordinates = await axiosInstance.get("BBMPCITZAPI/GetWardCordinates?wardNumber="+table1Item.WARDID)
       const { Table:ward = [] } = GetWardCordinates.data;
@@ -166,7 +160,14 @@ let table4Item = [];
         setWardLong(ward[0].WARDLONGITUDE);
         setGoogleMapLoad(true)
       }
-    
+      const sasNum = NCLtable1Item.PUID !== null ? NCLtable1Item.PUID || 0 : table1Item.PUID ? table1Item.PUID : 0;
+      const responseSAS = await axiosInstance.get('BBMPCITZAPI/GetTaxDetails?applicationNo=' + sasNum + '&propertycode='+JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+'&P_BOOKS_PROP_APPNO='+JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))+'&loginId=crc')
+      const { Table = [] } = responseSAS.data;
+      
+      if (Table.length === 0) {
+        toast.error(`${t("No SAS Applications Found")}`);
+      }
+      setSASTableData(Table);
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -406,7 +407,7 @@ const CopyBookData = async () => {
         }, 2000);
       }
     } else {
-      await fetchData();
+     
       setTimeout(() => {
        
       if(propertyPhoto.length === 0){
@@ -641,7 +642,7 @@ const CopyBookData = async () => {
                     variant="filled"
                     label={t("wardNumber")}
                     name="wardNumber"
-                    value={formData.wardNumber}
+                    value={formData.wardNumber +" ,"+ formData.wardName}
                     onChange={handleChange}
                     InputProps={{
                       readOnly: true,

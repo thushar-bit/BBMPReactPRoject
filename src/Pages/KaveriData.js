@@ -14,6 +14,7 @@ import LabelWithAsterisk   from '../components/LabelWithAsterisk'
 const KaveriData = () => {
   const [formData, setFormData] = useState({
     RegistrationNumber: "",
+    OldRegistrationNumber:"",
     ECDocumentNumber:""
   });
   const [TableKavDocData,setTableKavDocData] = useState([]);
@@ -24,11 +25,30 @@ const KaveriData = () => {
   const { t } = useTranslation();
   const handleKaveriDocumentData = async () => {
     if(formData.RegistrationNumber.length === 0){
-        toast.error(`${t("Please Enter the Registration Number")}`);
+      if(formData.OldRegistrationNumber.length === 0){
+        toast.error(`${t("Please Enter One of The Registration Number")}`);
         return
+      }
     }
+    if(formData.RegistrationNumber.length > 0 && formData.OldRegistrationNumber.length > 0){
+      toast.error(`${t("Please Enter any One Registration Number")}`)
+      return
+    }
+    debugger
+    const ekycOwnerDetails = JSON.parse(sessionStorage.getItem('EKYC_OWNER_DETAILS'));
+    const ekycdatas = ekycOwnerDetails.map(({ ownerName, ownerNumber }) => ({
+      ownerName: ownerName || "",
+      ownerNumber: ownerNumber || 0
+  }));
     try {
-       let response =  await axiosInstance.get(`KaveriAPI/GetKaveriDocData?RegistrationNoNumber=${formData.RegistrationNumber}&BOOKS_APP_NO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&PropertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&LoginId=crc`)
+      let response;
+      if(formData.RegistrationNumber.length > 0){
+        response =  await axiosInstance.post(`KaveriAPI/GetKaveriDocData?RegistrationNoNumber=${formData.RegistrationNumber}&BOOKS_APP_NO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&PropertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&LoginId=crc
+       `,ekycdatas)
+      }else if(formData.OldRegistrationNumber.length > 0){
+        response =  await axiosInstance.post(`KaveriAPI/GetKaveriDocData?RegistrationNoNumber=${formData.OldRegistrationNumber}&BOOKS_APP_NO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&PropertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&LoginId=crc
+        `,ekycdatas)
+      }
        const result = response.data;
        
        if(result.success)
@@ -84,18 +104,35 @@ const KaveriData = () => {
 
   const handleECPropertyData = async () => {
     if(formData.RegistrationNumber.length === 0){
+      if(formData.OldRegistrationNumber.length === 0)
       toast.error(`${t("enterRegistrationNumberFirst")}`);
+      return
+    }
+    if(formData.RegistrationNumber.length > 0 && formData.OldRegistrationNumber.length > 0){
+      toast.error(`${t("Please Enter any One Registration Number")}`)
       return
     }
     if(formData.ECDocumentNumber.length === 0){
       toast.error(`${t("enterEcDocumentNumber")}`)
       return
     }
+    const ekycOwnerDetails = JSON.parse(sessionStorage.getItem('EKYC_OWNER_DETAILS'));
+    const ekycdatas = ekycOwnerDetails.map(({ ownerName, ownerNumber }) => ({
+      ownerName: ownerName || "",
+      ownerNumber: ownerNumber || 0
+  }));
       try {
-
-        let response = await axiosInstance.get
-        (`KaveriAPI/GetKaveriECData?ECNumber=${formData.ECDocumentNumber}&RegistrationNoNumber=${formData.RegistrationNumber}&BOOKS_APP_NO=
-          ${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&PropertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&LoginId=crc`)
+        let response;
+        if(formData.RegistrationNumber.length > 0){
+           response = await axiosInstance.post
+          (`KaveriAPI/GetKaveriECData?ECNumber=${formData.ECDocumentNumber}&RegistrationNoNumber=${formData.RegistrationNumber}&BOOKS_APP_NO=
+            ${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&PropertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&LoginId=crc`,ekycdatas)
+        }else if(formData.OldRegistrationNumber.length > 0){
+           response = await axiosInstance.post
+          (`KaveriAPI/GetKaveriECData?ECNumber=${formData.ECDocumentNumber}&RegistrationNoNumber=${formData.OldRegistrationNumber}&BOOKS_APP_NO=
+            ${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&PropertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&LoginId=crc`,ekycdatas)
+        }
+       
           
           const result = response.data;
           
@@ -149,10 +186,11 @@ const KaveriData = () => {
   const handleNavigation = () => {
     debugger
     sessionStorage.setItem('KaveriVerified', isAllow);
+    const k = sessionStorage.getItem('KaveriVerified')
     if(TableKavDocData !== undefined && TableKavDocData !== null){
       if(TableKavDocData.length === 0)
         {
-          if(sessionStorage.getItem('KaveriVerified') === true){
+          if(k){
             navigate("/ClassificationDocumentUploadPage")
           }
           else {
@@ -200,6 +238,7 @@ const KaveriData = () => {
               >
                {t("KAVERISERVICESDATA")}
               </Typography>
+              
               <Grid container spacing={2} alignItems="center">
                 <Grid item xs={9}>
                   <TextField
@@ -222,16 +261,65 @@ const KaveriData = () => {
                     }}
                   />
                 </Grid>
-                  <Grid item xs={3} style={{ display: 'flex', alignItems: 'center' }}>
-                    <Button
-                      variant="contained"
-                      color="success"
-                        onClick={handleKaveriDocumentData}
-                      style={{ height: '100%' }}
-                    >
-                     {t("KaveriDocumentData")}
-                    </Button>
-                  </Grid>
+                  
+              </Grid>
+              <br></br>
+             
+              <Grid container alignItems="center" spacing={2}>
+  <Grid item xs={3} style={{ display: 'flex', justifyContent: 'flex-end',marginLeft:"6%"  }}>
+    <Typography 
+      variant="h6"
+      align="center"
+      gutterBottom
+      sx={{
+        fontWeight: 'bold',
+        fontFamily: "sans-serif",
+        color: '#000', // Specify the desired color here
+        fontSize: {
+          xs: '2rem',
+          sm: '2rem',
+          md: '1.2rem',
+        }
+      }}
+    >
+      OR
+    </Typography>
+  </Grid>
+  <Grid item xs={3} style={{ display: 'flex', justifyContent: 'flex-start',marginLeft:"44%" }}>
+    <Button
+      variant="contained"
+      color="success"
+      onClick={handleKaveriDocumentData}
+      style={{ height: '100%' }}
+    >
+      {t("KaveriDocumentData")}
+    </Button>
+  </Grid>
+</Grid>
+<br></br>
+              <Grid container spacing={2} alignItems="center">
+                <Grid item xs={9}>
+                  <TextField
+                    fullWidth
+                   
+                    label={< LabelWithAsterisk text={t("oldRegistrationNumber")} />}
+                    placeholder='NMG-X-XXXX-XXXX-XX'
+                    name="OldRegistrationNumber"
+                    value={formData.OldRegistrationNumber}
+                    onChange={handleChange}
+                    InputProps={{
+                      style:{backgroundColor:"#ffff"},
+                      endAdornment: (
+                        <Tooltip title={t("propertyEIDInfo")}>
+                          <IconButton color="primary">
+                            <InfoIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )
+                    }}
+                  />
+                </Grid>
+                  
               </Grid>
               {isShowKaveriDocumentDetais && 
               <TableContainer component={Paper} style={{ marginTop: 16 }}>
@@ -312,7 +400,7 @@ const KaveriData = () => {
   <Table>
     <TableHead>
       <TableRow>
-        <TableCell colSpan={4}>
+        <TableCell colSpan={6}>
           <Typography variant="h6">{t("PartyInformation")}</Typography>
         </TableCell>
       </TableRow>
@@ -321,6 +409,8 @@ const KaveriData = () => {
         <TableCell><strong>{t("PartyName")}</strong></TableCell>
         <TableCell><strong>{t("Age")}</strong></TableCell>
         <TableCell><strong>{t("Address")}</strong></TableCell>
+        <TableCell><strong>{t("EKYC Owner Name")}</strong></TableCell>
+        <TableCell><strong>{t("Name Match Status")}</strong></TableCell>
       </TableRow>
     </TableHead>
     <TableBody>
@@ -332,6 +422,8 @@ const KaveriData = () => {
               <TableCell>{party.partyname || 'N/A'}</TableCell>
               <TableCell>{party.age || 'N/A'}</TableCell>
               <TableCell>{party.address || 'N/A'}</TableCell>
+              <TableCell>{party.ekycOwnerName || 'N/A'}</TableCell>
+               <TableCell>{party.nameMatchScore || 'N/A'}</TableCell>
             </TableRow>
           ))
         ) : (
@@ -408,6 +500,8 @@ const KaveriData = () => {
                 <Typography variant="subtitle1"><strong>{t("DocumentSummary")}</strong></Typography>
                 <Typography>{EcDocumentData.docSummary || 'No document summary available'}</Typography>
               </TableCell>
+              <TableCell>
+                </TableCell>
             </TableRow>
 
             <TableRow>
@@ -423,6 +517,8 @@ const KaveriData = () => {
                     : 'No execution date available'}
                 </Typography>
               </TableCell>
+              <TableCell>
+                </TableCell>
             </TableRow>
 
             <TableRow>
@@ -437,6 +533,37 @@ const KaveriData = () => {
                 )}
               </TableCell>
               <TableCell />
+              <TableCell>
+                </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                <Typography variant="subtitle1"><strong>Claimants</strong></Typography>
+                {EcDocumentData.claimants && EcDocumentData.claimants.length > 0 ? (
+                  EcDocumentData.claimants.map((item, index) => (
+                    <Typography key={index}>{item}</Typography>
+                  ))
+                ) : (
+                  <Typography variant="body2" color="textSecondary">No Claimants available</Typography>
+                )}
+              </TableCell>
+              <TableCell>
+              <Typography variant="subtitle1"><strong>{t("EKYC Owner Name")}</strong></Typography>
+                <Typography>
+                  {EcDocumentData.ekycOwnerName 
+                    ? EcDocumentData.ekycOwnerName
+                    : 'No Ekyc Owner Name available'}
+                </Typography>
+              </TableCell>
+              <TableCell>
+              <Typography variant="subtitle1"><strong>{t("Name Match Status")}</strong></Typography>
+                <Typography>
+                  {EcDocumentData.nameMatchScore 
+                    ? EcDocumentData.nameMatchScore
+                    : 'No Name Match Score available'}
+                </Typography>
+              </TableCell>
+              
             </TableRow>
           </TableBody>
         </Table>

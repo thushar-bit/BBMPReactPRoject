@@ -8,7 +8,7 @@ const resources = {
       "propertyEID": "Property EID",
       "city": "City",
       "district": "District",
-      "wardNumber": "	Ward No.",
+      "wardNumber": "	Ward No. and Ward Name",
       "propertyNumber": "Property Number",
       "ownerName": "Owner Name",
       "streetName": "Street Name",
@@ -78,7 +78,7 @@ const resources = {
         "CarpetArea":"Carpet Area (in Sq.mts.)",
         "AdditionalArea":"Additional Area(in Sq.mts.)",
         "SuperBuiltArea":"Super Built Area (in Sq.mts.",
-        
+        "AsPerBBMPBooks":"As Per Books",
 
        //BBDDraft
         "PendingPropertyList":"List of Pending Property Details",
@@ -173,8 +173,13 @@ const resources = {
        "Nodataavailable":"No data available",
        //Kaveri
        "KAVERISERVICESDATA":"KAVERI SERVICES DATA",
-       "RegistrationNumber":"Registration Number",
+       
+       "RegistrationNumber":"Registration Number (When Registration Happened After 2003)",
+       "oldRegistrationNumber":"For Document Upload (Only when registration happened prior to 2004)",
        "KaveriDocumentData":"Get Kaveri Document Data",
+       "Please Enter any One Registration Number":"Please Enter any One Registration Number",
+       "EKYC Owner Name":"EKYC Owner Name",
+       "Name Match Status":"Name Match Status",
         "DocumentInformation":"Document Information",
         "ApplicationNumber":"Application Number",
         "ExecutionDate":"Execution Date",
@@ -276,7 +281,7 @@ const resources = {
 "errorDeletingData": "Error Deleting data!",
 "Please Enter the Registration Number": "Please Enter the Registration Number",
 "detailsFetchedSuccess": "Details Fetched Successfully",
-"enterRegistrationNumberFirst": "Please Enter the Registration Number First",
+"enterRegistrationNumberFirst": "Please Enter any one Registration Number First",
 "enterEcDocumentNumber": "Please Enter the EC Document Number",
 "registrationNumberNotExist": "The Given Registration Number Does Not Exist With EC Details.\nPlease Provide Correct Registration Number",
 "errorFetchingEcData": "Error Getting EC Property data!",
@@ -359,7 +364,7 @@ const resources = {
       "propertyEID": "ಸ್ಥಿರ ID",
       "city": "ನಗರ",
       "district": "ಜಿಲ್ಲೆ",
-      "wardNumber": "ವಾರ್ಡ್ ಸಂಖ್ಯೆ",
+      "wardNumber": "ವಾರ್ಡ್ ಸಂಖ್ಯೆ ಮತ್ತು ವಾರ್ಡ್ ಹೆಸರು",
       "propertyNumber": "ಸ್ಥಿರ ಸಂಖ್ಯೆ",
       "ownerName": "ಮಾಲಿಕರ ಹೆಸರು",
       "streetName": "ರಸ್ತೆಯ ಹೆಸರು",
@@ -428,7 +433,7 @@ const resources = {
        "CarpetArea":"ಕಾರ್ಪೆಟ್ ವಿಸ್ತೀರ್ಣ(ಚ. ಮೀಟರ್ ನಲ್ಲಿ)",
        "AdditionalArea":"ಹೆಚ್ಚಿನ ವಿವರಗಳು(ಚ. ಮೀಟರ್ ನಲ್ಲಿ)",
        "SuperBuiltArea":"ಘಟಕದ ವಿಸ್ತೀರ್ಣ (ಚ.ಮೀ. ಗಳಲ್ಲಿ)",
-       
+       "AsPerBBMPBooks":"ಪುಸ್ತಕಗಳ ಪ್ರಕಾರ",
 
       //BBDDraft
       "PendingPropertyList":"ಅಪೂರ್ಣ ಆಸ್ತಿ ವಿವರಗಳ ಪಟ್ಟಿ",
@@ -520,8 +525,12 @@ const resources = {
       "Nodataavailable":"ಯಾವುದೇ ಡೇಟಾ ಲಭ್ಯವಿಲ್ಲ",
       //Kaveri
       "KAVERISERVICESDATA":"ಕಾವೇರಿ ಸರ್ವೀಸ್ ಡೇಟಾ",
-      "RegistrationNumber":"ನೋಂದಣಿ ಸಂಖ್ಯೆ",
+      "RegistrationNumber":"ನೋಂದಣಿ ಸಂಖ್ಯೆ (2003 ರ ನಂತರ ನೋಂದಣಿ ಸಂಭವಿಸಿದಾಗ)",
+      "oldRegistrationNumber":"ಡಾಕ್ಯುಮೆಂಟ್ ಅಪ್‌ಲೋಡ್‌ಗಾಗಿ (2004 ರ ಮೊದಲು ನೋಂದಣಿ ಸಂಭವಿಸಿದಾಗ ಮಾತ್ರ)",
       "KaveriDocumentData":"ಕಾವೇರಿ ಡಾಕ್ಯುಮೆಂಟ್ ಡೇಟಾವನ್ನು ಪಡೆಯಿರಿ",
+      "Please Enter any One Registration Number":"ದಯವಿಟ್ಟು ಯಾವುದೇ ಒಂದು ನೋಂದಣಿ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ",
+      "EKYC Owner Name":"EKYC ಮಾಲೀಕರ ಹೆಸರು",
+      "Name Match Status":"ಹೆಸರು ಹೊಂದಾಣಿಕೆಯ ಸ್ಥಿತಿ",
        "DocumentInformation":"ಡಾಕ್ಯುಮೆಂಟ್ ಮಾಹಿತಿ",
        "ApplicationNumber":"ಅಪ್ಲಿಕೇಶನ್ ಸಂಖ್ಯೆ",
        "ExecutionDate":"Execution ದಿನಾಂಕ",

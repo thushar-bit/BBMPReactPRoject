@@ -68,7 +68,7 @@ const AreaDimension = () => {
   
     // Check if all relevant values are greater than 0 and not NaN
     if (values.some(val => val <= 0 || isNaN(val))) {
-      return { areaFt: '', areaMt: '' }; // Return empty if any value is invalid
+      return { areaFt: "Invalid Data", areaMt: "Invalid Data" }; // Return empty if any value is invalid
     }
   
     let areaFt = 1;
@@ -90,9 +90,12 @@ const AreaDimension = () => {
     }
   
     // Convert to meters (ft to m conversion)
-    const areaMt = areaFt > 0 ? Math.round(areaFt * 0.092903 * 100) / 100 : '';
-  
+    const areaMt = areaFt > 0 ? Math.round(areaFt * 0.092903 * 100) / 100 : "Invalid Data";
+    if(areaMt === "Invalid Data"){
+      areaFt = "Invalid Data"
+    }
     return { areaFt, areaMt };
+
   };
   
   const handleChange = (e) => {
@@ -252,8 +255,8 @@ const updatedFormData = {
     formData.sqMt = areaMt;
         setFormData(prevData => ({
           ...prevData,
-          sqFt: areaFt.toString(),
-          sqMt: areaMt.toString()
+         // sqFt: areaFt.toString(),
+        //  sqMt: areaMt.toString()
          
         }));
     
@@ -633,6 +636,17 @@ const updatedFormData = {
                   <FormControlLabel value="no" control={<Radio />} label={t("NoModifications")} />
                 </RadioGroup>
               </FormControl>
+              <Typography
+            variant="h6"
+            align="left"
+            gutterBottom
+            sx={{
+              fontWeight: 'bold',
+              marginBottom: 3,
+            }}
+          >
+           {t("AsPerBBMPBooks")}
+          </Typography>
               <Grid container spacing={3}>
                 <Grid item xs={6} sm={3}>
                   <TextField
@@ -659,7 +673,6 @@ const updatedFormData = {
                     fullWidth
                     label={t("West")}
                     name="Bookwest"
-                  
                     value={formData.Bookwest}
                     onChange={handleChange}
                      variant={"filled"}
@@ -680,7 +693,6 @@ const updatedFormData = {
                     fullWidth
                     label={t("North")}
                     name="Booknorth"
-              
                     value={formData.Booknorth}
                     onChange={handleChange}
                      variant={"filled"}
@@ -701,7 +713,6 @@ const updatedFormData = {
                     fullWidth
                     label={t("South")}
                     name="Booksouth"
-                   
                     value={formData.Booksouth}
                     onChange={handleChange}
                      variant={"filled"}
@@ -723,7 +734,6 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                 
                     label={<LabelWithAsterisk text={t('East')} />}
                     name="east"
                     value={formData.east}
@@ -745,7 +755,6 @@ const updatedFormData = {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-                  
                     name="west"
                     label={<LabelWithAsterisk text={t('West')} />}
                     value={formData.west}
@@ -829,7 +838,17 @@ const updatedFormData = {
               </FormControl>
               <Typography variant="h6" sx={{ fontWeight: 'bold', }}>
               </Typography>
-
+              <Typography
+            variant="h6"
+            align="left"
+            gutterBottom
+            sx={{
+              fontWeight: 'bold',
+              marginBottom: 3,
+            }}
+          >
+           {t("AsPerBBMPBooks")}
+          </Typography>
               {(isOddSiteEnabled === false) && (
                 
                 <Grid container spacing={3}>
@@ -1023,6 +1042,17 @@ const updatedFormData = {
                   <FormControlLabel value="no" control={<Radio />} label={t("NoModifications")} />
                 </RadioGroup>
               </FormControl>
+              <Typography
+            variant="h6"
+            align="left"
+            gutterBottom
+            sx={{
+              fontWeight: 'bold',
+              marginBottom: 3,
+            }}
+          >
+           {t("AsPerBBMPBooks")}
+          </Typography>
               <Grid container spacing={3}>
                 <Grid item xs={6} sm={3}>
                   <TextField
@@ -1227,7 +1257,17 @@ const updatedFormData = {
               </FormControl>
               <Typography variant="h6" sx={{ fontWeight: 'bold', }}>
               </Typography>
-
+              <Typography
+            variant="h6"
+            align="left"
+            gutterBottom
+            sx={{
+              fontWeight: 'bold',
+              marginBottom: 3,
+            }}
+          >
+           {t("AsPerBBMPBooks")}
+          </Typography>
               {(isOddSiteEnabled === false) && (
                 <Grid container spacing={3}>
                   <Grid item xs={6} sm={3}>
@@ -1513,7 +1553,7 @@ const updatedFormData = {
                       variant="filled"
                       size="medium"
                       name="sqFt"
-                      type="number"
+                      
                       value={formData.sqFt}
                       onChange={handleChange}
                       sx={{ width: '300px', borderColor: '#016767' }}
@@ -1533,7 +1573,7 @@ const updatedFormData = {
                       variant="filled"
                       size="medium"
                       name="sqMt"
-                      type="number"
+                     
                       value={formData.sqMt}
                       onChange={handleChange}
                       InputProps={{

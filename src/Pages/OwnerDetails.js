@@ -19,17 +19,18 @@ const OwnerDetails = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const [tablesdata9, setTablesData9] = useState([]);
+  const [tabledata5EkycVerifed, setTablesDataEKYCVerified] = useState([]);
+  const [tabledata5EkycNotVerifed,setTablesDataEkycNotVerifed] = useState([]);
   const [tablesdata8, setTableData8] = useState([]);
-  const [propertytype,setPropertyType] = useState()
-  const [OwnerNumber, setOwnerNumber] = useState("");
+  const [propertytype,setPropertyType] = useState();
+  const [coreArea,setCoreArea] = useState(0)
+ 
   const [loading, setLoading] = useState(false);
   const [editableIndex, setEditableIndex] = useState(-1);
   const [otpFieldsVisible, setOtpFieldsVisible] = useState(false);
   const [alertShown, setAlertShown] = useState(false);
   const [otpData, setOtpData] = useState({});
   const [otpNumber, setOtpNumber] = useState(0)
-  const [nameMatchStatuses, setNameMatchStatuses] = useState({});
   const { t } = useTranslation();
   const [otpButtonDisabled, setOtpButtonDisabled] = useState(false);
   const [timer, setTimer] = useState(30); // Initial countdown timer value in seconds
@@ -109,11 +110,11 @@ const OwnerDetails = () => {
   };
   const handleEdit = (index) => {
     setEditableIndex(index);
-    setFormData(tablesdata9[index]);
+    setFormData(tabledata5EkycNotVerifed[index]);
   };
   const handleDelete = async (index) => {
     try {
-      const ownerToDelete = tablesdata9[index];
+      const ownerToDelete = tabledata5EkycNotVerifed[index];
       await axiosInstance.get(`BBMPCITZAPI/DEL_SEL_NCL_PROP_OWNER_TEMP?P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&propertyCode=${ownerToDelete.PROPERTYCODE}&ownerNumber=${ownerToDelete.OWNERNUMBER}`);
       toast.error(`${t("ownerDeletedSuccess")}`);
       await fetchData();
@@ -128,18 +129,18 @@ const OwnerDetails = () => {
 
     const tableDataOwnerNumbers = tableData.map(item => item.OWNERNUMBER);
     // Flags for the checks
-    // let allEKYCVerified = true;
+     //let allEKYCVerified = true;
     let allNameMatchVerified = true;
     let atLeastOneMobileVerified = true;
     let relationshiptype = true;
     let relationname = true;
     // Check all the required conditions
-    for (let data of tablesdata9) {
+    debugger
+    sessionStorage.setItem('OwnerKaveriSkip', false);
+    for (let data of tabledata5EkycVerifed) {
       if (tableDataOwnerNumbers.includes(data.OWNERNUMBER)) { //retaining owners
-        // if (data.EKYCVERIFIED !== "Verfied") {
-        //     allEKYCVerified = false;
-        // }
-        if (nameMatchStatuses[data.OWNERNUMBER] !== "MATCHED" && nameMatchStatuses[data.OWNERNUMBER] !== "NEW OWNER") {
+      
+        if (tabledata5EkycVerifed.some(item => item.NAMEMATCHSCORE < 60)) {
           allNameMatchVerified = false;
         }
         if (data.MOBILEVERIFY !== "Verfied") {
@@ -147,9 +148,7 @@ const OwnerDetails = () => {
         }
       }
       else {
-        //   if (data.EKYCVERIFIED !== "Verfied") {   //new Owners
-        //     allEKYCVerified = false;
-        // }
+        
         if (data.MOBILEVERIFY !== "Verfied") {
           atLeastOneMobileVerified = false;
         }
@@ -162,18 +161,33 @@ const OwnerDetails = () => {
       }
     }
 
-    // Determine whether to navigate or alert
-    if (allNameMatchVerified && atLeastOneMobileVerified && relationname && relationshiptype || tablesdata9.length > 0) {
-      // Navigate to the desired location
-      navigate("/KaveriData")
-    } else {
-      // Display appropriate alerts
-      // if (!allEKYCVerified) {
-      //     alert("All owner numbers must have EKYCVERIFIED set to VERIFIED.");
-      // }
-      if (!allNameMatchVerified) {
-        toast.error(`${t("retainingOwnersNameMismatch")}`);
+    
+    if ( atLeastOneMobileVerified && relationname && relationshiptype && tabledata5EkycVerifed.length > 0 ) {
+      if(coreArea === 1){
+        if(!allNameMatchVerified){
+          debugger
+          const ekycOwnerDetails = tabledata5EkycVerifed.map(({ OWNERNAME, OWNERNUMBER }) => ({
+            ownerName: OWNERNAME || "",
+            ownerNumber: OWNERNUMBER || 0
+        }));
+          sessionStorage.setItem("EKYC_OWNER_DETAILS",JSON.stringify(ekycOwnerDetails))
+          navigate("/KaveriData")
+        }else if(allNameMatchVerified){
+          sessionStorage.setItem('OwnerKaveriSkip', true);
+          navigate("/ClassificationDocumentUploadPage")
+        }
       }
+      else 
+      {
+        const ekycOwnerDetails = tabledata5EkycVerifed.map(({ OWNERNAME, OWNERNUMBER }) => ({
+          ownerName: OWNERNAME || "",
+          ownerNumber: OWNERNUMBER || 0
+      }));
+          sessionStorage.setItem("EKYC_OWNER_DETAILS",JSON.stringify(ekycOwnerDetails))
+        navigate("/KaveriData")
+      }
+    } 
+    else {
       if (!atLeastOneMobileVerified) {
         toast.error(`${t("ownersMobileNotVerified")}`);
       }
@@ -183,10 +197,9 @@ const OwnerDetails = () => {
       if (!relationshiptype) {
         toast.error(`${t("ownersRelationTypeMissing")}`);
       }
-      if (tablesdata9.length === 0) {
+      if (tabledata5EkycVerifed.length === 0) {
         toast.error(`${t("atleastOneOwnerRequired")}`);
       }
-
     }
   }
 
@@ -264,9 +277,11 @@ const OwnerDetails = () => {
       const { Table5: NCLTable5 = [], Table1: NCLTable1Data = [], } = response3.data;
       const { Table8 = [] } = response1.data;
       setPropertyType(NCLTable1Data.length > 0 ? NCLTable1Data[0].PROPERTYCATEGORYID || "0":"0")
+      setCoreArea(NCLTable1Data.length > 0 ? NCLTable1Data[0].AREA_TYPE : 2)
       setTableData8(Table8.length > 0 ? Table8 : [])
       setTableData(Table5.length > 0 ? Table5 : []);
-      setTablesData9(NCLTable5.length > 0 ? NCLTable5 : []);
+      setTablesDataEKYCVerified(NCLTable5.length > 0 ? NCLTable5.filter(item => item.EKYCSTATUS === "DONE") : []);
+      setTablesDataEkycNotVerifed(NCLTable5.length > 0 ? NCLTable5 : [])
       setLoading(false);
     } catch (error) {
       toast.error(`${t("Error Getting data!")}` + error, {
@@ -289,32 +304,28 @@ const OwnerDetails = () => {
     if (txnno !== null && txnno !== undefined) {
       console.log('E-KYC completed successfully with txnno:', txnno);
       setTimeout(() => {
-      toast.success("E-KYC completed successfully with txnno:", txnno);
-    }, 30000);
+      toast.success("E-KYC completed successfully");
+    }, 3000);
+    let ownerType = JSON.parse(sessionStorage.getItem('OWNERTYPE'));
       const callEditEYCDate = async () => {
-        var ownerNumber = await EditOwnerDetailsFromEKYCData(txnno); //581
+        var ownerNumber = await EditOwnerDetailsFromEKYCData(txnno,ownerType); 
         if (ownerNumber !== "") {
-          setOwnerNumber(ownerNumber);
           console.log(ownerNumber)
         }
       }
       callEditEYCDate();
     }
-    //  toast.error("E-KYC was not successfully with txnno:",txnno)
+   
     fetchData();
   }, [location.search]);
-  React.useEffect(() => {
-    tablesdata9.forEach(row => {
-      updateNameMatchStatus(row);
-    });
-  }, [tablesdata9])
+ 
   const handleSubmit = (e) => {
 
     // Submit form data logic here
   };
-  const EditOwnerDetailsFromEKYCData = async (txno) => {
+  const EditOwnerDetailsFromEKYCData = async (txno,ownerType) => {
     try {
-      const response = await axiosInstance.get("E-KYCAPI/EditOwnerDetailsFromEKYCData?transactionNumber=" + txno)
+      const response = await axiosInstance.get("Name_Match/GET_BBD_NCL_OWNER_BYEKYCTRANSACTION?transactionNumber=" + txno + "&OwnerType=" +ownerType)
       if (response.data.length > 0) {
         console.log(response.data)
         return response.data.Table[0].OWNERNUMBER || ""
@@ -346,10 +357,12 @@ const OwnerDetails = () => {
   };
   const AddEKYCOwner = async () => {
     var ownerNumber = 1;
-    if(tablesdata9.length > 0){
-      const maxOwnerNumber = Math.max(...tablesdata9.map(item => item.OWNERNUMBER));
+    
+    if(tabledata5EkycVerifed.length > 0){
+      const maxOwnerNumber = Math.max(...tabledata5EkycVerifed.map(item => item.OWNERNUMBER));
       ownerNumber = maxOwnerNumber + 1;
     }
+    sessionStorage.setItem("OWNERTYPE","NEWOWNER")
     var response = await axiosInstance.post("E-KYCAPI/RequestEKYC?OwnerNumber=" + ownerNumber + "&BOOK_APP_NO="+JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))+"&PROPERTY_CODE="+ JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')))
 
     
@@ -364,6 +377,7 @@ const OwnerDetails = () => {
      {
       ownerNumber = row.SLNO;
     }
+    sessionStorage.setItem("OWNERTYPE","OLDOWNER")
     var response = await axiosInstance.post("E-KYCAPI/RequestEKYC?OwnerNumber=" + ownerNumber + "&BOOK_APP_NO="+JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))+"&PROPERTY_CODE="+ JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')))
     window.location.href = response.data;
   }
@@ -378,47 +392,17 @@ const OwnerDetails = () => {
     var response = await axiosInstance.get("BBMPCITZAPI/COPY_OWNER_FROM_BBDDRAFT_NCLTEMP?&P_BOOKS_PROP_APPNOAPPNO="+JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))+"&propertyCode="+ JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))+"&ownerNumber="+ownerNumber)
     console.log(response.data)
     const { Table1 = [] } = response.data;
-    setTablesData9(Table1);
+    setTablesDataEkycNotVerifed(Table1);
   }
   const OwnerExists = (BBDOwnerNumber) => {
-    const exists = tablesdata9.some(item => item.OWNERNUMBER === BBDOwnerNumber);
+    const exists = tabledata5EkycNotVerifed.some(item => item.OWNERNUMBER === BBDOwnerNumber);
+    return exists;
+  }
+  const OwnerEKYCVerfiedExists = (BBDOwnerNumber) => {
+    const exists = tabledata5EkycVerifed.some(item => item.OWNERNUMBER === BBDOwnerNumber && item.EKYCSTATUS === "DONE");
     return exists;
   }
 
-
-
-  const updateNameMatchStatus = async (row) => {
-    const status = await calculateNameMatchStatus(row.OWNERNAME, row.OWNERNUMBER);
-    setNameMatchStatuses(prevStatuses => ({
-      ...prevStatuses,
-      [row.OWNERNUMBER]: status
-    }));
-  };
-
-  const Fn_CPlus_NameMatchJulyFinal2023 = async (name1, name2) => {
-    try {
-      const response = await axiosInstance.get("BBMPCITZAPI/NameMatchScore2323?ownerName1=" + name1 + "&ownerName2=" + name2)
-      return response.data;
-    } catch (error) {
-      console.log("Fn_CPlus_NameMatchJulyFinal2023", error)
-    }
-  };
-
-  const calculateNameMatchStatus = async (grid2OwnerName, grid2Ownernumber) => {
-    let nameMatchStatus = "NEW OWNER";
-    const ownerData = tableData.find((owner) => owner.OWNERNUMBER === grid2Ownernumber);
-    if (ownerData) {
-      const grid1OwnerName = ownerData.OWNERNAME;
-      const nameMatchScore = await Fn_CPlus_NameMatchJulyFinal2023(grid2OwnerName, grid1OwnerName);
-
-      if (nameMatchScore) {
-        nameMatchStatus = "MATCHED";
-      } else {
-        nameMatchStatus = "NOT MATCHED";
-      }
-    }
-    return nameMatchStatus;
-  };
 
   function GradientCircularProgress() {
     return (
@@ -505,14 +489,14 @@ const OwnerDetails = () => {
                       <TableCell>{row.OWNERNAME}</TableCell>
                       <TableCell>{row.IDENTIFIERTYPE} {row.IDENTIFIERNAME}</TableCell>
                       <TableCell>{row.OWNERADDRESS} {row.MOBILENUMBER}</TableCell>
-                      <TableCell>{row.EKYCSTATUS}</TableCell>
+                      <TableCell>{OwnerEKYCVerfiedExists(row.OWNERNUMBER) ? "Verifed":row.EKYCSTATUS}</TableCell>
                       <TableCell>{OwnerExists(row.OWNERNUMBER) ? `${t("RETAINED")}` : `${t("DELETED")}`}</TableCell>
-                      <TableCell>{OwnerExists(row.OWNERNUMBER) ?
-                        <Button variant="contained" color="primary" onClick={() =>VerfiyEKYC(row)}>
-                            {t("VerifyE-KYC")}
-                        </Button>
+                      <TableCell>{OwnerEKYCVerfiedExists(row.OWNERNUMBER) ?
+                      ""
                         :
-                        ""
+                        <Button variant="contained" color="primary" onClick={() =>VerfiyEKYC(row)}>
+                        {t("VerifyE-KYC")}
+                    </Button>
                       }
                       </TableCell>
                       <TableCell>{OwnerExists(row.OWNERNUMBER) ?
@@ -531,7 +515,7 @@ const OwnerDetails = () => {
           </TableContainer>
           <br></br>
           <Grid container spacing={3}>
-            {tablesdata9.map((owner, index) => (
+            {tabledata5EkycNotVerifed.map((owner, index) => (
               <Grid item xs={12} key={index}>
                 <Paper elevation={3} sx={{ padding: 4, borderRadius: 2, backgroundColor: '#f7f7f7' }}>
                   <Typography variant="h6" color="primary" gutterBottom>
@@ -572,7 +556,8 @@ const OwnerDetails = () => {
                         fullWidth
                         label={t('NAMEMATCHSTATUS')}
                         name="NameMatchscore"
-                        value={nameMatchStatuses[owner.OWNERNUMBER] || "Loading..."}
+                        value={owner.NAMEMATCHSCORE ? owner.NAMEMATCHSCORE > 60 ? OwnerEKYCVerfiedExists(owner.OWNERNUMBER) ?
+                         "Name Matching" : "New Owner" : "Name Not Matching": "EKYC Pending"}
                         InputProps={{
                           readOnly: true,
                         }}
@@ -807,7 +792,8 @@ const OwnerDetails = () => {
 
 
 
-
+<br></br>
+<Typography>Actual Owners Applying For E-Khata</Typography>
 
           <TableContainer component={Paper} sx={{ mt: 4 }}>
             <Table>
@@ -826,14 +812,14 @@ const OwnerDetails = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {tablesdata9.length === 0 ? (
+                {tabledata5EkycVerifed.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={12} align="center">
                     {t("Nodataavailable")}
                     </TableCell>
                   </TableRow>
                 ) : (
-                  tablesdata9.map((row) => {
+                  tabledata5EkycVerifed.map((row) => {
 
                     return (
                       <TableRow key={row.id}>
@@ -848,22 +834,18 @@ const OwnerDetails = () => {
                           style={{
                             maxWidth: '100%',
                             maxHeight: '200px',
-                            width: 'auto', // Allow the width to adjust responsively
-                            height: 'auto', // Allow the height to adjust responsively
+                            width: 'auto', 
+                            height: 'auto', 
                             borderRadius: '8px',
                           }}
                         /></TableCell>
                         <TableCell>{row.MOBILEVERIFY}</TableCell>
                         <TableCell>{row.EKYCSTATUS}</TableCell>
                         <TableCell>
-                          <TextField
-                            fullWidth
-                            value={nameMatchStatuses[row.OWNERNUMBER] || "Loading..."}
-                            InputProps={{
-                              readOnly: true,
-                            }}
-                            variant="filled"
-                          />
+                       
+                          
+                            {row.NAMEMATCHSCORE > 60 ? OwnerEKYCVerfiedExists(row.OWNERNUMBER) ? "Name Matching"  : "New Owner": "Name Not Matching" }
+                           
                         </TableCell>
                       </TableRow>
                     );
