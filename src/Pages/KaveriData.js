@@ -181,14 +181,26 @@ const KaveriData = () => {
   const back = () => {
     navigate('/OwnerDetails');
   };
+  const handleReset = () => {
 
+    setIsAllow(false);
+    setisShowKaveriDocumentDetais(false);
+    setEcDocumentData([]);
+    setTableKavDocData([]);
+    setFormData({
+      ...formData,
+      RegistrationNumber: "",
+      OldRegistrationNumber: "",
+      
+    });
+  }
   const handleNavigation = () => {
     debugger
     sessionStorage.setItem('KaveriVerified', isAllow);
-    const k = sessionStorage.getItem('KaveriVerified')
+    let k = sessionStorage.getItem('KaveriVerified')
     if (TableKavDocData !== undefined && TableKavDocData !== null) {
       if (TableKavDocData.length === 0) {
-        if (k) {
+        if (k === "true") {
           navigate("/ClassificationDocumentUploadPage")
         }
         else {
@@ -570,9 +582,13 @@ const KaveriData = () => {
           <br></br>
           <br></br>
           <Box display="flex" justifyContent="center" gap={2} mt={3}>
-            <Button variant="contained" color="primary" onClick={back}>
+          <Button variant="contained" color="primary" onClick={back}>
               {t("Previous")}
             </Button>
+          <Button variant="contained" color="primary" onClick={handleReset}>
+              {t("Reset")}
+            </Button>
+           
             <Button variant="contained" color="primary" onClick={handleNavigation}>
               {t("next")}
             </Button>

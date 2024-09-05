@@ -270,7 +270,7 @@ const AreaDimension = () => {
         errors.checkbandhi = `${t("Please ensure all Checkbandhi values are Entered")}`;
       }
     }
-    if (formData.propertyType == 3) {
+    if (formData.propertyType === 3) {
       if (isInvalid(formData.ApartCarpetArea) || isInvalid(formData.ApartAddtionalArea) || isInvalid(formData.ApartSuperBuiltArea)) {
         errors.apartmentValues = `${t("Please ensure all Apartment values are Entered and More than 0")}`
       }
