@@ -56,7 +56,7 @@ const Login = () => {
       setTimer(30);
       const interval = setInterval(() => {
         setTimer(prevTimer => prevTimer - 1);
-      }, 1000);
+      }, 500);
       setTimeout(() => {
         setOtpButtonDisabled(false);
         clearInterval(interval);
@@ -140,7 +140,7 @@ const Login = () => {
         toast.success("Login Successfull !!");
         setTimeout(() => {
            navigate("/BBDDraft");
-        }, 1000);
+        }, 500);
        
     }
       else {

@@ -9,7 +9,6 @@ import SiteDetails from './Pages/SiteDetails';
 import BuildingDetails from './Pages/BuildingDetails';
 import MultiStoreyBuildingDetails from './Pages/MultiStoreyBuildingDetails';
 import OwnerDetails from './Pages/OwnerDetails';
-//import PropertyRights from './Pages/PropertyRights';
 import DocumentUploadPage from './Pages/DocumentUploadPage';
 import ClassificationDocumentUploadPage from './Pages/ClassificationDocumentUploadPage';
 import EKYCResponse from './Pages/EKYCResponse';
@@ -60,10 +59,6 @@ const AppRoutes = () => {
               path="/OwnerDetails"
               element={<OwnerDetails />}
             />
-            {/* <Route
-              path="/PropertyRights"
-              element={<PrivateRoute element={<PropertyRights />} />}
-            /> */}
              <Route
               path="/KaveriData"
               element={<PrivateRoute element={<KaveriData />} />}

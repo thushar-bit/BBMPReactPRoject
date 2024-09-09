@@ -29,24 +29,24 @@ const KaveriData = () => {
   const { t } = useTranslation();
 const fetchData = async (TypeOfLoad) => {
 
-  const response = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
-  const {Table14=[],Table15=[],Table16=[],Table17=[],Table18=[]} = response.data;
+  const response = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=KAVERI_DETAILS`);
+  const {Table1=[],Table2=[],Table3=[],Table4=[],Table5=[]} = response.data;
   debugger
   if(TypeOfLoad === "KAVERI_DOC_DATA"){
-    setKAVERI_DOC_DETAILS(Table14.length > 0 ? Table14 : []);
-    setKAVERI_PROP_DETAILS(Table15.length > 0 ? Table15 : []);
-    setKAVERI_PARTIES_DETAILS(Table16.length > 0? Table16 : []);
+    setKAVERI_DOC_DETAILS(Table1.length > 0 ? Table1 : []);
+    setKAVERI_PROP_DETAILS(Table2.length > 0 ? Table2 : []);
+    setKAVERI_PARTIES_DETAILS(Table3.length > 0? Table3 : []);
   }
   else if(TypeOfLoad === "KAVERI_EC_DATA"){
-    setKAVERIEC_PROP_DETAILS(Table17.length > 0? Table17 : []);
-    setKAVERIEC_PARTIES_DETAILS(Table18.length > 0 ? Table18 : []);
+    setKAVERIEC_PROP_DETAILS(Table4.length > 0? Table4 : []);
+    setKAVERIEC_PARTIES_DETAILS(Table5.length > 0 ? Table5 : []);
   }
   else {
-    setKAVERI_DOC_DETAILS(Table14.length > 0 ? Table14 : []);
-    setKAVERI_PROP_DETAILS(Table15.length > 0 ? Table15 : []);
-    setKAVERI_PARTIES_DETAILS(Table16.length > 0? Table16 : []);
-    setKAVERIEC_PROP_DETAILS(Table17.length > 0? Table17 : []);
-    setKAVERIEC_PARTIES_DETAILS(Table18.length > 0 ? Table18 : []);
+    setKAVERI_DOC_DETAILS(Table1.length > 0 ? Table1 : []);
+    setKAVERI_PROP_DETAILS(Table2.length > 0 ? Table2 : []);
+    setKAVERI_PARTIES_DETAILS(Table3.length > 0? Table3 : []);
+    setKAVERIEC_PROP_DETAILS(Table4.length > 0? Table4 : []);
+    setKAVERIEC_PARTIES_DETAILS(Table5.length > 0 ? Table5 : []);
   }
   
   
@@ -120,7 +120,7 @@ fetchData("Initial")
       });
       setTimeout(() => {
         navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
-      }, 2000);
+      }, 1000);
     }
   };
 
@@ -213,7 +213,7 @@ fetchData("Initial")
       });
       setTimeout(() => {
         navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
-      }, 2000);
+      }, 1000);
     }
   }
   const back = () => {

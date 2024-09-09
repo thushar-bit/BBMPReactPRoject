@@ -153,19 +153,19 @@ const AreaDimension = () => {
   const fetchData = async () => {
 
     try {
-      const response = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
-      const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
+      const response = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=AREA_DIMENSION`);
+      const response2 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=AREA_DIMENSION`);
       const {
         Table1: Table1Data = [],
         Table2: Table2Data = [],
         Table3: Table3Data = [],
-        Table7: Table7Data = []
+        Table4: Table4Data = []
       } = response.data;
       const {
         Table1: NCLTable1Data = [],
         Table2: NCLTable2Data = [],
         Table3: NCLTable3Data = [],
-        Table7: NCLTable7Data = []
+        Table4: NCLTable4Data = []
       } = response2.data;
       setFormData((prevFormData) => ({
         ...prevFormData,
@@ -188,9 +188,9 @@ const AreaDimension = () => {
         BookplotAreaSqMt: Table2Data.length > 0 ? Table2Data[0].SITEAREA || '' : '',
         builtUpAreaSqFt: NCLTable2Data.length > 0 ? NCLTable2Data[0].BUILDINGAREAFT || '' : Table2Data.length > 0 ? Table2Data[0].BUILDINGAREAFT || '' : '',
         builtUpAreaSqMt: NCLTable2Data.length > 0 ? NCLTable2Data[0].BUILDINGAREA || '' : Table2Data.length > 0 ? Table2Data[0].BUILDINGAREA || '' : '',
-        ApartCarpetArea: NCLTable7Data.length > 0 ? NCLTable7Data[0].CARPETAREA || '' : Table7Data.length > 0 ? Table7Data[0].CARPETAREA || '' : '',
-        ApartAddtionalArea: NCLTable7Data.length > 0 ? NCLTable7Data[0].ADDITIONALAREA || '' : Table7Data.length > 0 ? Table7Data[0].ADDITIONALAREA || '' : '',
-        ApartSuperBuiltArea: NCLTable7Data.length > 0 ? NCLTable7Data[0].SUPERBUILTUPAREA || 0 : Table7Data.length > 0 ? Table7Data[0].SUPERBUILTUPAREA || '' : '',
+        ApartCarpetArea: NCLTable4Data.length > 0 ? NCLTable4Data[0].CARPETAREA || '' : Table4Data.length > 0 ? Table4Data[0].CARPETAREA || '' : '',
+        ApartAddtionalArea: NCLTable4Data.length > 0 ? NCLTable4Data[0].ADDITIONALAREA || '' : Table4Data.length > 0 ? Table4Data[0].ADDITIONALAREA || '' : '',
+        ApartSuperBuiltArea: NCLTable4Data.length > 0 ? NCLTable4Data[0].SUPERBUILTUPAREA || 0 : Table4Data.length > 0 ? Table4Data[0].SUPERBUILTUPAREA || '' : '',
         cal1: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE1FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
         cal2: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE2FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
         cal3: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE3FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
@@ -328,7 +328,7 @@ const AreaDimension = () => {
         )
 
         const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
-        sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
+        
         setIsEditablecheckbandi(false);
         setFormData({
           ...formData,
@@ -346,7 +346,7 @@ const AreaDimension = () => {
         });
         setTimeout(() => {
           navigate('/ErrorPage', { state: { errorMessage: error.message } });
-        }, 1000);
+        }, 500);
       }
     }
 
@@ -387,7 +387,7 @@ const AreaDimension = () => {
         )
 
         const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
-        sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
+        
 
         setIsEditable(false);
         setIsEditablecheckbandi(false);
@@ -399,7 +399,7 @@ const AreaDimension = () => {
             modify: 'no',
             modifycheckbandi: 'no',
           });
-        }, 1000);
+        }, 500);
 
       } catch (error) {
         toast.error(`${t("errorSavingData")}` + error, {
@@ -413,7 +413,7 @@ const AreaDimension = () => {
         });
         setTimeout(() => {
           navigate('/ErrorPage', { state: { errorMessage: error.message } });
-        }, 1000);
+        }, 500);
       }
     }
     else if (formData.propertyType === 3 && isEditable === true) //only 3
@@ -431,7 +431,7 @@ const AreaDimension = () => {
         await axiosInstance.post('BBMPCITZAPI/UPD_NCL_PROPERTY_APARTMENT_TEMP_AREA', data
         )
         const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
-        sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
+        
         setIsEditable(false);
         setTimeout(async () => {
 
@@ -440,7 +440,7 @@ const AreaDimension = () => {
             ...formData,
             modify: 'no',
           });
-        }, 1000);
+        }, 500);
 
       } catch (error) {
         toast.error(`${t("errorSavingData")}` + error, {
@@ -454,7 +454,7 @@ const AreaDimension = () => {
         });
         setTimeout(() => {
           navigate('/ErrorPage', { state: { errorMessage: error.message } });
-        }, 1000);
+        }, 500);
       }
     }
     if (isEditable || isEditablecheckbandhi) {
@@ -471,7 +471,7 @@ const AreaDimension = () => {
     setTimeout(() => {
 
       handleNavigation();
-    }, 1000);
+    }, 500);
   };
   const back = () => {
     navigate('/AddressDetails')
@@ -498,7 +498,7 @@ const AreaDimension = () => {
       toast.error(`${t("propertyTypeNotFound")}`);
       setTimeout(() => {
         navigate("/AddressDetails")
-      }, 1000);
+      }, 500);
 
     }
   }

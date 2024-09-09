@@ -83,7 +83,7 @@ const OwnerDetails = () => {
       setTimer(30);
       const interval = setInterval(() => {
         setTimer(prevTimer => prevTimer - 1);
-      }, 1000);
+      }, 500);
 
 
       setTimeout(() => {
@@ -266,18 +266,18 @@ const OwnerDetails = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
-      const response2 = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
-      const response3 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
-      const { Table5 = [] } = response2.data;
-      const { Table5: NCLTable5 = [], Table1: NCLTable1Data = [], } = response3.data;
-      const { Table8 = [] } = response1.data;
+      const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData_React?UlbCode=555&Page=OWNER_DETAILS');
+      const response2 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=OWNER_DETAILS`);
+      const response3 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=OWNER_DETAILS`);
+      const { Table1:BBDTable1 = [] } = response2.data;
+      const { Table2: NCLTable2 = [], Table1: NCLTable1Data = [], } = response3.data;
+      const { Table:MasterTable1 = [] } = response1.data;
       setPropertyType(NCLTable1Data.length > 0 ? NCLTable1Data[0].PROPERTYCATEGORYID || "0" : "0")
       setCoreArea(NCLTable1Data.length > 0 ? NCLTable1Data[0].AREA_TYPE : 2)
-      setTableData8(Table8.length > 0 ? Table8 : [])
-      setTableData(Table5.length > 0 ? Table5 : []);
-      setTablesDataEKYCVerified(NCLTable5.length > 0 ? NCLTable5.filter(item => item.EKYCSTATUS === "DONE") : []);
-      setTablesDataEkycNotVerifed(NCLTable5.length > 0 ? NCLTable5 : [])
+      setTableData8(MasterTable1.length > 0 ? MasterTable1 : [])
+      setTableData(BBDTable1.length > 0 ? BBDTable1 : []);
+      setTablesDataEKYCVerified(NCLTable2.length > 0 ? NCLTable2.filter(item => item.EKYCSTATUS === "DONE") : []);
+      setTablesDataEkycNotVerifed(NCLTable2.length > 0 ? NCLTable2 : [])
       setLoading(false);
     } catch (error) {
       toast.error(`${t("Error Getting data!")}` + error, {
@@ -301,7 +301,7 @@ const OwnerDetails = () => {
       console.log('E-KYC completed successfully with txnno:', txnno);
       setTimeout(() => {
         toast.success("E-KYC completed successfully");
-      }, 3000);
+      }, 500);
       let ownerType = JSON.parse(sessionStorage.getItem('OWNERTYPE'));
       const callEditEYCDate = async () => {
         var ownerNumber = await EditOwnerDetailsFromEKYCData(txnno, ownerType);
@@ -347,7 +347,7 @@ const OwnerDetails = () => {
       toast.error(`${t("propertyTypeNotFound")}`);
       setTimeout(() => {
         navigate("/AddressDetails")
-      }, 1000);
+      }, 500);
 
     }
   };
@@ -550,8 +550,8 @@ const OwnerDetails = () => {
                         fullWidth
                         label={t('NAMEMATCHSTATUS')}
                         name="NameMatchscore"
-                        value={owner.NAMEMATCHSCORE ? owner.NAMEMATCHSCORE > 60 ? OwnerEKYCVerfiedExists(owner.OWNERNUMBER) ?
-                          "Name Matching" : "New Owner" : "Name Not Matching" : "EKYC Pending"}
+                        value={owner.NAMEMATCHSCORE > 60 ? OwnerEKYCVerfiedExists(owner.OWNERNUMBER) ?
+                          "Name Matching" : "New Owner" : "Name Not Matching" } 
                         InputProps={{
                           readOnly: true,
                         }}

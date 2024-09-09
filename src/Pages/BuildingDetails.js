@@ -78,7 +78,7 @@ const BuildingDetails = () => {
         });
         setTimeout(() => {
           navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
-        }, 2000);
+        }, 500);
       }
     }
     if (name === 'SelfuseArea' || name === 'RentedArea') {
@@ -110,14 +110,14 @@ const BuildingDetails = () => {
 
   const fetchData = async () => {
     try {
-      const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
-      const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
-      const { Table15 = [], Table16 = [] } = response1.data;
+      const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData_React?UlbCode=555&Page=BUILDING_DETAILS');
+      const response2 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=BUILDING_DETAILS`);;
+      const { Table:MasterTable1 = [], Table1:MasterTable2 = [] } = response1.data;
 
-      const { Table8 = [] } = response2.data;
-      const table8Item = Table8.length > 0 ? Table8 : [];
-      const table16Item = Table16.length > 0 ? Table16 : [];
-      const table15Item = Table15.length > 0 ? Table15 : [];
+      const { Table1 = [] } = response2.data;
+      const table8Item = Table1.length > 0 ? Table1 : [];
+      const table16Item = MasterTable2.length > 0 ? MasterTable2 : [];
+      const table15Item = MasterTable1.length > 0 ? MasterTable1 : [];
       setTableData(table8Item);
       setTablesData2(table16Item);
       setTablesData4(table15Item);
@@ -133,7 +133,7 @@ const BuildingDetails = () => {
       });
       setTimeout(() => {
         navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
-      }, 2000);
+      }, 500);
     }
 
   }
@@ -175,7 +175,7 @@ const BuildingDetails = () => {
       )
 
       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
-      sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
+      
       await toast.success(`${t("detailsSavedSuccess")}`, {
         position: "top-right",
         autoClose: 5000,
@@ -189,7 +189,7 @@ const BuildingDetails = () => {
       setTimeout(async () => {
         await fetchData();
         //    handleNavigation()
-      }, 2000);
+      }, 500);
     } catch (error) {
       await toast.error(`${t("errorSavingData")}` + error, {
         position: "top-right",
@@ -202,7 +202,7 @@ const BuildingDetails = () => {
       });
       setTimeout(() => {
         navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
-      }, 2000);
+      }, 500);
     }
 
   };
@@ -226,7 +226,7 @@ const BuildingDetails = () => {
       await axiosInstance.post('BBMPCITZAPI/DEL_SEL_NCL_PROP_BUILDING_TEMP?ULBCODE=555', data
       )
       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
-      sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
+      
       await toast.success(`${t("detailsDeletedSuccess")}`, {
         position: "top-right",
         autoClose: 5000,
@@ -239,7 +239,7 @@ const BuildingDetails = () => {
       setTimeout(async () => {
         await fetchData();
         //    handleNavigation()
-      }, 2000);
+      }, 500);
 
 
     } catch (error) {
@@ -254,7 +254,7 @@ const BuildingDetails = () => {
       });
       setTimeout(() => {
         navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
-      }, 2000);
+      }, 500);
     }
   };
 
@@ -291,7 +291,7 @@ const BuildingDetails = () => {
       });
       setTimeout(() => {
         navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
-      }, 2000);
+      }, 500);
     }
 
   };

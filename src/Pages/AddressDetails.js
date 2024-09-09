@@ -70,8 +70,8 @@ const AddressDetails = () => {
     verifySASNUM: Yup.string().required(`${t('sasApplicationNumber')}`).notOneOf(['0'], `${t('sasNumberInvalid')}`),
     streetid: Yup.string().required(`${t('streetNameRequired')}`).notOneOf(['0'], `${t('streetNameInvalid')}`),
     // propertyType:Yup.string().required(`${t("PropertyTypeInvalid")}`).notOneOf(['0'], `${t("PropertyTypeCannotBeZero")}`),
-    lat1: Yup.string().required(`${t('latitudeRequired')}`).notOneOf(['0'], `${t('latitudeInvalid')}`),
-    long1: Yup.string().required(`${t('longitudeRequired')}`).notOneOf(['0'], `${t('longitudeInvalid')}`),
+   // lat1: Yup.string().required(`${t('latitudeRequired')}`).notOneOf(['0'], `${t('latitudeInvalid')}`),
+  //  long1: Yup.string().required(`${t('longitudeRequired')}`).notOneOf(['0'], `${t('longitudeInvalid')}`),
   });
 
   const navigate = useNavigate();
@@ -92,33 +92,34 @@ const AddressDetails = () => {
   const [SAStableData, setSASTableData] = useState([]);
   const fetchData = React.useCallback(async () => {
     setLoading(true);
+    debugger
     try {
-      const response = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
-      const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
-      const response3 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
-
+      const response = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=ADDRESS`);
+      const response2 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=ADDRESS`);
+      const response3 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData_React?UlbCode=555&Page=ADDRESS');
+debugger
       const { Table1 = [], Table5 = [], } = response.data;
       let NCLtable1Item = [];
       let Table11Item = [];
       let table4Item = [];
       if (response2) {
-        const { Table11 = [], Table1: NCLTABLE1 = [], Table4 = [] } = response2.data;
+        const { Table3 = [], Table1: NCLTABLE1 = [], Table2 = [] } = response2.data;
         NCLtable1Item = NCLTABLE1.length > 0 ? NCLTABLE1[0] : [];
-        Table11Item = Table11.length > 0 ? Table11[0] : [];
-        table4Item = Table4.length > 0 ? Table4[0] : [];
+        Table11Item = Table3.length > 0 ? Table3[0] : [];
+        table4Item = Table2.length > 0 ? Table2[0] : [];
         setPreviewUrl(`data:image1/png;base64,${Table11Item.PROPERTYPHOTO || ""}`);
         setPropertyPhoto(Table11Item.PROPERTYPHOTO || "");
 
       } else {
         setIsEditable(true)
       }
-      const { Table2 = [] } = response3.data;
+      const { Table:MasterTable1 = [] } = response3.data;
       const table1Item = Table1.length > 0 ? Table1[0] : [];
 
       const table5Item = Table5.length > 0 ? Table5[0] : [];
 
       debugger
-      const filteredData = Table2.filter(item =>
+      const filteredData = MasterTable1.filter(item =>
         item.STREETID !== 99999 && item.WARDID === table1Item.WARDID
       );
       setTableData(filteredData);
@@ -249,8 +250,7 @@ const AddressDetails = () => {
     setfileExtension('');
   };
   const handleBack = () => {
-    sessionStorage.removeItem("BBD_DRAFT_API");
-    sessionStorage.removeItem("NCL_TEMP_API");
+   
     sessionStorage.removeItem("P_BOOKS_PROP_APPNO");
     sessionStorage.removeItem("SETPROPERTYCODE");
     sessionStorage.removeItem("SETPROPERYID");
@@ -370,8 +370,8 @@ const AddressDetails = () => {
         )
         setSelectedFile(null);
         const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
-        sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
-
+        
+        setTimeout(() => {
         toast.success(`${t("detailsSavedSuccess")}`, {
           position: "top-right",
           autoClose: 5000,
@@ -381,16 +381,14 @@ const AddressDetails = () => {
           draggable: true,
           progress: undefined,
         });
+      }, 100)
         setIsEditable(false);
         setLoading(false);
 
-        if (propertyPhoto.length === 0) {
-          toast.error(`${t("saveAddressFirst")}`);
-          return;
-        }
-        setTimeout(() => {
+      
+     
           navigate('/AreaDimension')
-        }, 1000)
+    
       } catch (error) {
         await toast.error(`${t("errorSavingData")}`, error, {
           position: "top-right",
@@ -403,18 +401,15 @@ const AddressDetails = () => {
         });
         setTimeout(() => {
           navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
-        }, 2000);
+        }, 500);
       }
     } else {
 
-      setTimeout(() => {
+     
 
-        if (propertyPhoto.length === 0) {
-          toast.error(`${t("saveAddressFirst")}`);
-          return;
-        }
+       
         navigate('/AreaDimension')
-      }, 1000)
+    
     }
     setLoading(false);
   }

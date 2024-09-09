@@ -45,7 +45,7 @@ const SiteDetails = () => {
         toast.error(`${t("error Fetching data")}`, error)
         setTimeout(() => {
           navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
-        }, 2000);
+        }, 500);
       }
     }
     if (name === "yearOfConstruction") {
@@ -85,7 +85,7 @@ if(isInitialEditable){
       )
 
       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
-      sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
+      
       await toast.success(`${t("detailsSavedSuccess")}`, {
         position: "top-right",
         autoClose: 5000,
@@ -99,7 +99,7 @@ if(isInitialEditable){
         await fetchData();
         setInitialEditable(false);
         handleNavigation()
-      }, 2000);
+      }, 500);
     } catch (error) {
       await toast.error(`${t("errorSavingData")}` + error, {
         position: "top-right",
@@ -112,7 +112,7 @@ if(isInitialEditable){
       });
       setTimeout(() => {
         navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
-      }, 2000);
+      }, 500);
     }
   }else{
     handleNavigation()
@@ -139,15 +139,15 @@ if(isInitialEditable){
     
     try {
       setLoading(true);
-      const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
-      const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
-      const { Table16 = [] } = response1.data;
-      const { Table2 = [] } = response2.data;
-      if(Table2.length === 0){
+      const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData_React?UlbCode=555&Page=SITE_DETAILS');
+      const response2 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=SITE_DETAILS`);;
+      const { Table1:MasterTable1 = [] } = response1.data;
+      const { Table1 = [] } = response2.data;
+      if(Table1.length === 0){
         setInitialEditable(true)
       }
-      const table2Item = Table2.length > 0 ? Table2[0] : [];
-      const table16Item = Table16.length > 0 ? Table16 : [];
+      const table2Item = Table1.length > 0 ? Table1[0] : [];
+      const table16Item = MasterTable1.length > 0 ? MasterTable1 : [];
       setTablesData2(table16Item);
       
       if (table2Item) {
@@ -171,7 +171,7 @@ if(isInitialEditable){
       toast.error("something went wrong",error)
       setTimeout(() => {
         navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
-      }, 2000);
+      }, 500);
     }
 
   }

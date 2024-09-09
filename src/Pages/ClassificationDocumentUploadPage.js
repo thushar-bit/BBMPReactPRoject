@@ -113,7 +113,7 @@ const ClassificationDocumentUploadPage = () => {
       });
       setTimeout(() => {
         navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
-      }, 2000);
+      }, 500);
     }
 
   };
@@ -148,17 +148,18 @@ const ClassificationDocumentUploadPage = () => {
 
 
   const fetchData = async () => {
+    debugger
     try {
-      const responeMaster = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
-      const response2 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
-      const response3 = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
+      const responeMaster = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData_React?UlbCode=555&Page=DOCUMENT_CLASSIFICATION_DETAILS');
+      const response2 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=DOCUMENT_CLASSIFICATION_DETAILS`);;
+      const response3 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=DOCUMENT_CLASSIFICATION_DETAILS`);
 
-      const { Table1: BBDTable1 = [] } = response3.data;
-      const { Table19 = [] } = responeMaster.data;
-      const { Table10: NCLTable10 = [], Table1: NCLTable1 = [] } = response2.data;
-      setTableData(NCLTable10.length > 0 ? NCLTable10 : []);
+      const { Table1: BBDTable1 = [] } = response2.data;
+      const { Table:MasterTable1 = [] } = responeMaster.data;
+      const { Table2: NCLTable2 = [], Table1: NCLTable1 = [] } = response3.data;
+      setTableData(NCLTable2.length > 0 ? NCLTable2 : []);
 
-      setMasterTableData(Table19.length > 0 ? Table19 : [])
+      setMasterTableData(MasterTable1.length > 0 ? MasterTable1 : [])
       setFormData((prevFormData) => ({
         ...prevFormData,
         PropertyClasssficationAsperBooks: BBDTable1.length > 0 ? BBDTable1[0].PROPERTYCLASSIFICATIONID : "",
@@ -189,7 +190,7 @@ const ClassificationDocumentUploadPage = () => {
       });
       setTimeout(() => {
         navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
-      }, 2000);
+      }, 500);
     }
 
 
@@ -255,13 +256,13 @@ const ClassificationDocumentUploadPage = () => {
     await axiosInstance.post(`BBMPCITZAPI/INS_NCL_PROPERTY_SUBCLASS?${queryString}`);
 
     const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
-    sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
+    
     setIsClassificationEditable(true);
     setIsEditable(false);
     toast.success(`${t("classificationSavedSuccess")}`);
     setTimeout(async () => {
       await fetchData();
-    }, 2000);
+    }, 500);
   }
   const isEditClassification = () => {
     setIsClassificationEditable(false);
@@ -317,7 +318,7 @@ const ClassificationDocumentUploadPage = () => {
       )
 
       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
-      sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
+      
       await toast.success(`${t("Document Uploaded Successfully")}`, {
         position: "top-right",
         autoClose: 5000,
@@ -330,7 +331,7 @@ const ClassificationDocumentUploadPage = () => {
       setTimeout(async () => {
         await fetchData();
         //    handleNavigation()
-      }, 2000);
+      }, 500);
     } catch (error) {
       await toast.error(`${t("errorSavingData")}` + error, {
         position: "top-right",
@@ -343,7 +344,7 @@ const ClassificationDocumentUploadPage = () => {
       });
       setTimeout(() => {
         navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
-      }, 2000);
+      }, 500);
     }
 
   };
@@ -407,7 +408,7 @@ const ClassificationDocumentUploadPage = () => {
       await axiosInstance.get(`BBMPCITZAPI/DEL_NCL_PROPERTY_DOC_BBD_CLASS_TEMP?${queryString}`
       )
       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
-      sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
+      
       await toast.success(`${t("detailsDeletedSuccess")}`, {
         position: "top-right",
         autoClose: 5000,
@@ -420,7 +421,7 @@ const ClassificationDocumentUploadPage = () => {
       setTimeout(async () => {
         await fetchData();
         //    handleNavigation()
-      }, 2000);
+      }, 500);
 
     } catch (error) {
       await toast.error(`${t("Error Deleting data!")}` + error, {
@@ -434,7 +435,7 @@ const ClassificationDocumentUploadPage = () => {
       });
       setTimeout(() => {
         navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
-      }, 2000);
+      }, 500);
     }
   };
 

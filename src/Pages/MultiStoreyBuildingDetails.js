@@ -103,7 +103,7 @@ const MultiStoreyBuildingDetails = () => {
         });
         setTimeout(() => {
           navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
-        }, 2000);
+        }, 500);
       }
     }
     if (name === "yearOfConstruction") {
@@ -133,20 +133,20 @@ const handleEdit = () => {
   const fetchData = async () => {
     try {
       
-      const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData?UlbCode=555');
-      const response2 = JSON.parse(sessionStorage.getItem('BBD_DRAFT_API'));
-      const response3 = JSON.parse(sessionStorage.getItem('NCL_TEMP_API'));
-      const { Table15 = [], Table16 = [], Table17 = [] } = response1.data;
-      const { Table7 = [] } = response2.data;
-      const { Table7:NCLTABLE7 = [] } = response3.data;
-      if(NCLTABLE7.length === 0){
+      const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData_React?UlbCode=555&Page=MULTI_STOREY_DETAILS');
+      const response2 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=MULTI_STOREY_DETAILS`);
+      const response3 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=MULTI_STOREY_DETAILS`);;
+      const { Table1:MasterTable1 = [], Table2:MasterTable2 = [], Table3:MasterTable3 = [] } = response1.data;
+      const { Table1:BBDTable1 = [] } = response2.data;
+      const { Table1:NCLTABLE1 = [] } = response3.data;
+      if(NCLTABLE1.length === 0){
         setInitialEditable(true);
       }
-      const table1Item = Table7.length > 0 ? Table7 : [];
-      const table13Item = NCLTABLE7.length > 0 ? NCLTABLE7[0] : [];
-      const table16Item = Table16.length > 0 ? Table16 : [];
-      const table15Item = Table15.length > 0 ? Table15 : [];
-      const table17Item = Table17.length > 0 ? Table17 : [];
+      const table1Item = BBDTable1.length > 0 ? BBDTable1 : [];
+      const table13Item = NCLTABLE1.length > 0 ? NCLTABLE1[0] : [];
+      const table16Item = MasterTable2.length > 0 ? MasterTable2 : [];
+      const table15Item = MasterTable1.length > 0 ? MasterTable1 : [];
+      const table17Item = MasterTable3.length > 0 ? MasterTable3 : [];
 
       setTableData(table1Item);
       setTablesData2(table16Item);
@@ -211,7 +211,7 @@ const handleEdit = () => {
       });
       setTimeout(() => {
         navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
-      }, 2000);
+      }, 500);
     }
 
   }
@@ -248,7 +248,7 @@ if(isEditable || isInitialEditable){
       )
 
       const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
-      sessionStorage.setItem('NCL_TEMP_API', JSON.stringify(response1));
+      
       await toast.success(`${t("detailsSavedSuccess")}`, {
         position: "top-right",
         autoClose: 5000,
@@ -264,7 +264,7 @@ if(isEditable || isInitialEditable){
         setIsEditable(false);
         setInitialEditable(false);
         handleNavigation();
-      }, 2000);
+      }, 500);
     } catch (error) {
       await toast.error(`${t("errorSavingData")}` + error, {
         position: "top-right",
@@ -277,7 +277,7 @@ if(isEditable || isInitialEditable){
       });
       setTimeout(() => {
         navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
-      }, 2000);
+      }, 500);
     }
   }
   else {
