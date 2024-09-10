@@ -72,8 +72,8 @@ const AddressDetails = () => {
       .required(`${t('pincodeRequired')}`)
       .matches(/^\d{6}$/, `${t('pincodeInvalid')}`),
     streetid: Yup.string().required(`${t('streetNameRequired')}`).notOneOf(['0'], `${t('streetNameInvalid')}`),
-   // lat1: Yup.string().required(`${t('latitudeRequired')}`).notOneOf(['0'], `${t('latitudeInvalid')}`),
-  //  long1: Yup.string().required(`${t('longitudeRequired')}`).notOneOf(['0'], `${t('longitudeInvalid')}`),
+    lat1: Yup.string().required(`${t('latitudeRequired')}`).notOneOf(['0'], `${t('latitudeInvalid')}`),
+    long1: Yup.string().required(`${t('longitudeRequired')}`).notOneOf(['0'], `${t('longitudeInvalid')}`),
   });
 
   const navigate = useNavigate();

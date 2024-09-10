@@ -270,6 +270,7 @@ const AreaDimension = () => {
 
   }
   const validateFormData = (formData) => {
+    debugger
     const errors = {};
 
     const isInvalid = (value) => value === '' || value === '0';
@@ -284,8 +285,12 @@ const AreaDimension = () => {
       }
     }
 
-    if (formData.oddSite === "Y" && formData.propertyType !== 3) {
-      if(formData.ActualSqFt !== formData.sqFt){
+    if (formData.oddSite === "Y" && formData.propertyType !== 3 ) {
+      if(formData.noofSides.length === 0){
+        errors.noofSides = "Please Enter the No of Side";
+        
+      }
+      if(formData.ActualSqFt !== formData.sqFt && formData.noofSides){
         const differencePercentage = (Math.abs(formData.ActualSqFt - formData.sqFt) / formData.sqFt) * 100;
         if (differencePercentage > 30) {
           errors.acutalPercentageDifference = "The Actual SqFt value differs by more than 30% from the calculated SqFt value."
@@ -1525,7 +1530,7 @@ const AreaDimension = () => {
                   <Grid item xs={6} sm={3}>
                     <TextField
                       fullWidth
-                      label="(Sq.Mt)"
+                      label="Built-UpArea(mt)"
                       name="builtUpAreaSqMt"
                       value={formData.builtUpAreaSqMt}
                       onChange={handleChange}
@@ -1575,12 +1580,12 @@ const AreaDimension = () => {
           <br></br>
           <br></br>
           <br></br>
-          {isOddSiteEnabled && formData.propertyType !== 3 && (
+          {isOddSiteEnabled && formData.propertyType !== 3 && formData.noofSides&& (
             
               
               
            
-            
+           
             <Grid container spacing={3} alignItems="center" justifyContent="center" 
             sx={{ 
               border: '5px solid #1976d2', 
@@ -1661,7 +1666,7 @@ const AreaDimension = () => {
            <Typography>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</Typography>
            <Typography>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</Typography>
            <Grid container spacing={3} alignItems="center" justifyContent="center" >
-{isOddSiteEnabled && formData.propertyType !== 3 &&(
+{isOddSiteEnabled && formData.propertyType !== 3 && formData.noofSides&&(
   
                 <Grid item>
                   <Grid container spacing={1} alignItems="center">
