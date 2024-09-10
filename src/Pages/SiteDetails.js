@@ -29,7 +29,7 @@ const SiteDetails = () => {
   const navigate = useNavigate();
   const [tablesdata2, setTablesData2] = useState([]);
   const [tablesdata3, setTablesData3] = useState([]);
-  const [fieldvalue,setFieldValue] = useState("")
+  
   const [isInitialEditable,setInitialEditable] = useState(false);
   const [loading, setLoading] = useState(false);
   const handleChange = async (e) => {
@@ -131,7 +131,7 @@ if(isInitialEditable){
       setLoading(true);
       const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData_React?UlbCode=555&Page=SITE_DETAILS');
       const response2 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=SITE_DETAILS`);;
-      const { Table1:MasterTable1 = [] } = response1.data;
+      const { Table:MasterTable1 = [] } = response1.data;
       const { Table1 = [] } = response2.data;
       if(Table1.length === 0){
         setInitialEditable(true)
@@ -278,7 +278,8 @@ if(isInitialEditable){
                       value={formData.yearOfConstruction}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      sx={{ backgroundColor: '#ffff' }}
+                      sx={{ backgroundColor: !isInitialEditable?  '':"#ffff" }}
+                      inputProps={{ readOnly: !isInitialEditable }}
                     >
                       <MenuItem value="">--Select--</MenuItem>
                       <MenuItem value="Before 2000">Before 2000</MenuItem>

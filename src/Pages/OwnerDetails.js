@@ -83,7 +83,7 @@ const OwnerDetails = () => {
       setTimer(30);
       const interval = setInterval(() => {
         setTimer(prevTimer => prevTimer - 1);
-      }, 500);
+      }, 1000);
 
 
       setTimeout(() => {
@@ -205,14 +205,14 @@ const OwnerDetails = () => {
 
 
   const handleSave = async () => {
-
+debugger
     try {
 
       if (otpFieldsVisible) {
         toast.error(`${t("verifyOtp")}`)
         return
       }
-      if (formData.IDENTIFIERTYPEID === null || formData.IDENTIFIERTYPEID === undefined) {
+      if (formData.IDENTIFIERTYPEID === null || formData.IDENTIFIERTYPEID === undefined || formData.IDENTIFIERTYPEID === 0) {
         toast.error(`${t("selectRelationshipType")}`)
         return
       }
@@ -238,14 +238,14 @@ const OwnerDetails = () => {
         return
       }
 
-
+      debugger
       setEditableIndex(-1);
       const params = {
         P_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')),
         propertyCode: formData.PROPERTYCODE,
         ownerNumber: formData.OWNERNUMBER,
-        IDENTIFIERTYPE: formData.IDENTIFIERTYPEID || null,
-        IDENTIFIERNAME_EN: formData.IDENTIFIERNAME || null,
+        IDENTIFIERTYPE: formData.IDENTIFIERTYPEID || 0,
+        IDENTIFIERNAME_EN: formData.IDENTIFIERNAME || "",
         MOBILENUMBER: formData.MOBILENUMBER || "0",
         MOBILEVERIFY: formData.MOBILEVERIFY !== "" ? formData.MOBILEVERIFY : "NOT VERIFIED",
         loginId: 'crc'

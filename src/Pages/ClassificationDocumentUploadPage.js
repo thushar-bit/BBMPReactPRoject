@@ -360,7 +360,7 @@ const ClassificationDocumentUploadPage = () => {
       navigate('/KaveriData')
     }
     else {
-      navigate('/DocumentUploadPage')
+      navigate('/KaveriData')
 
     }
   }

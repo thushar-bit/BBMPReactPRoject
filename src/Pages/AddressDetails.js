@@ -56,7 +56,13 @@ const AddressDetails = () => {
     long1: 0,
     wardNumber: "",
     wardName: "",
-    ownerName: ""
+    BBDOldWardNumber: "",
+    BBDOldPropertyNumber: "",
+    BBDSasApplicationNumber:"",
+    BBDAddress:"",
+    BBDPropertyType:"",
+    BBDPropertyCategory:"",
+    
   });
   const { t } = useTranslation();
   const validationSchema = Yup.object().shape({
@@ -89,9 +95,16 @@ const AddressDetails = () => {
   const fetchData = React.useCallback(async () => {
     setLoading(true);
     debugger
+    let response2 = null;
+    let book = JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))
     try {
       const response = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=ADDRESS`);
-      const response2 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=ADDRESS`);
+      if(book !== null){
+       response2 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=ADDRESS`);
+      }
+      else {
+        response2 = null
+      }
       const response3 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData_React?UlbCode=555&Page=ADDRESS');
 debugger
       const { Table1 = [], Table5 = [], } = response.data;
@@ -125,6 +138,12 @@ debugger
         propertyEID: table1Item.PROPERTYID || '',
         address: table1Item.ADDRESS || '',
         district: table1Item.DISTRICTNAME || '',
+        BBDOldWardNumber:table1Item.OLDWARDNUMBER198 || "",
+        BBDOldPropertyNumber:table1Item.MUNICIPALOLDNUMBER || "",
+        BBDSasApplicationNumber:table1Item.PUID || "",
+        BBDAddress:table1Item.ADDRESS ? table1Item.ADDRESS : "",
+        BBDPropertyType:table1Item.PROPERTYCATEGORYID  ? table1Item.PROPERTYCATEGORYID : "0",
+        BBDPropertyCategory:table1Item.PROPERTYCLASSIFICATIONID ? table1Item.PROPERTYCLASSIFICATIONID === 1 ? "ನಮೂನೆ-ಎ ವಹಿ" : "ನಮೂನೆ-ಬಿ ವಹಿ": "",
         wardNumber: table1Item.WARDID || '',
         wardName: table1Item.WARDNAME || "",
         propertyNumber: table1Item.PROPERTYCODE || '',
@@ -415,10 +434,10 @@ debugger
 
 
   const handleAddressChange = (newAddress) => {
-
+debugger
 
     if (!newAddress || !newAddress.address) {
-      console.error('Address is undefined');
+      toast.error('Address is undefined');
       return;
     }
     var parts = newAddress.address.split(', ');
@@ -429,13 +448,13 @@ debugger
 
     if (parts.length === 3) {
       area = parts[0].trim();
-      setFormData({
-        ...formData,
+      setFormData((prevData)=>({
+        ...prevData,
         lat1: lat2 !== undefined ? newAddress.lat : 0,
         long1: long2 !== undefined ? newAddress.lng : 0,
         areaorlocality: area
 
-      });
+      }));
     } else {
       var pincodeRegex = /\b\d{6}\b/;
       var pincodes = newAddress.address.match(pincodeRegex);
@@ -444,15 +463,15 @@ debugger
         pincode = pincodes[0];
       }
       area = parts[0].trim();
-      setFormData({
-        ...formData,
+      setFormData((prevData)=>({
+        ...prevData,
         lat1: lat2 !== undefined ? newAddress.lat : 0,
         long1: long2 !== undefined ? newAddress.lng : 0,
         DoorPlotNo: doorNo.length > 0 ? doorNo : "",
         pincode: pincode,
         areaorlocality: area
 
-      });
+      }));
     }
 
   };
@@ -651,9 +670,9 @@ const handleSASDelete = () => {
             <TextField
               fullWidth
               variant="filled"
-              label={t("propertyNumber")}
-              name="propertyNumber"
-              value={formData.propertyNumber}
+              label={t("Old Ward No")}
+              name="BBDOldWardNumber"
+              value={formData.BBDOldWardNumber}
               onChange={handleChange}
               InputProps={{
                 readOnly: true,
@@ -671,9 +690,90 @@ const handleSASDelete = () => {
             <TextField
               fullWidth
               variant="filled"
-              label={t("ownerName")}
-              name="ownerName"
-              value={formData.ownerName}
+              label={t("Property Old Number")}
+              name="BBDOldPropertyNumber"
+              value={formData.BBDOldPropertyNumber}
+              onChange={handleChange}
+              InputProps={{
+                readOnly: true,
+                endAdornment: (
+                  <Tooltip title={t("ownerNameInfo")}>
+                    <IconButton color="primary">
+                      <InfoIcon />
+                    </IconButton>
+                  </Tooltip>
+                )
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              variant="filled"
+              label={t("SAS Base Application No")}
+              name="BBDSasApplicationNumber"
+              value={formData.BBDSasApplicationNumber}
+              onChange={handleChange}
+              InputProps={{
+                readOnly: true,
+                endAdornment: (
+                  <Tooltip title={t("ownerNameInfo")}>
+                    <IconButton color="primary">
+                      <InfoIcon />
+                    </IconButton>
+                  </Tooltip>
+                )
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              variant="filled"
+              label={t("Property Address")}
+              name="BBDAddress"
+              value={formData.BBDAddress}
+              onChange={handleChange}
+              InputProps={{
+                readOnly: true,
+                endAdornment: (
+                  <Tooltip title={t("ownerNameInfo")}>
+                    <IconButton color="primary">
+                      <InfoIcon />
+                    </IconButton>
+                  </Tooltip>
+                )
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth  >
+              <InputLabel>
+                {t('Property Type')}
+              </InputLabel>
+              <Select
+                name="BBDPropertyType"
+                value={formData.BBDPropertyType}
+                onChange={handleChange}
+                inputProps={{ readOnly: true }}
+
+                
+              >
+                <MenuItem value="0">Select</MenuItem>
+                <MenuItem value="1">Vacant Site</MenuItem>
+                <MenuItem value="2">Site with Building</MenuItem>
+                <MenuItem value="3">Multistorey Flats</MenuItem>
+              </Select>
+
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              variant="filled"
+              label={t("Property Category(A/B)")}
+              name="BBDPropertyCategory"
+              value={formData.BBDPropertyCategory}
               onChange={handleChange}
               InputProps={{
                 readOnly: true,
@@ -764,9 +864,9 @@ const handleSASDelete = () => {
                 </Grid>
 
 
-             
+             </Grid>
 
-              <TableContainer component={Paper} sx={{ mt: 3 }}>
+              <TableContainer component={Paper} sx={{ mt: 3 ,alignItems:"center"}}>
                 <Table>
                   <TableHead>
                     <TableRow>
@@ -806,7 +906,7 @@ const handleSASDelete = () => {
                   </TableBody>
                 </Table>
               </TableContainer>
-        </Grid>
+      
         <Typography
           variant="h6"
           align="center"

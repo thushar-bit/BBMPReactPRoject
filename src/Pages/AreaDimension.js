@@ -52,7 +52,9 @@ const AreaDimension = () => {
     cal9: "",
     cal10: "",
     sqFt: "",
-    sqMt: ""
+    sqMt: "",
+    ActualSqFt:"",
+    ActualSqMt:""
   });
   const { t } = useTranslation();
   const [isEditable, setIsEditable] = useState(false);
@@ -117,6 +119,10 @@ const AreaDimension = () => {
         formData.plotAreaSqMt = 0;
       }
     }
+    if(name === "ActualSqFt"){
+      formData.ActualSqMt = value > 0 ? Math.round(value * 0.092903 * 100) / 100 : "Invalid Data";
+
+    }
     if (name.startsWith('cal')) {
 
       const updatedFormData = {
@@ -178,6 +184,8 @@ const AreaDimension = () => {
         ew: NCLTable3Data.length > 0 ? NCLTable3Data[0].EASTWEST || '' : '',
         plotAreaSqFt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREAFT || '' : '',
         plotAreaSqMt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREA || '' : '',
+        ActualSqFt:NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREAREGFT || '' : '',
+        ActualSqMt:NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREAREGMT || '' : '',
         Bookeast: Table1Data.length > 0 ? Table1Data.CHECKBANDI_EAST || '' : '',
         Bookwest: Table1Data.length > 0 ? Table1Data.CHECKBANDI_WEST || '' : '',
         Booknorth: Table1Data.length > 0 ? Table1Data.CHECKBANDI_NORTH || '' : '',
@@ -277,6 +285,13 @@ const AreaDimension = () => {
     }
 
     if (formData.oddSite === "Y" && formData.propertyType !== 3) {
+      if(formData.ActualSqFt !== formData.sqFt){
+        const differencePercentage = (Math.abs(formData.ActualSqFt - formData.sqFt) / formData.sqFt) * 100;
+        if (differencePercentage > 30) {
+          errors.acutalPercentageDifference = "The Actual SqFt value differs by more than 30% from the calculated SqFt value."
+        }
+      }
+
       for (let i = 1; i <= formData.noofSides; i++) {
         if (isInvalid(formData[`cal${i}`])) {
           if (i == 1) {
@@ -360,6 +375,7 @@ const AreaDimension = () => {
           toast.error("SqFt and SqMt cannot be Invalid")
           return
         }
+        
       }
       const data = {
         propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
@@ -380,6 +396,8 @@ const AreaDimension = () => {
         nsoddsitE4FT: formData.cal8 || null,
         sidE9: formData.cal9 || null,
         sidE10: formData.cal10 || null,
+        actualSqft:formData.ActualSqFt || null,
+        actualSqMt:formData.ActualSqMt|| null,
         oddSiteSides: formData.noofSides || null,
         loginId: "crc",
         p_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))
@@ -837,6 +855,8 @@ const AreaDimension = () => {
               </FormControl>
               <Typography variant="h6" sx={{ fontWeight: 'bold', }}>
               </Typography>
+              {(isOddSiteEnabled === false) && (
+                <>
               <Typography
                 variant="h6"
                 align="left"
@@ -848,6 +868,23 @@ const AreaDimension = () => {
               >
                 {t("AsPerBBMPBooks")}
               </Typography>
+              </>
+              )}
+                {(isOddSiteEnabled === true) && (
+                <>
+              <Typography
+                variant="h6"
+                align="left"
+                gutterBottom
+                sx={{
+                  fontWeight: 'bold',
+                  marginBottom: 3,
+                }}
+              >
+                {t("Area Dimensions")}
+              </Typography>
+              </>
+                )}
               {(isOddSiteEnabled === false) && (
 
                 <Grid container spacing={3}>
@@ -1052,6 +1089,7 @@ const AreaDimension = () => {
               >
                 {t("AsPerBBMPBooks")}
               </Typography>
+              
               <Grid container spacing={3}>
                 <Grid item xs={6} sm={3}>
                   <TextField
@@ -1256,6 +1294,8 @@ const AreaDimension = () => {
               </FormControl>
               <Typography variant="h6" sx={{ fontWeight: 'bold', }}>
               </Typography>
+              {(isOddSiteEnabled === false) && (
+                <>
               <Typography
                 variant="h6"
                 align="left"
@@ -1265,8 +1305,26 @@ const AreaDimension = () => {
                   marginBottom: 3,
                 }}
               >
+              
                 {t("AsPerBBMPBooks")}
               </Typography>
+              </>
+              )}
+               {(isOddSiteEnabled === true) && (
+                <>
+              <Typography
+                variant="h6"
+                align="left"
+                gutterBottom
+                sx={{
+                  fontWeight: 'bold',
+                  marginBottom: 3,
+                }}
+              >
+                {t("Area Dimensions")}
+              </Typography>
+              </>
+               )}
               {(isOddSiteEnabled === false) && (
                 <Grid container spacing={3}>
                   <Grid item xs={6} sm={3}>
@@ -1518,7 +1576,20 @@ const AreaDimension = () => {
           <br></br>
           <br></br>
           {isOddSiteEnabled && formData.propertyType !== 3 && (
-            <Grid container spacing={3} alignItems="center" justifyContent="center">
+            
+              
+              
+           
+            
+            <Grid container spacing={3} alignItems="center" justifyContent="center" 
+            sx={{ 
+              border: '5px solid #1976d2', 
+              borderRadius: '8px', 
+              padding: '16px', // Adds padding inside the border
+              width: 'fit-content', // Ensures the grid shrinks to fit content
+            }}
+            >
+              
               <Grid item>
                 <Grid container spacing={1} alignItems="center" justifyContent="center">
                   <Grid item>
@@ -1587,6 +1658,56 @@ const AreaDimension = () => {
             </Grid>
 
           )}
+           <Typography>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</Typography>
+           <Typography>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</Typography>
+           <Grid container spacing={3} alignItems="center" justifyContent="center" >
+{isOddSiteEnabled && formData.propertyType !== 3 &&(
+  
+                <Grid item>
+                  <Grid container spacing={1} alignItems="center">
+                    <Grid item>
+                      <Typography>Actual Area Sq.Ft</Typography>
+                    </Grid>
+                    <Grid item>
+                      <TextField
+                         variant={isEditable ? "outlined" : "filled"}
+                        size="medium"
+                        name="ActualSqFt"
+                        value={formData.ActualSqFt}
+                        onChange={handleChange}
+                        sx={{ width: '300px', borderColor: '#016767' }}
+                        InputProps={{
+                          readOnly: !isEditable,
+                          style: { backgroundColor: !isEditable ? '' : "#ffff" },
+                        }}
+                      />
+                    </Grid>
+                    <Grid item>
+                      <Typography>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</Typography>
+                    </Grid>
+                    <Grid item>
+                    <Typography>Actual Area Sq.Mt</Typography>
+                    </Grid>
+                    <Grid item>
+                      <TextField
+                        variant="filled"
+                        size="medium"
+                        name="ActualSqMt"
+                        value={formData.ActualSqMt}
+                        onChange={handleChange}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                        sx={{ width: '300px', borderColor: '#016767' }}
+                      />
+                    </Grid>
+                  </Grid>
+                </Grid>
+              )}
+            </Grid>
+
+          
+
 
           <Box display="flex" justifyContent="center" gap={2} mt={3}>
             <Button variant="contained" color="primary" onClick={back}>

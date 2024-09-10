@@ -11,10 +11,10 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '../components/Shake.css';
 import LabelWithAsterisk from '../components/LabelWithAsterisk'
+import DocumentUploadPage from './DocumentUploadPage';
 const KaveriData = () => {
   const [formData, setFormData] = useState({
     RegistrationNumber: "",
-    OldRegistrationNumber: "",
     ECDocumentNumber: ""
   });
   
@@ -23,6 +23,7 @@ const KaveriData = () => {
   const [KAVERI_PARTIES_DETAILS, setKAVERI_PARTIES_DETAILS] = useState([]);
   const [KAVERIEC_PROP_DETAILS, setKAVERIEC_PROP_DETAILS] = useState([]);
   const [KAVERIEC_PARTIES_DETAILS, setKAVERIEC_PARTIES_DETAILS] = useState([]);
+  const [DocumetUploadData,setDocumentUploadedData] = useState([]);
   const [isAllow, setIsAllow] = useState(false);
   const [isShowKaveriDocumentDetais, setisShowKaveriDocumentDetais] = useState(false)
   const navigate = useNavigate();
@@ -30,30 +31,30 @@ const KaveriData = () => {
 const fetchData = async (TypeOfLoad) => {
 
   const response = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=KAVERI_DETAILS`);
-  const {Table1=[],Table2=[],Table3=[],Table4=[],Table5=[]} = response.data;
-  debugger
+  const {Table1=[],Table2=[],Table3=[],Table4=[],Table5=[],Table6=[]} = response.data;
+  
   if(TypeOfLoad === "KAVERI_DOC_DATA"){
-    setKAVERI_DOC_DETAILS(Table1.length > 0 ? Table1 : []);
-    setKAVERI_PROP_DETAILS(Table2.length > 0 ? Table2 : []);
-    setKAVERI_PARTIES_DETAILS(Table3.length > 0? Table3 : []);
+    setKAVERI_DOC_DETAILS(Table2.length > 0 ? Table2 : []);
+    setKAVERI_PROP_DETAILS(Table3.length > 0 ? Table3 : []);
+    setKAVERI_PARTIES_DETAILS(Table4.length > 0? Table4 : []);
   }
   else if(TypeOfLoad === "KAVERI_EC_DATA"){
-    setKAVERIEC_PROP_DETAILS(Table4.length > 0? Table4 : []);
-    setKAVERIEC_PARTIES_DETAILS(Table5.length > 0 ? Table5 : []);
+    setKAVERIEC_PROP_DETAILS(Table5.length > 0? Table5 : []);
+    setKAVERIEC_PARTIES_DETAILS(Table6.length > 0 ? Table6 : []);
+    setDocumentUploadedData(Table1.length > 0 ? Table1 : []);
   }
   else {
-    setKAVERI_DOC_DETAILS(Table1.length > 0 ? Table1 : []);
-    setKAVERI_PROP_DETAILS(Table2.length > 0 ? Table2 : []);
-    setKAVERI_PARTIES_DETAILS(Table3.length > 0? Table3 : []);
-    setKAVERIEC_PROP_DETAILS(Table4.length > 0? Table4 : []);
-    setKAVERIEC_PARTIES_DETAILS(Table5.length > 0 ? Table5 : []);
+    setKAVERI_DOC_DETAILS(Table2.length > 0 ? Table2 : []);
+    setKAVERI_PROP_DETAILS(Table3.length > 0 ? Table3 : []);
+    setKAVERI_PARTIES_DETAILS(Table4.length > 0? Table4 : []);
+    setKAVERIEC_PROP_DETAILS(Table5.length > 0? Table5 : []);
+    setKAVERIEC_PARTIES_DETAILS(Table6.length > 0 ? Table6 : []);
+    setDocumentUploadedData(Table1.length > 0 ? Table1 : []);
   }
-  
-  
-
 }
 
 useEffect(()=> {
+  
   let k = sessionStorage.getItem('KaveriVerified')
   if(k === "true"){
     setisShowKaveriDocumentDetais(true);
@@ -62,36 +63,32 @@ fetchData("Initial")
 },[])
 
   const handleKaveriDocumentData = async () => {
+    
     if (formData.RegistrationNumber.length === 0) {
-      if (formData.OldRegistrationNumber.length === 0) {
         toast.error(`${t("Please Enter One of The Registration Number")}`);
         return
-      }
     }
-    if (formData.RegistrationNumber.length > 0 && formData.OldRegistrationNumber.length > 0) {
-      toast.error(`${t("Please Enter any One Registration Number")}`)
-      return
-    }
-    debugger
+    
+    
     const ekycOwnerDetails = JSON.parse(sessionStorage.getItem('EKYC_OWNER_DETAILS'));
     const ekycdatas = ekycOwnerDetails.map(({ ownerName, ownerNumber }) => ({
       ownerName: ownerName || "",
       ownerNumber: ownerNumber || 0
     }));
     try {
-      let response;
-      if (formData.RegistrationNumber.length > 0) {
-        response = await axiosInstance.post(`KaveriAPI/GetKaveriDocData?RegistrationNoNumber=${formData.RegistrationNumber}&BOOKS_APP_NO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&PropertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&LoginId=crc
+     
+      
+      let response = await axiosInstance.post(`KaveriAPI/GetKaveriDocData?RegistrationNoNumber=${formData.RegistrationNumber}&BOOKS_APP_NO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&PropertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&LoginId=crc
        `, ekycdatas)
-      } else if (formData.OldRegistrationNumber.length > 0) {
-        response = await axiosInstance.post(`KaveriAPI/GetKaveriDocData?RegistrationNoNumber=${formData.OldRegistrationNumber}&BOOKS_APP_NO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&PropertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&LoginId=crc
-        `, ekycdatas)
-      }
+    
+       
+     
       const result = response.data;
 
       if (result.success) {
         setisShowKaveriDocumentDetais(true);
-        fetchData("KAVERI_DOC_DATA")
+        
+       await fetchData("KAVERI_DOC_DATA")
       }
       else {
         toast.error(result.message)
@@ -104,7 +101,7 @@ fetchData("Initial")
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
-        progress: undefined,
+       
       });
 
     }
@@ -141,11 +138,11 @@ fetchData("Initial")
 
   const handleECPropertyData = async () => {
     if (formData.RegistrationNumber.length === 0) {
-      if (formData.OldRegistrationNumber.length === 0)
+      if (DocumetUploadData.length === 0)
         toast.error(`${t("enterRegistrationNumberFirst")}`);
       return
     }
-    if (formData.RegistrationNumber.length > 0 && formData.OldRegistrationNumber.length > 0) {
+    if (formData.RegistrationNumber.length > 0 && DocumetUploadData.length > 0) {
       toast.error(`${t("Please Enter any One Registration Number")}`)
       return
     }
@@ -164,9 +161,9 @@ fetchData("Initial")
         response = await axiosInstance.post
           (`KaveriAPI/GetKaveriECData?ECNumber=${formData.ECDocumentNumber}&RegistrationNoNumber=${formData.RegistrationNumber}&BOOKS_APP_NO=
             ${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&PropertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&LoginId=crc`, ekycdatas)
-      } else if (formData.OldRegistrationNumber.length > 0) {
+      } else if (DocumetUploadData > 0) {
         response = await axiosInstance.post
-          (`KaveriAPI/GetKaveriECData?ECNumber=${formData.ECDocumentNumber}&RegistrationNoNumber=${formData.OldRegistrationNumber}&BOOKS_APP_NO=
+          (`KaveriAPI/GetKaveriECData?ECNumber=${formData.ECDocumentNumber}&RegistrationNoNumber=${DocumetUploadData.DOCUMENTDETAILS}&BOOKS_APP_NO=
             ${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&PropertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&LoginId=crc`, ekycdatas)
       }
 
@@ -237,16 +234,14 @@ fetchData("Initial")
     });
   }
   const handleNavigation = () => {
-    debugger
+    
    // sessionStorage.setItem('KaveriVerified', isAllow);
     let k = sessionStorage.getItem('KaveriVerified')
     
         if (k === "true") {
           navigate("/ClassificationDocumentUploadPage")
         }
-        else {
-          navigate('/DocumentUploadPage');
-        }
+       
   
        if (isAllow) {
         sessionStorage.setItem('KaveriVerified', isAllow);
@@ -266,11 +261,10 @@ fetchData("Initial")
 
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="xl">
       <ToastContainer />
       <Box sx={{ backgroundColor: '#f0f0f0', padding: 4, borderRadius: 2, mt: 8 }}>
-        <form onKeyDown={handleKeyDown}>
-          <Typography
+      <Typography
             variant="h3"
             align="center"
             gutterBottom
@@ -288,9 +282,12 @@ fetchData("Initial")
           >
             {t("KAVERISERVICESDATA")}
           </Typography>
+       
+        <form onKeyDown={handleKeyDown}>
+          
 
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={9}>
+          <Grid container spacing={4} alignItems="center">
+            <Grid item xs={8}>
               <TextField
                 fullWidth
 
@@ -312,30 +309,11 @@ fetchData("Initial")
               />
             </Grid>
 
-          </Grid>
-          <br></br>
+          
+          
 
-          <Grid container alignItems="center" spacing={2}>
-            <Grid item xs={3} style={{ display: 'flex', justifyContent: 'flex-end', marginLeft: "6%" }}>
-              <Typography
-                variant="h6"
-                align="center"
-                gutterBottom
-                sx={{
-                  fontWeight: 'bold',
-                  fontFamily: "sans-serif",
-                  color: '#000', // Specify the desired color here
-                  fontSize: {
-                    xs: '2rem',
-                    sm: '2rem',
-                    md: '1.2rem',
-                  }
-                }}
-              >
-                OR
-              </Typography>
-            </Grid>
-            <Grid item xs={3} style={{ display: 'flex', justifyContent: 'flex-start', marginLeft: "44%" }}>
+       
+            <Grid item xs={3}>
               <Button
                 variant="contained"
                 color="success"
@@ -344,33 +322,10 @@ fetchData("Initial")
               >
                 {t("KaveriDocumentData")}
               </Button>
-            </Grid>
-          </Grid>
-          <br></br>
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={9}>
-              <TextField
-                fullWidth
-
-                label={< LabelWithAsterisk text={t("oldRegistrationNumber")} />}
-                placeholder='NMG-X-XXXX-XXXX-XX'
-                name="OldRegistrationNumber"
-                value={formData.OldRegistrationNumber}
-                onChange={handleChange}
-                InputProps={{
-                  style: { backgroundColor: "#ffff" },
-                  endAdornment: (
-                    <Tooltip title={t("propertyEIDInfo")}>
-                      <IconButton color="primary">
-                        <InfoIcon />
-                      </IconButton>
-                    </Tooltip>
-                  )
-                }}
-              />
-            </Grid>
-
-          </Grid>
+              </Grid>
+              </Grid>
+         
+        
           {isShowKaveriDocumentDetais &&
             <TableContainer component={Paper} style={{ marginTop: 16 }}>
               <Table>

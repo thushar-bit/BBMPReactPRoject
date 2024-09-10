@@ -111,7 +111,7 @@ debugger
 
     if (response3.data === "There is a issue while copying the data from Book Module.No Data Found") {
 
-      //future the propertyid will come from bbddraft page 
+     
       sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(row.PROPERTYCODE));
       
       sessionStorage.setItem('SETPROPERYID', row.PROPERTYID);

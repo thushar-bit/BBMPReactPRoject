@@ -94,6 +94,7 @@ const DocumentUploadPage = () => {
 
 
   const fetchData = async () => {
+    debugger
     try {
       const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterDocByCategoryOrClaimType?ULBCODE=555&CATEGORYID=1');
       const response2 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=DOCUMENT_DETAILS`);;
@@ -149,13 +150,17 @@ const DocumentUploadPage = () => {
     setfileExtension('');
   }
   const handleSubmit = async (e) => {
-
+debugger
     var propertyphoto2 = "";
     if (isEditable) {
       if (formData.DocumentDetails.length === 0) {
         toast.error("Please Provide Document Details")
         return
       }
+    }
+    if(tableData.length === 1){
+      toast.error("Only One Document Upload Allowed")
+      return
     }
     if (selectedFile) {
       propertyphoto2 = await getPropertyphoto(selectedFile);
@@ -223,14 +228,10 @@ const DocumentUploadPage = () => {
     }
 
   };
-  const back = () => {
-    navigate('/KaveriData')
-  }
-  const handleNavigation = () => {
-
-    navigate('/ClassificationDocumentUploadPage');
-
-  }
+   const back = () => {
+   navigate('/KaveriData')
+   }
+   
   const handleDownload = (base64Data, fileExtension, documentdescription) => {
     const filename = `${documentdescription}.${fileExtension.toLowerCase()}`;
 
@@ -307,7 +308,8 @@ const DocumentUploadPage = () => {
   };
 
   useEffect(() => {
-
+debugger
+console.log("Component is rendered")
     fetchData();
 
   }, []);
@@ -324,8 +326,8 @@ const DocumentUploadPage = () => {
         >
           {({ errors, touched, handleBlur }) => (
             <Form onKeyDown={handleKeyDown}>
-              <Typography
-                variant="h3"
+             
+              <Typography variant="h6"
                 align="center"
                 gutterBottom
                 sx={{
@@ -334,28 +336,11 @@ const DocumentUploadPage = () => {
                   marginBottom: 3,
                   color: '#',
                   fontSize: {
-                    xs: '1.5rem',
-                    sm: '2rem',
-                    md: '2.5rem',
-                  }
-                }}
-              >
-                {t("EligibilityDocuments")}
-              </Typography>
-              <Typography variant="h6"
-                align="center"
-                gutterBottom
-                sx={{
-                  fontWeight: 'bold',
-                  fontFamily: "sans-serif",
-                  marginBottom: 3,
-                  color: '#df1414',
-                  fontSize: {
                     xs: '1rem',
                     sm: '1rem',
                     md: '1.3rem',
                   }
-                }}>{t('Oneoftheaccompany')}</Typography>
+                }}>Title and Support Documents *    (One of the documents with * to be uploaded)   (Only when registration happened prior to 2004)</Typography>
               <Grid container spacing={4}>
 
 
@@ -548,14 +533,7 @@ const DocumentUploadPage = () => {
               </TableContainer>
 
               <Box display="flex" justifyContent="center" gap={2} mt={3}>
-                <Button variant="contained" color="primary" onClick={back}>
-                  {t("Previous")}
-                </Button>
-
-
-                <Button variant="contained" color="primary" onClick={handleNavigation}>
-                  {t("next")}
-                </Button>
+              
               </Box>
             </Form>
           )}
