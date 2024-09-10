@@ -193,7 +193,6 @@ const DocumentUploadPage = () => {
       await axiosInstance.post('BBMPCITZAPI/NCL_PROPERTY_ID_TEMP_INS?ID_BASIC_PROPERTY=0', data
       )
 
-      const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
       
       await toast.success(`${t("detailsSavedSuccess")}`, {
         position: "top-right",
@@ -272,7 +271,6 @@ const DocumentUploadPage = () => {
     try {
       await axiosInstance.post('BBMPCITZAPI/NCL_PROPERTY_ID_TEMP_DEL?ID_BASIC_PROPERTY=0', data
       )
-      const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
       
       await toast.success(`${t("detailsDeletedSuccess")}`, {
         position: "top-right",

@@ -324,6 +324,7 @@ const OwnerDetails = () => {
       const response = await axiosInstance.get("Name_Match/GET_BBD_NCL_OWNER_BYEKYCTRANSACTION?transactionNumber=" + txno + "&OwnerType=" + ownerType)
       if (response.data.length > 0) {
         console.log(response.data)
+        setEditableIndex(response.data.Table[0].OWNERNUMBER);
         return response.data.Table[0].OWNERNUMBER || ""
 
       }

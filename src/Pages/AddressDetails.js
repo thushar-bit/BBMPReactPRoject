@@ -61,15 +61,11 @@ const AddressDetails = () => {
   const { t } = useTranslation();
   const validationSchema = Yup.object().shape({
     DoorPlotNo: Yup.string().required(`${t("doorPlotNumber")}`).notOneOf(['0'], `${t('doorName')}`),
-    //  buildingname: Yup.string().required(`${t('buildingLandNameRequired')}`),
     areaorlocality: Yup.string().required(`${t('areaLocalityRequired')}`),
-    // NearestLandmark: Yup.string().required(`${t('nearestLandmarkRequired')}`),
     pincode: Yup.string()
       .required(`${t('pincodeRequired')}`)
       .matches(/^\d{6}$/, `${t('pincodeInvalid')}`),
-    verifySASNUM: Yup.string().required(`${t('sasApplicationNumber')}`).notOneOf(['0'], `${t('sasNumberInvalid')}`),
     streetid: Yup.string().required(`${t('streetNameRequired')}`).notOneOf(['0'], `${t('streetNameInvalid')}`),
-    // propertyType:Yup.string().required(`${t("PropertyTypeInvalid")}`).notOneOf(['0'], `${t("PropertyTypeCannotBeZero")}`),
    // lat1: Yup.string().required(`${t('latitudeRequired')}`).notOneOf(['0'], `${t('latitudeInvalid')}`),
   //  long1: Yup.string().required(`${t('longitudeRequired')}`).notOneOf(['0'], `${t('longitudeInvalid')}`),
   });
@@ -369,7 +365,6 @@ debugger
         await axiosInstance.post('BBMPCITZAPI/GET_PROPERTY_CTZ_PROPERTY', data
         )
         setSelectedFile(null);
-        const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
         
         setTimeout(() => {
         toast.success(`${t("detailsSavedSuccess")}`, {
@@ -514,7 +509,9 @@ debugger
       setSASTableData([]);
     }
   };
-
+const handleSASDelete = () => {
+  setSASTableData([])
+}
 
 
 
@@ -732,6 +729,83 @@ debugger
             </FormControl>
 
           </Grid>
+         
+                <Grid item xs={12} sm={6}>
+
+                  <TextField
+                    fullWidth
+                    variant={isEditable ? "outlined" : "filled"}
+                    label={t("SASBaseApplicationNo")}
+                    name="verifySASNUM"
+                    value={formData.verifySASNUM}
+                    onChange={handleChange}
+                   
+             
+                    InputProps={{
+                      readOnly: !isEditable,
+                      style: { backgroundColor: !isEditable ? '' : "#ffff" },
+                      endAdornment: (
+                        <Tooltip title={t("streetNameInfo")}>
+                          <IconButton color="primary">
+                            <InfoIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Button color='success'
+                    variant={"contained"}
+                    disabled={!isEditable}
+                    onClick={handleSASClick}>
+                    {t("VerifySASApplicationNumber")}
+                  </Button>
+                </Grid>
+
+
+             
+
+              <TableContainer component={Paper} sx={{ mt: 3 }}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("ApplicationNumber")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>PID</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("KHATHASURVEYNO")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("OwnerName")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("PropertyAddress")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("PropertyNature")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("SiteArea")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("BuiltUpArea")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}></TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {SAStableData.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={12} align="center">
+                          {t("Nodataavailable")}
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      SAStableData.map((row) => (
+                        <TableRow key={row.id}>
+                          <TableCell>{row.APPLICATIONNUMBER}</TableCell>
+                          <TableCell>{row.PID}</TableCell>
+                          <TableCell>{row.KHATHA_SURVEY_NO}</TableCell>
+                          <TableCell>{row.OWNERNAME}</TableCell>
+                          <TableCell>{row.PROPERTYADDRESS}</TableCell>
+                          <TableCell>{row.NATUREOFPROPERTY}</TableCell>
+                          <TableCell>{row.SITEAREA}</TableCell>
+                          <TableCell>{row.BUILTUPAREA}</TableCell>
+                          <TableCell><Button variant='outlined' color='error' onClick={handleSASDelete}>Delete</Button></TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
         </Grid>
         <Typography
           variant="h6"
@@ -1018,83 +1092,7 @@ debugger
                 </Grid>
               </Grid>
               <br></br>
-              <Grid container spacing={4} alignItems={"center"}>
-                <Grid item xs={12} sm={6}>
-
-                  <TextField
-                    fullWidth
-                    variant={isEditable ? "outlined" : "filled"}
-                    label={t("SASBaseApplicationNo")}
-                    name="verifySASNUM"
-                    value={formData.verifySASNUM}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    className={touched.verifySASNUM && !!errors.verifySASNUM ? 'shake' : ''}
-                    error={touched.verifySASNUM && !!errors.verifySASNUM}
-                    helperText={touched.verifySASNUM && errors.verifySASNUM}
-                    InputProps={{
-                      readOnly: !isEditable,
-                      style: { backgroundColor: !isEditable ? '' : "#ffff" },
-                      endAdornment: (
-                        <Tooltip title={t("streetNameInfo")}>
-                          <IconButton color="primary">
-                            <InfoIcon />
-                          </IconButton>
-                        </Tooltip>
-                      )
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Button color='success'
-                    variant={"contained"}
-                    disabled={!isEditable}
-                    onClick={handleSASClick}>
-                    {t("VerifySASApplicationNumber")}
-                  </Button>
-                </Grid>
-
-
-              </Grid>
-
-              <TableContainer component={Paper} sx={{ mt: 4 }}>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("ApplicationNumber")}</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>PID</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("KHATHASURVEYNO")}</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("OwnerName")}</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("PropertyAddress")}</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("PropertyNature")}</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("SiteArea")}</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("BuiltUpArea")}</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {SAStableData.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={12} align="center">
-                          {t("Nodataavailable")}
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      SAStableData.map((row) => (
-                        <TableRow key={row.id}>
-                          <TableCell>{row.APPLICATIONNUMBER}</TableCell>
-                          <TableCell>{row.PID}</TableCell>
-                          <TableCell>{row.KHATHA_SURVEY_NO}</TableCell>
-                          <TableCell>{row.OWNERNAME}</TableCell>
-                          <TableCell>{row.PROPERTYADDRESS}</TableCell>
-                          <TableCell>{row.NATUREOFPROPERTY}</TableCell>
-                          <TableCell>{row.SITEAREA}</TableCell>
-                          <TableCell>{row.BUILTUPAREA}</TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+            
 
               <br></br>
               <br></br>

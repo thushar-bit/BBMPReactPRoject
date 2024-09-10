@@ -113,27 +113,23 @@ debugger
 
       //future the propertyid will come from bbddraft page 
       sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(row.PROPERTYCODE));
-      const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&propertyid=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
       
       sessionStorage.setItem('SETPROPERYID', row.PROPERTYID);
-      setTimeout(() => {
-        // navigate('/BBDDraft');
+      
 
         navigate('/AddressDetails')
-      }, 500);
+    
     }
     else {
       sessionStorage.setItem('P_BOOKS_PROP_APPNO', JSON.stringify(response3.data.P_BOOKS_PROP_APPNO || 0));
       sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(response3.data.PropertyId || 0));
       try {
-        const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT?UlbCode=555&propertyid=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
-        const response2 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
+       
 
        
-        setTimeout(() => {
-          // navigate('/BBDDraft');
+       
           navigate('/AddressDetails')
-        }, 500);
+     
 
       } catch (error) {
 

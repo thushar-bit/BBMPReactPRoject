@@ -327,7 +327,6 @@ const AreaDimension = () => {
         await axiosInstance.post('BBMPCITZAPI/UPD_NCL_PROPERTY_MAIN_TEMP_CHECKBANDI', checkbandhidata
         )
 
-        const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
         
         setIsEditablecheckbandi(false);
         setFormData({
@@ -355,6 +354,10 @@ const AreaDimension = () => {
       if (formData.oddSite === "Y") {
         if (formData.noofSides === "0" || formData.noofSides === "") {
           toast.error("Please Select the no of Sides")
+          return
+        }
+        if(formData.sqFt === "Invalid Data" || formData.sqMt === "Invalid Data"){
+          toast.error("SqFt and SqMt cannot be Invalid")
           return
         }
       }
@@ -386,7 +389,6 @@ const AreaDimension = () => {
         await axiosInstance.post('BBMPCITZAPI/UPD_NCL_PROPERTY_SITE_DIMENSION_TEMP', data
         )
 
-        const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
         
 
         setIsEditable(false);
@@ -430,7 +432,6 @@ const AreaDimension = () => {
       try {
         await axiosInstance.post('BBMPCITZAPI/UPD_NCL_PROPERTY_APARTMENT_TEMP_AREA', data
         )
-        const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
         
         setIsEditable(false);
         setTimeout(async () => {

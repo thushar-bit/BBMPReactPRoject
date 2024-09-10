@@ -39,8 +39,7 @@ const MultiStoreyBuildingDetails = () => {
     floornumber: Yup.string().required(`${t('floorNumberRequired')}`),
     features: Yup.string().required(`${t('usageCategoryRequired')}`),
     yearOfConstruction: Yup.string()
-    .required(`${t('yearUsageRequired')}`).notOneOf(['0000'], 'Year Usage cannot be all 0')
-    .matches(/^[1-9]\d{3}$/, `${t("yearUsageRequiredInvalid")}`),
+    .required(`${t('yearUsageRequired')}`),
     Typeofuse: Yup.string().required(`${t('typeOfUseRequired')}`),
     Occupancy: Yup.string().required(`${t('occupancyRequired')}`),
     OwnersShareAreaSqmts: Yup.string().required(`${t('ownerShareAreaRequired')}`),
@@ -86,7 +85,7 @@ const MultiStoreyBuildingDetails = () => {
       try {
         
         if (value !== "") {
-          const response = await axiosInstance.get(`BBMPCITZAPI/GetNPMMasterTable?FeaturesHeadID=${value}`);
+          const response = await axiosInstance.get(`BBMPCITZAPI/GET_MST_FEATURE_BY_FEATUREHEADID?FEATUREHEADID=${value}`);
           if (response.data.Table.length > 0) {
             setTablesData3(response.data.Table);
           }
@@ -106,15 +105,7 @@ const MultiStoreyBuildingDetails = () => {
         }, 500);
       }
     }
-    if (name === "yearOfConstruction") {
-      if (/^\d{0,4}$/.test(value)) {
-        setFormData(prevFormData => ({
-          ...prevFormData,
-          [name]: value
-        }));
-      }
-      return
-    }
+    
     setFormData({
       ...formData,
       [name]: value
@@ -176,7 +167,7 @@ const handleEdit = () => {
       }
       if (table13Item.FEATUREHEADID !== null && table13Item.FEATUREHEADID !== "" && table13Item.FEATUREHEADID !== undefined) {
 
-        const response3 = await axiosInstance.get(`BBMPCITZAPI/GetNPMMasterTable?FeaturesHeadID=${table13Item.FEATUREHEADID}`);
+        const response3 = await axiosInstance.get(`BBMPCITZAPI/GET_MST_FEATURE_BY_FEATUREHEADID?FEATUREHEADID=${table13Item.FEATUREHEADID}`);
         if (response3.data.Table.length > 0) {
           setTablesData3(response3.data.Table);
         }
@@ -247,7 +238,6 @@ if(isEditable || isInitialEditable){
       await axiosInstance.post('BBMPCITZAPI/INS_UPD_NCL_PROPERTY_APARTMENT_TEMP1?ULBCODE=555', data
       )
 
-      const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
       
       await toast.success(`${t("detailsSavedSuccess")}`, {
         position: "top-right",
@@ -469,30 +459,53 @@ if(isEditable || isInitialEditable){
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={4}>
-                  <TextField
+                  
+                <FormControl
                     fullWidth
-                    type="number"
-                   
-                    label={<LabelWithAsterisk text={t('YearUsage')} />}
-                    name="yearOfConstruction"
-                    value={formData.yearOfConstruction}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    className={touched.yearOfConstruction && !!errors.yearOfConstruction ? 'shake' : ''}
                     error={touched.yearOfConstruction && !!errors.yearOfConstruction}
-                    helperText={touched.yearOfConstruction && errors.yearOfConstruction}
-                    InputProps={{
-                      style: { backgroundColor:  isInitialEditable ? '#ffff': "" } ,
-                      readOnly: !isInitialEditable,
-                      endAdornment: (
-                        <Tooltip title={t("doorPlotNoInfo")}>
-                          <IconButton color="primary">
-                            <InfoIcon />
-                          </IconButton>
-                        </Tooltip>
-                      )
-                    }}
-                  />
+                    sx={{ marginBottom: 3 }}
+                    className={touched.yearOfConstruction && !!errors.yearOfConstruction ? 'shake' : ''}
+                  >
+                    <InputLabel>      <LabelWithAsterisk text={t('YearUsage')} /></InputLabel>
+                    <Select
+                      name="yearOfConstruction"
+                      value={formData.yearOfConstruction}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      sx={{ backgroundColor: '#ffff' }}
+                    >
+                      <MenuItem value="">--Select--</MenuItem>
+                      <MenuItem value="Before 2000">Before 2000</MenuItem>
+                      <MenuItem value="2000">2000</MenuItem>
+                      <MenuItem value="2001">2001</MenuItem>
+                      <MenuItem value="2002">2002</MenuItem>
+                      <MenuItem value="2003">2003</MenuItem>
+                      <MenuItem value="2004">2004</MenuItem>
+                      <MenuItem value="2005">2005</MenuItem>
+                      <MenuItem value="2006">2006</MenuItem>
+                      <MenuItem value="2007">2007</MenuItem>
+                      <MenuItem value="2008">2008</MenuItem>
+                      <MenuItem value="2009">2009</MenuItem>
+                      <MenuItem value="2010">2010</MenuItem>
+                      <MenuItem value="2011">2011</MenuItem>
+                      <MenuItem value="2012">2012</MenuItem>
+                      <MenuItem value="2013">2013</MenuItem>
+                      <MenuItem value="2014">2014</MenuItem>
+                      <MenuItem value="2015">2015</MenuItem>
+                      <MenuItem value="2016">2016</MenuItem>
+                      <MenuItem value="2017">2017</MenuItem>
+                      <MenuItem value="2018">2018</MenuItem>
+                      <MenuItem value="2019">2019</MenuItem>
+                      <MenuItem value="2020">2020</MenuItem>
+                      <MenuItem value="2021">2021</MenuItem>
+                      <MenuItem value="2022">2022</MenuItem>
+                      <MenuItem value="2023">2023</MenuItem>
+                      <MenuItem value="2024">2024</MenuItem>
+                    </Select>
+                    <FormHelperText>
+                      {touched.yearOfConstruction && errors.yearOfConstruction ? errors.yearOfConstruction : ''}
+                    </FormHelperText>
+                  </FormControl>
                 </Grid>
               </Grid>
 

@@ -255,7 +255,6 @@ const ClassificationDocumentUploadPage = () => {
 
     await axiosInstance.post(`BBMPCITZAPI/INS_NCL_PROPERTY_SUBCLASS?${queryString}`);
 
-    const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
     
     setIsClassificationEditable(true);
     setIsEditable(false);
@@ -317,7 +316,6 @@ const ClassificationDocumentUploadPage = () => {
       await axiosInstance.post('BBMPCITZAPI/INS_NCL_PROPERTY_DOC_BBD_CLASS_TEMP', data
       )
 
-      const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
       
       await toast.success(`${t("Document Uploaded Successfully")}`, {
         position: "top-right",

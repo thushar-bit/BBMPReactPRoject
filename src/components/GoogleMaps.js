@@ -112,7 +112,34 @@ const GoogleMaps = ({ lat,long,onLocationChange }) => {
       });
     }
   }, [isLoaded]);
-
+  const handleGoButtonClick = () => {
+    if (isLoaded && inputRef.current) {
+      const query = inputRef.current.value; // Get the text from the input field
+      const service = new window.google.maps.places.PlacesService(mapRef.current);
+  
+      service.textSearch({ query }, (results, status) => {
+        if (status === window.google.maps.places.PlacesServiceStatus.OK && results[0]) {
+          const place = results[0];
+          const lat = place.geometry.location.lat();
+          const lng = place.geometry.location.lng();
+  
+          setMarkerPosition({ lat, lng });
+          setAddress(place.formatted_address);
+          setCenter({ lat, lng });
+  
+          alert(`Latitude: ${lat}, Longitude: ${lng}`);
+          alert(`Address: ${place.formatted_address}`);
+  
+          if (onLocationChange) {
+            onLocationChange({ lat, lng, address: place.formatted_address });
+          }
+        } else {
+          alert(`Cannot locate '${query}' on the map`);
+        }
+      });
+    }
+  };
+  
   return isLoaded ? (
     <div>
       <input
@@ -122,6 +149,7 @@ const GoogleMaps = ({ lat,long,onLocationChange }) => {
         ref={inputRef}
         style={{ width: "90%", margin: "15px", height: "30px" }}
       />
+       <button id="go-button" type="button" onClick={handleGoButtonClick}>Go</button>
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={center}

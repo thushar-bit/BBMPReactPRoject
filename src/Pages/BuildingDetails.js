@@ -18,7 +18,7 @@ import '../components/Shake.css';
 import LabelWithAsterisk from '../components/LabelWithAsterisk'
 const BuildingDetails = () => {
   const [formData, setFormData] = useState({
-    BuildingNumber: "",
+    BuildingNumber: "1",
     BuildingName: '',
     floornumber: "",
     features: '',
@@ -36,12 +36,10 @@ const BuildingDetails = () => {
   const { t } = useTranslation();
   const validationSchema = Yup.object().shape({
     BuildingNumber: Yup.string().required(`${t('buildingNumberRequired')}`),
-    BuildingName: Yup.string().required(`${t('buildingNameRequired')}`),
     floornumber: Yup.string().required(`${t('floorNumberRequired')}`),
     features: Yup.string().required(`${t('usageCategoryRequired')}`),
     yearOfConstruction: Yup.string()
-      .required(`${t('yearUsageRequired')}`).notOneOf(['0000'], 'Year Usage cannot be all 0')
-      .matches(/^[1-9]\d{3}$/, `${t("yearUsageRequiredInvalid")}`),
+      .required(`${t('yearUsageRequired')}`),
     Typeofuse: Yup.string().required(`${t('typeOfUseRequired')}`),
     SelfuseArea: Yup.string().required(`${t('selfUseAreaRequired')}`),
     RentedArea: Yup.string().required(`${t('rentedAreaRequired')}`),
@@ -57,11 +55,11 @@ const BuildingDetails = () => {
   const [tablesdata4, setTablesData4] = useState([]);
   const handleChange = async (e) => {
     const { name, value } = e.target;
-
+debugger
     if (name === "features") {
       try {
         if (value !== "") {
-          const response = await axiosInstance.get(`BBMPCITZAPI/GetNPMMasterTable?FeaturesHeadID=${value}`);
+          const response = await axiosInstance.get(`BBMPCITZAPI/GET_MST_FEATURE_BY_FEATUREHEADID?FEATUREHEADID=${value}`);
           if (response.data.Table.length > 0) {
             setTablesData3(response.data.Table);
           }
@@ -91,15 +89,7 @@ const BuildingDetails = () => {
       formData.TotalAreaMts = (parseFloat(totalArea) * 0.092903).toFixed(2).toString()
 
     }
-    if (name === "yearOfConstruction") {
-      if (/^\d{0,4}$/.test(value)) {
-        setFormData(prevFormData => ({
-          ...prevFormData,
-          [name]: value
-        }));
-      }
-      return
-    }
+   
 
     setFormData({
       ...formData,
@@ -174,7 +164,6 @@ const BuildingDetails = () => {
       await axiosInstance.post('BBMPCITZAPI/DEL_INS_SEL_NCL_PROP_BUILDING_TEMP?ULBCODE=555', data
       )
 
-      const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
       
       await toast.success(`${t("detailsSavedSuccess")}`, {
         position: "top-right",
@@ -225,7 +214,6 @@ const BuildingDetails = () => {
     try {
       await axiosInstance.post('BBMPCITZAPI/DEL_SEL_NCL_PROP_BUILDING_TEMP?ULBCODE=555', data
       )
-      const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
       
       await toast.success(`${t("detailsDeletedSuccess")}`, {
         position: "top-right",
@@ -261,11 +249,13 @@ const BuildingDetails = () => {
   const handleEdit = async (row) => {
     try {
       if (row.FEATUREHEADID !== null && row.FEATUREHEADID !== "") {
-        const response3 = await axiosInstance.get(`BBMPCITZAPI/GetNPMMasterTable?FeaturesHeadID=${row.FEATUREHEADID}`);
+        const response3 = await axiosInstance.get(`BBMPCITZAPI/GET_MST_FEATURE_BY_FEATUREHEADID?FEATUREHEADID=${row.FEATUREHEADID}`);
         if (response3.data.Table.length > 0) {
           setTablesData3(response3.data.Table);
         }
       }
+     
+      
       setFormData({
         BuildingNumber: row.BUILDINGBLOCKID || 0,
         BuildingName: row.BUILDINGBLOCKNAME || '',
@@ -275,6 +265,9 @@ const BuildingDetails = () => {
         yearOfConstruction: row.BUILTYEAR || '',
         SelfuseArea: row.AREA || 0,
         RentedArea: row.RENTEDAREA || 0,
+        SelfuseAreaMts: (parseFloat(row.AREA) * 0.092903).toFixed(2).toString(),
+        RentedAreaMts: (parseFloat(row.RENTEDAREA ) * 0.092903).toFixed(2).toString(),
+        TotalAreaMts: (parseFloat(row.TOTALAREA) * 0.092903).toFixed(2).toString(),
         TotalArea: row.TOTALAREA || '',
         BesomCustomerID: row.RRNO || '',
         BWSSBMeterNumber: row.WATERMETERNO || ''
@@ -377,15 +370,13 @@ const BuildingDetails = () => {
                         </Tooltip>
                       )
                     }}
-                    label={<LabelWithAsterisk text={t('BuildingName')} />}
+                    label={t('BuildingName')}
 
                     name="BuildingName"
                     value={formData.BuildingName}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className={touched.BuildingName && !!errors.BuildingName ? 'shake' : ''}
-                    error={touched.BuildingName && !!errors.BuildingName}
-                    helperText={touched.BuildingName && errors.BuildingName}
+                    
                   />
                 </Grid>
                 <Grid item xs={12} sm={4}>
@@ -470,7 +461,53 @@ const BuildingDetails = () => {
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={4}>
-                  <TextField
+                <FormControl
+                    fullWidth
+                    error={touched.yearOfConstruction && !!errors.yearOfConstruction}
+                    sx={{ marginBottom: 3 }}
+                    className={touched.yearOfConstruction && !!errors.yearOfConstruction ? 'shake' : ''}
+                  >
+                    <InputLabel>      <LabelWithAsterisk text={t('YearUsage')} /></InputLabel>
+                    <Select
+                      name="yearOfConstruction"
+                      value={formData.yearOfConstruction}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      sx={{ backgroundColor: '#ffff' }}
+                    >
+                      <MenuItem value="">--Select--</MenuItem>
+                      <MenuItem value="Before 2000">Before 2000</MenuItem>
+                      <MenuItem value="2000">2000</MenuItem>
+                      <MenuItem value="2001">2001</MenuItem>
+                      <MenuItem value="2002">2002</MenuItem>
+                      <MenuItem value="2003">2003</MenuItem>
+                      <MenuItem value="2004">2004</MenuItem>
+                      <MenuItem value="2005">2005</MenuItem>
+                      <MenuItem value="2006">2006</MenuItem>
+                      <MenuItem value="2007">2007</MenuItem>
+                      <MenuItem value="2008">2008</MenuItem>
+                      <MenuItem value="2009">2009</MenuItem>
+                      <MenuItem value="2010">2010</MenuItem>
+                      <MenuItem value="2011">2011</MenuItem>
+                      <MenuItem value="2012">2012</MenuItem>
+                      <MenuItem value="2013">2013</MenuItem>
+                      <MenuItem value="2014">2014</MenuItem>
+                      <MenuItem value="2015">2015</MenuItem>
+                      <MenuItem value="2016">2016</MenuItem>
+                      <MenuItem value="2017">2017</MenuItem>
+                      <MenuItem value="2018">2018</MenuItem>
+                      <MenuItem value="2019">2019</MenuItem>
+                      <MenuItem value="2020">2020</MenuItem>
+                      <MenuItem value="2021">2021</MenuItem>
+                      <MenuItem value="2022">2022</MenuItem>
+                      <MenuItem value="2023">2023</MenuItem>
+                      <MenuItem value="2024">2024</MenuItem>
+                    </Select>
+                    <FormHelperText>
+                      {touched.yearOfConstruction && errors.yearOfConstruction ? errors.yearOfConstruction : ''}
+                    </FormHelperText>
+                  </FormControl>
+                  {/* <TextField
                     fullWidth
                     type="number"
                     label={<LabelWithAsterisk text={t('YearUsage')} />}
@@ -495,7 +532,7 @@ const BuildingDetails = () => {
                         </Tooltip>
                       )
                     }}
-                  />
+                  /> */}
                 </Grid>
 
               </Grid>
@@ -632,7 +669,7 @@ const BuildingDetails = () => {
                     }}
                   />
                 </Grid>
-                {/* <Grid item xs={12} sm={4}>
+                <Grid item xs={12} sm={4}>
                   <TextField
                     fullWidth
                     label={"BESCOM Customer ID :"}
@@ -677,10 +714,10 @@ const BuildingDetails = () => {
                       )
                     }}
                   />
-                </Grid> */}
+                </Grid>
 
 
-                <Grid item xs={20} sm={4}></Grid>
+                
                 <Grid item xs={16} sm={4}>
                   <Button variant="contained" color="success" type="submit">
                     {t("Save+")}
@@ -719,9 +756,9 @@ const BuildingDetails = () => {
                         <TableRow key={row.id}>
                           <TableCell>{row.BUILDINGBLOCKID}</TableCell>
                           <TableCell>{row.BUILDINGBLOCKNAME}</TableCell>
-                          <TableCell>{row.FLOORNUMBER}</TableCell>
-                          <TableCell>{row.FEATUREHEADNAME}</TableCell>
-                          <TableCell>{row.FEATURENAME}</TableCell>
+                          <TableCell>{row.FLOORNUMBER_EN}</TableCell>
+                          <TableCell>{row.FEATUREHEADNAME_EN}</TableCell>
+                          <TableCell>{row.FEATURENAME_EN}</TableCell>
                           <TableCell>{row.BUILTYEAR}</TableCell>
                           <TableCell>{row.AREA}</TableCell>
                           <TableCell>{row.RENTEDAREA}</TableCell>
