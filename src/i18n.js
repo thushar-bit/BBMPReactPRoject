@@ -281,6 +281,7 @@ const resources = {
 "errorDeletingData": "Error Deleting data!",
 "Please Enter the Registration Number": "Please Enter the Registration Number",
 "detailsFetchedSuccess": "Details Fetched Successfully",
+"detailsDeletedSuccess":"Details Deleted Successfully",
 "enterRegistrationNumberFirst": "Please Enter any one Registration Number First",
 "enterEcDocumentNumber": "Please Enter the EC Document Number",
 "registrationNumberNotExist": "The Given Registration Number Does Not Exist With EC Details.\nPlease Provide Correct Registration Number",

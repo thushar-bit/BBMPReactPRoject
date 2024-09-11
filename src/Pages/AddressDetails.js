@@ -361,7 +361,10 @@ debugger
       } else {
         toast.error(`${t("copyFailed")}`)
       }
-
+      if(formData.verifySASNUM.length === 0){
+        toast.error(`${t("provideSasAppNumber")}`);
+        return
+      }
 
 
       const data = {
@@ -835,7 +838,7 @@ const handleSASDelete = () => {
                   <TextField
                     fullWidth
                     variant={isEditable ? "outlined" : "filled"}
-                    label={t("SASBaseApplicationNo")}
+                    label={<LabelWithAsterisk text={t('SASBaseApplicationNo')} />}
                     name="verifySASNUM"
                     value={formData.verifySASNUM}
                     onChange={handleChange}
