@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   TextField, Button, Grid, Box, Container, Typography, Tooltip, IconButton,
-  FormControl, MenuItem, Select, InputLabel,
+  FormControl, MenuItem, Select, InputLabel,CircularProgress,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, FormHelperText
 } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
@@ -53,6 +53,8 @@ const BuildingDetails = () => {
   const [tablesdata2, setTablesData2] = useState([]);
   const [tablesdata3, setTablesData3] = useState([]);
   const [tablesdata4, setTablesData4] = useState([]);
+  const [BescomTable,setBescomTable] = useState([]);
+  const [loading,setLoading] = useState(false);
   const handleChange = async (e) => {
     const { name, value } = e.target;
 debugger
@@ -203,6 +205,32 @@ debugger
     navigate('/OwnerDetails');
 
   }
+  const handleBescomVerify = async () => {
+    debugger
+    if(formData.floornumber.length === 0){
+      toast.error("Please Provide Floor Number")
+      return
+    }
+    setLoading(true)
+    const params1 = {
+      BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')),
+      propertycode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
+      BescomAccountNumber: formData.BesomCustomerID,
+      LoginId: "crc",
+      propertytype: 2,
+      FloorNumber: formData.floornumber
+    };
+    const queryString = new URLSearchParams(params1).toString();
+    const BescomResponse = await axiosInstance.post(`Bescom/GetBescomData?"${queryString}`);
+    if(BescomResponse.data === "No Bescom Details Found"){
+      toast.error("No Bescom Details Found")
+      return
+    }
+    toast.success("Details Fetched Successfully")
+    setBescomTable(BescomResponse.data.Table || [])
+   setLoading(false);
+
+  }
   const handleDelete = async (id) => {
 
     const data = {
@@ -298,7 +326,21 @@ debugger
     fetchData();
 
   }, []);
-
+  function GradientCircularProgress() {
+    return (
+      <React.Fragment>
+        <svg width={0} height={0}>
+          <defs>
+            <linearGradient id="my_gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#e01cd5" />
+              <stop offset="100%" stopColor="#1CB5E0" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <CircularProgress sx={{ 'svg circle': { stroke: 'url(#my_gradient)' } }} />
+      </React.Fragment>
+    );
+  }
   return (
     <Container maxWidth="xl">
       <ToastContainer />
@@ -476,7 +518,7 @@ debugger
                       sx={{ backgroundColor: '#ffff' }}
                     >
                       <MenuItem value="">--Select--</MenuItem>
-                      <MenuItem value="Before 2000">Before 2000</MenuItem>
+                      <MenuItem value="2000">Before 2000</MenuItem>
                       <MenuItem value="2000">2000</MenuItem>
                       <MenuItem value="2001">2001</MenuItem>
                       <MenuItem value="2002">2002</MenuItem>
@@ -691,6 +733,7 @@ debugger
                       )
                     }}
                   />
+                <Button color="primary" onClick={handleBescomVerify}>{t("Verify with Bescom")}</Button>
                 </Grid>
                 <Grid item xs={12} sm={4}>
                   <TextField
@@ -725,6 +768,62 @@ debugger
                 </Grid>
                 <Grid item xs={12} sm={4}></Grid>
               </Grid>
+             
+              {loading ? (
+  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '20vh' }}>
+  <GradientCircularProgress />
+</Box>
+) : (
+              BescomTable.length > 0 &&
+              <> 
+                <Typography  variant="h6">Bescom Data</Typography>
+              <TableContainer component={Paper} sx={{ mt: 4 }}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Consumer Name")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Account Id")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Escom Name")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("RR No")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Nature Of Business")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("MobileNo ")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Email ")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Address ")}</TableCell>
+                
+                      
+           
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {BescomTable.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={12} align="center">
+                          {t("Nodataavailable")}
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      BescomTable.map((row) => (
+                        <TableRow key={row.id}>
+                          <TableCell>{row.CONSUMER_NAME}</TableCell>
+                          <TableCell>{row.ACCOUNTID}</TableCell>
+                          <TableCell>{row.ESCOM_NAME}</TableCell>
+                          <TableCell>{row.RR_NUMBER}</TableCell>
+                          <TableCell>{row.BUSINESS_NATURE}</TableCell>
+                          <TableCell>{row.MOBILE_NUMBER}</TableCell>
+                          <TableCell>{row.EMAIL}</TableCell>
+                          <TableCell>{row.ADDRESS}</TableCell>
+                     
+                      
+                        
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              </>
+)}
+ 
               <TableContainer component={Paper} sx={{ mt: 4 }}>
                 <Table>
                   <TableHead>
@@ -738,8 +837,8 @@ debugger
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("SelfUseArea")}</TableCell>
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("RentedArea")}</TableCell>
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("TotalArea")}</TableCell>
-                      {/* <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>BESCOM Customer ID :</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>ಬಿ ಡಬ್ಲ್ಯೂ ಎಸ್ ಎಸ್ ಬಿ ಮೀಟರ್ ಸಂಖ್ಯೆ :</TableCell> */}
+                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>BESCOM Customer ID :</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>ಬಿ ಡಬ್ಲ್ಯೂ ಎಸ್ ಎಸ್ ಬಿ ಮೀಟರ್ ಸಂಖ್ಯೆ :</TableCell> 
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Edit")}</TableCell>
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Delete")}</TableCell>
                     </TableRow>
@@ -763,8 +862,8 @@ debugger
                           <TableCell>{row.AREA}</TableCell>
                           <TableCell>{row.RENTEDAREA}</TableCell>
                           <TableCell>{row.TOTALAREA}</TableCell>
-                          {/* <TableCell>{row.ACCOUNTID}</TableCell>
-                          <TableCell>{row.WATERMETERNO}</TableCell> */}
+                           <TableCell>{row.ACCOUNTID}</TableCell>
+                          <TableCell>{row.WATERMETERNO}</TableCell> 
                           <TableCell>
                             <Tooltip title="Edit">
                               <IconButton color="primary" onClick={() => handleEdit(row)}>

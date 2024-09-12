@@ -41,6 +41,7 @@ const AddressDetails = () => {
     DoorPlotNo: "",
     streetid: '',
     streetName: "",
+    nclStreetName:"",
     Street: "",
     doorno: '',
     areaorlocality: '',
@@ -150,6 +151,7 @@ debugger
         ulbname: table1Item.ULBNAME || '',
         ownerName: table5Item.OWNERNAME || '',
         streetName: table1Item.STREETNAME_EN || '',
+        nclStreetName:Table11Item.STREETNAME,
         DoorPlotNo: Table11Item.DOORNO || '',
         buildingname: Table11Item.BUILDINGNAME || '',
         streetid: NCLtable1Item.STREETID || '',
@@ -371,6 +373,7 @@ debugger
         propertyCode: formData.propertyNumber,
         categoryId: formData.propertyType,
         streetid: formData.streetid,
+        streetName:formData.nclStreetName,
         doorno: formData.DoorPlotNo,
         buildingname: formData.buildingname,
         areaorlocality: formData.areaorlocality,
@@ -978,10 +981,7 @@ const handleSASDelete = () => {
                     value={formData.buildingname}
                     onChange={handleChange}
                     variant={isEditable ? "outlined" : "filled"}
-                    // onBlur={handleBlur}
-                    // className={touched.buildingname && !!errors.buildingname ? 'shake' : ''}
-                    // error={touched.buildingname && !!errors.buildingname}
-                    // helperText={touched.buildingname && errors.buildingname}
+                  
                     InputProps={{
                       readOnly: !isEditable,
                       style: { backgroundColor: !isEditable ? '' : "#ffff" },
@@ -1004,9 +1004,7 @@ const handleSASDelete = () => {
                     value={formData.NearestLandmark}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    // className={touched.NearestLandmark && !!errors.NearestLandmark ? 'shake' : ''}
-                    // error={touched.NearestLandmark && !!errors.NearestLandmark}
-                    // helperText={touched.NearestLandmark && errors.NearestLandmark}
+                  
                     variant={isEditable ? "outlined" : "filled"}
                     InputProps={{
                       readOnly: !isEditable,
@@ -1082,7 +1080,7 @@ const handleSASDelete = () => {
                     sx={{ marginBottom: 3 }}
                     className={touched.streetid && !!errors.streetid ? 'shake' : ''}
                   >
-                    <InputLabel > {t("streetName")} <span style={{ color: 'red' }}> *</span>
+                    <InputLabel > {t("Select Street/Nearst Street From List Of Ward Streets")} <span style={{ color: 'red' }}> *</span>
                     </InputLabel>
                     <Select
                       name="streetid"
@@ -1103,6 +1101,29 @@ const handleSASDelete = () => {
                       {touched.streetid && errors.streetid ? errors.streetid : ''}
                     </FormHelperText>
                   </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label={ t('Street/Nearst Street')}
+                    name="nclStreetName"
+                    value={formData.nclStreetName}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                
+                    variant={isEditable ? "outlined" : "filled"}
+                    InputProps={{
+                      style: { backgroundColor: !isEditable ? '' : "#ffff" },
+                      readOnly: !isEditable,
+                      endAdornment: (
+                        <Tooltip title={t("areaLocalityInfo")}>
+                          <IconButton color="primary">
+                            <InfoIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )
+                    }}
+                  />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
