@@ -172,21 +172,21 @@ const resources = {
        "OwnerPhoto":"Owner Photo",
        "Nodataavailable":"No data available",
        //Kaveri
-       "KAVERISERVICESDATA":"KAVERI SERVICES DATA",
+       "KAVERISERVICESDATA":"KAVERI REGISTRATION DATA",
        
-       "RegistrationNumber":"Registration Number (When Registration Happened After 2003)",
+       "RegistrationNumber":"Registration Number (If Registration Happened After 2003)",
        "oldRegistrationNumber":"For Document Upload (Only when registration happened prior to 2004)",
        "KaveriDocumentData":"Get Kaveri Document Data",
        "Please Enter any One Registration Number":"Please Enter any One Registration Number",
        "EKYC Owner Name":"EKYC Owner Name",
        "Name Match Status":"Name Match Status",
-        "DocumentInformation":"Document Information",
+        "DocumentInformation":"Kaveri Document Data",
         "ApplicationNumber":"Application Number",
         "ExecutionDate":"Execution Date",
 
        "PendingDocumentNumber":"Pending Document Number",
        "FinalRegistrationNumber":"Final Registration Number",
-       "PropertyInformation":"Property Information",
+       "PropertyInformation":"Property Details",
        "PropertyID":"Property ID",
        "DocumentID":"Document ID",
        "VillageName":"Village Name",
@@ -194,7 +194,7 @@ const resources = {
        
 
        "Nopropertyinformationavailable":"No property information available",
-       "PartyInformation":"Party Information",
+       "PartyInformation":"Document Owner Data",
        "PartyID":"Party ID",
        "PartyName":"Party Name",
        "Age":"Age",

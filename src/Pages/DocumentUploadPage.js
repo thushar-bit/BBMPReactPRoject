@@ -12,7 +12,7 @@ import axiosInstance from '../components/Axios';
 import { styled } from '@mui/material/styles';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -314,8 +314,8 @@ console.log("Component is rendered")
 
   }, []);
   return (
-    <Container maxWidth="xl">
-      <ToastContainer />
+    
+     
       <Box sx={{ backgroundColor: '#f0f0f0', padding: 4, borderRadius: 2, mt: 8 }}>
         <Formik
           initialValues={formData}
@@ -539,7 +539,7 @@ console.log("Component is rendered")
           )}
         </Formik>
       </Box>
-    </Container>
+   
   );
 };
 
