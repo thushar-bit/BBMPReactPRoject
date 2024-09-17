@@ -111,7 +111,7 @@ const GoogleMaps = ({ lat,long,onLocationChange }) => {
         if (onLocationChange) onLocationChange({ lat, lng, address: place.formatted_address });
       });
     }
-  }, [isLoaded]);
+  }, [isLoaded,onLocationChange]);
   const handleGoButtonClick = () => {
     if (isLoaded && inputRef.current) {
       const query = inputRef.current.value; // Get the text from the input field

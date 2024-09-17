@@ -2,7 +2,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './Pages/Login';
-import BBDDraft from './Pages/BBDDraft'
+import BBDDraft from './Pages/BBDDraft';
+import BBDDraftGenerated from './Pages/BBDDraftGenerated';
 import AddressDetails from './Pages/AddressDetails';
 import AreaDimension from './Pages/AreaDimension';
 import SiteDetails from './Pages/SiteDetails';
@@ -31,6 +32,10 @@ const AppRoutes = () => {
           <Breadcrumbs />
           <Routes>
             <Route path="/" element={<Login />} />
+            <Route
+              path="/BBDDraftGenerated"
+              element={<PrivateRoute element={<BBDDraftGenerated />} />}
+            /> 
              <Route
               path="/BBDDraft"
               element={<PrivateRoute element={<BBDDraft />} />}

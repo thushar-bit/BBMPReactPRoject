@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect ,useCallback} from 'react';
 import {
   TextField, Button, Grid, Box, Container, Typography, Tooltip, IconButton,
   FormControl, MenuItem, Select, InputLabel,CircularProgress,
@@ -53,11 +53,12 @@ const BuildingDetails = () => {
   const [tablesdata2, setTablesData2] = useState([]);
   const [tablesdata3, setTablesData3] = useState([]);
   const [tablesdata4, setTablesData4] = useState([]);
+  const [tableYearMaster,setYearMaster] = useState([]);
   const [BescomTable,setBescomTable] = useState([]);
   const [loading,setLoading] = useState(false);
   const handleChange = async (e) => {
     const { name, value } = e.target;
-debugger
+
     if (name === "features") {
       try {
         if (value !== "") {
@@ -100,19 +101,21 @@ debugger
   };
 
 
-  const fetchData = async () => {
+  const fetchData =useCallback(async () => {
     try {
       const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData_React?UlbCode=555&Page=BUILDING_DETAILS');
       const response2 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=BUILDING_DETAILS`);;
-      const { Table:MasterTable1 = [], Table1:MasterTable2 = [] } = response1.data;
+      const { Table:MasterTable1 = [], Table1:MasterTable2 = [],Table2:MasterTable3 } = response1.data;
 
       const { Table1 = [] } = response2.data;
       const table8Item = Table1.length > 0 ? Table1 : [];
       const table16Item = MasterTable2.length > 0 ? MasterTable2 : [];
       const table15Item = MasterTable1.length > 0 ? MasterTable1 : [];
+      const table18Item = MasterTable3.length > 0 ? MasterTable3 : [];
       setTableData(table8Item);
       setTablesData2(table16Item);
       setTablesData4(table15Item);
+      setYearMaster(table18Item);
     } catch (error) {
       toast.error(`${t("errorSavingData")}` + error, {
         position: "top-right",
@@ -128,7 +131,7 @@ debugger
       }, 500);
     }
 
-  }
+  }, [navigate,t]);
   const handleSubmit = async () => {
     // 
 
@@ -206,9 +209,13 @@ debugger
 
   }
   const handleBescomVerify = async () => {
-    debugger
+    
     if(formData.floornumber.length === 0){
       toast.error("Please Provide Floor Number")
+      return
+    }
+    if(formData.BesomCustomerID.length === 0){
+      toast.error("Please Provide BescomCustomerID or Account No")
       return
     }
     setLoading(true)
@@ -325,7 +332,7 @@ debugger
 
     fetchData();
 
-  }, []);
+  }, [fetchData]);
   function GradientCircularProgress() {
     return (
       <React.Fragment>
@@ -518,63 +525,17 @@ debugger
                       sx={{ backgroundColor: '#ffff' }}
                     >
                       <MenuItem value="">--Select--</MenuItem>
-                      <MenuItem value="2000">Before 2000</MenuItem>
-                      <MenuItem value="2000">2000</MenuItem>
-                      <MenuItem value="2001">2001</MenuItem>
-                      <MenuItem value="2002">2002</MenuItem>
-                      <MenuItem value="2003">2003</MenuItem>
-                      <MenuItem value="2004">2004</MenuItem>
-                      <MenuItem value="2005">2005</MenuItem>
-                      <MenuItem value="2006">2006</MenuItem>
-                      <MenuItem value="2007">2007</MenuItem>
-                      <MenuItem value="2008">2008</MenuItem>
-                      <MenuItem value="2009">2009</MenuItem>
-                      <MenuItem value="2010">2010</MenuItem>
-                      <MenuItem value="2011">2011</MenuItem>
-                      <MenuItem value="2012">2012</MenuItem>
-                      <MenuItem value="2013">2013</MenuItem>
-                      <MenuItem value="2014">2014</MenuItem>
-                      <MenuItem value="2015">2015</MenuItem>
-                      <MenuItem value="2016">2016</MenuItem>
-                      <MenuItem value="2017">2017</MenuItem>
-                      <MenuItem value="2018">2018</MenuItem>
-                      <MenuItem value="2019">2019</MenuItem>
-                      <MenuItem value="2020">2020</MenuItem>
-                      <MenuItem value="2021">2021</MenuItem>
-                      <MenuItem value="2022">2022</MenuItem>
-                      <MenuItem value="2023">2023</MenuItem>
-                      <MenuItem value="2024">2024</MenuItem>
+                      {tableYearMaster.map((item) => (
+                        <MenuItem key={item.YEAR} value={item.YEAR}>
+                          {item.YEAR}
+                        </MenuItem>
+                      ))}
                     </Select>
                     <FormHelperText>
                       {touched.yearOfConstruction && errors.yearOfConstruction ? errors.yearOfConstruction : ''}
                     </FormHelperText>
                   </FormControl>
-                  {/* <TextField
-                    fullWidth
-                    type="number"
-                    label={<LabelWithAsterisk text={t('YearUsage')} />}
-
-                    placeholder='yyyy'
-
-                    name="yearOfConstruction"
-                    value={formData.yearOfConstruction}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    className={touched.yearOfConstruction && !!errors.yearOfConstruction ? 'shake' : ''}
-                    error={touched.yearOfConstruction && !!errors.yearOfConstruction}
-                    helperText={touched.yearOfConstruction && errors.yearOfConstruction}
-                    InputProps={{
-                      maxLength: 4,
-                      style: { backgroundColor: '#ffff' },
-                      endAdornment: (
-                        <Tooltip title={t("doorPlotNoInfo")}>
-                          <IconButton color="primary">
-                            <InfoIcon />
-                          </IconButton>
-                        </Tooltip>
-                      )
-                    }}
-                  /> */}
+                 
                 </Grid>
 
               </Grid>
@@ -802,8 +763,8 @@ debugger
                         </TableCell>
                       </TableRow>
                     ) : (
-                      BescomTable.map((row) => (
-                        <TableRow key={row.id}>
+                      BescomTable.map((row,index) => (
+                        <TableRow key={index}>
                           <TableCell>{row.CONSUMER_NAME}</TableCell>
                           <TableCell>{row.ACCOUNTID}</TableCell>
                           <TableCell>{row.ESCOM_NAME}</TableCell>
@@ -851,8 +812,8 @@ debugger
                         </TableCell>
                       </TableRow>
                     ) : (
-                      tableData.map((row) => (
-                        <TableRow key={row.id}>
+                      tableData.map((row,index) => (
+                        <TableRow key={index}>
                           <TableCell>{row.BUILDINGBLOCKID}</TableCell>
                           <TableCell>{row.BUILDINGBLOCKNAME}</TableCell>
                           <TableCell>{row.FLOORNUMBER_EN}</TableCell>

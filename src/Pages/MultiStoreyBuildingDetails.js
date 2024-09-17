@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   TextField, Button, Grid, Box, Container, Typography, Tooltip, IconButton, FormHelperText,
-  FormControl, MenuItem, Select, InputLabel, Radio, RadioGroup, FormControlLabel,
+  FormControl, MenuItem, Select, InputLabel, Radio, RadioGroup, FormControlLabel,CircularProgress,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
@@ -56,8 +56,9 @@ const MultiStoreyBuildingDetails = () => {
   const [tablesdata3, setTablesData3] = useState([]);
   const [tablesdata4, setTablesData4] = useState([]);
   const [tablesdata6, setTablesData6] = useState([]);
-
-
+  const [tableYearMaster,setYearMaster] = useState([]);
+  const [BescomTable,setBescomTable] = useState([]);
+  const [loading,setLoading] = useState(false);
 
   const handleChange = async (e) => {
 
@@ -112,6 +113,36 @@ const MultiStoreyBuildingDetails = () => {
     });
 
   };
+  const handleBescomVerify = async () => {
+    
+    if(formData.floornumber.length === 0){
+      toast.error("Please Provide Floor Number")
+      return
+    }
+    if(formData.BesomCustomerID.length === 0){
+      toast.error("Please Provide BescomCustomerID or Account No")
+      return
+    }
+    setLoading(true)
+    const params1 = {
+      BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')),
+      propertycode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
+      BescomAccountNumber: formData.BesomCustomerID,
+      LoginId: "crc",
+      propertytype: 2,
+      FloorNumber: formData.floornumber
+    };
+    const queryString = new URLSearchParams(params1).toString();
+    const BescomResponse = await axiosInstance.post(`Bescom/GetBescomData?"${queryString}`);
+    if(BescomResponse.data === "No Bescom Details Found"){
+      toast.error("No Bescom Details Found")
+      return
+    }
+    toast.success("Details Fetched Successfully")
+    setBescomTable(BescomResponse.data.Table || [])
+   setLoading(false);
+
+  }
 const handleEdit = () => {
   if(isInitialEditable)
     {
@@ -121,13 +152,13 @@ const handleEdit = () => {
     setInitialEditable(true);
   }
 }
-  const fetchData = async () => {
+const fetchData = React.useCallback(async () => {
     try {
       
-      const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData_React?UlbCode=555&Page=MULTI_STOREY_DETAILS');
+      const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData_React?UlbCode=555&Page=MULTISTOREY_DETAILS');
       const response2 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=MULTI_STOREY_DETAILS`);
       const response3 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=MULTI_STOREY_DETAILS`);;
-      const { Table1:MasterTable1 = [], Table2:MasterTable2 = [], Table3:MasterTable3 = [] } = response1.data;
+      const { Table:MasterTable1 = [], Table1:MasterTable2 = [], Table2:MasterTable3 = [],Table3:MasterTable4 } = response1.data;
       const { Table1:BBDTable1 = [] } = response2.data;
       const { Table1:NCLTABLE1 = [] } = response3.data;
       if(NCLTABLE1.length === 0){
@@ -138,11 +169,12 @@ const handleEdit = () => {
       const table16Item = MasterTable2.length > 0 ? MasterTable2 : [];
       const table15Item = MasterTable1.length > 0 ? MasterTable1 : [];
       const table17Item = MasterTable3.length > 0 ? MasterTable3 : [];
-
+      const table18Item = MasterTable4.length > 0 ? MasterTable4 : [];
       setTableData(table1Item);
       setTablesData2(table16Item);
       setTablesData4(table15Item);
       setTablesData6(table17Item);
+      setYearMaster(table18Item);
       var sharetype = "0";
       var ownersharetypeValue = "";
 
@@ -205,12 +237,12 @@ const handleEdit = () => {
       }, 500);
     }
 
-  }
+  }, [navigate,t]);
   React.useEffect(() => {
 
     fetchData();
 
-  }, []);
+  }, [fetchData]);
   const handleSubmit = async (e) => {
 
 if(isEditable || isInitialEditable){
@@ -288,7 +320,21 @@ if(isEditable || isInitialEditable){
       e.preventDefault(); 
     }
   };
- 
+  function GradientCircularProgress() {
+    return (
+      <React.Fragment>
+        <svg width={0} height={0}>
+          <defs>
+            <linearGradient id="my_gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#e01cd5" />
+              <stop offset="100%" stopColor="#1CB5E0" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <CircularProgress sx={{ 'svg circle': { stroke: 'url(#my_gradient)' } }} />
+      </React.Fragment>
+    );
+  }
 
   return (
     <Container maxWidth="xl">
@@ -475,32 +521,11 @@ if(isEditable || isInitialEditable){
                       sx={{ backgroundColor: '#ffff' }}
                     >
                       <MenuItem value="">--Select--</MenuItem>
-                      <MenuItem value="Before 2000">Before 2000</MenuItem>
-                      <MenuItem value="2000">2000</MenuItem>
-                      <MenuItem value="2001">2001</MenuItem>
-                      <MenuItem value="2002">2002</MenuItem>
-                      <MenuItem value="2003">2003</MenuItem>
-                      <MenuItem value="2004">2004</MenuItem>
-                      <MenuItem value="2005">2005</MenuItem>
-                      <MenuItem value="2006">2006</MenuItem>
-                      <MenuItem value="2007">2007</MenuItem>
-                      <MenuItem value="2008">2008</MenuItem>
-                      <MenuItem value="2009">2009</MenuItem>
-                      <MenuItem value="2010">2010</MenuItem>
-                      <MenuItem value="2011">2011</MenuItem>
-                      <MenuItem value="2012">2012</MenuItem>
-                      <MenuItem value="2013">2013</MenuItem>
-                      <MenuItem value="2014">2014</MenuItem>
-                      <MenuItem value="2015">2015</MenuItem>
-                      <MenuItem value="2016">2016</MenuItem>
-                      <MenuItem value="2017">2017</MenuItem>
-                      <MenuItem value="2018">2018</MenuItem>
-                      <MenuItem value="2019">2019</MenuItem>
-                      <MenuItem value="2020">2020</MenuItem>
-                      <MenuItem value="2021">2021</MenuItem>
-                      <MenuItem value="2022">2022</MenuItem>
-                      <MenuItem value="2023">2023</MenuItem>
-                      <MenuItem value="2024">2024</MenuItem>
+                      {tableYearMaster.map((item) => (
+                        <MenuItem key={item.YEAR} value={item.YEAR}>
+                          {item.YEAR}
+                        </MenuItem>
+                      ))}
                     </Select>
                     <FormHelperText>
                       {touched.yearOfConstruction && errors.yearOfConstruction ? errors.yearOfConstruction : ''}
@@ -595,31 +620,8 @@ if(isEditable || isInitialEditable){
                     </FormHelperText>
                   </FormControl>
                 </Grid>
-                {/* <Grid item xs={12} sm={4}>
-                  <TextField
-                    fullWidth
-                    label={"BESCOM Customer ID :"}
-                    name="BesomCustomerID"
-                    type="number"
-                    value={formData.BesomCustomerID}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    className={touched.BesomCustomerID && !!errors.BesomCustomerID ? 'shake' : ''}
-                    error={touched.BesomCustomerID && !!errors.BesomCustomerID}
-                    helperText={touched.BesomCustomerID && errors.BesomCustomerID}
-                    InputProps={{
-                      style: { backgroundColor:  isInitialEditable ? '#ffff': "" } ,
-                      readOnly: !isInitialEditable,
-                      endAdornment: (
-                        <Tooltip title={t("pincodeInfo")}>
-                          <IconButton color="primary">
-                            <InfoIcon />
-                          </IconButton>
-                        </Tooltip>
-                      )
-                    }}
-                  />
-                </Grid> */}
+              
+                
                 <Grid item xs={12} sm={4}>
                   <FormControl
                     fullWidth
@@ -672,8 +674,92 @@ if(isEditable || isInitialEditable){
                     }}
                   />
                 </Grid>
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    fullWidth
+                    label={"BESCOM Customer ID :"}
+                    name="BesomCustomerID"
+                    type="number"
+                    value={formData.BesomCustomerID}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    className={touched.BesomCustomerID && !!errors.BesomCustomerID ? 'shake' : ''}
+                    error={touched.BesomCustomerID && !!errors.BesomCustomerID}
+                    helperText={touched.BesomCustomerID && errors.BesomCustomerID}
+                    InputProps={{
+                      style: { backgroundColor:  isInitialEditable ? '#ffff': "" } ,
+                      readOnly: !isInitialEditable,
+                      endAdornment: (
+                        <Tooltip title={t("pincodeInfo")}>
+                          <IconButton color="primary">
+                            <InfoIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )
+                    }}
+                  />
+                   <Button color="primary" onClick={handleBescomVerify}>{t("Verify with Bescom")}</Button>
+                </Grid> 
+                </Grid>
+                <Grid item xs={12} sm={4}></Grid>
                 
-              </Grid>
+                                
+                {loading ? (
+  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '10vh' }}>
+  <GradientCircularProgress />
+</Box>
+) : (
+              BescomTable.length > 0 &&
+              <> 
+                <Typography  variant="h6">Bescom Data</Typography>
+              <TableContainer component={Paper} sx={{ mt: 4 }}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Consumer Name")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Account Id")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Escom Name")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("RR No")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Nature Of Business")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("MobileNo ")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Email ")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Address ")}</TableCell>
+                
+                      
+           
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {BescomTable.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={12} align="center">
+                          {t("Nodataavailable")}
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      BescomTable.map((row,index) => (
+                        <TableRow key={index}>
+                          <TableCell>{row.CONSUMER_NAME}</TableCell>
+                          <TableCell>{row.ACCOUNTID}</TableCell>
+                          <TableCell>{row.ESCOM_NAME}</TableCell>
+                          <TableCell>{row.RR_NUMBER}</TableCell>
+                          <TableCell>{row.BUSINESS_NATURE}</TableCell>
+                          <TableCell>{row.MOBILE_NUMBER}</TableCell>
+                          <TableCell>{row.EMAIL}</TableCell>
+                          <TableCell>{row.ADDRESS}</TableCell>
+                     
+                      
+                        
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              </>
+)}
+                
+             
               <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
               {t("DataAvailableInBBMPBooks")} 
               </Typography>
@@ -703,8 +789,8 @@ if(isEditable || isInitialEditable){
                         </TableCell>
                       </TableRow>
                     ) : (
-                      tableData.map((row) => (
-                        <TableRow key={row.id}>
+                      tableData.map((row,index) => (
+                        <TableRow key={index}>
                           <TableCell>{row.BLOCKNUMBER}</TableCell>
                           <TableCell>{row.FLOORNUMBERID}</TableCell>
                           <TableCell>{row.FLATNO}</TableCell>

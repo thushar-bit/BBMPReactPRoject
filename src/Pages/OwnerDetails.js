@@ -135,7 +135,7 @@ const OwnerDetails = () => {
     let relationshiptype = true;
     let relationname = true;
     // Check all the required conditions
-    debugger
+    
     sessionStorage.setItem('OwnerKaveriSkip', false);
     for (let data of tabledata5EkycVerifed) {
       if (tableDataOwnerNumbers.includes(data.OWNERNUMBER)) { //retaining owners
@@ -165,7 +165,7 @@ const OwnerDetails = () => {
     if (atLeastOneMobileVerified && relationname && relationshiptype && tabledata5EkycVerifed.length > 0) {
       if (coreArea === 1) {
         if (!allNameMatchVerified) {
-          debugger
+          
           const ekycOwnerDetails = tabledata5EkycVerifed.map(({ OWNERNAME, OWNERNUMBER }) => ({
             ownerName: OWNERNAME || "",
             ownerNumber: OWNERNUMBER || 0
@@ -205,7 +205,7 @@ const OwnerDetails = () => {
 
 
   const handleSave = async () => {
-debugger
+
     try {
 
       if (otpFieldsVisible) {
@@ -238,7 +238,7 @@ debugger
         return
       }
 
-      debugger
+      
       setEditableIndex(-1);
       const params = {
         P_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')),
@@ -263,7 +263,7 @@ debugger
     }
 
   };
-  const fetchData = async () => {
+  const fetchData = React.useCallback(async () => {
     setLoading(true);
     try {
       const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData_React?UlbCode=555&Page=OWNER_DETAILS');
@@ -291,7 +291,7 @@ debugger
       });
     }
 
-  }
+  },[t])
 
   React.useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -313,7 +313,7 @@ debugger
     }
 
     fetchData();
-  }, [location.search]);
+  }, [location.search,fetchData]);
 
   const handleSubmit = (e) => {
 
@@ -478,8 +478,8 @@ debugger
                     </TableCell>
                   </TableRow>
                 ) : (
-                  tableData.map((row) => (
-                    <TableRow key={row.id}>
+                  tableData.map((row,index) => (
+                    <TableRow key={index}>
                       <TableCell>{row.OWNERNUMBER}</TableCell>
                       <TableCell>{row.OWNERNAME}</TableCell>
                       <TableCell>{row.IDENTIFIERTYPE} {row.IDENTIFIERNAME}</TableCell>
@@ -538,7 +538,7 @@ debugger
                         fullWidth
                         label={t('OwnerName')}
                         name="OwnerName"
-                        value={owner.OWNERNAME}
+                        value={owner.OWNERNAME || ''}
                         InputProps={{
                           readOnly: true,
                         }}
@@ -603,7 +603,7 @@ debugger
                           label={< LabelWithAsterisk text={t("RelationName")} />}
 
                           name="IDENTIFIERNAME"
-                          value={formData.IDENTIFIERNAME}
+                          value={formData.IDENTIFIERNAME || ''}
                           onChange={handleChange}
                           variant="standard"
                         />
@@ -612,7 +612,7 @@ debugger
                           fullWidth
                           label={< LabelWithAsterisk text={t("RelationName")} />}
                           name="RelationName"
-                          value={owner.IDENTIFIERNAME}
+                          value={owner.IDENTIFIERNAME || ''}
                           InputProps={{
                             readOnly: true,
                           }}
@@ -637,7 +637,7 @@ debugger
                         fullWidth
                         label={t('DateOfBirth')}
                         name="DateOfBirth"
-                        value={owner.DATEOFBIRTH}
+                        value={owner.DATEOFBIRTH || ''}
                         InputProps={{
                           readOnly: true,
                         }}
@@ -649,7 +649,7 @@ debugger
                         fullWidth
                         label={t('Address')}
                         name="Address"
-                        value={owner.OWNERADDRESS}
+                        value={owner.OWNERADDRESS || ''}
                         multiline
                         rows={2}
                         InputProps={{
@@ -679,7 +679,7 @@ debugger
                             label={< LabelWithAsterisk text={t("MobileNumber")} />}
 
                             name="MOBILENUMBER"
-                            value={formData.MOBILENUMBER}
+                            value={formData.MOBILENUMBER || ''}
                             onChange={handleChange}
                             variant="standard"
                           />
@@ -721,7 +721,7 @@ debugger
                           fullWidth
                           label={< LabelWithAsterisk text={t("MobileNumber")} />}
                           name="MobileNumber"
-                          value={owner.MOBILENUMBER}
+                          value={owner.MOBILENUMBER || ''}
                           InputProps={{
                             readOnly: true,
                           }}
@@ -814,10 +814,10 @@ debugger
                     </TableCell>
                   </TableRow>
                 ) : (
-                  tabledata5EkycVerifed.map((row) => {
+                  tabledata5EkycVerifed.map((row,index) => {
 
                     return (
-                      <TableRow key={row.id}>
+                      <TableRow key={index}>
                         <TableCell>{row.OWNERNUMBER}</TableCell>
                         <TableCell>{row.OWNERNAME}</TableCell>
                         <TableCell>{row.IDENTIFIERNAME}</TableCell>

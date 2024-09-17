@@ -80,12 +80,12 @@ const AddressDetails = () => {
   const navigate = useNavigate();
 
   const [selectedFile, setSelectedFile] = useState(null);
-  const [fileExtension, setfileExtension] = useState([]);
+  //const [fileExtension, setfileExtension] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
   const [handleSASClicks, sethandleSASClicks] = useState(false);
-  const [lat2, setlat1] = useState(0);
-  const [long2, setlong1] = useState(0);
+  const [lat2 ] = useState(0);
+  const [long2] = useState(0);
   const [GoogleMapLoad, setGoogleMapLoad] = useState(false);
   const [wardlat, setWardLat] = useState(13.0074);
   const [wardLong, setWardLong] = useState(77.5688)
@@ -95,7 +95,7 @@ const AddressDetails = () => {
   const [SAStableData, setSASTableData] = useState([]);
   const fetchData = React.useCallback(async () => {
     setLoading(true);
-    debugger
+    
     let response2 = null;
     let book = JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))
     try {
@@ -107,7 +107,7 @@ const AddressDetails = () => {
         response2 = null
       }
       const response3 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData_React?UlbCode=555&Page=ADDRESS');
-debugger
+
       const { Table1 = [], Table5 = [], } = response.data;
       let NCLtable1Item = [];
       let Table11Item = [];
@@ -128,7 +128,7 @@ debugger
 
       const table5Item = Table5.length > 0 ? Table5[0] : [];
 
-      debugger
+      
       const filteredData = MasterTable1.filter(item =>
         item.STREETID !== 99999 && item.WARDID === table1Item.WARDID
       );
@@ -192,11 +192,11 @@ debugger
       return <ErrorPage errorMessage={error} />;
     }
     setLoading(false);
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   const handleChange = (e) => {
 
@@ -243,7 +243,7 @@ debugger
       setSelectedFile(null);
       return
     }
-    setfileExtension(fileExtension);
+   // setfileExtension(fileExtension);
     const maxSize = 500 * 1024;
     if (file && file.size > maxSize) {
       toast.error(`${t("File size exceeds 500 KB limit")}`);
@@ -264,7 +264,7 @@ debugger
   const handleFileDelete = () => {
     setSelectedFile(null);
     setPreviewUrl(null);
-    setfileExtension('');
+  //  setfileExtension('');
   };
   const handleBack = () => {
    
@@ -335,7 +335,7 @@ debugger
   }
 
   const handleSubmit = async (e) => {
-    debugger
+    
     if (e.key === 'Enter') {
       e.preventDefault();
     }
@@ -440,7 +440,7 @@ debugger
 
 
   const handleAddressChange = (newAddress) => {
-debugger
+
 
     if (!newAddress || !newAddress.address) {
       toast.error('Address is undefined');
@@ -753,7 +753,7 @@ const handleSASDelete = () => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <FormControl fullWidth  >
+            <FormControl fullWidth  variant="filled" >
               <InputLabel>
                 {t('Property Type')}
               </InputLabel>
@@ -762,8 +762,6 @@ const handleSASDelete = () => {
                 value={formData.BBDPropertyType}
                 onChange={handleChange}
                 inputProps={{ readOnly: true }}
-
-                
               >
                 <MenuItem value="0">Select</MenuItem>
                 <MenuItem value="1">Vacant Site</MenuItem>
@@ -895,8 +893,8 @@ const handleSASDelete = () => {
                         </TableCell>
                       </TableRow>
                     ) : (
-                      SAStableData.map((row) => (
-                        <TableRow key={row.id}>
+                      SAStableData.map((row,index) => (
+                        <TableRow key={index}>
                           <TableCell>{row.APPLICATIONNUMBER}</TableCell>
                           <TableCell>{row.PID}</TableCell>
                           <TableCell>{row.KHATHA_SURVEY_NO}</TableCell>
@@ -912,7 +910,8 @@ const handleSASDelete = () => {
                   </TableBody>
                 </Table>
               </TableContainer>
-      
+      <br></br>
+     
         <Typography
           variant="h6"
           align="center"
@@ -920,20 +919,36 @@ const handleSASDelete = () => {
           sx={{
             fontWeight: 'bold',
             fontFamily: "sans-serif",
-            marginBottom: 3,
+            marginTop: 3,
             color: '#1565c0',
             fontSize: {
-              xs: '1.5rem',
+              xs: '1rem',
               sm: '2rem',
-              md: '2.5rem',
+              md: '1rem',
             }
           }}
         >
-          {t("PostalAddressofProperty")}
+         Location search
+         (Enter a landmark near your property to zoom into that area & then select your specific property)
         </Typography>
         {GoogleMapLoad &&
           <GoogleMaps lat={wardlat} long={wardLong} onLocationChange={handleAddressChange} />
         }
+       <Typography>  Please Click on the Map of Your Property to get the Address and Coordinates</Typography>
+       <Typography variant="h6"
+          align="center"
+          gutterBottom
+          sx={{
+            fontWeight: 'bold',
+            fontFamily: "sans-serif",
+            marginTop: 3,
+            color: '#1565c0',
+            fontSize: {
+              xs: '1rem',
+              sm: '1rem',
+              md: '1.5rem',
+            }
+          }}>  {t("PostalAddressofProperty")}</Typography>
         <Formik
           initialValues={formData}
           validationSchema={validationSchema}
@@ -1126,6 +1141,8 @@ const handleSASDelete = () => {
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
+                </Grid>
+                <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
                     label={<LabelWithAsterisk text={t('lattitude')} />}
@@ -1173,6 +1190,7 @@ const handleSASDelete = () => {
                     }}
                   />
                 </Grid>
+           
                 <Grid item xs={12} sm={6}>
                   <Box display="flex" alignItems="center">
                     <Typography variant="body1" sx={{ ml: 1 }}>

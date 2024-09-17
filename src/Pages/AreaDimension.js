@@ -75,13 +75,13 @@ const AreaDimension = () => {
 
     let areaFt = 1;
 
-    if (numberOfSides === 3) {
+    // if (numberOfSides === 3) {
 
-      const [a, b, c] = values;
-      const s = (a + b + c) / 2;
-      areaFt = Math.sqrt(s * (s - a) * (s - b) * (s - c));
-      areaFt = Math.round(areaFt * 100) / 100;
-    } else {
+    //   const [a, b, c] = values;
+    //   const s = (a + b + c) / 2;
+    //   areaFt = Math.sqrt(s * (s - a) * (s - b) * (s - c));
+    //   areaFt = Math.round(areaFt * 100) / 100;
+    // } else {
 
       const s = values.reduce((acc, val) => acc + val, 0) / 2;
 
@@ -89,7 +89,7 @@ const AreaDimension = () => {
         areaFt *= (s - side);
       }
       areaFt = Math.round(Math.sqrt(areaFt) * 100) / 100;
-    }
+   // }
 
     // Convert to meters (ft to m conversion)
     const areaMt = areaFt > 0 ? Math.round(areaFt * 0.092903 * 100) / 100 : "Invalid Data";
@@ -156,7 +156,7 @@ const AreaDimension = () => {
       [name]: value
     });
   };
-  const fetchData = async () => {
+  const fetchData = React.useCallback(async () => {
 
     try {
       const response = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=AREA_DIMENSION`);
@@ -235,15 +235,11 @@ const AreaDimension = () => {
     catch (error) {
       navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
     }
-  }
+  }, [navigate]);
   useEffect(() => {
     fetchData();
-  }, []);
-  useEffect(() => {
-    if (isOddSiteEnabled) {
-      handleCalulationNCL(formData);
-    }
-  }, [formData, isOddSiteEnabled]);
+  }, [fetchData]);
+ 
 
   const handleCalulation = () => {
 
@@ -256,7 +252,8 @@ const AreaDimension = () => {
     }));
 
   }
-  const handleCalulationNCL = (TableData) => {
+ 
+  const handleCalulationNCL =  React.useCallback(async (TableData) => {
 
     const { areaFt, areaMt } = calculateArea(formData.noofSides, TableData);
     formData.sqFt = areaFt;
@@ -268,9 +265,14 @@ const AreaDimension = () => {
 
     }));
 
-  }
+  }, [formData]);
+  useEffect(() => {
+    if (isOddSiteEnabled) {
+      handleCalulationNCL(formData);
+    }
+  }, [handleCalulationNCL,formData, isOddSiteEnabled]);
   const validateFormData = (formData) => {
-    debugger
+    
     const errors = {};
 
     const isInvalid = (value) => value === '' || value === '0';
@@ -299,7 +301,7 @@ const AreaDimension = () => {
 
       for (let i = 1; i <= formData.noofSides; i++) {
         if (isInvalid(formData[`cal${i}`])) {
-          if (i == 1) {
+          if (i === 1) {
             errors[`cal${i}`] = `Please ensure Road Side Length is Entered and More than 0.`;
           } else {
             errors[`cal${i}`] = `Please ensure Length${i} value is Entered and More than 0.`;
@@ -321,7 +323,7 @@ const AreaDimension = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    debugger
+    
     const validationErrors = validateFormData(formData);
 
     if (Object.keys(validationErrors).length > 0) {
@@ -370,7 +372,7 @@ const AreaDimension = () => {
     }
 
     if ((formData.propertyType === 1 || formData.propertyType === 2) && (isEditable)) {
-      debugger
+      
       if (formData.oddSite === "Y") {
         if (formData.noofSides === "0" || formData.noofSides === "") {
           toast.error("Please Select the no of Sides")
@@ -501,7 +503,7 @@ const AreaDimension = () => {
     navigate('/AddressDetails')
   }
   const handleNavigation = () => {
-    debugger
+    
 
     const validationErrors = validateFormData(formData);
     if (Object.keys(validationErrors).length > 0) {
@@ -1568,7 +1570,7 @@ const AreaDimension = () => {
                 sx={{ backgroundColor: !isEditable ? '' : "#ffff", width: "20%" }}
               >
                 <MenuItem value="">--Select--</MenuItem>
-                {[3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
+                {[4, 5, 6, 7, 8, 9, 10].map((item) => (
                   <MenuItem key={item} value={item}>
                     {item}
                   </MenuItem>

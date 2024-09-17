@@ -31,7 +31,7 @@ const KaveriData = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const DocumentUploadedValidation = (Table1) => {
-    debugger
+    
     if(Table1.length === 0){
       return { isValid: false, data: Table1 };
     }
@@ -91,7 +91,7 @@ fetchData("AfterKaveriVerification")
     ;
     fetchData("InitialKaveri")
   }
-},[])
+},[fetchData])
 
   const handleKaveriDocumentData = async () => {
     
@@ -164,7 +164,7 @@ fetchData("AfterKaveriVerification")
 
 
   const handleChange = async (e) => {
-    debugger
+    
     const { name, value } = e.target;
 
     setFormData(prevFormData => ({
@@ -176,7 +176,7 @@ fetchData("AfterKaveriVerification")
 
 
   const handleECPropertyData = async () => {
-    debugger
+    
     setKaveriDocVerified(false);
    
     console.log(DocumetUploadData)
@@ -558,7 +558,9 @@ if(isKaveriDocVerified){
             </TableContainer>
 
           }
+        
                <DocumentUploadPage  />
+             
           <br></br>
           <br></br>
           <Typography variant='h6'>{t("KaveriMessage1")}</Typography>
@@ -602,11 +604,15 @@ if(isKaveriDocVerified){
           </Grid>
           <TableContainer component={Paper}>
             {KAVERIEC_PROP_DETAILS && KAVERIEC_PROP_DETAILS.length === 0 ? (
+              <Table>
+                <TableBody>
               <TableRow>
                 <TableCell colSpan={2} align="center">
                   <Typography>{t("Nodataavailable")}</Typography>
                 </TableCell>
               </TableRow>
+              </TableBody>
+              </Table>
             ) : (
               <Table>
                 <TableBody>
@@ -614,33 +620,33 @@ if(isKaveriDocVerified){
                     
                     <TableCell>
                       <Typography variant="subtitle1"><strong>{t("District Name")}</strong></Typography>
-                      <Typography>
+                      <Typography variant="body2">
                         { KAVERIEC_PROP_DETAILS[0].DISTRICTNAME|| "N/A" }
                       </Typography>
                       </TableCell>
                      
                       <TableCell>
                       <Typography variant="subtitle1"><strong>{t("Taluka Name")}</strong></Typography>
-                      <Typography style={{ whiteSpace: 'pre-line' }}>
+                      <Typography variant="body2" style={{ whiteSpace: 'pre-line' }}>
                         { KAVERIEC_PROP_DETAILS[0].TALUKANAME || "N/A"}
                       </Typography>
                         </TableCell>
                     
                         <TableCell>
                         <Typography variant="subtitle1"><strong>{t("Village Name")}</strong></Typography>
-                        <Typography style={{ whiteSpace: 'pre-line' }}>
+                        <Typography variant="body2" style={{ whiteSpace: 'pre-line' }}>
                         { KAVERIEC_PROP_DETAILS[0].VILLAGENAME || "N/A"}
                       </Typography>
                           </TableCell>
                           <TableCell>
                           <Typography variant="subtitle1"><strong>{t("Hobli Name")}</strong></Typography>
-                      <Typography style={{ whiteSpace: 'pre-line' }}>
+                      <Typography variant="body2" style={{ whiteSpace: 'pre-line' }}>
                         { KAVERIEC_PROP_DETAILS[0].HOBLINAME || "N/A"}
                       </Typography>
                           </TableCell>
                           <TableCell>
                           <Typography variant="subtitle1"><strong>{t("Article Name")}</strong></Typography>
-                          <Typography style={{ whiteSpace: 'pre-line' }}>
+                          <Typography  variant="body2"style={{ whiteSpace: 'pre-line' }}>
                         { KAVERIEC_PROP_DETAILS[0].ARTICLENAME || "N/A" }
                       </Typography>
                           </TableCell>
@@ -650,7 +656,7 @@ if(isKaveriDocVerified){
                    
                     <TableCell>
                       <Typography variant="subtitle1"><strong>{t("Latest Registration Number")}</strong></Typography>
-                      <Typography>{KAVERIEC_PROP_DETAILS[0].LATEST_REGISTRATIONNO || 'No document summary available'}</Typography>
+                      <Typography variant="body2">{KAVERIEC_PROP_DETAILS[0].LATEST_REGISTRATIONNO || 'No document summary available'}</Typography>
                     </TableCell>
                     <TableCell>
                     </TableCell>
@@ -659,11 +665,11 @@ if(isKaveriDocVerified){
                   <TableRow>
                      <TableCell>
                       <Typography variant="subtitle1"><strong>{t("Is Latest Registration Number")}</strong></Typography>
-                      <Typography>{KAVERIEC_PROP_DETAILS[0].IS_LATEST_REGISTRATIONNO === 'Y' ? "Yes" : "No" || 'N/A'}</Typography>
+                      <Typography variant="body2">{KAVERIEC_PROP_DETAILS[0].IS_LATEST_REGISTRATIONNO === 'Y' ? "Yes" : "No" || 'N/A'}</Typography>
                     </TableCell> 
                     <TableCell>
                       <Typography variant="subtitle1"><strong>{t("Registration Date")}</strong></Typography>
-                      <Typography>
+                      <Typography variant="body2">
                         {KAVERIEC_PROP_DETAILS[0].EXECUTIONDATE
                           ? new Date(KAVERIEC_PROP_DETAILS[0].EXECUTIONDATE).toLocaleString()
                           : 'No execution date available'}
@@ -673,7 +679,7 @@ if(isKaveriDocVerified){
                       <Typography variant="subtitle1"><strong>Executant Names</strong></Typography>
                       {KAVERIEC_PARTIES_DETAILS && KAVERIEC_PARTIES_DETAILS.length > 0 ? (
                         KAVERIEC_PARTIES_DETAILS.map((item, index) => (
-                          <Typography key={index}>{item.ISCLAIMANTOREXECUTANT === 'E' ? item.OWNERNAME : ""}</Typography>
+                          <Typography key={index} variant="body2">{item.ISCLAIMANTOREXECUTANT === 'E' ? item.OWNERNAME : ""}</Typography>
                         ))
                       ) : (
                         <Typography variant="body2" color="textSecondary">No executants available</Typography>
@@ -693,14 +699,14 @@ if(isKaveriDocVerified){
                       <Typography variant="subtitle1"><strong>Claimant Names</strong></Typography>
                       {KAVERIEC_PARTIES_DETAILS && KAVERIEC_PARTIES_DETAILS.length > 0 ? (
                         KAVERIEC_PARTIES_DETAILS.map((item, index) => (
-                          <Typography key={index}>{item.ISCLAIMANTOREXECUTANT === 'C' ? item.OWNERNAME : ""}</Typography>
+                          <Typography key={index} variant="body2">{item.ISCLAIMANTOREXECUTANT === 'C' ? item.OWNERNAME : ""}</Typography>
                         ))
                       ) : (
                         <Typography variant="body2" color="textSecondary">No Claimants available</Typography>
                       )}
                     </TableCell>
                     <TableCell>
-                      <Typography variant="subtitle1"><strong>{t("EKYC Owner Name")}</strong></Typography>
+                      <Typography variant="subtitle1" ><strong>{t("EKYC Owner Name")}</strong></Typography>
                       <Typography>
                       {KAVERIEC_PARTIES_DETAILS && KAVERIEC_PARTIES_DETAILS.length > 0 ? (
                         KAVERIEC_PARTIES_DETAILS.map((item, index) => (
@@ -713,7 +719,7 @@ if(isKaveriDocVerified){
                     </TableCell>
                     <TableCell>
                       <Typography variant="subtitle1"><strong>{t("Name Match Status")}</strong></Typography>
-                      <Typography>
+                      <Typography variant="body2">
                       {KAVERIEC_PARTIES_DETAILS && KAVERIEC_PARTIES_DETAILS.length > 0 ? (
                         KAVERIEC_PARTIES_DETAILS.map((item, index) => (
                           <Typography key={index}>{item.ISCLAIMANTOREXECUTANT === 'C' ? item.NAMEMATCH_SCORE > 60 ? "Matched" : "Not Matched": ""}</Typography>

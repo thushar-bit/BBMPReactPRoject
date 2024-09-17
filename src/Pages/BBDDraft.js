@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect ,useCallback} from 'react';
 import {
   TextField, Button, Grid, Box, Container, Typography, CircularProgress,
   FormControl, MenuItem, Select, InputLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
@@ -9,8 +9,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../components/Axios';
-import ErrorPage from './ErrorPage';
-import '../components/Shake.css';
 
 const BBDDraft = () => {
   const [formData, setFormData] = useState({
@@ -28,27 +26,40 @@ const BBDDraft = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const { t } = useTranslation();
-  const fetchData = async () => {
-    var response = await axiosInstance.get("BBMPCITZAPI/GetMasterZone")
-    setZoneData(response.data.Table || [])
-  };
+  const fetchData = useCallback(async () => {
+    setLoading(true)
+    try {
+      let response = await axiosInstance.get("BBMPCITZAPI/GetMasterZone")
+      setZoneData(response.data.Table || [])
+      formData.ZoneName = JSON.parse(sessionStorage.getItem('DraftZoneId'))
+      var response1 = await axiosInstance.get("BBMPCITZAPI/GetMasterWard?ZoneId=" + JSON.parse(sessionStorage.getItem('DraftZoneId')))
+      setWardData(response1.data.Table)
+      formData.WardName = JSON.parse(sessionStorage.getItem('DraftWardId'))
+      let response2 = await axiosInstance.get(`BBMPCITZAPI/LOAD_BBD_RECORDS?ZoneId=${formData.ZoneName}&WardId=${424057}&SerachType=${0}&Search=${"thushar"}`)
+      setPropertyData(response2.data.Table || [])
+      setLoading(false)
+    } catch (error) {
+      navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
+    }
+   
+  }, [formData,navigate]);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   const handleChange = async (e) => {
     try {
 
       const { name, value } = e.target;
       if (name === "ZoneName") {
-        var response = await axiosInstance.get("BBMPCITZAPI/GetMasterWard?ZoneId=" + value)
+        let response = await axiosInstance.get("BBMPCITZAPI/GetMasterWard?ZoneId=" + value)
         setWardData(response.data.Table)
       }
 
       if (name === "WardName") {
         setLoading(true);
-        var response = await axiosInstance.get(`BBMPCITZAPI/LOAD_BBD_RECORDS?ZoneId=${formData.ZoneName}&WardId=${424057}&SerachType=${0}&Search=${"thushar"}`)
+        let response = await axiosInstance.get(`BBMPCITZAPI/LOAD_BBD_RECORDS?ZoneId=${formData.ZoneName}&WardId=${424057}&SerachType=${0}&Search=${"thushar"}`)
         setPropertyData(response.data.Table || [])
 
         setLoading(false);
@@ -83,10 +94,15 @@ const BBDDraft = () => {
         return
       }
       else {
-        var response = await axiosInstance.get("BBMPCITZAPI/LOAD_BBD_RECORDS?ZoneId=" + formData.ZoneName + "&WardId=" + formData.WardName + "&SerachType=" + formData.SelectType + "&Search=" + formData.Search + "")
+        let response = await axiosInstance.get("BBMPCITZAPI/LOAD_BBD_RECORDS?ZoneId=" + formData.ZoneName + "&WardId=" + formData.WardName + "&SerachType=" + formData.SelectType + "&Search=" + formData.Search + "")
         setPropertyData(response.data.Table || [])
       }
     }
+  }
+  const handleBack = () => {
+    sessionStorage.removeItem("DraftZoneId")
+    sessionStorage.removeItem("DraftWardId")
+    navigate('/BBDDraftGenerated')
   }
   const handleReset = () => {
 
@@ -105,7 +121,7 @@ const BBDDraft = () => {
 
   const handleNavigation = async (row) => {
     //  navigate('/AddressDetails')
-debugger
+
 
     const response3 = await axiosInstance.get(`BBMPCITZAPI/Get_Ctz_ObjectionModPendingAppl?LoginId=crc&propertycode=${row.PROPERTYCODE}&propertyid=${row.PROPERTYID}`);
 
@@ -264,13 +280,18 @@ debugger
               sx={{ marginBottom: 3 }}
             />
           </Grid>
+          
           <Box display="flex" justifyContent="center" gap={2} mt={6} width="100%">
+          <Button variant="contained" color="primary" onClick={handleBack}>
+              {t("Previous")}
+            </Button>
             <Button variant="contained" color="success" onClick={handleSearch}>
               {t("Search")}
             </Button>
             <Button variant="contained" color="primary" onClick={handleReset}>
               {t("Reset")}
             </Button>
+          
           </Box>
         </Grid>
         <TableContainer component={Paper} sx={{ mt: 4 }}>
@@ -297,7 +318,7 @@ debugger
                 propertyData
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row, index) => (
-                    <TableRow key={row.id}>
+                    <TableRow key={index}>
                       <TableCell>{page * rowsPerPage + index + 1}</TableCell>
                       <TableCell>{row.PROPERTYID}</TableCell>
                       <TableCell>{row.ASSESMENTNUMBER}</TableCell>

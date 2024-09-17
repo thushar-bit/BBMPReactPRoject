@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  TextField, Button, Box, Container, Typography,
+   Button, Box, Container, Typography,
   FormControl, MenuItem, Select, InputLabel, FormHelperText,Skeleton 
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
@@ -29,7 +29,7 @@ const SiteDetails = () => {
   const navigate = useNavigate();
   const [tablesdata2, setTablesData2] = useState([]);
   const [tablesdata3, setTablesData3] = useState([]);
-  
+  const [tableYearMaster,setYearMaster] = useState([]);
   const [isInitialEditable,setInitialEditable] = useState(false);
   const [loading, setLoading] = useState(false);
   const handleChange = async (e) => {
@@ -59,7 +59,7 @@ const SiteDetails = () => {
    
 
   const handleSubmit = async (e) => {
-    debugger
+    
 if(isInitialEditable){
     const data = {
       propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
@@ -125,19 +125,21 @@ if(isInitialEditable){
     navigate('/OwnerDetails')
 
   }
-  const fetchData = async () => {
+  const fetchData = React.useCallback(async () => {
     
     try {
       setLoading(true);
       const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData_React?UlbCode=555&Page=SITE_DETAILS');
       const response2 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=SITE_DETAILS`);;
-      const { Table:MasterTable1 = [] } = response1.data;
+      const { Table:MasterTable1 = [],Table2:MasterTable2 } = response1.data;
       const { Table1 = [] } = response2.data;
       if(Table1.length === 0){
         setInitialEditable(true)
       }
       const table2Item = Table1.length > 0 ? Table1[0] : [];
       const table16Item = MasterTable1.length > 0 ? MasterTable1 : [];
+      const table18Item = MasterTable2.length > 0 ? MasterTable2 : [];
+      setYearMaster(table18Item);
       setTablesData2(table16Item);
       
       if (table2Item) {
@@ -164,7 +166,7 @@ if(isInitialEditable){
       }, 500);
     }
 
-  }
+  }, [navigate]);
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault(); 
@@ -174,7 +176,7 @@ if(isInitialEditable){
 
     fetchData();
 
-  }, []);
+  }, [fetchData]);
 
   return (
     <Container maxWidth="md">
@@ -282,32 +284,11 @@ if(isInitialEditable){
                       inputProps={{ readOnly: !isInitialEditable }}
                     >
                       <MenuItem value="">--Select--</MenuItem>
-                      <MenuItem value="Before 2000">Before 2000</MenuItem>
-                      <MenuItem value="2000">2000</MenuItem>
-                      <MenuItem value="2001">2001</MenuItem>
-                      <MenuItem value="2002">2002</MenuItem>
-                      <MenuItem value="2003">2003</MenuItem>
-                      <MenuItem value="2004">2004</MenuItem>
-                      <MenuItem value="2005">2005</MenuItem>
-                      <MenuItem value="2006">2006</MenuItem>
-                      <MenuItem value="2007">2007</MenuItem>
-                      <MenuItem value="2008">2008</MenuItem>
-                      <MenuItem value="2009">2009</MenuItem>
-                      <MenuItem value="2010">2010</MenuItem>
-                      <MenuItem value="2011">2011</MenuItem>
-                      <MenuItem value="2012">2012</MenuItem>
-                      <MenuItem value="2013">2013</MenuItem>
-                      <MenuItem value="2014">2014</MenuItem>
-                      <MenuItem value="2015">2015</MenuItem>
-                      <MenuItem value="2016">2016</MenuItem>
-                      <MenuItem value="2017">2017</MenuItem>
-                      <MenuItem value="2018">2018</MenuItem>
-                      <MenuItem value="2019">2019</MenuItem>
-                      <MenuItem value="2020">2020</MenuItem>
-                      <MenuItem value="2021">2021</MenuItem>
-                      <MenuItem value="2022">2022</MenuItem>
-                      <MenuItem value="2023">2023</MenuItem>
-                      <MenuItem value="2024">2024</MenuItem>
+                      {tableYearMaster.map((item) => (
+                        <MenuItem key={item.YEAR} value={item.YEAR}>
+                          {item.YEAR}
+                        </MenuItem>
+                      ))}
                     </Select>
                     <FormHelperText>
                       {touched.yearOfConstruction && errors.yearOfConstruction ? errors.yearOfConstruction : ''}

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import {
-  TextField, Button, Grid, Box, Container, Typography, Tooltip, IconButton,
+  TextField, Button, Grid, Box, Typography, Tooltip, IconButton,
   FormControl, MenuItem, Select, InputLabel,
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, FormHelperText
+  Table, TableBody, TableCell, TableHead, TableRow,  FormHelperText
 } from '@mui/material';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import InfoIcon from '@mui/icons-material/Info';
@@ -93,8 +93,8 @@ const DocumentUploadPage = () => {
   };
 
 
-  const fetchData = async () => {
-    debugger
+  const fetchData = React.useCallback(async () => {
+    
     try {
       const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterDocByCategoryOrClaimType?ULBCODE=555&CATEGORYID=1');
       const response2 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=DOCUMENT_DETAILS`);;
@@ -118,7 +118,7 @@ const DocumentUploadPage = () => {
     }
 
 
-  }
+  },[navigate,t])
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     const maxSize = 5 * 1024 * 1024;
@@ -150,7 +150,7 @@ const DocumentUploadPage = () => {
     setfileExtension('');
   }
   const handleSubmit = async (e) => {
-debugger
+
     var propertyphoto2 = "";
     if (isEditable) {
       if (formData.DocumentDetails.length === 0) {
@@ -228,9 +228,7 @@ debugger
     }
 
   };
-   const back = () => {
-   navigate('/KaveriData')
-   }
+  
    
   const handleDownload = (base64Data, fileExtension, documentdescription) => {
     const filename = `${documentdescription}.${fileExtension.toLowerCase()}`;
@@ -308,11 +306,11 @@ debugger
   };
 
   useEffect(() => {
-debugger
+
 console.log("Component is rendered")
     fetchData();
 
-  }, []);
+  }, [fetchData]);
   return (
     
      
@@ -481,7 +479,7 @@ console.log("Component is rendered")
               <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
                 {t("UploadedDocument")}
               </Typography>
-              <TableContainer component={Paper} sx={{ mt: 4 }}>
+             
                 <Table>
                   <TableHead>
                     <TableRow>
@@ -502,8 +500,8 @@ console.log("Component is rendered")
                         </TableCell>
                       </TableRow>
                     ) : (
-                      tableData.map((row) => (
-                        <TableRow key={row.id}>
+                      tableData.map((row,index) => (
+                        <TableRow key={index}>
                           <TableCell>{row.DOCUMENTID}</TableCell>
                           <TableCell>{row.DOCUMENTTYPEDESCRIPTION}</TableCell>
                           <TableCell>{row.DOCUMENTDETAILS}</TableCell>
@@ -530,7 +528,7 @@ console.log("Component is rendered")
                     )}
                   </TableBody>
                 </Table>
-              </TableContainer>
+             
 
               <Box display="flex" justifyContent="center" gap={2} mt={3}>
               

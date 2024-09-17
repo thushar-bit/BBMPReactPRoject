@@ -69,7 +69,7 @@ const Login = () => {
     const response = await axiosInstance.get("Auth/GetServerIpAddress")
     setipAddress(response.data.ip)
   }
-  React.useEffect(() => {
+  useEffect(() => {
     fetchIPAddress()
   }, [])
   const handleChange = async (e) => {
@@ -139,7 +139,7 @@ const Login = () => {
         }
         toast.success("Login Successfull !!");
         setTimeout(() => {
-           navigate("/BBDDraft");
+           navigate("/BBDDraftGenerated");
         }, 500);
        
     }

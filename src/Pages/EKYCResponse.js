@@ -11,7 +11,7 @@ const EKYCResponse = () => {
   const location = useLocation();
   const [status1, setStatus] = useState("")
   const [txnos, settxnos] = useState("")
-  const fetchData = async () => {
+  const fetchData = React.useCallback(async () => {
     const params = new URLSearchParams(location.search);
     const txnno = params.get('txnno');
     const status = params.get('status');
@@ -48,10 +48,10 @@ const EKYCResponse = () => {
         console.error('Error during E-KYC owner vault response update:', error);
       }
     }
-  }
+  },[location.search,navigate])
   React.useEffect(() => {
     fetchData()
-  }, [])
+  }, [fetchData])
 
 
 

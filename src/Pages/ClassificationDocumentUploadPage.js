@@ -147,8 +147,8 @@ const ClassificationDocumentUploadPage = () => {
   };
 
 
-  const fetchData = async () => {
-    debugger
+  const fetchData = React.useCallback(async () => {
+    
     try {
       const responeMaster = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData_React?UlbCode=555&Page=DOCUMENT_CLASSIFICATION_DETAILS');
       const response2 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=DOCUMENT_CLASSIFICATION_DETAILS`);;
@@ -195,7 +195,7 @@ const ClassificationDocumentUploadPage = () => {
 
 
 
-  }
+  },[navigate,t])
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     const maxSize = 5 * 1024 * 1024;
@@ -347,7 +347,7 @@ const ClassificationDocumentUploadPage = () => {
 
   };
   const back = () => {
-    debugger
+    
     const k = sessionStorage.getItem('KaveriVerified')
     const Owner = sessionStorage.getItem('OwnerKaveriSkip')
     if (Owner === "true") {
@@ -405,9 +405,9 @@ const ClassificationDocumentUploadPage = () => {
     try {
       await axiosInstance.get(`BBMPCITZAPI/DEL_NCL_PROPERTY_DOC_BBD_CLASS_TEMP?${queryString}`
       )
-      const response1 = await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
+       await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
       
-      await toast.success(`${t("detailsDeletedSuccess")}`, {
+       toast.success(`${t("detailsDeletedSuccess")}`, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -462,7 +462,7 @@ const ClassificationDocumentUploadPage = () => {
 
     fetchData();
 
-  }, []);
+  }, [fetchData]);
   return (
     <Container maxWidth="xl">
       <ToastContainer />
@@ -738,8 +738,8 @@ const ClassificationDocumentUploadPage = () => {
                         </TableCell>
                       </TableRow>
                     ) : (
-                      tableData.map((row) => (
-                        <TableRow key={row.id}>
+                      tableData.map((row,index) => (
+                        <TableRow key={index}>
                           <TableCell>{row.DOCUMENTROWID}</TableCell>
                           <TableCell>{row.DOCUMENTTYPEDESCRIPTION}</TableCell>
                           <TableCell>{row.DOCUMENTDETAILS}</TableCell>
