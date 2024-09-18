@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   TextField, Button, Grid, Box, Typography, Tooltip, IconButton,
-  FormControl, MenuItem, Select, InputLabel,
+  FormControl, MenuItem, Select, InputLabel,TableContainer,Paper,
   Table, TableBody, TableCell, TableHead, TableRow,  FormHelperText
 } from '@mui/material';
 import GetAppIcon from '@mui/icons-material/GetApp';
@@ -479,7 +479,7 @@ console.log("Component is rendered")
               <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
                 {t("UploadedDocument")}
               </Typography>
-             
+              <TableContainer component={Paper} style={{ marginTop: 16 }}>
                 <Table>
                   <TableHead>
                     <TableRow>
@@ -528,7 +528,7 @@ console.log("Component is rendered")
                     )}
                   </TableBody>
                 </Table>
-             
+             </TableContainer>
 
               <Box display="flex" justifyContent="center" gap={2} mt={3}>
               

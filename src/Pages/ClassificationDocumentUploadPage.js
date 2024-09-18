@@ -348,16 +348,12 @@ const ClassificationDocumentUploadPage = () => {
   };
   const back = () => {
     
-    const k = sessionStorage.getItem('KaveriVerified')
+   
     const Owner = sessionStorage.getItem('OwnerKaveriSkip')
     if (Owner === "true") {
-      // sessionStorage.removeItem("KaveriVerified");
+    
       navigate('/OwnerDetails')
 
-    }
-    else if (k === "true") {
-
-      navigate('/KaveriData')
     }
     else {
       navigate('/KaveriData')

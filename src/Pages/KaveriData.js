@@ -25,9 +25,8 @@ const KaveriData = () => {
   const [KAVERIEC_PARTIES_DETAILS, setKAVERIEC_PARTIES_DETAILS] = useState([]);
   const [DocumetUploadData,setDocumentUploadedData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [isAllow, setIsAllow] = useState(false);
-  const [isKaveriDocVerified,setKaveriDocVerified] = useState(false);
-  const [isShowKaveriDocumentDetais, setisShowKaveriDocumentDetais] = useState(false)
+
+ 
   const navigate = useNavigate();
   const { t } = useTranslation();
   const DocumentUploadedValidation = (Table1) => {
@@ -46,24 +45,22 @@ setLoading(true)
 ;
   const response = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=KAVERI_DETAILS`);
   const {Table1=[],Table2=[],Table3=[],Table4=[],Table5=[],Table6=[]} = response.data;
- 
+ debugger
   let objs = {}
   if(TypeOfLoad === "KAVERI_DOC_DATA"){
     setKAVERI_DOC_DETAILS(Table2.length > 0 ? Table2 : []);
     setKAVERI_PROP_DETAILS(Table3.length > 0 ? Table3 : []);
     setKAVERI_PARTIES_DETAILS(Table4.length > 0? Table4 : []);
-    setKaveriDocVerified(Table2.length > 0 ? false : true)
   }
   else if(TypeOfLoad === "KAVERI_EC_DATA"){
     setKAVERIEC_PROP_DETAILS(Table5.length > 0? Table5 : []);
     setKAVERIEC_PARTIES_DETAILS(Table6.length > 0 ? Table6 : []);
-    objs= DocumentUploadedValidation(Table1.length > 0 ? Table1 : [])
+    objs= DocumentUploadedValidation(Table1.length > 0 ? Table1 : []) 
     setLoading(false)
     return objs;
   }
   else if(TypeOfLoad === "AfterKaveriVerification") {
     setKAVERI_DOC_DETAILS(Table2.length > 0 ? Table2 : []);
-    setisShowKaveriDocumentDetais(Table2.length > 0 ? true : false);
     setKAVERI_PROP_DETAILS(Table3.length > 0 ? Table3 : []);
     setKAVERI_PARTIES_DETAILS(Table4.length > 0? Table4 : []);
     setKAVERIEC_PROP_DETAILS(Table5.length > 0? Table5 : []);
@@ -72,6 +69,16 @@ setLoading(true)
   }
   else if(TypeOfLoad === "InitialKaveri"){
     setDocumentUploadedData(Table1.length > 0 ? Table1 : []);
+    if(Table2.length > 0 &&Table3.length > 0&& Table4.length > 0  &&Table5.length > 0 &&Table6.length > 0 ){
+      setKAVERI_DOC_DETAILS(Table2.length > 0 ? Table2 : []);
+
+      setKAVERI_PROP_DETAILS(Table3.length > 0 ? Table3 : []);
+      setKAVERI_PARTIES_DETAILS(Table4.length > 0? Table4 : []);
+      setKAVERIEC_PROP_DETAILS(Table5.length > 0? Table5 : []);
+      setKAVERIEC_PARTIES_DETAILS(Table6.length > 0 ? Table6 : []);
+      setDocumentUploadedData(Table1.length > 0 ? Table1 : []);
+    }
+   
     objs= DocumentUploadedValidation(Table1.length > 0 ? Table1 : [])
     setLoading(false)
     return objs;
@@ -82,15 +89,9 @@ setLoading(true)
 
 useEffect(()=> {
   
-  let k = sessionStorage.getItem('KaveriVerified')
-  if(k === "true"){
-    
-fetchData("AfterKaveriVerification")
-  }
-  else {
-    ;
-    fetchData("InitialKaveri")
-  }
+ 
+    fetchData("AfterKaveriVerification")
+  
 },[fetchData])
 
   const handleKaveriDocumentData = async () => {
@@ -117,7 +118,7 @@ fetchData("AfterKaveriVerification")
       const result = response.data;
 
       if (result.success) {
-        setisShowKaveriDocumentDetais(true);
+        
       
        await fetchData("KAVERI_DOC_DATA")
        setLoading(false)
@@ -177,7 +178,7 @@ fetchData("AfterKaveriVerification")
 
   const handleECPropertyData = async () => {
     
-    setKaveriDocVerified(false);
+    
    
     console.log(DocumetUploadData)
     const DocumetUploadDatas = await fetchData("InitialKaveri")
@@ -213,7 +214,7 @@ fetchData("AfterKaveriVerification")
      
       let response;
       if (formData.RegistrationNumber.length > 0) {
-        setKaveriDocVerified(true);
+        
         if(KAVERI_DOC_DETAILS.length === 0){
           setTimeout(() => {
             toast.error("Please Verify the Kaveri Document Number")
@@ -236,7 +237,7 @@ fetchData("AfterKaveriVerification")
       if (result.success) {
         if (result.ecDataExists) {
           fetchData("KAVERI_EC_DATA")
-          setIsAllow(true);
+         
           setTimeout(() => {
           toast.success("Details Fetched Successfull.You can Download the EC Certificate from the Above Table", {
             position: "top-right",
@@ -251,7 +252,7 @@ fetchData("AfterKaveriVerification")
         }
         else {
           setLoading(false)
-          setIsAllow(false);
+       
           setTimeout(() => {
           toast.error(`${t("registrationNumberNotExist")}`);
           },100)
@@ -259,7 +260,7 @@ fetchData("AfterKaveriVerification")
         }
       }
       else {
-        setIsAllow(false);
+     
         setLoading(false)
         setTimeout(() => {
         toast.error(result.message)
@@ -287,10 +288,8 @@ fetchData("AfterKaveriVerification")
     navigate('/OwnerDetails');
   };
   const handleReset = () => {
-    sessionStorage.setItem('KaveriVerified', false);
-    setIsAllow(false);
-    setKaveriDocVerified(false);
-    setisShowKaveriDocumentDetais(false);
+   
+    
     setKAVERI_DOC_DETAILS([]);
     setKAVERI_PROP_DETAILS([]);
     setKAVERI_PARTIES_DETAILS([]);
@@ -304,27 +303,55 @@ fetchData("AfterKaveriVerification")
       
     });
   }
-  const handleNavigation = () => {
+  const handleNavigation = async () => {
+    debugger
     
-   // sessionStorage.setItem('KaveriVerified', isAllow);
-if(isKaveriDocVerified){
-  toast.error("If your Verifying through Kaveri Document Registration Number .Please Provide Correct Registration Number or Verify with the Number")
-  return
-}
-    let k = sessionStorage.getItem('KaveriVerified')
-    
-        if (k === "true") {
-          navigate("/ClassificationDocumentUploadPage")
-        }
-       
+
   
-       if (isAllow) {
-        sessionStorage.setItem('KaveriVerified', isAllow);
+    
+      
+  
+  if(KAVERI_DOC_DETAILS.length > 0 && KAVERI_PROP_DETAILS.length > 0 && KAVERI_PARTIES_DETAILS.length > 0 )    
+ {    
+  if( KAVERIEC_PROP_DETAILS.length > 0 && KAVERIEC_PARTIES_DETAILS.length > 0)   {
+    navigate("/ClassificationDocumentUploadPage")
+  }
+  else {
+    setTimeout(() => {
+    toast.error("Please Verify EC Data")
+  }, 200);
+  }
+       
+}
+else 
+{
+  const DocumetUploadDatas = await fetchData("InitialKaveri")
+  if(DocumetUploadDatas.data.length > 0){
+    if(DocumetUploadDatas.data.length === 2){
+      if( KAVERIEC_PROP_DETAILS.length > 0 && KAVERIEC_PARTIES_DETAILS.length > 0)   {
         navigate("/ClassificationDocumentUploadPage")
       }
       else {
-        toast.error(`${t("ECError")}`);
+        setTimeout(() => {
+        toast.error("Please Verify EC Data")
+      }, 200);
+        return
       }
+  }
+  else {
+    setTimeout(() => {
+    toast.error("Please Check if the Document is Uploaded Other than Encumbrance Certificate with the EC Number.If not Please Delete the Certificate and Upload the Document and Verify EC again to Continue")
+  }, 200);
+    return
+  }
+}
+      else {
+        setTimeout(() => {
+        toast.error(`${t("ECError")}`);
+      }, 200);
+        return
+      }
+    }
     
   
   };
@@ -423,7 +450,7 @@ if(isKaveriDocVerified){
               </Grid>
          
              
-          {isShowKaveriDocumentDetais &&
+          {(KAVERI_DOC_DETAILS.length > 0 && KAVERI_PROP_DETAILS.length > 0 && KAVERI_PARTIES_DETAILS.length > 0) &&
             <TableContainer component={Paper} style={{ marginTop: 16 }}>
               <Table>
                 <TableHead>
@@ -435,18 +462,7 @@ if(isKaveriDocVerified){
                   <TableRow>
                     <TableCell><strong>{t("ApplicationNumber")}</strong></TableCell>
                     <TableCell><strong>{t("RegistrationDatetime")}</strong></TableCell> 
-                    {/* <TableCell><strong>{t("PendingDocumentNumber")}</strong></TableCell>
-                  
-                  
-                    SRO Name
-                    Hobli 
-                    ZoneName 
-                    //
-                    Id ProofType 
-                    Id ProofNumber :
-                    Party Type :
-                    Admission Date :
-                    */}
+                   
                     <TableCell><strong>{t("NatureDeed")}</strong></TableCell>
                 
                     <TableCell><strong>{t("FinalRegistrationNumber")}</strong></TableCell>
@@ -553,10 +569,10 @@ if(isKaveriDocVerified){
                       )}
                   </TableBody>
                 </Table>
-              </TableContainer>
-
             </TableContainer>
 
+            </TableContainer>
+          
           }
         
                <DocumentUploadPage  />
@@ -603,7 +619,7 @@ if(isKaveriDocVerified){
             </Grid>
           </Grid>
           <TableContainer component={Paper}>
-            {KAVERIEC_PROP_DETAILS && KAVERIEC_PROP_DETAILS.length === 0 ? (
+            {KAVERIEC_PROP_DETAILS.length === 0 ? (
               <Table>
                 <TableBody>
               <TableRow>
@@ -650,10 +666,6 @@ if(isKaveriDocVerified){
                         { KAVERIEC_PROP_DETAILS[0].ARTICLENAME || "N/A" }
                       </Typography>
                           </TableCell>
-                         
-                    
-                     
-                   
                     <TableCell>
                       <Typography variant="subtitle1"><strong>{t("Latest Registration Number")}</strong></Typography>
                       <Typography variant="body2">{KAVERIEC_PROP_DETAILS[0].LATEST_REGISTRATIONNO || 'No document summary available'}</Typography>

@@ -44,7 +44,7 @@ const MultiStoreyBuildingDetails = () => {
     Occupancy: Yup.string().required(`${t('occupancyRequired')}`),
     OwnersShareAreaSqmts: Yup.string().required(`${t('ownerShareAreaRequired')}`),
     SelectOwnerShareType: Yup.string().required(`${t('ownerShareTypeRequired')}`),
-  //  BesomCustomerID: Yup.string().required('Bescom Customer ID is required'),
+    BesomCustomerID: Yup.string().required('Bescom Customer ID is required'),
   });
   const [tableData, setTableData] = useState([
   ]);
@@ -132,10 +132,13 @@ const MultiStoreyBuildingDetails = () => {
       propertytype: 2,
       FloorNumber: formData.floornumber
     };
+    debugger
     const queryString = new URLSearchParams(params1).toString();
-    const BescomResponse = await axiosInstance.post(`Bescom/GetBescomData?"${queryString}`);
+    const BescomResponse = await axiosInstance.post(`Bescom/GetBescomData?${queryString}`);
     if(BescomResponse.data === "No Bescom Details Found"){
       toast.error("No Bescom Details Found")
+     
+      setLoading(false);
       return
     }
     toast.success("Details Fetched Successfully")
@@ -160,7 +163,7 @@ const fetchData = React.useCallback(async () => {
       const response3 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=MULTI_STOREY_DETAILS`);;
       const { Table:MasterTable1 = [], Table1:MasterTable2 = [], Table2:MasterTable3 = [],Table3:MasterTable4 } = response1.data;
       const { Table1:BBDTable1 = [] } = response2.data;
-      const { Table1:NCLTABLE1 = [] } = response3.data;
+      const { Table1:NCLTABLE1 = [],Table2:NCLTable2 } = response3.data;
       if(NCLTABLE1.length === 0){
         setInitialEditable(true);
       }
@@ -170,11 +173,13 @@ const fetchData = React.useCallback(async () => {
       const table15Item = MasterTable1.length > 0 ? MasterTable1 : [];
       const table17Item = MasterTable3.length > 0 ? MasterTable3 : [];
       const table18Item = MasterTable4.length > 0 ? MasterTable4 : [];
+      const tableBescom = NCLTable2.length > 0 ? NCLTable2 : [];
       setTableData(table1Item);
       setTablesData2(table16Item);
       setTablesData4(table15Item);
       setTablesData6(table17Item);
       setYearMaster(table18Item);
+      setBescomTable(tableBescom);
       var sharetype = "0";
       var ownersharetypeValue = "";
 
@@ -311,10 +316,15 @@ if(isEditable || isInitialEditable){
   };
 
   const handleNavigation = () => {
-
+    
+    if(BescomTable.length > 0)
+{
     navigate('/OwnerDetails');
-
-  };
+}else {
+  toast.error("Bescom Needs to Be Verified")
+  return
+}
+  }
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault(); 
@@ -677,7 +687,7 @@ if(isEditable || isInitialEditable){
                 <Grid item xs={12} sm={4}>
                   <TextField
                     fullWidth
-                    label={"BESCOM Customer ID :"}
+                    label={<LabelWithAsterisk text={"BESCOM Customer ID :"}/>}
                     name="BesomCustomerID"
                     type="number"
                     value={formData.BesomCustomerID}

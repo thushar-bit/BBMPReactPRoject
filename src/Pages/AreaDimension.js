@@ -1673,7 +1673,7 @@ const AreaDimension = () => {
                 <Grid item>
                   <Grid container spacing={1} alignItems="center">
                     <Grid item>
-                      <Typography>Actual Area Sq.Ft</Typography>
+                      <Typography>Site Area(Area as per document)	(Sq.ft)</Typography>
                     </Grid>
                     <Grid item>
                       <TextField
@@ -1693,7 +1693,7 @@ const AreaDimension = () => {
                       <Typography>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</Typography>
                     </Grid>
                     <Grid item>
-                    <Typography>Actual Area Sq.Mt</Typography>
+                    <Typography>(Sq.Mt)</Typography>
                     </Grid>
                     <Grid item>
                       <TextField

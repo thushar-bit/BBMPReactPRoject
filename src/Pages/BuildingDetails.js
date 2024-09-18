@@ -25,7 +25,7 @@ const BuildingDetails = () => {
     Typeofuse: '',
     yearOfConstruction: '',
     SelfuseArea: "",
-    RentedArea: "",
+    RentedArea: '',
     TotalArea: '',
     SelfuseAreaMts: "",
     RentedAreaMts: "",
@@ -42,9 +42,9 @@ const BuildingDetails = () => {
       .required(`${t('yearUsageRequired')}`),
     Typeofuse: Yup.string().required(`${t('typeOfUseRequired')}`),
     SelfuseArea: Yup.string().required(`${t('selfUseAreaRequired')}`),
-    RentedArea: Yup.string().required(`${t('rentedAreaRequired')}`),
+   // RentedArea:  Yup.string().required(`${t('rentedAreaRequired')}`),
     //  BWSSBMeterNumber: Yup.string().required('BWSSB Meter Number is required'),
-    //  BesomCustomerID: Yup.string().required('Bescom Customer ID is required'),
+      BesomCustomerID: Yup.string().required('Bescom Customer ID is required'),
 
   });
   const [tableData, setTableData] = useState([
@@ -54,6 +54,7 @@ const BuildingDetails = () => {
   const [tablesdata3, setTablesData3] = useState([]);
   const [tablesdata4, setTablesData4] = useState([]);
   const [tableYearMaster,setYearMaster] = useState([]);
+  const [RentedAreaEnabled,setRentedAreaEnabled] = useState(true)
   const [BescomTable,setBescomTable] = useState([]);
   const [loading,setLoading] = useState(false);
   const handleChange = async (e) => {
@@ -66,7 +67,20 @@ const BuildingDetails = () => {
           if (response.data.Table.length > 0) {
             setTablesData3(response.data.Table);
           }
+          else {
+            setTablesData3([]);
+          }
+          debugger
+          if(value === 1 || value === 2 || value === 3){
+            setRentedAreaEnabled(true)
+            
+          }else {
+            setRentedAreaEnabled(false)
+            formData.RentedArea = ""
+            formData.RentedAreaMts = ""
+          }
         }
+        
       } catch (error) {
         toast.error(`${t("errorSavingData")}` + error, {
           position: "top-right",
@@ -85,10 +99,18 @@ const BuildingDetails = () => {
     if (name === 'SelfuseArea' || name === 'RentedArea') {
       const selfuseAreaValue = name === 'SelfuseArea' ? value : formData.SelfuseArea;
       const RentedAreaValue = name === 'RentedArea' ? value : formData.RentedArea;
-      const totalArea = Math.round(parseFloat(selfuseAreaValue) + parseFloat(RentedAreaValue));
+      let totalArea = 0;
+      if(formData.RentedArea.length > 0){
+       totalArea = Math.round(parseFloat(selfuseAreaValue) + parseFloat(RentedAreaValue));
+       formData.RentedAreaMts = (parseFloat(RentedAreaValue) * 0.092903).toFixed(2).toString()
+      }
+      else {
+        totalArea = Math.round(parseFloat(selfuseAreaValue))
+        formData.RentedAreaMts = 0.00
+      }
       formData.TotalArea = totalArea;
       formData.SelfuseAreaMts = (parseFloat(selfuseAreaValue) * 0.092903).toFixed(2).toString()
-      formData.RentedAreaMts = (parseFloat(RentedAreaValue) * 0.092903).toFixed(2).toString()
+      
       formData.TotalAreaMts = (parseFloat(totalArea) * 0.092903).toFixed(2).toString()
 
     }
@@ -107,15 +129,17 @@ const BuildingDetails = () => {
       const response2 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=BUILDING_DETAILS`);;
       const { Table:MasterTable1 = [], Table1:MasterTable2 = [],Table2:MasterTable3 } = response1.data;
 
-      const { Table1 = [] } = response2.data;
+      const { Table1 = [] ,Table2:NCLTable2} = response2.data;
       const table8Item = Table1.length > 0 ? Table1 : [];
       const table16Item = MasterTable2.length > 0 ? MasterTable2 : [];
       const table15Item = MasterTable1.length > 0 ? MasterTable1 : [];
       const table18Item = MasterTable3.length > 0 ? MasterTable3 : [];
+      const tableBescom = NCLTable2.length > 0 ? NCLTable2 : [];
       setTableData(table8Item);
       setTablesData2(table16Item);
       setTablesData4(table15Item);
       setYearMaster(table18Item);
+      setBescomTable(tableBescom);
     } catch (error) {
       toast.error(`${t("errorSavingData")}` + error, {
         position: "top-right",
@@ -134,7 +158,12 @@ const BuildingDetails = () => {
   }, [navigate,t]);
   const handleSubmit = async () => {
     // 
-
+if(RentedAreaEnabled){
+  if(formData.RentedArea.length === 0){
+    toast.error("Please enter the Rented Area")
+    return
+  }
+}
 
     var BUILDINGUSAGETYPEID = 0;
     if (formData.RentedArea === 0) {
@@ -161,10 +190,10 @@ const BuildingDetails = () => {
       buildingnumberid: formData.BuildingNumber,
       buildingblockname: formData.BuildingName || null,
       ownUseArea: formData.SelfuseArea,
-      rentedArea: formData.RentedArea,
+      rentedArea:  formData.RentedArea.length === 0 ? "0" :formData.RentedArea ,
       p_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))
     }
-
+debugger
     try {
       await axiosInstance.post('BBMPCITZAPI/DEL_INS_SEL_NCL_PROP_BUILDING_TEMP?ULBCODE=555', data
       )
@@ -204,9 +233,13 @@ const BuildingDetails = () => {
     navigate('/AreaDimension')
   }
   const handleNavigation = () => {
-
+    if(BescomTable.length > 0)
+{
     navigate('/OwnerDetails');
-
+}else {
+  toast.error("BESCOM Needs to Be Verified")
+  return
+}
   }
   const handleBescomVerify = async () => {
     
@@ -227,10 +260,13 @@ const BuildingDetails = () => {
       propertytype: 2,
       FloorNumber: formData.floornumber
     };
+    debugger
     const queryString = new URLSearchParams(params1).toString();
-    const BescomResponse = await axiosInstance.post(`Bescom/GetBescomData?"${queryString}`);
+    const BescomResponse = await axiosInstance.post(`Bescom/GetBescomData?${queryString}`);
     if(BescomResponse.data === "No Bescom Details Found"){
-      toast.error("No Bescom Details Found")
+      toast.error("No Bescom Details Found");
+     
+      setLoading(false);
       return
     }
     toast.success("Details Fetched Successfully")
@@ -500,7 +536,7 @@ const BuildingDetails = () => {
                       <MenuItem value="">--Select--</MenuItem>
                       {tablesdata3.map((item) => (
                         <MenuItem key={item.FEATUREID} value={item.FEATUREID}>
-                          {item.FEATURENAME_EN}
+                          {item.FEATURENAME}
                         </MenuItem>
                       ))}
                     </Select>
@@ -571,7 +607,7 @@ const BuildingDetails = () => {
                   <TextField
                     fullWidth
                     label={<LabelWithAsterisk text={t('RentedAreafts')} />}
-
+                    variant={RentedAreaEnabled ? "outlined" : "filled"}
                     name="RentedArea"
                     type="number"
                     value={formData.RentedArea}
@@ -581,7 +617,8 @@ const BuildingDetails = () => {
                     error={touched.RentedArea && !!errors.RentedArea}
                     helperText={touched.RentedArea && errors.RentedArea}
                     InputProps={{
-                      style: { backgroundColor: '#ffff' },
+                      readOnly: !RentedAreaEnabled,
+                      style: { backgroundColor: RentedAreaEnabled? '#ffff' : '' },
                       endAdornment: (
                         <Tooltip title={t("streetInfo")}>
                           <IconButton color="primary">
@@ -675,7 +712,7 @@ const BuildingDetails = () => {
                 <Grid item xs={12} sm={4}>
                   <TextField
                     fullWidth
-                    label={"BESCOM Customer ID :"}
+                    label={<LabelWithAsterisk text={"BESCOM Customer ID :"}/>}
                     name="BesomCustomerID"
                     value={formData.BesomCustomerID}
                     onChange={handleChange}
@@ -703,10 +740,7 @@ const BuildingDetails = () => {
                     name="BWSSBMeterNumber"
                     value={formData.BWSSBMeterNumber}
                     onChange={handleChange}
-                    onBlur={handleBlur}
-                    className={touched.BWSSBMeterNumber && !!errors.BWSSBMeterNumber ? 'shake' : ''}
-                    error={touched.BWSSBMeterNumber && !!errors.BWSSBMeterNumber}
-                    helperText={touched.BWSSBMeterNumber && errors.BWSSBMeterNumber}
+                   
                     InputProps={{
                       style: { backgroundColor: '#ffff' } ,
                       endAdornment: (
