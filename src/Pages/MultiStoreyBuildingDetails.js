@@ -528,7 +528,8 @@ if(isEditable || isInitialEditable){
                       value={formData.yearOfConstruction}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      sx={{ backgroundColor: '#ffff' }}
+                      sx={{ backgroundColor: !isInitialEditable?  '':"#ffff" }}
+                      inputProps={{ readOnly: !isInitialEditable }}
                     >
                       <MenuItem value="">--Select--</MenuItem>
                       {tableYearMaster.map((item) => (

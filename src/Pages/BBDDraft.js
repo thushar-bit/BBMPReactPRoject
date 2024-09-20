@@ -31,18 +31,23 @@ const BBDDraft = () => {
     try {
       let response = await axiosInstance.get("BBMPCITZAPI/GetMasterZone")
       setZoneData(response.data.Table || [])
-      formData.ZoneName = JSON.parse(sessionStorage.getItem('DraftZoneId'))
+      
       var response1 = await axiosInstance.get("BBMPCITZAPI/GetMasterWard?ZoneId=" + JSON.parse(sessionStorage.getItem('DraftZoneId')))
       setWardData(response1.data.Table)
-      formData.WardName = JSON.parse(sessionStorage.getItem('DraftWardId'))
-      let response2 = await axiosInstance.get(`BBMPCITZAPI/LOAD_BBD_RECORDS?ZoneId=${formData.ZoneName}&WardId=${424057}&SerachType=${0}&Search=${"thushar"}`)
+   
+      let response2 = await axiosInstance.get(`BBMPCITZAPI/LOAD_BBD_RECORDS?ZoneId=${JSON.parse(sessionStorage.getItem('DraftZoneId'))}&WardId=${JSON.parse(sessionStorage.getItem('DraftWardId'))}&SerachType=${0}&Search=${"thushar"}`)
       setPropertyData(response2.data.Table || [])
+      
       setLoading(false)
     } catch (error) {
       navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
     }
-   
-  }, [formData,navigate]);
+    setFormData(prevData => ({
+      ...prevData,
+      ZoneName: JSON.parse(sessionStorage.getItem('DraftZoneId')),
+      WardName: JSON.parse(sessionStorage.getItem('DraftWardId'))
+    }));
+  }, [navigate]);
 
   useEffect(() => {
     fetchData();
@@ -50,7 +55,7 @@ const BBDDraft = () => {
 
   const handleChange = async (e) => {
     try {
-
+debugger
       const { name, value } = e.target;
       if (name === "ZoneName") {
         let response = await axiosInstance.get("BBMPCITZAPI/GetMasterWard?ZoneId=" + value)
@@ -59,7 +64,7 @@ const BBDDraft = () => {
 
       if (name === "WardName") {
         setLoading(true);
-        let response = await axiosInstance.get(`BBMPCITZAPI/LOAD_BBD_RECORDS?ZoneId=${formData.ZoneName}&WardId=${424057}&SerachType=${0}&Search=${"thushar"}`)
+        let response = await axiosInstance.get(`BBMPCITZAPI/LOAD_BBD_RECORDS?ZoneId=${formData.ZoneName}&WardId=${value}&SerachType=${0}&Search=${"thushar"}`)
         setPropertyData(response.data.Table || [])
 
         setLoading(false);

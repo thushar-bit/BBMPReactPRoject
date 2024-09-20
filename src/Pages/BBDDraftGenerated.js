@@ -28,7 +28,7 @@ const BBDDraftGenerated = () => {
     var response = await axiosInstance.get("BBMPCITZAPI/GET_PROPERTY_BBD_Draft_Generated_Wards")
     const uniqueData = response.data.Table.filter(
         (value, index, self) =>
-          index === self.findIndex((t) => t.ZONENAME === value.ZONENAME )
+          index === self.findIndex((t) => t.AROID === value.AROID )
       );
     setData(uniqueData || [])
     setLoading(false)
@@ -44,11 +44,11 @@ const BBDDraftGenerated = () => {
 
   const handleNavigation = async (row) => {
     //  navigate('/AddressDetails')
-
+debugger
 
 try {
       sessionStorage.setItem('DraftZoneId', JSON.stringify(row.ZONEID));
-      sessionStorage.setItem('DraftWardId', JSON.stringify(row.WARDNUMBER));
+      sessionStorage.setItem('DraftWardId', JSON.stringify(row.WARDID));
         navigate('/BBDDraft')
       } catch (error) {
 
@@ -113,40 +113,51 @@ try {
          eKhata Roll-Out Status and Information
         </Typography>
         
-        <TableContainer component={Paper} sx={{ mt: 4 }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>ZONE</TableCell>
-                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>ARO or Subdivision</TableCell>
-                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Ward Name and Number Where Draft eKhata rolled out</TableCell>
-                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Status of Draft eKhata rolled out in ward</TableCell>
-                
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {Data.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={12} align="center">
-                    {t("Nodataavailable")}
-                  </TableCell>
-                </TableRow>
-              ) : (
-                Data
-                  
-                  .map((row, index) => (
-                    <TableRow key={index}>
-                     
-                      <TableCell>{row.ZONENAME}</TableCell>
-                      <TableCell>{row.ARONAME}</TableCell>
-                      <TableCell><Button color="primary" onClick={() => handleNavigation(row)}>{row.WARDNAME}</Button></TableCell>
-                      <TableCell>{row.STATUS}</TableCell>
-                    </TableRow>
-                  ))
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <TableContainer component={Paper} sx={{ mt: 4, maxHeight: 800 /* Set max height */ }}>
+  <Table stickyHeader aria-label="sticky table">
+    <TableHead>
+      <TableRow>
+        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>ZONE</TableCell>
+        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>ARO or Subdivision</TableCell>
+        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Ward Name and Number Where Draft eKhata rolled out</TableCell>
+        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Status of Draft eKhata rolled out in ward</TableCell>
+      </TableRow>
+    </TableHead>
+    <TableBody>
+      {Data.length === 0 ? (
+        <TableRow>
+          <TableCell colSpan={12} align="center">
+            {t("Nodataavailable")}
+          </TableCell>
+        </TableRow>
+      ) : (
+        Data
+        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+        .map((row, index, arr) => {
+          const showZoneName = index === 0 || row.ZONEID !== arr[index - 1].ZONEID;
+          
+
+          return (
+            <TableRow key={index}>
+             
+              <TableCell>{showZoneName ? row.ZONENAME : ""}</TableCell>
+             
+              <TableCell>{ row.ARONAME}</TableCell>
+              <TableCell>
+                {row.WARDNAME ? (
+                  <Button color="primary" onClick={() => handleNavigation(row)}>
+                    {row.WARDNAME}
+                  </Button>
+                ) : ""}
+              </TableCell>
+              <TableCell>{row.STATUS}</TableCell>
+            </TableRow>
+          );
+        })
+      )}
+    </TableBody>
+  </Table>
+</TableContainer>
         <TablePagination
           rowsPerPageOptions={[10, 25, 50, 100]}
           component="div"

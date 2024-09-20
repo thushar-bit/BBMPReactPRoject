@@ -29,7 +29,7 @@ const OwnerDetails = () => {
   const [editableIndex, setEditableIndex] = useState(-1);
   const [otpFieldsVisible, setOtpFieldsVisible] = useState(false);
   const [alertShown, setAlertShown] = useState(false);
-  const [otpData, setOtpData] = useState({});
+
   const [otpNumber, setOtpNumber] = useState(0)
   const { t } = useTranslation();
   const [otpButtonDisabled, setOtpButtonDisabled] = useState(false);
@@ -75,8 +75,8 @@ const OwnerDetails = () => {
   const handleGenerateOtp = async (index) => {
     try {
       const response = await axiosInstance.get("E-KYCAPI/SendOTP?OwnerMobileNo=" + formData.MOBILENUMBER);
-      toast.success(`${t("otpSentSuccess")}`);
-      setOtpData(response.data.otpResponseMessage);
+      toast.success(response.data.otpResponseMessage);
+     
       setOtpNumber(response.data.otp);
       formData.MOBILEVERIFY = "NOT VERIFIED";
       setOtpButtonDisabled(true);
@@ -99,13 +99,13 @@ const OwnerDetails = () => {
 
   };
 
-  const handleVerifyOtp = (index) => {
+  const handleVerifyOtp = () => {
     if (formData.OwnerOTP === otpNumber.toString()) {
       toast.success(`${t("otpVerifiedSuccess")}`);
       formData.MOBILEVERIFY = "Verfied";
       setOtpFieldsVisible(false);
     } else {
-      toast.error(otpData);
+      toast.error("Invalid OTP Entered");
     }
   };
   const handleEdit = (index) => {

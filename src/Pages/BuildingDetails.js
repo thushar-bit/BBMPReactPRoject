@@ -340,7 +340,7 @@ debugger
         RentedAreaMts: (parseFloat(row.RENTEDAREA ) * 0.092903).toFixed(2).toString(),
         TotalAreaMts: (parseFloat(row.TOTALAREA) * 0.092903).toFixed(2).toString(),
         TotalArea: row.TOTALAREA || '',
-        BesomCustomerID: row.RRNO || '',
+        BesomCustomerID: row.ACCOUNTID || '',
         BWSSBMeterNumber: row.WATERMETERNO || ''
       });
     } catch (error) {

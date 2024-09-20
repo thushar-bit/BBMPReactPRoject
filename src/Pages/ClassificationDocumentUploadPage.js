@@ -50,17 +50,19 @@ const ClassificationDocumentUploadPage = () => {
   const { t } = useTranslation();
   const validationSchema = Yup.object().shape({
     DocumentType: Yup.string().required(`${t('documentTypeRequired')}`),
-    DocumentNumber: Yup.string().required(`${t('documentNumberRequired')}`),
+  //  DocumentNumber: Yup.string().required(`${t('documentNumberRequired')}`),
     //   AKatha: Yup.string().required('This is required').test('not-zero', 'A Katha Claim cannot be Select', value => value !== "0")
   });
   const [tableData, setTableData] = useState([
   ]);
   const navigate = useNavigate();
   const [tablesdata2, setTablesData2] = useState([]);
-  const [MasterTableData, setMasterTableData] = useState([])
+  const [MasterTableData, setMasterTableData] = useState([]);
+  const [MasterAkathaTableData,setMasterAkathaTableData]= useState([])
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileExtension, setfileExtension] = useState([]);
   const [isEditable, setIsEditable] = useState(false);
+  const [isHaveDocument,setHaveDocument] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isClassificationEditable, setIsClassificationEditable] = useState(false);
@@ -68,7 +70,7 @@ const ClassificationDocumentUploadPage = () => {
     setSelectedDate(date);
   };
   const handleAkathaDropdownValueChange = async (e) => {
-
+debugger
     try {
       const { name, value } = e.target;
       let updatedClassification = "";
@@ -84,13 +86,13 @@ const ClassificationDocumentUploadPage = () => {
         } else {
           updatedClassification = "0";
         }
-        if (value === "51") {
-          setIsEditable(true);
+        // if (value === "51") {
+          
 
-        } else {
-          setIsEditable(false);
+        // } else {
+        //   setIsEditable(false);
 
-        }
+        // }
 
         const response = await axiosInstance.get(`BBMPCITZAPI/GET_NPM_MST_CLASS_DOCUMENT_CLASSANDSUBCLASS?CLASSIFICATIONID=1&SUBCLASSIFICATIONID1=${value}&SUBCLASSIFICATIONID2=0`)
         const { Table } = response.data;
@@ -137,12 +139,34 @@ const ClassificationDocumentUploadPage = () => {
   };
 
   const handleChange = async (e) => {
-
+debugger
     const { name, value } = e.target;
-
+    if(name === "DocumentType"){
+      if(value === 26){
+        setIsEditable(true);
+      }else {
+        setIsEditable(false);
+      }
+      if(value === 243){
+        setHaveDocument(true)
+        setSelectedFile(null)
+        setfileExtension([])
+        setFormData({
+          ...formData,
+          documentregistereddate: "",
+          DocumentNumber: "",
+          DocumentDetails: "",
+          DocumentType:value
+        });
+        return
+      }
+      else {
+        setHaveDocument(false)
+      }
+    }
     setFormData({
       ...formData,
-      [name]: value
+      [name]: value,
     });
   };
 
@@ -155,11 +179,12 @@ const ClassificationDocumentUploadPage = () => {
       const response3 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=DOCUMENT_CLASSIFICATION_DETAILS`);
 
       const { Table1: BBDTable1 = [] } = response2.data;
-      const { Table:MasterTable1 = [] } = responeMaster.data;
+      const { Table:MasterTable1 = [],Table1:MasterTable2 } = responeMaster.data;
       const { Table2: NCLTable2 = [], Table1: NCLTable1 = [] } = response3.data;
       setTableData(NCLTable2.length > 0 ? NCLTable2 : []);
 
       setMasterTableData(MasterTable1.length > 0 ? MasterTable1 : [])
+      setMasterAkathaTableData(MasterTable2.length > 0 ? MasterTable2 : [])
       setFormData((prevFormData) => ({
         ...prevFormData,
         PropertyClasssficationAsperBooks: BBDTable1.length > 0 ? BBDTable1[0].PROPERTYCLASSIFICATIONID : "",
@@ -268,7 +293,12 @@ const ClassificationDocumentUploadPage = () => {
 
   }
   const handleSubmit = async (e) => {
+    let data = {};
+    debugger
+    if(formData.DocumentType !== 243)
+      {
 
+    
     var propertyphoto2 = "";
     if (isEditable) {
       if (formData.DocumentDetails.length === 0) {
@@ -278,6 +308,10 @@ const ClassificationDocumentUploadPage = () => {
     }
     if (selectedFile) {
       propertyphoto2 = await getPropertyphoto(selectedFile);
+    }
+    if(formData.DocumentNumber.length === 0){
+      toast.error("Please enter the Document Number");
+      return
     }
 
     if (!isClassificationEditable) {
@@ -297,7 +331,8 @@ const ClassificationDocumentUploadPage = () => {
       toast.error(`${t("Document Registered Date cannot be greater than today")}`);
       return;
     }
-    const data = {
+    
+     data = {
       documentnumber: formData.DocumentNumber,
       createdby: "crc",
       documentextension: fileExtension,
@@ -311,7 +346,28 @@ const ClassificationDocumentUploadPage = () => {
       ulbcode: 555,
       p_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))
     }
-
+  }
+  else
+   {
+    if (!isClassificationEditable) {
+      toast.error(`${t("saveClassificationBeforeUpload")}`);
+      return
+    }
+     data = {
+      documentnumber: null,
+      createdby: "crc",
+      documentextension: null,
+      propertycode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
+      documentdetails: null,
+      scanneddocument: "", 
+      classificationid: formData.AKatha,
+      subclassificationid: 0,
+      documentdate: null,
+      documenttypeid: formData.DocumentType,
+      ulbcode: 555,
+      p_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))
+    }
+  }
     try {
       await axiosInstance.post('BBMPCITZAPI/INS_NCL_PROPERTY_DOC_BBD_CLASS_TEMP', data
       )
@@ -552,41 +608,19 @@ const ClassificationDocumentUploadPage = () => {
                       inputProps={{ readOnly: isClassificationEditable }}
                     >
                       <MenuItem value="0">--Select--</MenuItem>
-                      <MenuItem value="47">{t("PrivateLayout")}</MenuItem>
-                      <MenuItem value="48">{t("House/Site")}</MenuItem>
-                      <MenuItem value="49">{t("OwnLayoutOfBDA/DevelopmentAuthority")}</MenuItem>
-                      <MenuItem value="50">{t("GP/MunicipalityKhatabeforemergerwithBBMP")}</MenuItem>
-                      <MenuItem value="51">{t("Others")}</MenuItem>
+                      {MasterAkathaTableData.map((item) => (
+                        <MenuItem key={item.SUBCLASSIFICATIONID} value={item.SUBCLASSIFICATIONID}>
+                          {item.SUBCLASSIFICATION_EN}
+                        </MenuItem>
+                      ))}
                     </Select>
                     <FormHelperText>
                       {touched.AKatha && errors.AKatha ? errors.AKatha : ''}
                     </FormHelperText>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={4}>
-                  <TextField
-                    fullWidth
-                    variant={isEditable ? "outlined" : "filled"}
-
-                    label={isEditable ? <LabelWithAsterisk text={t("DocumentDetails")} /> : t("DocumentDetails")}
-
-                    placeholder='Document Details'
-                    name="DocumentDetails"
-                    value={formData.DocumentDetails}
-                    onChange={handleChange}
-                    InputProps={{
-                      readOnly: !isEditable,
-                      style: { backgroundColor: !isEditable ? '' : "#ffff" },
-                      endAdornment: (
-                        <Tooltip title={t("doorPlotNoInfo")}>
-                          <IconButton color="primary">
-                            <InfoIcon />
-                          </IconButton>
-                        </Tooltip>
-                      )
-                    }}
-                  />
-                </Grid>
+                <Grid item xs={12} sm={4}></Grid>
+                
                 {!isClassificationEditable ?
                   <Grid item xs={12} sm={4}><Button variant="contained" color="success" onClick={onClassifySave}>
                     {t("SaveClassificationDetails")}
@@ -625,17 +659,45 @@ const ClassificationDocumentUploadPage = () => {
                     </FormHelperText>
                   </FormControl>
                 </Grid>
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    fullWidth
+                    variant={isEditable ? "outlined" : "filled"}
 
+                    label={isEditable ? <LabelWithAsterisk text={t("DocumentDetails")} /> : t("DocumentDetails")}
+
+                    placeholder='Document Details'
+                    name="DocumentDetails"
+                    value={formData.DocumentDetails}
+                    onChange={handleChange}
+                    InputProps={{
+                      readOnly: !isEditable,
+                      style: { backgroundColor: !isEditable ? '' : "#ffff" },
+                      endAdornment: (
+                        <Tooltip title={t("doorPlotNoInfo")}>
+                          <IconButton color="primary">
+                            <InfoIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )
+                    }}
+                  />
+                </Grid>
                 <Grid item xs={12} sm={4}>
                   <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
                     <DatePicker
-                      label={<LabelWithAsterisk text={t("DocumentRegisteredDate")} />}
+                      //label={<LabelWithAsterisk text={t("DocumentRegisteredDate")} />}
+                      variant={isHaveDocument ? "outlined" : "filled"}
+
+                      label={!isHaveDocument ? <LabelWithAsterisk text={t("DocumentRegisteredDate")} /> : t("DocumentRegisteredDate")}
                       name='documentregistereddate'
                       placeholder='dd-mm-yyyy'
                       value={selectedDate}
                       onChange={date => handleDateChange(date)}
                       disableFuture
-                      sx={{ width: '100%', backgroundColor: '#ffff' }}
+                      sx={{ width: '100%',backgroundColor: isHaveDocument ? '' : "#ffff" }}
+                     
+                    disabled={isHaveDocument}
                     />
                   </LocalizationProvider>
                 </Grid>
@@ -651,8 +713,10 @@ const ClassificationDocumentUploadPage = () => {
                 <Grid item xs={12} sm={4}>
                   <TextField
                     fullWidth
-                    label={<LabelWithAsterisk text={t("DocumentNumber :")} />}
+                   // label={<LabelWithAsterisk text={t("DocumentNumber :")} />}
+                    variant={isHaveDocument ? "outlined" : "filled"}
 
+                    label={!isHaveDocument ? <LabelWithAsterisk text={t("DocumentNumber :")} /> : t("DocumentNumber :")}
                     name="DocumentNumber"
                     value={formData.DocumentNumber}
                     onChange={handleChange}
@@ -661,7 +725,8 @@ const ClassificationDocumentUploadPage = () => {
                     error={touched.DocumentNumber && !!errors.DocumentNumber}
                     helperText={touched.DocumentNumber && errors.DocumentNumber}
                     InputProps={{
-                      style: { backgroundColor: '#ffff' },
+                      readOnly:isHaveDocument,
+                      style: { backgroundColor: isHaveDocument ? '' : "#ffff" },
                       endAdornment: (
                         <Tooltip title={t("nearestLandmarkInfo")}>
                           <IconButton color="primary">
@@ -672,8 +737,7 @@ const ClassificationDocumentUploadPage = () => {
                     }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={4}>
-                </Grid>
+                
                 <Grid item xs={12} sm={4}>
                   <Box display="flex" alignItems="center">
                     <Typography variant="body1" sx={{ ml: 1 }}>
@@ -682,9 +746,10 @@ const ClassificationDocumentUploadPage = () => {
                     <Button
                       component="label"
                       variant="contained"
+                      disabled={isHaveDocument}
                       startIcon={<CloudUploadIcon />}
                       sx={{ ml: 2 }}
-
+                      
                     >
                       {t("Uploadfile")}
                       <VisuallyHiddenInput type="file" accept=".pdf" onChange={handleFileChange} />
@@ -704,7 +769,7 @@ const ClassificationDocumentUploadPage = () => {
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sm={4}>
-                  <Button variant="contained" color="success" type="submit">
+                  <Button variant="contained" color="success" type="submit" >
                     {t("AddDocument+")}
                   </Button>
                 </Grid>

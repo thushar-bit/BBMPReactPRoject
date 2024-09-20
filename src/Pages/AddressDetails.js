@@ -335,7 +335,7 @@ const AddressDetails = () => {
   }
 
   const handleSubmit = async (e) => {
-    
+    debugger
     if (e.key === 'Enter') {
       e.preventDefault();
     }
@@ -356,19 +356,32 @@ const AddressDetails = () => {
         toast.error(`${t("Please Select the Property Type")}`)
         return
       }
-      setLoading(true);
-      const copy = await CopyBookData();
-      if (copy) {
-        toast.success(`${t("copySuccess")}`)
-      } else {
-        toast.error(`${t("copyFailed")}`)
-      }
       if(formData.verifySASNUM.length === 0){
         toast.error(`${t("provideSasAppNumber")}`);
         return
       }
+      const response = await axiosInstance.get(
+        'BBMPCITZAPI/GetTaxDetails', {
+        params: {
+          applicationNo: formData.verifySASNUM,
+          propertycode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
+          P_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')),
+          loginId: 'crc'
+        }
+      }
+      );
 
+      const { Table = [] } = response.data;
+      if (Table.length === 0) {
+        toast.error(`${t("No SAS Applications Found")}`);
+        return
+      }
+     
+       await CopyBookData();
+      
+     
 
+      setLoading(true);
       const data = {
         propertyCode: formData.propertyNumber,
         categoryId: formData.propertyType,
@@ -903,7 +916,7 @@ const handleSASDelete = () => {
                           <TableCell>{row.NATUREOFPROPERTY}</TableCell>
                           <TableCell>{row.SITEAREA}</TableCell>
                           <TableCell>{row.BUILTUPAREA}</TableCell>
-                          <TableCell><Button variant='outlined' color='error' onClick={handleSASDelete}>Delete</Button></TableCell>
+                          <TableCell><Button variant='outlined' color='error' onClick={handleSASDelete} disabled={!isEditable}>Delete</Button></TableCell>
                         </TableRow>
                       ))
                     )}
