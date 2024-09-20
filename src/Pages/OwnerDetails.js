@@ -109,6 +109,7 @@ const OwnerDetails = () => {
     }
   };
   const handleEdit = (index) => {
+    debugger
     setEditableIndex(index);
     setFormData(tabledata5EkycNotVerifed[index]);
   };
@@ -276,7 +277,21 @@ const OwnerDetails = () => {
       setCoreArea(NCLTable1Data.length > 0 ? NCLTable1Data[0].AREA_TYPE : 2)
       setTableData8(MasterTable1.length > 0 ? MasterTable1 : [])
       setTableData(BBDTable1.length > 0 ? BBDTable1 : []);
-      setTablesDataEKYCVerified(NCLTable2.length > 0 ? NCLTable2.filter(item => item.EKYCSTATUS === "DONE") : []);
+      setTablesDataEKYCVerified(NCLTable2.length > 0 ? NCLTable2.filter(item => item.EKYCSTATUS === "DONE" 
+
+        // if (data.MOBILEVERIFY !== "Verfied") {
+        //   atLeastOneMobileVerified = false;
+        // }
+        // if (data.IDENTIFIERNAME === null || data.IDENTIFIERNAME === "" || data.IDENTIFIERNAME === undefined) {
+        //   relationname = false;
+        // }
+        // if (data.IDENTIFIERTYPEID === "0" || data.IDENTIFIERTYPEID === null || data.IDENTIFIERTYPEID === undefined) {
+        //   relationshiptype = false;
+        // }
+        && (item.MOBILEVERIFY === "Verfied")
+        && (item.IDENTIFIERNAME !== null || item.IDENTIFIERNAME !== "" || item.IDENTIFIERNAME !== undefined)
+        && (item.IDENTIFIERTYPEID !== "0" || item.IDENTIFIERTYPEID !== null || item.IDENTIFIERTYPEID !== undefined)
+      ) : []);
       setTablesDataEkycNotVerifed(NCLTable2.length > 0 ? NCLTable2 : [])
       setLoading(false);
     } catch (error) {
@@ -298,6 +313,7 @@ const OwnerDetails = () => {
     const txnno = params.get('txnno');
 
     if (txnno !== null && txnno !== undefined) {
+     
       console.log('E-KYC completed successfully with txnno:', txnno);
       setTimeout(() => {
         toast.success("E-KYC completed successfully");
@@ -320,15 +336,20 @@ const OwnerDetails = () => {
     // Submit form data logic here
   };
   const EditOwnerDetailsFromEKYCData = async (txno, ownerType) => {
+    debugger
+    ownerType = "NEWOWNER"
     try {
-      const response = await axiosInstance.get("Name_Match/GET_BBD_NCL_OWNER_BYEKYCTRANSACTION?transactionNumber=" + txno + "&OwnerType=" + ownerType)
-      if (response.data.length > 0) {
-        console.log(response.data)
-        setEditableIndex(response.data.Table[0].OWNERNUMBER);
-        return response.data.Table[0].OWNERNUMBER || ""
-
-      }
-      return ""
+       await axiosInstance.get("Name_Match/GET_BBD_NCL_OWNER_BYEKYCTRANSACTION?transactionNumber=" + txno + "&OwnerType=" + ownerType)
+       if(ownerType === "OLDOWNER"){
+       let OWNERNUMBERVERIFY = JSON.parse(sessionStorage.getItem('OWNERNUMBERVERIFY'));
+        setEditableIndex(OWNERNUMBERVERIFY - 1);
+       }
+       if(ownerType === "NEWOWNER"){
+        const response3 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=OWNER_DETAILS`);
+        const { Table2: NCLTable2 = [] } = response3.data;
+        setEditableIndex(NCLTable2.length -1)
+       }
+       return ""
     } catch (error) {
       console.log("EditOwnerDetailsFromEKYCData", error)
     }
@@ -366,14 +387,17 @@ const OwnerDetails = () => {
     window.location.href = response.data;
   };
   const VerfiyEKYC = async (row) => {
-
+debugger
     let ownerNumber = 0;
     if (row.OWNERNUMBER !== "") {
       ownerNumber = row.OWNERNUMBER;
+      sessionStorage.setItem("OWNERNUMBERVERIFY", JSON.stringify(row.OWNERNUMBER))
     } else {
       ownerNumber = row.SLNO;
+      sessionStorage.setItem("OWNERNUMBERVERIFY", JSON.stringify(row.SLNO))
     }
     sessionStorage.setItem("OWNERTYPE", JSON.stringify("OLDOWNER"))
+    
     var response = await axiosInstance.post("E-KYCAPI/RequestEKYC?OwnerNumber=" + ownerNumber + "&BOOK_APP_NO=" + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + "&PROPERTY_CODE=" + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')))
     window.location.href = response.data;
   }
@@ -494,6 +518,7 @@ const OwnerDetails = () => {
                         </Button>
                       }
                       </TableCell>
+                      
                       <TableCell>{OwnerExists(row.OWNERNUMBER) ?
                         ""
                         :
