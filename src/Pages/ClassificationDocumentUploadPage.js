@@ -360,8 +360,6 @@ debugger
       propertycode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
       documentdetails: null,
       scanneddocument: "", 
-      classificationid: formData.AKatha,
-      subclassificationid: 0,
       documentdate: null,
       documenttypeid: formData.DocumentType,
       ulbcode: 555,
@@ -369,7 +367,7 @@ debugger
     }
   }
     try {
-      await axiosInstance.post('BBMPCITZAPI/INS_NCL_PROPERTY_DOC_BBD_CLASS_TEMP', data
+      await axiosInstance.post('BBMPCITZAPI/INS_NCL_PROPERTY_CLASS_DOC_ID_BBD_TEMP', data
       )
 
       
@@ -450,12 +448,12 @@ debugger
 
     const data = {
       PROPERTYCODE: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
-      DOCUMENTROWID: row.DOCUMENTROWID,
+      P_DOC_SCAN_ID: row.DOC_SCAN_ID,
       p_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))
     }
     const queryString = new URLSearchParams(data).toString();
     try {
-      await axiosInstance.get(`BBMPCITZAPI/DEL_NCL_PROPERTY_DOC_BBD_CLASS_TEMP?${queryString}`
+      await axiosInstance.get(`BBMPCITZAPI/DEL_NCL_PROPERTY_CLASS_DOC_ID_BBD_TEMP?${queryString}`
       )
        await axiosInstance.get('BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP?ULBCODE=555&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&Propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '');
       
@@ -801,7 +799,7 @@ debugger
                     ) : (
                       tableData.map((row,index) => (
                         <TableRow key={index}>
-                          <TableCell>{row.DOCUMENTROWID}</TableCell>
+                          <TableCell>{row.DOC_SCAN_ID}</TableCell>
                           <TableCell>{row.DOCUMENTTYPEDESCRIPTION}</TableCell>
                           <TableCell>{row.DOCUMENTDETAILS}</TableCell>
                           <TableCell>{row.DOCUMENTNUMBER}</TableCell>
