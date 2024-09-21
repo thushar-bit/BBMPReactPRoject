@@ -75,13 +75,13 @@ const AreaDimension = () => {
 
     let areaFt = 1;
 
-    // if (numberOfSides === 3) {
+   if (numberOfSides === 3) {
 
-    //   const [a, b, c] = values;
-    //   const s = (a + b + c) / 2;
-    //   areaFt = Math.sqrt(s * (s - a) * (s - b) * (s - c));
-    //   areaFt = Math.round(areaFt * 100) / 100;
-    // } else {
+       const [a, b, c] = values;
+       const s = (a + b + c) / 2;
+       areaFt = Math.sqrt(s * (s - a) * (s - b) * (s - c));
+       areaFt = Math.round(areaFt * 100) / 100;
+     } else {
 
       const s = values.reduce((acc, val) => acc + val, 0) / 2;
 
@@ -89,7 +89,7 @@ const AreaDimension = () => {
         areaFt *= (s - side);
       }
       areaFt = Math.round(Math.sqrt(areaFt) * 100) / 100;
-   // }
+    }
 
     // Convert to meters (ft to m conversion)
     const areaMt = areaFt > 0 ? Math.round(areaFt * 0.092903 * 100) / 100 : "Invalid Data";
@@ -209,7 +209,7 @@ const AreaDimension = () => {
         cal8: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE4FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
         cal9: NCLTable3Data.length > 0 ? NCLTable3Data[0].SIDE9 || '' : Table3Data.length > 0 ? Table3Data[0].SIDE9 || '' : '',
         cal10: NCLTable3Data.length > 0 ? NCLTable3Data[0].SIDE10 || '' : Table3Data.length > 0 ? Table3Data[0].SIDE10 || '' : '',
-        noofSides: NCLTable3Data.length > 0 ? NCLTable3Data[0].ODDSITENOOFSIDES || '' : Table3Data.length > 0 ? Table3Data[0].ODDSITENOOFSIDES || '' : '',
+        noofSides: NCLTable3Data.length > 0 ? NCLTable3Data[0].ODDSITENOOFSIDES || 4 : Table3Data.length > 0 ? Table3Data[0].ODDSITENOOFSIDES || 4 : 4,
         oddSite: NCLTable3Data.length > 0 ? NCLTable3Data[0].ODDSITE || '' : Table3Data.length > 0 ? Table3Data[0].ODDSITE || '' : '',
       }));
 
@@ -1570,7 +1570,7 @@ const AreaDimension = () => {
                 sx={{ backgroundColor: !isEditable ? '' : "#ffff", width: "20%" }}
               >
                 <MenuItem value="">--Select--</MenuItem>
-                {[4, 5, 6, 7, 8, 9, 10].map((item) => (
+                {[3,4, 5, 6, 7, 8, 9, 10].map((item) => (
                   <MenuItem key={item} value={item}>
                     {item}
                   </MenuItem>

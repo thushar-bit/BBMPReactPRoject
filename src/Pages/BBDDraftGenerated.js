@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Button, Box, Container, Typography, CircularProgress,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-  TablePagination
+  
 } from '@mui/material';
 
 
@@ -19,8 +19,7 @@ const BBDDraftGenerated = () => {
   const [loading, setLoading] = useState(false);
   const [Data, setData] = useState([]);
 
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+ 
   const { t } = useTranslation();
   const fetchData = async () => {
     try {
@@ -57,14 +56,9 @@ try {
     }
   
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+ 
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+  
 
   function GradientCircularProgress() {
     return (
@@ -113,7 +107,7 @@ try {
          eKhata Roll-Out Status and Information
         </Typography>
         
-        <TableContainer component={Paper} sx={{ mt: 4, maxHeight: 800 /* Set max height */ }}>
+        <TableContainer component={Paper} sx={{ mt: 4, maxHeight: 900  }}>
   <Table stickyHeader aria-label="sticky table">
     <TableHead>
       <TableRow>
@@ -132,7 +126,7 @@ try {
         </TableRow>
       ) : (
         Data
-        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+       
         .map((row, index, arr) => {
           const showZoneName = index === 0 || row.ZONEID !== arr[index - 1].ZONEID;
           
@@ -158,15 +152,7 @@ try {
     </TableBody>
   </Table>
 </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[10, 25, 50, 100]}
-          component="div"
-          count={Data.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
+        
       </Box>
     </Container>
   );

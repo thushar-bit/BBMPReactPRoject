@@ -250,7 +250,7 @@ const fetchData = React.useCallback(async () => {
   }, [fetchData]);
   const handleSubmit = async (e) => {
 
-if(isEditable || isInitialEditable){
+if(isInitialEditable){
     const data = {
       propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
       plotareaownersharE_AREA: formData.SelectOwnerShareType === "1" ? formData.OwnersShareAreaSqmts : 0,

@@ -11,7 +11,8 @@ import { toast, ToastContainer } from 'react-toastify';
 import LabelWithAsterisk from '../components/LabelWithAsterisk'
 const OwnerDetails = () => {
   const [formData, setFormData] = useState({
-    relato: "0"
+    relato: "0",
+    MOBILEVERIFY: ""
   });
 
   const [tableData, setTableData] = useState([
@@ -206,7 +207,7 @@ const OwnerDetails = () => {
 
 
   const handleSave = async () => {
-
+debugger
     try {
 
       if (otpFieldsVisible) {
@@ -340,14 +341,17 @@ const OwnerDetails = () => {
     ownerType = "NEWOWNER"
     try {
        await axiosInstance.get("Name_Match/GET_BBD_NCL_OWNER_BYEKYCTRANSACTION?transactionNumber=" + txno + "&OwnerType=" + ownerType)
+       const response3 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=OWNER_DETAILS`);
+        const { Table2: NCLTable2 = [] } = response3.data;
        if(ownerType === "OLDOWNER"){
        let OWNERNUMBERVERIFY = JSON.parse(sessionStorage.getItem('OWNERNUMBERVERIFY'));
         setEditableIndex(OWNERNUMBERVERIFY - 1);
+        setFormData(NCLTable2[OWNERNUMBERVERIFY - 1]);
        }
        if(ownerType === "NEWOWNER"){
-        const response3 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=OWNER_DETAILS`);
-        const { Table2: NCLTable2 = [] } = response3.data;
-        setEditableIndex(NCLTable2.length -1)
+        
+        setEditableIndex(NCLTable2.length -1);
+        setFormData(NCLTable2[NCLTable2.length -1]);
        }
        return ""
     } catch (error) {
@@ -774,7 +778,7 @@ debugger
                           fullWidth
                           label={t('MobileVerification')}
                           name="MOBILEVERIFY"
-                          value={owner.MOBILEVERIFY || "NOT VERIFIED"}
+                          value={owner.MOBILEVERIFY === null ? "NOT VERIFIED":owner.MOBILEVERIFY === null}
                           InputProps={{
                             readOnly: true,
                           }}

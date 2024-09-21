@@ -78,7 +78,7 @@ debugger
       if (name === "AKatha") {
 
         if (value !== "") {
-          if (value !== "51") {
+          if (value !== 51) {
             updatedClassification = "4";
           } else {
             updatedClassification = "5";
@@ -172,7 +172,7 @@ debugger
 
 
   const fetchData = React.useCallback(async () => {
-    
+    debugger
     try {
       const responeMaster = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData_React?UlbCode=555&Page=DOCUMENT_CLASSIFICATION_DETAILS');
       const response2 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=DOCUMENT_CLASSIFICATION_DETAILS`);;
@@ -252,12 +252,12 @@ debugger
     setfileExtension('');
   }
   const onClassifySave = async () => {
-
+debugger
     if (formData.AKatha === "0") {
       toast.error(`${t("selectKathaClaim")}`)
       return
     }
-    if (String(formData.AKatha) === "51") {
+    if (String(formData.AKatha) === 51) {
       if (formData.DocumentDetails.length === 0) {
         toast.error(`${t("enterDocumentDetails")}`)
         return
@@ -269,7 +269,7 @@ debugger
       CLASSIFICATIONID: formData.PropertyClassification,
       SUBCLASSIFICATIONID: formData.AKatha,
       CREATEDBY: 'crc',
-      SUBCLASSIFICATION: formData.AKatha === "51" ? formData.DocumentDetails : ""
+      SUBCLASSIFICATION: formData.AKatha === 51 ? formData.DocumentDetails : ""
     }
     const filteredData = Object.fromEntries(
       Object.entries(data).filter(([value]) => value !== '' && value !== null)
