@@ -26,6 +26,7 @@ const SadImage = styled('img')({
 });
 
 const ErrorPage = () => {
+  
   const navigate = useNavigate();
   const location = useLocation();
   const errorMessage = location.state?.errorMessage || "Unknown error occurred in Sending Error Message";

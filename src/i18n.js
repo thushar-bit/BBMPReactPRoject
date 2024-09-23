@@ -284,7 +284,7 @@ const resources = {
 "detailsDeletedSuccess":"Details Deleted Successfully",
 "enterRegistrationNumberFirst": "Please Enter any one Registration Number First",
 "enterEcDocumentNumber": "Please Enter the EC Document Number",
-"registrationNumberNotExist": "The Given Registration Number Does Not Exist With EC Details.\nPlease Provide Correct Registration Number",
+"registrationNumberNotExist": "The Given Document Registration Number Does Not Exist With EC Details.\nPlease Provide Correct Document Registration Number.",
 "errorFetchingEcData": "Error Getting EC Property data!",
 "otpSentSuccess": "OTP Sent Successfully",
 "otpVerifiedSuccess": "OTP Verified Successfully",

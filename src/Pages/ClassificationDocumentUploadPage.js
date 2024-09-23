@@ -45,7 +45,7 @@ const ClassificationDocumentUploadPage = () => {
     PropertyClasssficationAsperBooks: "",
     PropertyClassification: "",
     AKatha: "",
-
+    propertyType: "",
   });
   const { t } = useTranslation();
   const validationSchema = Yup.object().shape({
@@ -70,7 +70,7 @@ const ClassificationDocumentUploadPage = () => {
     setSelectedDate(date);
   };
   const handleAkathaDropdownValueChange = async (e) => {
-debugger
+
     try {
       const { name, value } = e.target;
       let updatedClassification = "";
@@ -139,7 +139,7 @@ debugger
   };
 
   const handleChange = async (e) => {
-debugger
+
     const { name, value } = e.target;
     if(name === "DocumentType"){
       if(value === 26){
@@ -172,7 +172,7 @@ debugger
 
 
   const fetchData = React.useCallback(async () => {
-    debugger
+    
     try {
       const responeMaster = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData_React?UlbCode=555&Page=DOCUMENT_CLASSIFICATION_DETAILS');
       const response2 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=DOCUMENT_CLASSIFICATION_DETAILS`);;
@@ -190,7 +190,8 @@ debugger
         PropertyClasssficationAsperBooks: BBDTable1.length > 0 ? BBDTable1[0].PROPERTYCLASSIFICATIONID : "",
         PropertyClassification: NCLTable1.length > 0 ? NCLTable1[0].PROPERTYCLASSIFICATIONID : '',
         DocumentDetails: NCLTable1.length > 0 ? NCLTable1[0].SUBCLASSIFICATION === null ? "" : NCLTable1[0].SUBCLASSIFICATION : "",
-        AKatha: NCLTable1.length > 0 ? NCLTable1[0].SUBCLASSIFICATIONID : ""
+        AKatha: NCLTable1.length > 0 ? NCLTable1[0].SUBCLASSIFICATIONID : "",
+        propertyType: NCLTable1.length > 0 ? NCLTable1[0].PROPERTYCATEGORYID || "0" : "0",
       }));
 
       if (NCLTable1.length > 0) {
@@ -252,7 +253,7 @@ debugger
     setfileExtension('');
   }
   const onClassifySave = async () => {
-debugger
+
     if (formData.AKatha === "0") {
       toast.error(`${t("selectKathaClaim")}`)
       return
@@ -294,7 +295,7 @@ debugger
   }
   const handleSubmit = async (e) => {
     let data = {};
-    debugger
+    
     if(formData.DocumentType !== 243)
       {
 
@@ -401,16 +402,20 @@ debugger
 
   };
   const back = () => {
-    
-   
-    const Owner = sessionStorage.getItem('OwnerKaveriSkip')
-    if (Owner === "true") {
-    
-      navigate('/OwnerDetails')
-
+    if (formData.propertyType === 1) {
+      navigate('/SiteDetails')
+    } else if (formData.propertyType === 2) {
+      navigate('/BuildingDetails')
     }
-    else {
-      navigate('/KaveriData')
+    else if (formData.propertyType === 3) {
+
+      navigate('/MultiStoreyBuildingDetails')
+    } else {
+
+      toast.error(`${t("propertyTypeNotFound")}`);
+      setTimeout(() => {
+        navigate("/TaxDetails")
+      }, 500);
 
     }
   }
@@ -490,6 +495,10 @@ debugger
 
 
   const handleOpenDialog = () => {
+    if(tableData.length === 0){
+      toast.error("Please Upload the Document")
+      return
+    }
     setIsDialogOpen(true);
   };
 

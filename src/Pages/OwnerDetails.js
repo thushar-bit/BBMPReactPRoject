@@ -23,7 +23,7 @@ const OwnerDetails = () => {
   const [tabledata5EkycVerifed, setTablesDataEKYCVerified] = useState([]);
   const [tabledata5EkycNotVerifed, setTablesDataEkycNotVerifed] = useState([]);
   const [tablesdata8, setTableData8] = useState([]);
-  const [propertytype, setPropertyType] = useState();
+  // const [propertytype, setPropertyType] = useState();
   const [coreArea, setCoreArea] = useState(0)
 
   const [loading, setLoading] = useState(false);
@@ -110,7 +110,7 @@ const OwnerDetails = () => {
     }
   };
   const handleEdit = (index) => {
-    debugger
+    
     setEditableIndex(index);
     setFormData(tabledata5EkycNotVerifed[index]);
   };
@@ -173,10 +173,10 @@ const OwnerDetails = () => {
             ownerNumber: OWNERNUMBER || 0
           }));
           sessionStorage.setItem("EKYC_OWNER_DETAILS", JSON.stringify(ekycOwnerDetails))
-          navigate("/KaveriData")
+          navigate("/LocationDetails")
         } else if (allNameMatchVerified) {
           sessionStorage.setItem('OwnerKaveriSkip', true);
-          navigate("/ClassificationDocumentUploadPage")
+          navigate("/LocationDetails")
         }
       }
       else {
@@ -185,7 +185,7 @@ const OwnerDetails = () => {
           ownerNumber: OWNERNUMBER || 0
         }));
         sessionStorage.setItem("EKYC_OWNER_DETAILS", JSON.stringify(ekycOwnerDetails))
-        navigate("/KaveriData")
+        navigate("/LocationDetails")
       }
     }
     else {
@@ -207,7 +207,7 @@ const OwnerDetails = () => {
 
 
   const handleSave = async () => {
-debugger
+
     try {
 
       if (otpFieldsVisible) {
@@ -274,7 +274,7 @@ debugger
       const { Table1:BBDTable1 = [] } = response2.data;
       const { Table2: NCLTable2 = [], Table1: NCLTable1Data = [], } = response3.data;
       const { Table:MasterTable1 = [] } = response1.data;
-      setPropertyType(NCLTable1Data.length > 0 ? NCLTable1Data[0].PROPERTYCATEGORYID || "0" : "0")
+      // setPropertyType(NCLTable1Data.length > 0 ? NCLTable1Data[0].PROPERTYCATEGORYID || "0" : "0")
       setCoreArea(NCLTable1Data.length > 0 ? NCLTable1Data[0].AREA_TYPE : 2)
       setTableData8(MasterTable1.length > 0 ? MasterTable1 : [])
       setTableData(BBDTable1.length > 0 ? BBDTable1 : []);
@@ -337,7 +337,7 @@ debugger
     // Submit form data logic here
   };
   const EditOwnerDetailsFromEKYCData = async (txno, ownerType) => {
-    debugger
+    
     ownerType = "NEWOWNER"
     try {
        await axiosInstance.get("Name_Match/GET_BBD_NCL_OWNER_BYEKYCTRANSACTION?transactionNumber=" + txno + "&OwnerType=" + ownerType)
@@ -360,22 +360,9 @@ debugger
 
   };
   const back = () => {
-    if (propertytype === 1) {
-      navigate('/SiteDetails')
-    } else if (propertytype === 2) {
-      navigate('/BuildingDetails')
-    }
-    else if (propertytype === 3) {
-
-      navigate('/MultiStoreyBuildingDetails')
-    } else {
-
-      toast.error(`${t("propertyTypeNotFound")}`);
-      setTimeout(() => {
-        navigate("/AddressDetails")
-      }, 500);
-
-    }
+   
+      navigate('/KaveriData')
+    
   };
   const AddEKYCOwner = async () => {
     var ownerNumber = 1;
@@ -391,7 +378,7 @@ debugger
     window.location.href = response.data;
   };
   const VerfiyEKYC = async (row) => {
-debugger
+
     let ownerNumber = 0;
     if (row.OWNERNUMBER !== "") {
       ownerNumber = row.OWNERNUMBER;

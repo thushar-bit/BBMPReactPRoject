@@ -70,7 +70,7 @@ const BuildingDetails = () => {
           else {
             setTablesData3([]);
           }
-          debugger
+          
           if(value === 1 || value === 2 || value === 3){
             setRentedAreaEnabled(true)
             
@@ -193,7 +193,7 @@ if(RentedAreaEnabled){
       rentedArea:  formData.RentedArea.length === 0 ? "0" :formData.RentedArea ,
       p_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))
     }
-debugger
+
     try {
       await axiosInstance.post('BBMPCITZAPI/DEL_INS_SEL_NCL_PROP_BUILDING_TEMP?ULBCODE=555', data
       )
@@ -233,9 +233,13 @@ debugger
     navigate('/AreaDimension')
   }
   const handleNavigation = () => {
+    if(tableData.length === 0){
+      toast.error("Please Enter and Save the Building Details")
+      return
+    }
     if(BescomTable.length > 0)
 {
-    navigate('/OwnerDetails');
+    navigate('/ClassificationDocumentUploadPage');
 }else {
   toast.error("BESCOM Needs to Be Verified")
   return
@@ -260,7 +264,7 @@ debugger
       propertytype: 2,
       FloorNumber: formData.floornumber
     };
-    debugger
+    
     const queryString = new URLSearchParams(params1).toString();
     const BescomResponse = await axiosInstance.post(`Bescom/GetBescomData?${queryString}`);
     if(BescomResponse.data === "No Bescom Details Found"){

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   TextField, Button, Grid, Box, Container, Typography, CircularProgress, Tooltip, IconButton,
-  FormControl, FormHelperText, MenuItem, Select, InputLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
+  FormControl, FormHelperText, MenuItem, Select, InputLabel
 } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import InfoIcon from '@mui/icons-material/Info';
@@ -29,7 +29,7 @@ const VisuallyHiddenInput = styled('input')({
   width: 1,
 });
 
-const AddressDetails = () => {
+const LocationDetails = () => {
   const [formData, setFormData] = useState({
     propertyCode: '',
     propertyNumber: "",
@@ -52,17 +52,11 @@ const AddressDetails = () => {
     categoryId: 2,
     puidNo: '',
     loginId: 'crc',
-    verifySASNUM: "",
     lat1: 0,
     long1: 0,
     wardNumber: "",
     wardName: "",
-    BBDOldWardNumber: "",
-    BBDOldPropertyNumber: "",
-    BBDSasApplicationNumber:"",
-    BBDAddress:"",
-    BBDPropertyType:"",
-    BBDPropertyCategory:"",
+  
     
   });
   const { t } = useTranslation();
@@ -83,7 +77,7 @@ const AddressDetails = () => {
   //const [fileExtension, setfileExtension] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
-  const [handleSASClicks, sethandleSASClicks] = useState(false);
+ 
   const [lat2 ] = useState(0);
   const [long2] = useState(0);
   const [GoogleMapLoad, setGoogleMapLoad] = useState(false);
@@ -92,7 +86,7 @@ const AddressDetails = () => {
 
   const [tableData, setTableData] = useState([
   ]);
-  const [SAStableData, setSASTableData] = useState([]);
+
   const fetchData = React.useCallback(async () => {
     setLoading(true);
     
@@ -139,12 +133,7 @@ const AddressDetails = () => {
         propertyEID: table1Item.PROPERTYID || '',
         address: table1Item.ADDRESS || '',
         district: table1Item.DISTRICTNAME || '',
-        BBDOldWardNumber:table1Item.OLDWARDNUMBER198 || "",
-        BBDOldPropertyNumber:table1Item.MUNICIPALOLDNUMBER || "",
-        BBDSasApplicationNumber:table1Item.PUID || "",
-        BBDAddress:table1Item.ADDRESS ? table1Item.ADDRESS : "",
-        BBDPropertyType:table1Item.PROPERTYCATEGORYID  ? table1Item.PROPERTYCATEGORYID : "0",
-        BBDPropertyCategory:table1Item.PROPERTYCLASSIFICATIONID ? table1Item.PROPERTYCLASSIFICATIONID === 1 ? "ನಮೂನೆ-ಎ ವಹಿ" : "ನಮೂನೆ-ಬಿ ವಹಿ": "",
+        
         wardNumber: table1Item.WARDID || '',
         wardName: table1Item.WARDNAME || "",
         propertyNumber: table1Item.PROPERTYCODE || '',
@@ -160,7 +149,7 @@ const AddressDetails = () => {
         areaorlocality: Table11Item.AREAORLOCALITY || '',
         lat1: table4Item.LATITUDE || "",
         long1: table4Item.LONGITUDE || "",
-        verifySASNUM: NCLtable1Item.PUID !== null ? NCLtable1Item.PUID || "" : table1Item.PUID ? table1Item.PUID : "",
+        
       });
 
       setGoogleMapLoad(false)
@@ -177,14 +166,7 @@ const AddressDetails = () => {
         setWardLong(ward[0].WARDLONGITUDE);
         setGoogleMapLoad(true)
       }
-      const sasNum = NCLtable1Item.PUID !== null ? NCLtable1Item.PUID || 0 : table1Item.PUID ? table1Item.PUID : 0;
-      const responseSAS = await axiosInstance.get('BBMPCITZAPI/GetTaxDetails?applicationNo=' + sasNum + '&propertycode=' + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + '&P_BOOKS_PROP_APPNO=' + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + '&loginId=crc')
-      const { Table = [] } = responseSAS.data;
-
-      if (Table.length === 0) {
-        toast.error(`${t("No SAS Applications Found")}`);
-      }
-      setSASTableData(Table);
+    
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -192,7 +174,7 @@ const AddressDetails = () => {
       return <ErrorPage errorMessage={error} />;
     }
     setLoading(false);
-  }, [t]);
+  }, []);
 
   useEffect(() => {
     fetchData();
@@ -210,15 +192,7 @@ const AddressDetails = () => {
       }
       return
     }
-    if (name === "verifySASNUM") {
-      if (/^\d{0,10}$/.test(value)) {
-        setFormData(prevFormData => ({
-          ...prevFormData,
-          [name]: value
-        }));
-      }
-      return
-    }
+   
     setFormData({
       ...formData,
       [name]: value
@@ -356,26 +330,8 @@ const AddressDetails = () => {
         toast.error(`${t("Please Select the Property Type")}`)
         return
       }
-      if(formData.verifySASNUM.length === 0){
-        toast.error(`${t("provideSasAppNumber")}`);
-        return
-      }
-      const response = await axiosInstance.get(
-        'BBMPCITZAPI/GetTaxDetails', {
-        params: {
-          applicationNo: formData.verifySASNUM,
-          propertycode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
-          P_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')),
-          loginId: 'crc'
-        }
-      }
-      );
-
-      const { Table = [] } = response.data;
-      if (Table.length === 0) {
-        toast.error(`${t("No SAS Applications Found")}`);
-        return
-      }
+     
+      
      
        await CopyBookData();
       
@@ -384,23 +340,23 @@ const AddressDetails = () => {
       setLoading(true);
       const data = {
         propertyCode: formData.propertyNumber,
-        categoryId: formData.propertyType,
+     
         streetid: formData.streetid,
         streetName:formData.nclStreetName,
         doorno: formData.DoorPlotNo,
-        buildingname: formData.buildingname,
+        buildingname: formData.buildingname,   //sp change
         areaorlocality: formData.areaorlocality,
         landmark: formData.NearestLandmark,
         pincode: formData.pincode,
         propertyphoto: propertyphoto2.length > 0 ? propertyphoto2 : propertyPhoto,
-        puidNo: formData.verifySASNUM,
+       
         loginId: "crc",
         P_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')),
         latitude: formData.lat1.toString(),
         longitude: formData.long1.toString()
       };
       try {
-        await axiosInstance.post('BBMPCITZAPI/GET_PROPERTY_CTZ_PROPERTY', data
+        await axiosInstance.post('BBMPCITZAPI/INS_UPD_NCL_PROPERTY_ADDRESS_TEMP2', data
         )
         setSelectedFile(null);
         
@@ -495,61 +451,7 @@ const AddressDetails = () => {
 
   };
 
-  const handleSASClick = async () => {
-
-    if (!formData.verifySASNUM || formData.verifySASNUM.length === 0) {
-      toast.error(`${t("provideSasAppNumber")}`);
-      return;
-    }
-
-    if (!handleSASClicks) {
-      sethandleSASClicks(true);
-
-
-      try {
-        const copy = await CopyBookData();
-        if (copy) {
-          //   toast.success("Copy From BBMP Books Data Was Successful.");
-        } else {
-          toast.error(`${t("copyFailed")}`);
-          sethandleSASClicks(false);
-          setLoading(false)
-          return;
-        }
-
-        const response = await axiosInstance.get(
-          'BBMPCITZAPI/GetTaxDetails', {
-          params: {
-            applicationNo: formData.verifySASNUM,
-            propertycode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
-            P_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')),
-            loginId: 'crc'
-          }
-        }
-        );
-
-        const { Table = [] } = response.data;
-        if (Table.length === 0) {
-          toast.error(`${t("No SAS Applications Found")}`);
-          return
-        }
-        setSASTableData(Table);
-        toast.success("Details Fetched")
-      } catch (error) {
-        toast.error(`${t("errorFetchingSasDetails")}`);
-      } finally {
-        sethandleSASClicks(false);
-
-      }
-    } else {
-      setLoading(false)
-      sethandleSASClicks(false);
-      setSASTableData([]);
-    }
-  };
-const handleSASDelete = () => {
-  setSASTableData([])
-}
+  
 
 
 
@@ -584,345 +486,7 @@ const handleSASDelete = () => {
       <Box sx={{ backgroundColor: '#f0f0f0', padding: 4, borderRadius: 2, mt: 8 }}>
         <ToastContainer />
 
-        <Typography
-          variant="h3"
-          align="center"
-          gutterBottom
-          sx={{
-            fontWeight: 'bold',
-            fontFamily: "sans-serif",
-            marginBottom: 3,
-            color: '#',
-            fontSize: {
-              xs: '1.5rem',
-              sm: '2rem',
-              md: '2.5rem',
-            }
-          }}
-        >
-          {t("DataAvailableInBBMPBooks")}
-        </Typography>
-        <Grid container spacing={4}>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              variant="filled"
-              label={t("PropertyEID")}
-              name="propertyEID"
-              value={formData.propertyEID}
-              onChange={handleChange}
-              InputProps={{
-                readOnly: true,
-                endAdornment: (
-                  <Tooltip title={t("propertyEIDInfo")}>
-                    <IconButton color="primary">
-                      <InfoIcon />
-                    </IconButton>
-                  </Tooltip>
-                )
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              variant="filled"
-              InputProps={{
-                readOnly: true,
-                endAdornment: (
-                  <Tooltip title={t("cityInfo")}>
-                    <IconButton color="primary">
-                      <InfoIcon />
-                    </IconButton>
-                  </Tooltip>
-                )
-              }}
-              label={t("city")}
-              name="ulbname"
-              value={formData.ulbname}
-              onChange={handleChange}
-
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              variant="filled"
-              InputProps={{
-                readOnly: true,
-                endAdornment: (
-                  <Tooltip title={t("districtInfo")}>
-                    <IconButton color="primary">
-                      <InfoIcon />
-                    </IconButton>
-                  </Tooltip>
-                )
-              }}
-              label={t("district")}
-              name="district"
-              value={formData.district}
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              variant="filled"
-              label={t("wardNumber")}
-              name="wardNumber"
-              value={formData.wardNumber + " ," + formData.wardName}
-              onChange={handleChange}
-              InputProps={{
-                readOnly: true,
-                endAdornment: (
-                  <Tooltip title={t("wardNumberInfo")}>
-                    <IconButton color="primary">
-                      <InfoIcon />
-                    </IconButton>
-                  </Tooltip>
-                )
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              variant="filled"
-              label={t("Old Ward No")}
-              name="BBDOldWardNumber"
-              value={formData.BBDOldWardNumber}
-              onChange={handleChange}
-              InputProps={{
-                readOnly: true,
-                endAdornment: (
-                  <Tooltip title={t("propertyNumberInfo")}>
-                    <IconButton color="primary">
-                      <InfoIcon />
-                    </IconButton>
-                  </Tooltip>
-                )
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              variant="filled"
-              label={t("Property Old Number")}
-              name="BBDOldPropertyNumber"
-              value={formData.BBDOldPropertyNumber}
-              onChange={handleChange}
-              InputProps={{
-                readOnly: true,
-                endAdornment: (
-                  <Tooltip title={t("ownerNameInfo")}>
-                    <IconButton color="primary">
-                      <InfoIcon />
-                    </IconButton>
-                  </Tooltip>
-                )
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              variant="filled"
-              label={t("SAS Base Application No")}
-              name="BBDSasApplicationNumber"
-              value={formData.BBDSasApplicationNumber}
-              onChange={handleChange}
-              InputProps={{
-                readOnly: true,
-                endAdornment: (
-                  <Tooltip title={t("ownerNameInfo")}>
-                    <IconButton color="primary">
-                      <InfoIcon />
-                    </IconButton>
-                  </Tooltip>
-                )
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              variant="filled"
-              label={t("Property Address")}
-              name="BBDAddress"
-              value={formData.BBDAddress}
-              onChange={handleChange}
-              InputProps={{
-                readOnly: true,
-                endAdornment: (
-                  <Tooltip title={t("ownerNameInfo")}>
-                    <IconButton color="primary">
-                      <InfoIcon />
-                    </IconButton>
-                  </Tooltip>
-                )
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <FormControl fullWidth  variant="filled" >
-              <InputLabel>
-                {t('Property Type')}
-              </InputLabel>
-              <Select
-                name="BBDPropertyType"
-                value={formData.BBDPropertyType}
-                onChange={handleChange}
-                inputProps={{ readOnly: true }}
-              >
-                <MenuItem value="0">Select</MenuItem>
-                <MenuItem value="1">Vacant Site</MenuItem>
-                <MenuItem value="2">Site with Building</MenuItem>
-                <MenuItem value="3">Multistorey Flats</MenuItem>
-              </Select>
-
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              variant="filled"
-              label={t("Property Category(A/B)")}
-              name="BBDPropertyCategory"
-              value={formData.BBDPropertyCategory}
-              onChange={handleChange}
-              InputProps={{
-                readOnly: true,
-                endAdornment: (
-                  <Tooltip title={t("ownerNameInfo")}>
-                    <IconButton color="primary">
-                      <InfoIcon />
-                    </IconButton>
-                  </Tooltip>
-                )
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              variant="filled"
-              label={t("streetName")}
-              name="streetName"
-              value={formData.streetName}
-              onChange={handleChange}
-              InputProps={{
-                readOnly: true,
-                endAdornment: (
-                  <Tooltip title={t("streetNameInfo")}>
-                    <IconButton color="primary">
-                      <InfoIcon />
-                    </IconButton>
-                  </Tooltip>
-                )
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={12}>
-            <FormControl fullWidth  >
-              <InputLabel>
-                <LabelWithAsterisk text={t('SelectthePropertyType')} />
-              </InputLabel>
-              <Select
-                name="propertyType"
-                value={formData.propertyType}
-                onChange={handleChange}
-                inputProps={{ readOnly: !isEditable }}
-
-                sx={{ backgroundColor: !isEditable ? '' : "#ffff" }}
-              >
-                <MenuItem value="0">Select</MenuItem>
-                <MenuItem value="1">Vacant Site</MenuItem>
-                <MenuItem value="2">Site with Building</MenuItem>
-                <MenuItem value="3">Multistorey Flats</MenuItem>
-              </Select>
-
-            </FormControl>
-
-          </Grid>
-         
-                <Grid item xs={12} sm={6}>
-
-                  <TextField
-                    fullWidth
-                    variant={isEditable ? "outlined" : "filled"}
-                    label={<LabelWithAsterisk text={t('SASBaseApplicationNo')} />}
-                    name="verifySASNUM"
-                    value={formData.verifySASNUM}
-                    onChange={handleChange}
-                   
-             
-                    InputProps={{
-                      readOnly: !isEditable,
-                      style: { backgroundColor: !isEditable ? '' : "#ffff" },
-                      endAdornment: (
-                        <Tooltip title={t("streetNameInfo")}>
-                          <IconButton color="primary">
-                            <InfoIcon />
-                          </IconButton>
-                        </Tooltip>
-                      )
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Button color='success'
-                    variant={"contained"}
-                    disabled={!isEditable}
-                    onClick={handleSASClick}>
-                    {t("VerifySASApplicationNumber")}
-                  </Button>
-                </Grid>
-
-
-             </Grid>
-
-              <TableContainer component={Paper} sx={{ mt: 3 ,alignItems:"center"}}>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("ApplicationNumber")}</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>PID</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("KHATHASURVEYNO")}</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("OwnerName")}</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("PropertyAddress")}</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("PropertyNature")}</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("SiteArea")}</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("BuiltUpArea")}</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}></TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {SAStableData.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={12} align="center">
-                          {t("Nodataavailable")}
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      SAStableData.map((row,index) => (
-                        <TableRow key={index}>
-                          <TableCell>{row.APPLICATIONNUMBER}</TableCell>
-                          <TableCell>{row.PID}</TableCell>
-                          <TableCell>{row.KHATHA_SURVEY_NO}</TableCell>
-                          <TableCell>{row.OWNERNAME}</TableCell>
-                          <TableCell>{row.PROPERTYADDRESS}</TableCell>
-                          <TableCell>{row.NATUREOFPROPERTY}</TableCell>
-                          <TableCell>{row.SITEAREA}</TableCell>
-                          <TableCell>{row.BUILTUPAREA}</TableCell>
-                          <TableCell><Button variant='outlined' color='error' onClick={handleSASDelete} disabled={!isEditable}>Delete</Button></TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+        
       <br></br>
      
         <Typography
@@ -1261,14 +825,7 @@ const handleSASDelete = () => {
                       {t("Edit")}
                     </Button>
                   )}
-                  {/* <Button variant="contained" color="success" type="submit"  onClick={() => setFieldValue('save')}>
-                    {t("save")}
-                  </Button>
-
-                  <Button variant="contained" color="primary"  type="submit"
-        onClick={() => setFieldValue('next')} >
-                    Next
-                  </Button> */}
+                
                   <Button variant="contained" color="success" type="submit" >
                     {t("save")}
                   </Button>
@@ -1282,4 +839,4 @@ const handleSASDelete = () => {
   );
 };
 
-export default AddressDetails;
+export default LocationDetails;

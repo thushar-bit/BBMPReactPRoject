@@ -43,7 +43,7 @@ const BBDDraftGenerated = () => {
 
   const handleNavigation = async (row) => {
     //  navigate('/AddressDetails')
-debugger
+
 
 try {
       sessionStorage.setItem('DraftZoneId', JSON.stringify(row.ZONEID));

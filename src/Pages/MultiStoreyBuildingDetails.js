@@ -132,7 +132,7 @@ const MultiStoreyBuildingDetails = () => {
       propertytype: 2,
       FloorNumber: formData.floornumber
     };
-    debugger
+    
     const queryString = new URLSearchParams(params1).toString();
     const BescomResponse = await axiosInstance.post(`Bescom/GetBescomData?${queryString}`);
     if(BescomResponse.data === "No Bescom Details Found"){
@@ -319,7 +319,7 @@ if(isInitialEditable){
     
     if(BescomTable.length > 0)
 {
-    navigate('/OwnerDetails');
+    navigate('/ClassificationDocumentUploadPage');
 }else {
   toast.error("Bescom Needs to Be Verified")
   return

@@ -55,7 +55,7 @@ const BBDDraft = () => {
 
   const handleChange = async (e) => {
     try {
-debugger
+
       const { name, value } = e.target;
       if (name === "ZoneName") {
         let response = await axiosInstance.get("BBMPCITZAPI/GetMasterWard?ZoneId=" + value)
@@ -138,7 +138,7 @@ debugger
       sessionStorage.setItem('SETPROPERYID', row.PROPERTYID);
       
 
-        navigate('/AddressDetails')
+        navigate('/TaxDetails')
     
     }
     else {
@@ -149,7 +149,7 @@ debugger
 
        
        
-          navigate('/AddressDetails')
+          navigate('/TaxDetails')
      
 
       } catch (error) {

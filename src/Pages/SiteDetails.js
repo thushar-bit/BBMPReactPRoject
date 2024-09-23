@@ -122,7 +122,7 @@ if(isInitialEditable){
   }
   const handleNavigation = () => {
 
-    navigate('/OwnerDetails')
+    navigate('/ClassificationDocumentUploadPage')
 
   }
   const fetchData = React.useCallback(async () => {

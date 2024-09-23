@@ -34,6 +34,8 @@ const AreaDimension = () => {
     BookplotAreaSqMt: "",
     builtUpAreaSqFt: "",
     builtUpAreaSqMt: "",
+    KaveriAreaSQFT:"",
+    KaveriAreaSQMT:"",
     modify: 'no',
     modifycheckbandi: 'no',
     oddSite: '',
@@ -99,7 +101,10 @@ const AreaDimension = () => {
     return { areaFt, areaMt };
 
   };
-
+const handleAddressEdit = () => {
+  setIsEditable(true);
+  setIsEditablecheckbandi(true);
+}
   const handleChange = (e) => {
 
     const { name, value } = e.target;
@@ -141,21 +146,62 @@ const AreaDimension = () => {
         //  sqMt: areaMt.toString()
       }));
     }
-    if (name === 'modify' && value === 'yes') {
-      setIsEditable(true);
-    } else if (name === 'modify' && value === 'no') {
-      setIsEditable(false);
-    }
-    if (name === 'modifycheckbandi' && value === 'yes') {
-      setIsEditablecheckbandi(true);
-    } else if (name === 'modifycheckbandi' && value === 'no') {
-      setIsEditablecheckbandi(false);
-    }
+   
     setFormData({
       ...formData,
       [name]: value
     });
   };
+  const validateFormData = React.useCallback(async (formData) => {
+    
+    const errors = {};
+
+    const isInvalid = (value) => value === '' || value === '0';
+    if (formData.propertyType !== 3) {
+      if (isInvalid(formData.east) || isInvalid(formData.west) || isInvalid(formData.north) || isInvalid(formData.south)) {
+        errors.checkbandhi = `${t("Please ensure all Checkbandhi values are Entered")}`;
+      }
+    }
+    if (formData.propertyType === 3) {
+      if (isInvalid(formData.ApartCarpetArea) || isInvalid(formData.ApartAddtionalArea) || isInvalid(formData.ApartSuperBuiltArea)) {
+        errors.apartmentValues = `${t("Please ensure all Apartment values are Entered and More than 0")}`
+      }
+    }
+
+    if (formData.oddSite === "Y" && formData.propertyType !== 3 ) {
+      if(formData.noofSides.length === 0){
+        errors.noofSides = "Please Enter the No of Side";
+        
+      }
+      if(formData.ActualSqFt !== formData.sqFt && formData.noofSides){
+        const differencePercentage = (Math.abs(formData.ActualSqFt - formData.sqFt) / formData.sqFt) * 100;
+        if (differencePercentage > 30) {
+          errors.acutalPercentageDifference = "The Actual SqFt value differs by more than 30% from the calculated SqFt value."
+        }
+      }
+
+      for (let i = 1; i <= formData.noofSides; i++) {
+        if (isInvalid(formData[`cal${i}`])) {
+          if (i === 1) {
+            errors[`cal${i}`] = `Please ensure Road Side Length is Entered and More than 0.`;
+          } else {
+            errors[`cal${i}`] = `Please ensure Length${i} value is Entered and More than 0.`;
+
+          }
+        }
+      }
+    } else {
+      // Validate ns and ew
+      if (isInvalid(formData.ns)) {
+        errors.nsEw = 'Please ensure N-S (ft) values are Entered and More than 0.';
+      }
+      else if (isInvalid(formData.ew)) {
+        errors.nsEw = 'Please ensure E-W (ft) values are Entered and More than 0.';
+      }
+    }
+
+    return errors;
+  }, [t]);
   const fetchData = React.useCallback(async () => {
 
     try {
@@ -212,7 +258,51 @@ const AreaDimension = () => {
         noofSides: NCLTable3Data.length > 0 ? NCLTable3Data[0].ODDSITENOOFSIDES || 4 : Table3Data.length > 0 ? Table3Data[0].ODDSITENOOFSIDES || 4 : 4,
         oddSite: NCLTable3Data.length > 0 ? NCLTable3Data[0].ODDSITE || '' : Table3Data.length > 0 ? Table3Data[0].ODDSITE || '' : '',
       }));
+      const updatedFormData = {
+        propertyType: NCLTable1Data.length > 0 ? NCLTable1Data[0].PROPERTYCATEGORYID || "0" : "0",
+        east: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_EAST : "",
+        west: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_WEST || '' : '',
+        north: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_NORTH || '' : '',
+        south: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_SOUTH || '' : '',
+        ns: NCLTable3Data.length > 0 ? NCLTable3Data[0].NORTHSOUTH || '' : '',
+        ew: NCLTable3Data.length > 0 ? NCLTable3Data[0].EASTWEST || '' : '',
+        plotAreaSqFt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREAFT || '' : '',
+        plotAreaSqMt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREA || '' : '',
+        ActualSqFt:NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREAREGFT || '' : '',
+        ActualSqMt:NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREAREGMT || '' : '',
+        Bookeast: Table1Data.length > 0 ? Table1Data.CHECKBANDI_EAST || '' : '',
+        Bookwest: Table1Data.length > 0 ? Table1Data.CHECKBANDI_WEST || '' : '',
+        Booknorth: Table1Data.length > 0 ? Table1Data.CHECKBANDI_NORTH || '' : '',
+        Booksouth: Table1Data.length > 0 ? Table1Data.CHECKBANDI_SOUTH || '' : '',
+        Bookns: Table3Data.length > 0 ? Table3Data[0].NORTHSOUTH || '' : '',
+        Bookew: Table3Data.length > 0 ? Table3Data[0].EASTWEST || '' : '',
+        BookplotAreaSqFt: Table2Data.length > 0 ? Table2Data[0].SITEAREAFT || '' : '',
+        BookplotAreaSqMt: Table2Data.length > 0 ? Table2Data[0].SITEAREA || '' : '',
+        builtUpAreaSqFt: NCLTable2Data.length > 0 ? NCLTable2Data[0].BUILDINGAREAFT || '' : Table2Data.length > 0 ? Table2Data[0].BUILDINGAREAFT || '' : '',
+        builtUpAreaSqMt: NCLTable2Data.length > 0 ? NCLTable2Data[0].BUILDINGAREA || '' : Table2Data.length > 0 ? Table2Data[0].BUILDINGAREA || '' : '',
+        ApartCarpetArea: NCLTable4Data.length > 0 ? NCLTable4Data[0].CARPETAREA || '' : Table4Data.length > 0 ? Table4Data[0].CARPETAREA || '' : '',
+        ApartAddtionalArea: NCLTable4Data.length > 0 ? NCLTable4Data[0].ADDITIONALAREA || '' : Table4Data.length > 0 ? Table4Data[0].ADDITIONALAREA || '' : '',
+        ApartSuperBuiltArea: NCLTable4Data.length > 0 ? NCLTable4Data[0].SUPERBUILTUPAREA || 0 : Table4Data.length > 0 ? Table4Data[0].SUPERBUILTUPAREA || '' : '',
+        cal1: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE1FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
+        cal2: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE2FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
+        cal3: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE3FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
+        cal4: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE4FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
+        cal5: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE1FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
+        cal6: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE2FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
+        cal7: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE3FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
+        cal8: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE4FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
+        cal9: NCLTable3Data.length > 0 ? NCLTable3Data[0].SIDE9 || '' : Table3Data.length > 0 ? Table3Data[0].SIDE9 || '' : '',
+        cal10: NCLTable3Data.length > 0 ? NCLTable3Data[0].SIDE10 || '' : Table3Data.length > 0 ? Table3Data[0].SIDE10 || '' : '',
+        noofSides: NCLTable3Data.length > 0 ? NCLTable3Data[0].ODDSITENOOFSIDES || 4 : Table3Data.length > 0 ? Table3Data[0].ODDSITENOOFSIDES || 4 : 4,
+        oddSite: NCLTable3Data.length > 0 ? NCLTable3Data[0].ODDSITE || '' : Table3Data.length > 0 ? Table3Data[0].ODDSITE || '' : '',
+      }
+      console.log(updatedFormData)
+      const validationErrors = await validateFormData(updatedFormData);
 
+      if (Object.keys(validationErrors).length > 0) {
+        setIsEditable(true)
+        setIsEditablecheckbandi(true)
+      }
       if (NCLTable3Data.length > 0) {
         if (NCLTable3Data[0].ODDSITE === "Y") {
           setIsOddSiteEnabled(true)
@@ -231,11 +321,15 @@ const AreaDimension = () => {
           setIsOddSiteEnabled(false)
         }
       }
+      debugger
+     
     }
     catch (error) {
       navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
     }
-  }, [navigate]);
+  }, [navigate,validateFormData]);
+ 
+  
   useEffect(() => {
     fetchData();
   }, [fetchData]);
@@ -271,60 +365,13 @@ const AreaDimension = () => {
       handleCalulationNCL(formData);
     }
   }, [handleCalulationNCL,formData, isOddSiteEnabled]);
-  const validateFormData = (formData) => {
-    
-    const errors = {};
-
-    const isInvalid = (value) => value === '' || value === '0';
-    if (formData.propertyType !== 3) {
-      if (isInvalid(formData.east) || isInvalid(formData.west) || isInvalid(formData.north) || isInvalid(formData.south)) {
-        errors.checkbandhi = `${t("Please ensure all Checkbandhi values are Entered")}`;
-      }
-    }
-    if (formData.propertyType === 3) {
-      if (isInvalid(formData.ApartCarpetArea) || isInvalid(formData.ApartAddtionalArea) || isInvalid(formData.ApartSuperBuiltArea)) {
-        errors.apartmentValues = `${t("Please ensure all Apartment values are Entered and More than 0")}`
-      }
-    }
-
-    if (formData.oddSite === "Y" && formData.propertyType !== 3 ) {
-      if(formData.noofSides.length === 0){
-        errors.noofSides = "Please Enter the No of Side";
-        
-      }
-      if(formData.ActualSqFt !== formData.sqFt && formData.noofSides){
-        const differencePercentage = (Math.abs(formData.ActualSqFt - formData.sqFt) / formData.sqFt) * 100;
-        if (differencePercentage > 30) {
-          errors.acutalPercentageDifference = "The Actual SqFt value differs by more than 30% from the calculated SqFt value."
-        }
-      }
-
-      for (let i = 1; i <= formData.noofSides; i++) {
-        if (isInvalid(formData[`cal${i}`])) {
-          if (i === 1) {
-            errors[`cal${i}`] = `Please ensure Road Side Length is Entered and More than 0.`;
-          } else {
-            errors[`cal${i}`] = `Please ensure Length${i} value is Entered and More than 0.`;
-
-          }
-        }
-      }
-    } else {
-      // Validate ns and ew
-      if (isInvalid(formData.ns)) {
-        errors.nsEw = 'Please ensure N-S (ft) values are Entered and More than 0.';
-      }
-      else if (isInvalid(formData.ew)) {
-        errors.nsEw = 'Please ensure E-W (ft) values are Entered and More than 0.';
-      }
-    }
-
-    return errors;
-  };
+  
+  
   const handleSubmit = async (e) => {
+    debugger
     e.preventDefault();
     
-    const validationErrors = validateFormData(formData);
+    const validationErrors = await validateFormData(formData);
 
     if (Object.keys(validationErrors).length > 0) {
       const errorMessages = Object.values(validationErrors).join('\n');
@@ -382,7 +429,12 @@ const AreaDimension = () => {
           toast.error("SqFt and SqMt cannot be Invalid")
           return
         }
-        
+        if(formData.KaveriAreaSQFT !== formData.ActualSqFt){
+          toast.error("The Calculated Area is not matching the Deed Area .Please Meet ARO for Correction")
+        }
+      }
+      if(formData.KaveriAreaSQFT !== formData.plotAreaSqFt){
+        toast.error("The Calculated Area is not matching the Deed Area .Please Meet ARO for Correction")
       }
       const data = {
         propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
@@ -500,12 +552,12 @@ const AreaDimension = () => {
     }, 500);
   };
   const back = () => {
-    navigate('/AddressDetails')
+    navigate('/LocationDetails')
   }
-  const handleNavigation = () => {
+  const handleNavigation = async () => {
     
 
-    const validationErrors = validateFormData(formData);
+    const validationErrors = await validateFormData(formData);
     if (Object.keys(validationErrors).length > 0) {
       const errorMessages = Object.values(validationErrors).join('\n');
       toast.error(errorMessages);
@@ -523,7 +575,7 @@ const AreaDimension = () => {
 
       toast.error(`${t("propertyTypeNotFound")}`);
       setTimeout(() => {
-        navigate("/AddressDetails")
+        navigate("/TaxDetails")
       }, 500);
 
     }
@@ -654,12 +706,7 @@ const AreaDimension = () => {
               <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
                 {t("ScheduleOfTheProperty")}
               </Typography>
-              <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
-                <RadioGroup row name="modifycheckbandi" value={formData.modifycheckbandi} onChange={handleChange}>
-                  <FormControlLabel value="yes" control={<Radio />} label={t("Modify")} />
-                  <FormControlLabel value="no" control={<Radio />} label={t("NoModifications")} />
-                </RadioGroup>
-              </FormControl>
+             
               <Typography
                 variant="h6"
                 align="left"
@@ -845,12 +892,7 @@ const AreaDimension = () => {
               <Typography variant="h6" sx={{ fontWeight: 'bold', marginY: 2 }}>
                 {t("Additional Details")}
               </Typography>
-              <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
-                <RadioGroup row name="modify" value={formData.modify} onChange={handleChange}>
-                  <FormControlLabel value="yes" control={<Radio />} label={t("Modify")} />
-                  <FormControlLabel value="no" control={<Radio />} label={t("NoModifications")} />
-                </RadioGroup>
-              </FormControl>
+             
               <Typography variant="h6" sx={{ fontWeight: 'bold', marginY: 2 }}>
                 {t("OddSite")}
               </Typography>
@@ -860,6 +902,63 @@ const AreaDimension = () => {
                   <FormControlLabel value="N" control={<Radio disabled={!isEditable} />} label={t("No")} />
                 </RadioGroup>
               </FormControl>
+              <Typography
+                variant="h6"
+                align="left"
+                gutterBottom
+                sx={{
+                  fontWeight: 'bold',
+                  marginBottom: 3,
+                }}
+              >
+                {t("Area as per Deed Document")}
+                
+              </Typography>
+              <Grid container spacing={3}>
+              <Grid item xs={6} sm={3}>
+              <TextField
+                      fullWidth
+                      label="Sq (ft)"
+                      name="KaveriAreaSQFT"
+                      value={formData.KaveriAreaSQFT}
+                      onChange={handleChange}
+                      type="number"
+                      variant={"filled"}
+                      InputProps={{
+                        readOnly: true,
+                        endAdornment: (
+                          <Tooltip title="Converted from Sq.ft">
+                            <IconButton>
+                              <InfoIcon />
+                            </IconButton>
+                          </Tooltip>
+                        )
+                      }}
+                    />
+                    </Grid>
+                      <Grid item xs={6} sm={3}>
+                     <TextField
+                      fullWidth
+                      label="Sq (mt)"
+                      name="KaveriAreaSQMT"
+                      value={formData.KaveriAreaSQMT}
+                      onChange={handleChange}
+                      type="number"
+                      variant={"filled"}
+                      InputProps={{
+                        readOnly: true,
+                        endAdornment: (
+                          <Tooltip title="Converted from Sq.ft">
+                            <IconButton>
+                              <InfoIcon />
+                            </IconButton>
+                          </Tooltip>
+                        )
+                      }}
+                    />
+                    </Grid>
+                    </Grid>
+                    <br></br>
               <Typography variant="h6" sx={{ fontWeight: 'bold', }}>
               </Typography>
               {(isOddSiteEnabled === false) && (
@@ -1079,12 +1178,7 @@ const AreaDimension = () => {
               <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
                 {t("ScheduleOfTheProperty")}
               </Typography>
-              <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
-                <RadioGroup row name="modifycheckbandi" value={formData.modifycheckbandi} onChange={handleChange}>
-                  <FormControlLabel value="yes" control={<Radio />} label={t("Modify")} />
-                  <FormControlLabel value="no" control={<Radio />} label={t("NoModifications")} />
-                </RadioGroup>
-              </FormControl>
+             
               <Typography
                 variant="h6"
                 align="left"
@@ -1284,12 +1378,7 @@ const AreaDimension = () => {
               <Typography variant="h6" sx={{ fontWeight: 'bold', marginY: 2 }}>
                 {t("Additional Details")}
               </Typography>
-              <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
-                <RadioGroup row name="modify" value={formData.modify} onChange={handleChange}>
-                  <FormControlLabel value="yes" control={<Radio />} label={t("Modify")} />
-                  <FormControlLabel value="no" control={<Radio />} label={t("NoModifications")} />
-                </RadioGroup>
-              </FormControl>
+             
               <Typography variant="h6" sx={{ fontWeight: 'bold', marginY: 2 }}>
                 {t("OddSite")}
               </Typography>
@@ -1301,6 +1390,62 @@ const AreaDimension = () => {
               </FormControl>
               <Typography variant="h6" sx={{ fontWeight: 'bold', }}>
               </Typography>
+              <Typography
+                variant="h6"
+                align="left"
+                gutterBottom
+                sx={{
+                  fontWeight: 'bold',
+                  marginBottom: 3,
+                }}
+              >
+                {t("Area as per Deed Document")}
+              </Typography>
+              <Grid container spacing={3}>
+              <Grid item xs={6} sm={3}>
+              <TextField
+                      fullWidth
+                      label="Sq (ft)"
+                      name="Bookns"
+                      value={formData.KaveriAreaSQFT}
+                      onChange={handleChange}
+                      type="number"
+                      variant={"filled"}
+                      InputProps={{
+                        readOnly: true,
+                        endAdornment: (
+                          <Tooltip title="Converted from Sq.ft">
+                            <IconButton>
+                              <InfoIcon />
+                            </IconButton>
+                          </Tooltip>
+                        )
+                      }}
+                    />
+                    </Grid>
+                      <Grid item xs={6} sm={3}>
+                     <TextField
+                      fullWidth
+                      label="Sq (mt)"
+                      name="Bookns"
+                      value={formData.KaveriAreaSQMT}
+                      onChange={handleChange}
+                      type="number"
+                      variant={"filled"}
+                      InputProps={{
+                        readOnly: true,
+                        endAdornment: (
+                          <Tooltip title="Converted from Sq.ft">
+                            <IconButton>
+                              <InfoIcon />
+                            </IconButton>
+                          </Tooltip>
+                        )
+                      }}
+                    />
+                    </Grid>
+                    </Grid>
+                    <br></br>
               {(isOddSiteEnabled === false) && (
                 <>
               <Typography
@@ -1720,6 +1865,11 @@ const AreaDimension = () => {
             <Button variant="contained" color="primary" onClick={back}>
               {t("Previous")}
             </Button>
+            {!isEditable && !isEditablecheckbandhi && (
+                    <Button variant="contained" color="primary" onClick={handleAddressEdit}>
+                      {t("Edit")}
+                    </Button>
+                  )}
             <Button variant="contained" color="success" type="submit">
               {t("save")}
             </Button>
