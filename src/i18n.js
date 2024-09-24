@@ -89,7 +89,7 @@ const resources = {
        
         "AssessmentNo":"Assessment No",
         "SASApplicationNo":"SAS ApplicationNo",
-        "OpenProperty": "Open Property",
+        "OpenProperty": "Submit Information for Final EKhata",
         "ClickHere":"Click Here",
         "Reset":"Reset",
 

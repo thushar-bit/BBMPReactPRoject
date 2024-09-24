@@ -19,13 +19,13 @@ const SiteDetails = () => {
     yearOfConstruction: ""
   });
   const { t } = useTranslation();
-  const validationSchema = Yup.object().shape({
+  const validationSchema = React.useMemo(() => Yup.object().shape({
     features: Yup.string().required(`${t('usageCategoryRequired')}`).notOneOf(['0'], `${t('UsageCategoryInvalid')}`),
     Typeofuse: Yup.string().required(`${t('typeOfUseRequired')}`).notOneOf(['0'], `${t('typeOfUseRequiredInvalid')}`),
     yearOfConstruction: Yup.string()
       .required(`${t('yearUsageRequired')}`)
 
-  });
+    }), [t]);
   const navigate = useNavigate();
   const [tablesdata2, setTablesData2] = useState([]);
   const [tablesdata3, setTablesData3] = useState([]);
@@ -150,12 +150,20 @@ if(isInitialEditable){
           }
         }
         if (table2Item) {
-          setFormData((prevFormData) => ({
-            ...prevFormData,
+          
+          const updatedFormData = {
             features: table2Item.FEATUREHEADID || "",
             Typeofuse: table2Item.FEATUREID || "",
             yearOfConstruction: table2Item.BUILTYEAR || '',
-          }));
+          }
+          setFormData(updatedFormData);
+      debugger
+      const isValid =await  validationSchema.isValid(updatedFormData);
+      if(isValid){
+        setInitialEditable(false);
+      }else{
+        setInitialEditable(true);
+      }
         }
       }
       setLoading(false)
@@ -166,7 +174,7 @@ if(isInitialEditable){
       }, 500);
     }
 
-  }, [navigate]);
+  }, [navigate,validationSchema]);
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault(); 

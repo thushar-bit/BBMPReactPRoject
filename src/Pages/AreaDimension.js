@@ -55,8 +55,6 @@ const AreaDimension = () => {
     cal10: "",
     sqFt: "",
     sqMt: "",
-    ActualSqFt:"",
-    ActualSqMt:""
   });
   const { t } = useTranslation();
   const [isEditable, setIsEditable] = useState(false);
@@ -124,10 +122,7 @@ const handleAddressEdit = () => {
         formData.plotAreaSqMt = 0;
       }
     }
-    if(name === "ActualSqFt"){
-      formData.ActualSqMt = value > 0 ? Math.round(value * 0.092903 * 100) / 100 : "Invalid Data";
-
-    }
+   
     if (name.startsWith('cal')) {
 
       const updatedFormData = {
@@ -173,10 +168,10 @@ const handleAddressEdit = () => {
         errors.noofSides = "Please Enter the No of Side";
         
       }
-      if(formData.ActualSqFt !== formData.sqFt && formData.noofSides){
-        const differencePercentage = (Math.abs(formData.ActualSqFt - formData.sqFt) / formData.sqFt) * 100;
+      if(formData.KaveriAreaSQFT !== formData.sqFt && formData.noofSides){
+        const differencePercentage = (Math.abs(formData.KaveriAreaSQFT - formData.sqFt) / formData.sqFt) * 100;
         if (differencePercentage > 30) {
-          errors.acutalPercentageDifference = "The Actual SqFt value differs by more than 30% from the calculated SqFt value."
+          errors.acutalPercentageDifference = "The Deed SqFt value differs by more than 30% from the calculated SqFt value."
         }
       }
 
@@ -197,6 +192,13 @@ const handleAddressEdit = () => {
       }
       else if (isInvalid(formData.ew)) {
         errors.nsEw = 'Please ensure E-W (ft) values are Entered and More than 0.';
+      }
+      debugger
+      if(formData.KaveriAreaSQFT !== formData.plotAreaSqFt){
+        const differencePercentage = (Math.abs(formData.KaveriAreaSQFT - formData.plotAreaSqFt) / formData.plotAreaSqFt) * 100;
+        if (differencePercentage > 30) {
+          errors.acutalPercentageDifference = "The Deed SqFt value differs by more than 30% from the calculated SqFt value."
+        }
       }
     }
 
@@ -219,45 +221,7 @@ const handleAddressEdit = () => {
         Table3: NCLTable3Data = [],
         Table4: NCLTable4Data = []
       } = response2.data;
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        propertyType: NCLTable1Data.length > 0 ? NCLTable1Data[0].PROPERTYCATEGORYID || "0" : "0",
-        east: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_EAST : "",
-        west: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_WEST || '' : '',
-        north: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_NORTH || '' : '',
-        south: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_SOUTH || '' : '',
-        ns: NCLTable3Data.length > 0 ? NCLTable3Data[0].NORTHSOUTH || '' : '',
-        ew: NCLTable3Data.length > 0 ? NCLTable3Data[0].EASTWEST || '' : '',
-        plotAreaSqFt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREAFT || '' : '',
-        plotAreaSqMt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREA || '' : '',
-        ActualSqFt:NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREAREGFT || '' : '',
-        ActualSqMt:NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREAREGMT || '' : '',
-        Bookeast: Table1Data.length > 0 ? Table1Data.CHECKBANDI_EAST || '' : '',
-        Bookwest: Table1Data.length > 0 ? Table1Data.CHECKBANDI_WEST || '' : '',
-        Booknorth: Table1Data.length > 0 ? Table1Data.CHECKBANDI_NORTH || '' : '',
-        Booksouth: Table1Data.length > 0 ? Table1Data.CHECKBANDI_SOUTH || '' : '',
-        Bookns: Table3Data.length > 0 ? Table3Data[0].NORTHSOUTH || '' : '',
-        Bookew: Table3Data.length > 0 ? Table3Data[0].EASTWEST || '' : '',
-        BookplotAreaSqFt: Table2Data.length > 0 ? Table2Data[0].SITEAREAFT || '' : '',
-        BookplotAreaSqMt: Table2Data.length > 0 ? Table2Data[0].SITEAREA || '' : '',
-        builtUpAreaSqFt: NCLTable2Data.length > 0 ? NCLTable2Data[0].BUILDINGAREAFT || '' : Table2Data.length > 0 ? Table2Data[0].BUILDINGAREAFT || '' : '',
-        builtUpAreaSqMt: NCLTable2Data.length > 0 ? NCLTable2Data[0].BUILDINGAREA || '' : Table2Data.length > 0 ? Table2Data[0].BUILDINGAREA || '' : '',
-        ApartCarpetArea: NCLTable4Data.length > 0 ? NCLTable4Data[0].CARPETAREA || '' : Table4Data.length > 0 ? Table4Data[0].CARPETAREA || '' : '',
-        ApartAddtionalArea: NCLTable4Data.length > 0 ? NCLTable4Data[0].ADDITIONALAREA || '' : Table4Data.length > 0 ? Table4Data[0].ADDITIONALAREA || '' : '',
-        ApartSuperBuiltArea: NCLTable4Data.length > 0 ? NCLTable4Data[0].SUPERBUILTUPAREA || 0 : Table4Data.length > 0 ? Table4Data[0].SUPERBUILTUPAREA || '' : '',
-        cal1: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE1FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
-        cal2: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE2FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
-        cal3: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE3FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
-        cal4: NCLTable3Data.length > 0 ? NCLTable3Data[0].EWODDSITE4FT || '' : Table3Data.length > 0 ? Table3Data[0].EWODDSITE1FT || '' : '',
-        cal5: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE1FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
-        cal6: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE2FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
-        cal7: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE3FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
-        cal8: NCLTable3Data.length > 0 ? NCLTable3Data[0].NSODDSITE4FT || '' : Table3Data.length > 0 ? Table3Data[0].NSODDSITE1FT || '' : '',
-        cal9: NCLTable3Data.length > 0 ? NCLTable3Data[0].SIDE9 || '' : Table3Data.length > 0 ? Table3Data[0].SIDE9 || '' : '',
-        cal10: NCLTable3Data.length > 0 ? NCLTable3Data[0].SIDE10 || '' : Table3Data.length > 0 ? Table3Data[0].SIDE10 || '' : '',
-        noofSides: NCLTable3Data.length > 0 ? NCLTable3Data[0].ODDSITENOOFSIDES || 4 : Table3Data.length > 0 ? Table3Data[0].ODDSITENOOFSIDES || 4 : 4,
-        oddSite: NCLTable3Data.length > 0 ? NCLTable3Data[0].ODDSITE || '' : Table3Data.length > 0 ? Table3Data[0].ODDSITE || '' : '',
-      }));
+     
       const updatedFormData = {
         propertyType: NCLTable1Data.length > 0 ? NCLTable1Data[0].PROPERTYCATEGORYID || "0" : "0",
         east: NCLTable1Data.length > 0 ? NCLTable1Data[0].CHECKBANDI_EAST : "",
@@ -268,8 +232,8 @@ const handleAddressEdit = () => {
         ew: NCLTable3Data.length > 0 ? NCLTable3Data[0].EASTWEST || '' : '',
         plotAreaSqFt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREAFT || '' : '',
         plotAreaSqMt: NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREA || '' : '',
-        ActualSqFt:NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREAREGFT || '' : '',
-        ActualSqMt:NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREAREGMT || '' : '',
+        KaveriAreaSQFT:NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREA_KAVERI_FT || '' : '',
+        KaveriAreaSQMT:NCLTable2Data.length > 0 ? NCLTable2Data[0].SITEAREA_KAVERI_MT || '' : '',
         Bookeast: Table1Data.length > 0 ? Table1Data.CHECKBANDI_EAST || '' : '',
         Bookwest: Table1Data.length > 0 ? Table1Data.CHECKBANDI_WEST || '' : '',
         Booknorth: Table1Data.length > 0 ? Table1Data.CHECKBANDI_NORTH || '' : '',
@@ -296,7 +260,8 @@ const handleAddressEdit = () => {
         noofSides: NCLTable3Data.length > 0 ? NCLTable3Data[0].ODDSITENOOFSIDES || 4 : Table3Data.length > 0 ? Table3Data[0].ODDSITENOOFSIDES || 4 : 4,
         oddSite: NCLTable3Data.length > 0 ? NCLTable3Data[0].ODDSITE || '' : Table3Data.length > 0 ? Table3Data[0].ODDSITE || '' : '',
       }
-      console.log(updatedFormData)
+      setFormData(updatedFormData);
+      
       const validationErrors = await validateFormData(updatedFormData);
 
       if (Object.keys(validationErrors).length > 0) {
@@ -429,9 +394,7 @@ const handleAddressEdit = () => {
           toast.error("SqFt and SqMt cannot be Invalid")
           return
         }
-        if(formData.KaveriAreaSQFT !== formData.ActualSqFt){
-          toast.error("The Calculated Area is not matching the Deed Area .Please Meet ARO for Correction")
-        }
+      
       }
       if(formData.KaveriAreaSQFT !== formData.plotAreaSqFt){
         toast.error("The Calculated Area is not matching the Deed Area .Please Meet ARO for Correction")
@@ -455,8 +418,8 @@ const handleAddressEdit = () => {
         nsoddsitE4FT: formData.cal8 || null,
         sidE9: formData.cal9 || null,
         sidE10: formData.cal10 || null,
-        actualSqft:formData.ActualSqFt || null,
-        actualSqMt:formData.ActualSqMt|| null,
+        siteareA_KAVERI_FT:formData.KaveriAreaSQFT || null,
+        siteareA_KAVERI_MT:formData.KaveriAreaSQMT|| null,
         oddSiteSides: formData.noofSides || null,
         loginId: "crc",
         p_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))
@@ -1808,59 +1771,7 @@ const handleAddressEdit = () => {
                 </Grid>
               )}
             </Grid>
-
           )}
-           <Typography>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</Typography>
-           <Typography>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</Typography>
-           <Grid container spacing={3} alignItems="center" justifyContent="center" >
-{isOddSiteEnabled && formData.propertyType !== 3 && formData.noofSides&&(
-  
-                <Grid item>
-                  <Grid container spacing={1} alignItems="center">
-                    <Grid item>
-                      <Typography>Site Area(Area as per document)	(Sq.ft)</Typography>
-                    </Grid>
-                    <Grid item>
-                      <TextField
-                         variant={isEditable ? "outlined" : "filled"}
-                        size="medium"
-                        name="ActualSqFt"
-                        value={formData.ActualSqFt}
-                        onChange={handleChange}
-                        sx={{ width: '300px', borderColor: '#016767' }}
-                        InputProps={{
-                          readOnly: !isEditable,
-                          style: { backgroundColor: !isEditable ? '' : "#ffff" },
-                        }}
-                      />
-                    </Grid>
-                    <Grid item>
-                      <Typography>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</Typography>
-                    </Grid>
-                    <Grid item>
-                    <Typography>(Sq.Mt)</Typography>
-                    </Grid>
-                    <Grid item>
-                      <TextField
-                        variant="filled"
-                        size="medium"
-                        name="ActualSqMt"
-                        value={formData.ActualSqMt}
-                        onChange={handleChange}
-                        InputProps={{
-                          readOnly: true,
-                        }}
-                        sx={{ width: '300px', borderColor: '#016767' }}
-                      />
-                    </Grid>
-                  </Grid>
-                </Grid>
-              )}
-            </Grid>
-
-          
-
-
           <Box display="flex" justifyContent="center" gap={2} mt={3}>
             <Button variant="contained" color="primary" onClick={back}>
               {t("Previous")}

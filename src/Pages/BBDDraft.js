@@ -225,6 +225,7 @@ const BBDDraft = () => {
                 name="ZoneName"
                 value={formData.ZoneName}
                 onChange={handleChange}
+                sx={{ backgroundColor: "#ffff" }}
               >
                 <MenuItem value="">--Select--</MenuItem>
                 {zoneData.map((item) => (
@@ -245,6 +246,7 @@ const BBDDraft = () => {
                 name="WardName"
                 value={formData.WardName}
                 onChange={handleChange}
+                sx={{ backgroundColor: "#ffff" }}
               >
                 <MenuItem value="">--Select--</MenuItem>
                 {WardData.map((item) => (
@@ -263,11 +265,13 @@ const BBDDraft = () => {
               <InputLabel>{t("SearchType")}</InputLabel>
               <Select
                 name="SelectType"
+                sx={{ backgroundColor: "#ffff" }}
+               
                 value={formData.SelectType}
                 onChange={handleChange}
               >
                 <MenuItem value="0">--Select--</MenuItem>
-                <MenuItem value="1">Property Id</MenuItem>
+                <MenuItem value="1">Property EID</MenuItem>
                 <MenuItem value="2">Owner Name</MenuItem>
                 <MenuItem value="3">Assessment No</MenuItem>
                 <MenuItem value="4">Property Address</MenuItem>
@@ -282,7 +286,8 @@ const BBDDraft = () => {
               value={formData.Search}
               onChange={handleChange}
               fullWidth
-              sx={{ marginBottom: 3 }}
+              
+              sx={{ marginBottom: 3,backgroundColor:"#ffff"  }}
             />
           </Grid>
           
@@ -304,12 +309,17 @@ const BBDDraft = () => {
             <TableHead>
               <TableRow>
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Sl No</TableCell>
-                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("PropertyID")}</TableCell>
+                {/* <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("PropertyID")}</TableCell> */}
+                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Property EID</TableCell> 
+                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("OwnerName")}</TableCell>
+                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Download</TableCell>
+                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("OpenProperty")}</TableCell>
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("AssessmentNo")}</TableCell>
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Address")}</TableCell>
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("SASApplicationNo")}</TableCell>
-                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("OwnerName")}</TableCell>
-                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("OpenProperty")}</TableCell>
+           
+               
+                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Remarks</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -326,11 +336,14 @@ const BBDDraft = () => {
                     <TableRow key={index}>
                       <TableCell>{page * rowsPerPage + index + 1}</TableCell>
                       <TableCell>{row.PROPERTYID}</TableCell>
+                      <TableCell>{row.OWNERNAME}</TableCell>
+                      <TableCell><Button color="primary" variant='outlined'>Draft EKatha</Button></TableCell>
+                      <TableCell><Button color="primary" onClick={() => handleNavigation(row)}>{t("ClickHere")}</Button></TableCell>
+                      
                       <TableCell>{row.ASSESMENTNUMBER}</TableCell>
                       <TableCell>{row.ADDRESS}</TableCell>
                       <TableCell>{row.SASAPPLICATIONNO}</TableCell>
-                      <TableCell>{row.OWNERNAME}</TableCell>
-                      <TableCell><Button color="primary" onClick={() => handleNavigation(row)}>{t("ClickHere")}</Button></TableCell>
+                      <TableCell></TableCell>
                     </TableRow>
                   ))
               )}

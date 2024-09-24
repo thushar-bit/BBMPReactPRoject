@@ -60,7 +60,7 @@ const LocationDetails = () => {
     
   });
   const { t } = useTranslation();
-  const validationSchema = Yup.object().shape({
+  const validationSchema = React.useMemo(() =>Yup.object().shape({
     DoorPlotNo: Yup.string().required(`${t("doorPlotNumber")}`).notOneOf(['0'], `${t('doorName')}`),
     areaorlocality: Yup.string().required(`${t('areaLocalityRequired')}`),
     pincode: Yup.string()
@@ -69,7 +69,7 @@ const LocationDetails = () => {
     streetid: Yup.string().required(`${t('streetNameRequired')}`).notOneOf(['0'], `${t('streetNameInvalid')}`),
     lat1: Yup.string().required(`${t('latitudeRequired')}`).notOneOf(['0'], `${t('latitudeInvalid')}`),
     long1: Yup.string().required(`${t('longitudeRequired')}`).notOneOf(['0'], `${t('longitudeInvalid')}`),
-  });
+  }), [t]);
 
   const navigate = useNavigate();
 
@@ -114,9 +114,7 @@ const LocationDetails = () => {
         setPreviewUrl(`data:image1/png;base64,${Table11Item.PROPERTYPHOTO || ""}`);
         setPropertyPhoto(Table11Item.PROPERTYPHOTO || "");
 
-      } else {
-        setIsEditable(true)
-      }
+      } 
       const { Table:MasterTable1 = [] } = response3.data;
       const table1Item = Table1.length > 0 ? Table1[0] : [];
 
@@ -127,13 +125,11 @@ const LocationDetails = () => {
         item.STREETID !== 99999 && item.WARDID === table1Item.WARDID
       );
       setTableData(filteredData);
-
-      setFormData({
+      const updatedFormData = {
         propertyType: NCLtable1Item.PROPERTYCATEGORYID || "0",
         propertyEID: table1Item.PROPERTYID || '',
         address: table1Item.ADDRESS || '',
         district: table1Item.DISTRICTNAME || '',
-        
         wardNumber: table1Item.WARDID || '',
         wardName: table1Item.WARDNAME || "",
         propertyNumber: table1Item.PROPERTYCODE || '',
@@ -149,9 +145,15 @@ const LocationDetails = () => {
         areaorlocality: Table11Item.AREAORLOCALITY || '',
         lat1: table4Item.LATITUDE || "",
         long1: table4Item.LONGITUDE || "",
-        
-      });
-
+      }
+      setFormData(updatedFormData);
+      debugger
+      const isValid =await  validationSchema.isValid(updatedFormData);
+      if(isValid){
+        setIsEditable(false);
+      }else{
+        setIsEditable(true);
+      }
       setGoogleMapLoad(false)
       const GetWardCordinates = await axiosInstance.get("BBMPCITZAPI/GetWardCordinates?wardNumber=" + table1Item.WARDID)
       const { Table: ward = [] } = GetWardCordinates.data;
@@ -174,7 +176,7 @@ const LocationDetails = () => {
       return <ErrorPage errorMessage={error} />;
     }
     setLoading(false);
-  }, []);
+  }, [validationSchema]);
 
   useEffect(() => {
     fetchData();
