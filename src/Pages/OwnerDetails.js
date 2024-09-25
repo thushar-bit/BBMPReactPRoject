@@ -9,6 +9,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import axiosInstance from '../components/Axios';
 import { toast, ToastContainer } from 'react-toastify';
 import LabelWithAsterisk from '../components/LabelWithAsterisk'
+import MaskingValue from '../components/MaskingValue';
 const OwnerDetails = () => {
   const [formData, setFormData] = useState({
     relato: "0",
@@ -513,7 +514,7 @@ const OwnerDetails = () => {
                       <TableCell>{row.OWNERNUMBER}</TableCell>
                       <TableCell>{row.OWNERNAME}</TableCell>
                       <TableCell>{row.IDENTIFIERTYPE} {row.IDENTIFIERNAME}</TableCell>
-                      <TableCell>{row.OWNERADDRESS} {row.MOBILENUMBER}</TableCell>
+                      <TableCell>{row.OWNERADDRESS} {MaskingValue({value:row.MOBILENUMBER,maskingLength:4})}</TableCell>
                       <TableCell>{OwnerEKYCVerfiedExists(row.OWNERNUMBER) ? "Verifed" : row.EKYCSTATUS}</TableCell>
                       <TableCell>{OwnerExists(row.OWNERNUMBER) ? `${t("RETAINED")}` : `${t("DELETED")}`}</TableCell>
                       <TableCell>{OwnerEKYCVerfiedExists(row.OWNERNUMBER) ?
@@ -711,6 +712,7 @@ const OwnerDetails = () => {
 
                             name="MOBILENUMBER"
                             value={formData.MOBILENUMBER || ''}
+                          
                             onChange={handleChange}
                             variant="standard"
                           />
@@ -752,7 +754,7 @@ const OwnerDetails = () => {
                           fullWidth
                           label={< LabelWithAsterisk text={t("MobileNumber")} />}
                           name="MobileNumber"
-                          value={owner.MOBILENUMBER || ''}
+                          value={MaskingValue({value:owner.MOBILENUMBER,maskingLength:4})|| ''}
                           InputProps={{
                             readOnly: true,
                           }}
@@ -853,7 +855,7 @@ const OwnerDetails = () => {
                         <TableCell>{row.OWNERNAME}</TableCell>
                         <TableCell>{row.IDENTIFIERNAME}</TableCell>
                         <TableCell>{row.OWNERADDRESS}</TableCell>
-                        <TableCell>{row.MOBILENUMBER}</TableCell>
+                        <TableCell>{MaskingValue({value:row.MOBILENUMBER,maskingLength:4}) || 'N/A'}</TableCell>
                         <TableCell> <img
                           src={`data:image/png;base64,${row.OWNERPHOTO}`}
                           alt="No Images Found"

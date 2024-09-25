@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   TextField, Button, Grid, Box, Container, Typography, Tooltip, IconButton,
-  FormControl, MenuItem, Select, InputLabel, FormHelperText,
+  FormControl, MenuItem, Select, InputLabel, FormHelperText,FormLabel,RadioGroup,FormControlLabel,Radio,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 } from '@mui/material';
 import GetAppIcon from '@mui/icons-material/GetApp';
@@ -139,15 +139,15 @@ const ClassificationDocumentUploadPage = () => {
   };
 
   const handleChange = async (e) => {
-
+debugger
     const { name, value } = e.target;
     if(name === "DocumentType"){
-      if(value === 26){
+      if(value === "26"){
         setIsEditable(true);
       }else {
         setIsEditable(false);
       }
-      if(value === 243){
+      if(value === "243"){
         setHaveDocument(true)
         setSelectedFile(null)
         setfileExtension([])
@@ -639,32 +639,35 @@ const ClassificationDocumentUploadPage = () => {
                 }
                 <Grid item xs={12} sm={4}></Grid>
                 <Grid item xs={12} sm={4}>
-                  <FormControl
-                    fullWidth
-                    error={touched.DocumentType && !!errors.DocumentType}
-                    sx={{ marginBottom: 3 }}
-                    className={touched.DocumentType && !!errors.DocumentType ? 'shake' : ''}
-                  >
-                    <InputLabel> <LabelWithAsterisk text={t("DocumentType")} /></InputLabel>
-                    <Select
-                      name="DocumentType"
-                      value={formData.DocumentType}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      sx={{ backgroundColor: '#ffff' }}
-                    >
-
-                      <MenuItem value="">--Select--</MenuItem>
-                      {tablesdata2.map((item) => (
-                        <MenuItem key={item.DOCUMENTTYPEID} value={item.DOCUMENTTYPEID}>
-                          {item.DOCUMENTTYPEDESCRIPTION_EN}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                    <FormHelperText>
-                      {touched.DocumentType && errors.DocumentType ? errors.DocumentType : ''}
-                    </FormHelperText>
-                  </FormControl>
+                <FormControl
+    fullWidth
+    error={touched.DocumentType && !!errors.DocumentType}
+    sx={{ marginBottom: 3 }}
+    className={touched.DocumentType && !!errors.DocumentType ? 'shake' : ''}
+  >
+    <FormLabel>
+      <LabelWithAsterisk text={t("DocumentType")} />
+    </FormLabel>
+    <RadioGroup
+      name="DocumentType"
+      value={formData.DocumentType}
+      onChange={handleChange}
+      onBlur={handleBlur}
+    >
+     
+      {tablesdata2.map((item) => (
+        <FormControlLabel
+          key={item.DOCUMENTTYPEID}
+          value={item.DOCUMENTTYPEID}
+          control={<Radio />}
+          label={item.DOCUMENTTYPEDESCRIPTION_EN}
+        />
+      ))}
+    </RadioGroup>
+    <FormHelperText>
+      {touched.DocumentType && errors.DocumentType ? errors.DocumentType : ''}
+    </FormHelperText>
+  </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={4}>
                   <TextField

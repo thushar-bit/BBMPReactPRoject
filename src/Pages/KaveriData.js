@@ -13,6 +13,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import '../components/Shake.css';
 import LabelWithAsterisk from '../components/LabelWithAsterisk'
 import DocumentUploadPage from './DocumentUploadPage';
+import MaskingValue from '../components/MaskingValue';
 const KaveriData = () => {
   const [formData, setFormData] = useState({
     RegistrationNumber: "",
@@ -550,7 +551,7 @@ debugger
 
                       <TableCell>{party.PARTYADDRESS || 'N/A'}</TableCell>
                       <TableCell>{party.IDPROOFTYPE || 'N/A'}</TableCell>
-                      <TableCell>{party.IDPROOFNUMBER || 'N/A'}</TableCell>
+                      <TableCell>{MaskingValue({value:party.IDPROOFNUMBER,maskingLength:4}) || 'N/A'}</TableCell>
                       <TableCell>{party.PARTYTYPE || 'N/A'}</TableCell>
                       <TableCell>{party.ADMISSIONDATE || 'N/A'}</TableCell>
                       {/* <TableCell>{party.PARTYTYPE === "Claimant" ? party.EKYC_OWNERNAME : 'N/A'}</TableCell>
