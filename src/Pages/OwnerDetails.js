@@ -153,7 +153,7 @@ const OwnerDetails = () => {
     let relationname = true;
     // Check all the required conditions
     
-    sessionStorage.setItem('OwnerKaveriSkip', false);
+
     for (let data of tabledata5EkycVerifed) {
       if (tableDataOwnerNumbers.includes(data.OWNERNUMBER)) { //retaining owners
 
@@ -190,7 +190,7 @@ const OwnerDetails = () => {
           sessionStorage.setItem("EKYC_OWNER_DETAILS", JSON.stringify(ekycOwnerDetails))
           navigate("/LocationDetails")
         } else if (allNameMatchVerified) {
-          sessionStorage.setItem('OwnerKaveriSkip', true);
+        
           navigate("/LocationDetails")
         }
       }
