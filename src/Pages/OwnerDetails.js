@@ -47,11 +47,26 @@ const OwnerDetails = () => {
         setOtpFieldsVisible(false);
         setAlertShown(false);
       } else {
+       debugger
+       let noOfMobile = tabledata5EkycNotVerifed.filter(row => row.MOBILENUMBER === value);
+        
+
+        if(noOfMobile.length === 0){
         setOtpFieldsVisible(true);
         if (!alertShown) {
           alert(`${t("MobileValidation")}`);
           setAlertShown(true);
         }
+      }
+      else {
+       formData.MOBILEVERIFY = "Verified";
+       setOtpFieldsVisible(false);
+      }
+
+
+
+
+        
       }
       if (name === "MOBILENUMBER") {
         if (/^\d{0,10}$/.test(value)) {
@@ -103,7 +118,7 @@ const OwnerDetails = () => {
   const handleVerifyOtp = () => {
     if (formData.OwnerOTP === otpNumber.toString()) {
       toast.success(`${t("otpVerifiedSuccess")}`);
-      formData.MOBILEVERIFY = "Verfied";
+      formData.MOBILEVERIFY = "Verified";
       setOtpFieldsVisible(false);
     } else {
       toast.error("Invalid OTP Entered");
@@ -145,13 +160,13 @@ const OwnerDetails = () => {
         if (tabledata5EkycVerifed.some(item => item.NAMEMATCHSCORE < 60)) {
           allNameMatchVerified = false;
         }
-        if (data.MOBILEVERIFY !== "Verfied") {
+        if (data.MOBILEVERIFY !== "Verified") {
           atLeastOneMobileVerified = false;
         }
       }
       else {
 
-        if (data.MOBILEVERIFY !== "Verfied") {
+        if (data.MOBILEVERIFY !== "Verified") {
           atLeastOneMobileVerified = false;
         }
         if (data.IDENTIFIERNAME === null || data.IDENTIFIERNAME === "" || data.IDENTIFIERNAME === undefined) {
@@ -280,7 +295,7 @@ const OwnerDetails = () => {
       setTableData(BBDTable1.length > 0 ? BBDTable1 : []);
       setTablesDataEKYCVerified(NCLTable2.length > 0 ? NCLTable2.filter(item => item.EKYCSTATUS === "DONE" 
 
-        // if (data.MOBILEVERIFY !== "Verfied") {
+        // if (data.MOBILEVERIFY !== "Verified") {
         //   atLeastOneMobileVerified = false;
         // }
         // if (data.IDENTIFIERNAME === null || data.IDENTIFIERNAME === "" || data.IDENTIFIERNAME === undefined) {
@@ -289,7 +304,7 @@ const OwnerDetails = () => {
         // if (data.IDENTIFIERTYPEID === "0" || data.IDENTIFIERTYPEID === null || data.IDENTIFIERTYPEID === undefined) {
         //   relationshiptype = false;
         // }
-        && (item.MOBILEVERIFY === "Verfied")
+        && (item.MOBILEVERIFY === "Verified")
         && (item.IDENTIFIERNAME !== null || item.IDENTIFIERNAME !== "" || item.IDENTIFIERNAME !== undefined)
         && (item.IDENTIFIERTYPEID !== "0" || item.IDENTIFIERTYPEID !== null || item.IDENTIFIERTYPEID !== undefined)
       ) : []);
@@ -502,11 +517,11 @@ const OwnerDetails = () => {
                       <TableCell>{OwnerEKYCVerfiedExists(row.OWNERNUMBER) ? "Verifed" : row.EKYCSTATUS}</TableCell>
                       <TableCell>{OwnerExists(row.OWNERNUMBER) ? `${t("RETAINED")}` : `${t("DELETED")}`}</TableCell>
                       <TableCell>{OwnerEKYCVerfiedExists(row.OWNERNUMBER) ?
-                        ""
+                      ""
                         :
                         <Button variant="contained" color="primary" onClick={() => VerfiyEKYC(row)}>
-                          {t("VerifyE-KYC")}
-                        </Button>
+                        {t("VerifyE-KYC")}
+                      </Button>
                       }
                       </TableCell>
                       

@@ -771,6 +771,7 @@ const handleAddressEdit = () => {
                     label={<LabelWithAsterisk text={t('East')} />}
                     name="east"
                     value={formData.east}
+                    multiline 
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "outlined" : "filled"}
                     InputProps={{
@@ -793,6 +794,7 @@ const handleAddressEdit = () => {
                     label={<LabelWithAsterisk text={t('West')} />}
                     value={formData.west}
                     onChange={handleChange}
+                    multiline 
                     variant={isEditablecheckbandhi ? "outlined" : "filled"}
                     InputProps={{
                       readOnly: !isEditablecheckbandhi,
@@ -815,6 +817,7 @@ const handleAddressEdit = () => {
                     label={<LabelWithAsterisk text={t('North')} />}
                     value={formData.north}
                     onChange={handleChange}
+                    multiline 
                     variant={isEditablecheckbandhi ? "outlined" : "filled"}
                     InputProps={{
                       readOnly: !isEditablecheckbandhi,
@@ -837,6 +840,7 @@ const handleAddressEdit = () => {
                     name="south"
                     value={formData.south}
                     onChange={handleChange}
+                    multiline 
                     variant={isEditablecheckbandhi ? "outlined" : "filled"}
                     InputProps={{
                       readOnly: !isEditablecheckbandhi,
@@ -1249,7 +1253,7 @@ const handleAddressEdit = () => {
                 <Grid item xs={6} sm={3}>
                   <TextField
                     fullWidth
-
+                    multiline 
                     label={<LabelWithAsterisk text={t('East')} />}
                     name="east"
                     value={formData.east}
@@ -1274,7 +1278,7 @@ const handleAddressEdit = () => {
 
                     label={<LabelWithAsterisk text={t('West')} />}
                     name="west"
-
+                    multiline 
                     value={formData.west}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "outlined" : "filled"}
@@ -1297,7 +1301,7 @@ const handleAddressEdit = () => {
 
                     label={<LabelWithAsterisk text={t('North')} />}
                     name="north"
-
+                    multiline 
                     value={formData.north}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "outlined" : "filled"}
@@ -1320,7 +1324,7 @@ const handleAddressEdit = () => {
 
                     label={<LabelWithAsterisk text={t('South')} />}
                     name="south"
-
+                    multiline 
                     value={formData.south}
                     onChange={handleChange}
                     variant={isEditablecheckbandhi ? "outlined" : "filled"}

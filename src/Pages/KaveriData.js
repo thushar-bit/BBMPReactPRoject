@@ -69,6 +69,20 @@ const KaveriData = () => {
       setKAVERIEC_PROP_DETAILS(Table5.length > 0 ? Table5 : []);
       setKAVERIEC_PARTIES_DETAILS(Table6.length > 0 ? Table6 : []);
       setDocumentUploadedData(Table1.length > 0 ? Table1 : []);
+      if(Table2.length > 0){
+         setFormData(prevFormData => ({
+          ...prevFormData,
+          TypeOfUpload: "RegistrationNumber"
+        }));
+      }
+      else if(Table1.length > 0)
+      {
+       setFormData(prevFormData => ({
+        ...prevFormData,
+        TypeOfUpload: "OldRegistrationNumber"
+      }));
+      }
+      
     }
     else if (TypeOfLoad === "InitialKaveri") {
       setDocumentUploadedData(Table1.length > 0 ? Table1 : []);
@@ -175,7 +189,7 @@ const KaveriData = () => {
 
   const handleECPropertyData = async () => {
 
-
+debugger
 
     console.log(DocumetUploadData)
     const DocumetUploadDatas = await fetchData("InitialKaveri")
@@ -188,7 +202,7 @@ const KaveriData = () => {
     if (formData.TypeOfUpload === "OldRegistrationNumber") {
       if (DocumetUploadDatas.data.length === 0) {
         setTimeout(() => {
-          toast.error(`${t("enterRegistrationNumberFirst")}`);
+          toast.error("Please Upload the Document with Correct Document Number");
         }, 100)
         return
       }
@@ -211,7 +225,7 @@ const KaveriData = () => {
       setLoading(true)
 
       let response;
-      if (formData.RegistrationNumber.length > 0) {
+      if (formData.RegistrationNumber.length > 0 && formData.TypeOfUpload === "RegistrationNumber") {
 
         if (KAVERI_DOC_DETAILS.length === 0) {
           setTimeout(() => {
@@ -221,7 +235,7 @@ const KaveriData = () => {
           return
         }
         response = await axiosInstance.post(`KaveriAPI/GetKaveriECData?ECNumber=${formData.ECDocumentNumber}&RegistrationNoNumber=${formData.RegistrationNumber}&BOOKS_APP_NO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&PropertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&LoginId=crc`)
-      } else if (DocumetUploadDatas.data.length > 0) {
+      } else if (DocumetUploadDatas.data.length > 0 && formData.TypeOfUpload === "OldRegistrationNumber") {
         response = await axiosInstance.post(`KaveriAPI/GetKaveriECData?ECNumber=${formData.ECDocumentNumber}&RegistrationNoNumber=${DocumetUploadDatas.data[0].ORDERNUMBER}&BOOKS_APP_NO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&PropertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&LoginId=crc`)
       }
 
@@ -325,7 +339,7 @@ const KaveriData = () => {
         }
         else {
           setTimeout(() => {
-            toast.error("Please Check if the Document is Uploaded Other than Encumbrance Certificate with the EC Number.If not Please Delete the Certificate and Upload the Document and Verify EC again to Continue");
+            toast.error("Please Check if the Document Uploaded Other than Encumbrance Certificate with the Correct Registration Number.If not Please Delete the Certificate and Upload the New Document with Correct Registation Number and Verify EC again to Continue");
           }, 200);
           return
         }
