@@ -46,6 +46,7 @@ const ClassificationDocumentUploadPage = () => {
     PropertyClassification: "",
     AKatha: "",
     propertyType: "",
+    isDocumentAvailable:"DocumentAvailable"
   });
   const { t } = useTranslation();
   const validationSchema = Yup.object().shape({
@@ -63,6 +64,7 @@ const ClassificationDocumentUploadPage = () => {
   const [fileExtension, setfileExtension] = useState([]);
   const [isEditable, setIsEditable] = useState(false);
   const [isHaveDocument,setHaveDocument] = useState(false);
+  const [IsDocumentAvailable,setIsDocumentAvailable] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isClassificationEditable, setIsClassificationEditable] = useState(false);
@@ -70,7 +72,7 @@ const ClassificationDocumentUploadPage = () => {
     setSelectedDate(date);
   };
   const handleAkathaDropdownValueChange = async (e) => {
-
+debugger
     try {
       const { name, value } = e.target;
       let updatedClassification = "";
@@ -86,15 +88,9 @@ const ClassificationDocumentUploadPage = () => {
         } else {
           updatedClassification = "0";
         }
-        // if (value === "51") {
-          
+       
 
-        // } else {
-        //   setIsEditable(false);
-
-        // }
-
-        const response = await axiosInstance.get(`BBMPCITZAPI/GET_NPM_MST_CLASS_DOCUMENT_CLASSANDSUBCLASS?CLASSIFICATIONID=1&SUBCLASSIFICATIONID1=${value}&SUBCLASSIFICATIONID2=0`)
+        const response = await axiosInstance.get(`BBMPCITZAPI/GET_NPM_MST_CLASS_DOCUMENT_BY_CATEGORY_SUBCLASS?PROPERTYCATEGORYID=${formData.propertyType}&CLASSIFICATIONID=1&SUBCLASSIFICATIONID=${value}`)
         const { Table } = response.data;
         setTablesData2(Table.length > 0 ? Table : []);
       }
@@ -141,27 +137,49 @@ const ClassificationDocumentUploadPage = () => {
   const handleChange = async (e) => {
 debugger
     const { name, value } = e.target;
-    if(name === "DocumentType"){
+    debugger
+    if(name === "DocumentType" || name === "isDocumentAvailable"){
       if(value === "26"){
         setIsEditable(true);
       }else {
         setIsEditable(false);
       }
-      if(value === "243"){
-        setHaveDocument(true)
+      if(value === "243" || value === "DoNotHaveIt"){
+      if(value === "DoNotHaveIt"){
+        setIsDocumentAvailable(false)
+      }
+      else {
+        setIsDocumentAvailable(true)
+      }
+          setHaveDocument(true)
+       
         setSelectedFile(null)
         setfileExtension([])
+        if(value !== "DoNotHaveIt"){
         setFormData({
           ...formData,
           documentregistereddate: "",
           DocumentNumber: "",
           DocumentDetails: "",
-          DocumentType:value
+          DocumentType:value,
+          isDocumentAvailable:"DoNotHaveIt",
         });
+      }
+      else {
+        setFormData({
+          ...formData,
+          documentregistereddate: "",
+          DocumentNumber: "",
+          DocumentDetails: "",
+          isDocumentAvailable:value,
+        });
+      }
         return
       }
       else {
         setHaveDocument(false)
+        setIsDocumentAvailable(false)
+        formData.isDocumentAvailable ="DocumentAvailable"
       }
     }
     setFormData({
@@ -199,7 +217,8 @@ debugger
           setIsClassificationEditable(false)
         } else {
           setIsClassificationEditable(true)
-          const response = await axiosInstance.get(`BBMPCITZAPI/GET_NPM_MST_CLASS_DOCUMENT_CLASSANDSUBCLASS?CLASSIFICATIONID=1&SUBCLASSIFICATIONID1=${NCLTable1[0].SUBCLASSIFICATIONID}&SUBCLASSIFICATIONID2=0`)
+          debugger
+          const response = await axiosInstance.get(`BBMPCITZAPI/GET_NPM_MST_CLASS_DOCUMENT_BY_CATEGORY_SUBCLASS?PROPERTYCATEGORYID=${NCLTable1[0].PROPERTYCATEGORYID}&CLASSIFICATIONID=1&SUBCLASSIFICATIONID=${NCLTable1[0].SUBCLASSIFICATIONID}`)
           const { Table } = response.data;
           setTablesData2(Table.length > 0 ? Table : []);
         }
@@ -296,7 +315,7 @@ debugger
   const handleSubmit = async (e) => {
     let data = {};
     
-    if(formData.DocumentType !== 243)
+    if(formData.DocumentType !== "243" && formData.isDocumentAvailable !== "DoNotHaveIt")
       {
 
     
@@ -359,10 +378,10 @@ debugger
       createdby: "crc",
       documentextension: null,
       propertycode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
-      documentdetails: null,
+      documentdetails:  "Do Not Have it" ,
       scanneddocument: "", 
       documentdate: null,
-      documenttypeid: formData.DocumentType,
+      documenttypeid:  formData.DocumentType ,
       ulbcode: 555,
       p_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))
     }
@@ -669,6 +688,40 @@ debugger
     </FormHelperText>
   </FormControl>
                 </Grid>
+                {!IsDocumentAvailable && 
+                <Grid item xs={12} sm={4}>
+                <FormControl
+    fullWidth
+    error={touched.isDocumentAvailable && !!errors.isDocumentAvailable}
+    sx={{ marginBottom: 3 }}
+    className={touched.isDocumentAvailable && !!errors.isDocumentAvailable ? 'shake' : ''}
+  >
+    <FormLabel>
+      <LabelWithAsterisk text={""} />
+    </FormLabel>
+    <RadioGroup
+      name="isDocumentAvailable"
+      value={formData.isDocumentAvailable}
+      onChange={handleChange}
+      onBlur={handleBlur}
+    >
+     <FormControlLabel
+      value="DocumentAvailable"
+      control={<Radio />}
+      label={t("Document Available")}
+    />
+    <FormControlLabel
+      value="DoNotHaveIt"
+      control={<Radio />}
+      label={t("Do not have it")}
+    />
+    </RadioGroup>
+    <FormHelperText>
+      {touched.isDocumentAvailable && errors.isDocumentAvailable ? errors.isDocumentAvailable : ''}
+    </FormHelperText>
+  </FormControl>
+                </Grid>
+}
                 <Grid item xs={12} sm={4}>
                   <TextField
                     fullWidth
@@ -778,6 +831,10 @@ debugger
                     {t("MaximumFileSizeMB")}
                   </Typography>
                 </Grid>
+                {!IsDocumentAvailable &&
+                <Grid item xs={12} sm={4}>
+                  </Grid>
+          }
                 <Grid item xs={12} sm={4}>
                   <Button variant="contained" color="success" type="submit" >
                     {t("AddDocument+")}
