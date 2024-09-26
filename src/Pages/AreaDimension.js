@@ -194,12 +194,14 @@ const handleAddressEdit = () => {
         errors.nsEw = 'Please ensure E-W (ft) values are Entered and More than 0.';
       }
       debugger
+      if(formData.propertyType !== 3){
       if(formData.KaveriAreaSQFT !== formData.plotAreaSqFt){
         const differencePercentage = (Math.abs(formData.KaveriAreaSQFT - formData.plotAreaSqFt) / formData.plotAreaSqFt) * 100;
         if (differencePercentage > 30) {
           errors.acutalPercentageDifference = "The Deed SqFt value differs by more than 30% from the calculated SqFt value."
         }
       }
+    }
     }
 
     return errors;
@@ -584,14 +586,7 @@ const handleAddressEdit = () => {
           {formData.propertyType === 3 && (
             <Grid container spacing={3}>
 
-              <Grid item xs={6} sm={3}>
-                <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
-                  <RadioGroup row name="modify" value={formData.modify} onChange={handleChange}>
-                    <FormControlLabel value="yes" control={<Radio />} label={t("Modify")} />
-                    <FormControlLabel value="no" control={<Radio />} label={t("NoModifications")} />
-                  </RadioGroup>
-                </FormControl>
-              </Grid>
+              
               <Grid item xs={6} sm={3}>
                 <TextField
                   fullWidth
