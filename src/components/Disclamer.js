@@ -8,7 +8,7 @@ const DisclaimerDialog = ({ open, onClose, onAgree }) => {
   const contentRef = useRef(null);
   const { t } = useTranslation();
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [isAgreed, setIsAgreed] = useState(false); // Renaming disabled to isAgreed
+  const [isAgreed, setIsAgreed] = useState(false); 
   const [pdfUrl, setPdfUrl] = useState('');
 
   const handleAgree = () => {
@@ -20,7 +20,7 @@ const DisclaimerDialog = ({ open, onClose, onAgree }) => {
   };
 
   const handleSwitchChange = () => {
-    setIsAgreed(!isAgreed); // Toggle the agreement state
+    setIsAgreed(!isAgreed); 
   };
 
   const fetchPdf = async () => {
@@ -28,36 +28,38 @@ const DisclaimerDialog = ({ open, onClose, onAgree }) => {
       const response = await axiosInstance.get(
         `Report/GetFinalBBMPReport?propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}`,
         {
-          responseType: 'blob', // Important to get the response as a blob
+          responseType: 'blob', 
         }
       );
 
-      // Create a URL for the PDF blob
+      
       const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
       const pdfUrl = URL.createObjectURL(pdfBlob);
 
-      setPdfUrl(pdfUrl); // Set the URL to the state
+      setPdfUrl(pdfUrl); 
     } catch (error) {
       console.error("Error fetching PDF: ", error);
     }
   };
+const onEsign = () => {
 
+}
   const handleConfirmYes = () => {
-    // Perform the action when user confirms
+   
     fetchPdf();
     setIsAgreed(false);
     setConfirmOpen(false);
-    onClose(); // Close the DisclaimerDialog
+    onClose(); 
   };
 
   const handleConfirmNo = () => {
     setConfirmOpen(false);
-    onClose(); // Close the DisclaimerDialog
+    onClose(); 
   };
 
   return (
     <>
-      {/* Confirmation Dialog */}
+     
       <Dialog open={confirmOpen} onClose={handleConfirmNo} maxWidth="md" fullWidth>
         <DialogContent>
           <Typography variant="h5">{t("disclamerMessage1")}</Typography>
@@ -68,7 +70,7 @@ const DisclaimerDialog = ({ open, onClose, onAgree }) => {
         </DialogActions>
       </Dialog>
 
-      {/* Disclaimer Dialog */}
+   
       <Dialog open={open} onClose={onClose} maxWidth="xl" fullWidth>
         <DialogContent dividers style={{ maxHeight: '500px' }} ref={contentRef}>
           <Typography variant="h3" gutterBottom>
@@ -110,7 +112,11 @@ const DisclaimerDialog = ({ open, onClose, onAgree }) => {
           <DialogContent>
             <iframe src={pdfUrl} width="100%" height="600px" title="PDF Viewer"></iframe>
           </DialogContent>
+        
           <DialogActions>
+          <Button onClick={() => onEsign} color="primary">
+              E-Sign
+            </Button>
             <Button onClick={() => setPdfUrl('')} color="primary">
               Close PDF
             </Button>
