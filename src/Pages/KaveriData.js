@@ -47,7 +47,7 @@ const KaveriData = () => {
 
     const response = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=KAVERI_DETAILS`);
     
-    const { Table1 = [], Table2 = [], Table3 = [], Table4 = [], Table5 = [], Table6 = [] } = response.data;
+    const { Table1 = [], Table2 = [], Table3 = [], Table4 = [], Table5 = [], Table6 = [],Table7 = [] } = response.data;
 
     let objs = {}
     if (TypeOfLoad === "KAVERI_DOC_DATA") {
@@ -70,19 +70,14 @@ const KaveriData = () => {
       setKAVERIEC_PROP_DETAILS(Table5.length > 0 ? Table5 : []);
       setKAVERIEC_PARTIES_DETAILS(Table6.length > 0 ? Table6 : []);
       setDocumentUploadedData(Table1.length > 0 ? Table1 : []);
-      if(Table2.length > 0){
+      debugger
+      if(Table7.length > 0){
          setFormData(prevFormData => ({
           ...prevFormData,
-          TypeOfUpload: "RegistrationNumber"
+          TypeOfUpload: Table7[0].KAVERIDOC_AVAILABLE === "1" ? "RegistrationNumber" : Table7[0].KAVERIDOC_AVAILABLE === "2" ? "OldRegistrationNumber" : Table7[0].KAVERIDOC_AVAILABLE === "3" ? "DoNotHaveRegistrationDeed": ""
         }));
       }
-      else if(Table1.length > 0)
-      {
-       setFormData(prevFormData => ({
-        ...prevFormData,
-        TypeOfUpload: "OldRegistrationNumber"
-      }));
-      }
+      
       
     }
     else if (TypeOfLoad === "InitialKaveri") {
@@ -124,6 +119,7 @@ const KaveriData = () => {
       setLoading(true)
 
       let response = await axiosInstance.post(`KaveriAPI/GetKaveriDocData?RegistrationNoNumber=${formData.RegistrationNumber}&BOOKS_APP_NO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&PropertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&LoginId=crc`)
+      await axiosInstance.post(`BBMPCITZAPI/UPD_COL_NCL_PROPERTY_COMPARE_MATRIX_TEMP?BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&propertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&COLUMN_NAME=KAVERIDOC_AVAILABLE&COLUMN_VALUE=1&loginID=23`);
 
 
 
@@ -240,6 +236,7 @@ debugger
         response = await axiosInstance.post(`KaveriAPI/GetKaveriECData?ECNumber=${formData.ECDocumentNumber}&RegistrationNoNumber=${DocumetUploadDatas.data[0].ORDERNUMBER}&BOOKS_APP_NO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&PropertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&LoginId=crc`)
       }
 
+    
 
       const result = response.data;
 
@@ -309,10 +306,20 @@ debugger
       ...formData,
       RegistrationNumber: "",
       OldRegistrationNumber: "",
-
+      TypeOfUpload:""
     });
   }
   const handleNavigation = async () => {
+    if(formData.TypeOfUpload === "DoNotHaveRegistrationDeed"){
+      try{
+      await axiosInstance.post(`BBMPCITZAPI/UPD_COL_NCL_PROPERTY_COMPARE_MATRIX_TEMP?BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&propertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&COLUMN_NAME=KAVERIDOC_AVAILABLE&COLUMN_VALUE=3&loginID=23`);
+      navigate("/OwnerDetails")
+      }
+      catch(error){
+        console.log(error)
+      }
+      
+    }
     if (KAVERI_DOC_DETAILS.length > 0 && KAVERI_PROP_DETAILS.length > 0 && KAVERI_PARTIES_DETAILS.length > 0) {
       if (KAVERIEC_PROP_DETAILS.length > 0 && KAVERIEC_PARTIES_DETAILS.length > 0) {
         navigate("/OwnerDetails");
@@ -407,6 +414,15 @@ debugger
             <RadioGroup row name="TypeOfUpload" value={formData.TypeOfUpload} onChange={handleChange}>
               <FormControlLabel value="RegistrationNumber" control={<Radio />} label={t("RegistrationNumber")} />
               <FormControlLabel value="OldRegistrationNumber" control={<Radio />} label={t("oldRegistrationNumber")} />
+              <FormControlLabel value="DoNotHaveRegistrationDeed" control={<Radio />} label={
+    <>
+      {t("DoNotHaveRegistrationDeed")}{" "}
+      <Typography component="span" style={{ color: 'red' }}>
+        {t("CaseRefertoARO")}
+      </Typography>
+    </>
+  }
+/>
             </RadioGroup>
           </FormControl>
         </Grid>
@@ -574,6 +590,8 @@ debugger
         
         <br></br>
         <br></br>
+        {formData.TypeOfUpload !== "DoNotHaveRegistrationDeed" &&
+        <>
         <Typography variant='h6'>{t("KaveriMessage1")}</Typography>
 
         <br></br>
@@ -713,7 +731,7 @@ debugger
                     )}
                   </TableCell>
 
-
+          
                 </TableRow>
               </TableBody>
             </Table>
@@ -722,6 +740,8 @@ debugger
         <br></br>
         <br></br>
         <br></br>
+</>
+}
         <Box display="flex" justifyContent="center" gap={2} mt={3}>
           <Button variant="contained" color="primary" onClick={back}>
             {t("Previous")}

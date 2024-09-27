@@ -148,7 +148,7 @@ const handleAddressEdit = () => {
     });
   };
   const validateFormData = React.useCallback(async (formData) => {
-    
+    debugger
     const errors = {};
 
     const isInvalid = (value) => value === '' || value === '0';
@@ -197,8 +197,8 @@ const handleAddressEdit = () => {
       if(formData.propertyType !== 3){
       if(formData.KaveriAreaSQFT !== formData.plotAreaSqFt){
         const differencePercentage = (Math.abs(formData.KaveriAreaSQFT - formData.plotAreaSqFt) / formData.plotAreaSqFt) * 100;
-        if (differencePercentage > 30) {
-          errors.acutalPercentageDifference = "The Deed SqFt value differs by more than 30% from the calculated SqFt value."
+        if (differencePercentage > 20) {
+          errors.acutalPercentageDifference = "The Deed SqFt value differs by more than 20% from the calculated SqFt value."
         }
       }
     }
