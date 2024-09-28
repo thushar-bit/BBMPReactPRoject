@@ -13,7 +13,8 @@ import MaskingValue from '../components/MaskingValue';
 const OwnerDetails = () => {
   const [formData, setFormData] = useState({
     relato: "0",
-    MOBILEVERIFY: ""
+    MOBILEVERIFY: "",
+    IDENTIFIERNAME: ""
   });
 
   const [tableData, setTableData] = useState([
@@ -31,7 +32,7 @@ const OwnerDetails = () => {
   const [editableIndex, setEditableIndex] = useState(-1);
   const [otpFieldsVisible, setOtpFieldsVisible] = useState(false);
   const [alertShown, setAlertShown] = useState(false);
-
+  const [EkycResponseData,setEkycResponseData] = useState(null)
   const [otpNumber, setOtpNumber] = useState(0)
   const { t } = useTranslation();
   const [otpButtonDisabled, setOtpButtonDisabled] = useState(false);
@@ -39,7 +40,7 @@ const OwnerDetails = () => {
   const [countdownInterval, setCountdownInterval] = useState(null);
 
   const handleChange = (e) => {
-
+debugger
     const { name, value } = e.target;
 
     if (name === "MOBILENUMBER") {
@@ -222,7 +223,7 @@ const OwnerDetails = () => {
 
 
 
-  const handleSave = async () => {
+  const handleSave = async (Type) => {
 
     try {
 
@@ -256,7 +257,8 @@ const OwnerDetails = () => {
         return
       }
 
-      
+      if(Type === "AFTEREKYC")
+      {
       setEditableIndex(-1);
       const params = {
         P_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')),
@@ -276,6 +278,25 @@ const OwnerDetails = () => {
       console.log(response.data);
       toast.success(`${t("ownerEditedSuccess")}`)
       await fetchData();
+    }
+    else if(Type === "EKYC"){
+      debugger
+      const params = {
+        IDENTIFIERTYPE: formData.IDENTIFIERTYPEID || 0,
+        MOBILENUMBER: formData.MOBILENUMBER || "0",
+        MOBILEVERIFY: formData.MOBILEVERIFY !== "" ? formData.MOBILEVERIFY : "NOT VERIFIED",
+        loginId: 'crc'
+      };
+
+      const queryString = new URLSearchParams(params).toString();
+
+
+      const response = await axiosInstance.post(`BBMPCITZAPI/INS_NCL_PROPERTY_OWNER_TEMP_WITH_EKYCDATA?${queryString}`,EkycResponseData);
+      console.log(response.data);
+      toast.success(`${t("ownerEditedSuccess")}`)
+      setEkycResponseData(null);
+      await fetchData();
+    }
     } catch (error) {
       toast.error(`${t("errorSavingData")}`, error)
     }
@@ -290,22 +311,10 @@ const OwnerDetails = () => {
       const { Table1:BBDTable1 = [] } = response2.data;
       const { Table2: NCLTable2 = [], Table1: NCLTable1Data = [], } = response3.data;
       const { Table:MasterTable1 = [] } = response1.data;
-      // setPropertyType(NCLTable1Data.length > 0 ? NCLTable1Data[0].PROPERTYCATEGORYID || "0" : "0")
       setCoreArea(NCLTable1Data.length > 0 ? NCLTable1Data[0].AREA_TYPE : 2)
       setTableData8(MasterTable1.length > 0 ? MasterTable1 : [])
       setTableData(BBDTable1.length > 0 ? BBDTable1 : []);
       setTablesDataEKYCVerified(NCLTable2.length > 0 ? NCLTable2.filter(item => item.EKYCSTATUS === "DONE" 
-
-        // if (data.MOBILEVERIFY !== "Verified") {
-        //   atLeastOneMobileVerified = false;
-        // }
-        // if (data.IDENTIFIERNAME === null || data.IDENTIFIERNAME === "" || data.IDENTIFIERNAME === undefined) {
-        //   relationname = false;
-        // }
-        // if (data.IDENTIFIERTYPEID === "0" || data.IDENTIFIERTYPEID === null || data.IDENTIFIERTYPEID === undefined) {
-        //   relationshiptype = false;
-        // }
-        && (item.MOBILEVERIFY === "Verified")
         && (item.IDENTIFIERNAME !== null || item.IDENTIFIERNAME !== "" || item.IDENTIFIERNAME !== undefined)
         && (item.IDENTIFIERTYPEID !== "0" || item.IDENTIFIERTYPEID !== null || item.IDENTIFIERTYPEID !== undefined)
       ) : []);
@@ -347,27 +356,36 @@ const OwnerDetails = () => {
 
     fetchData();
   }, [location.search,fetchData]);
-
   const handleSubmit = (e) => {
 
     // Submit form data logic here
   };
+ 
   const EditOwnerDetailsFromEKYCData = async (txno, ownerType) => {
     
     ownerType = "NEWOWNER"
     try {
-       await axiosInstance.get("Name_Match/GET_BBD_NCL_OWNER_BYEKYCTRANSACTION?transactionNumber=" + txno + "&OwnerType=" + ownerType)
-       const response3 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=OWNER_DETAILS`);
-        const { Table2: NCLTable2 = [] } = response3.data;
-       if(ownerType === "OLDOWNER"){
-       let OWNERNUMBERVERIFY = JSON.parse(sessionStorage.getItem('OWNERNUMBERVERIFY'));
-        setEditableIndex(OWNERNUMBERVERIFY - 1);
-        setFormData(NCLTable2[OWNERNUMBERVERIFY - 1]);
+     const ekycResponse =  await axiosInstance.get("Name_Match/GET_BBD_NCL_OWNER_BYEKYCTRANSACTION?transactionNumber=" + txno + "&OwnerType=" + ownerType)
+   
+       
+       if(ownerType === "OLDOWNER")
+        {
+       
+      formData.IDENTIFIERNAME = ekycResponse.data.identifierNameEng;
+        setEkycResponseData(ekycResponse.data);
+        setFormData((prevState) => ({
+          ...prevState,
+          IDENTIFIERNAME: ekycResponse.data.identifierNameEng,
+        }));
        }
        if(ownerType === "NEWOWNER"){
-        
-        setEditableIndex(NCLTable2.length -1);
-        setFormData(NCLTable2[NCLTable2.length -1]);
+        setEkycResponseData(ekycResponse.data);
+     //   setEditableIndex(NCLTable2.length -1);
+     formData.IDENTIFIERNAME = ekycResponse.data.identifierNameEng;
+     setFormData((prevState) => ({
+      ...prevState,
+      IDENTIFIERNAME: ekycResponse.data.identifierNameEng,
+    }));
        }
        return ""
     } catch (error) {
@@ -398,10 +416,10 @@ const OwnerDetails = () => {
     let ownerNumber = 0;
     if (row.OWNERNUMBER !== "") {
       ownerNumber = row.OWNERNUMBER;
-      sessionStorage.setItem("OWNERNUMBERVERIFY", JSON.stringify(row.OWNERNUMBER))
+      
     } else {
       ownerNumber = row.SLNO;
-      sessionStorage.setItem("OWNERNUMBERVERIFY", JSON.stringify(row.SLNO))
+    
     }
     sessionStorage.setItem("OWNERTYPE", JSON.stringify("OLDOWNER"))
     
@@ -542,12 +560,205 @@ const OwnerDetails = () => {
           </TableContainer>
           <br></br>
           <Grid container spacing={3}>
-            {tabledata5EkycNotVerifed.map((owner, index) => (
-              <Grid item xs={12} key={index}>
+           {EkycResponseData !== null &&
+              <Grid item xs={12} >
                 <Paper elevation={3} sx={{ padding: 4, borderRadius: 2, backgroundColor: '#f7f7f7' }}>
                   <Typography variant="h6" color="primary" gutterBottom>
                     {t('OwnersToBeAddedine-Khatha')}
                   </Typography>
+                  <Grid item xs={12} sm={2}>
+                    <div style={{ marginLeft: '10px', position: 'relative', textAlign: 'center' }}>
+                      <img
+                        src={`data:image/png;base64,${EkycResponseData.photoBytes}`}
+                        alt="No Images Found"
+                        style={{
+                          maxWidth: '100%',
+                          maxHeight: '200px',
+                          width: 'auto',
+                          height: 'auto',
+                          borderRadius: '8px',
+                        }}
+                      />
+                    </div>
+                  </Grid>
+                  <Grid container spacing={2}>
+
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        fullWidth
+                        label={t('OwnerName')}
+                        name="OwnerName"
+                        value={EkycResponseData.ownerNameEng || ''}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                        variant="filled"
+                      />
+                    </Grid>
+                   
+                    <Grid item xs={12} sm={6}>
+                      </Grid>
+                    <Grid item xs={12} sm={6}>
+                     
+                        <FormControl fullWidth sx={{ marginBottom: 3 }}>
+                          <InputLabel>< LabelWithAsterisk text={t("RelationshipType")} /></InputLabel>
+                          <Select
+                            name="IDENTIFIERTYPEID"
+                            value={formData.IDENTIFIERTYPEID}
+                            onChange={handleChange}
+                          >
+                            <MenuItem value="">--Select--</MenuItem>
+                            {tablesdata8.map((item) => (
+                              <MenuItem key={item.IDENTIFIERTYPEID} value={item.IDENTIFIERTYPEID}>
+                                {item.IDENTIFIERTYPE_EN}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                     
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      
+                        <TextField
+                          fullWidth
+                          label={< LabelWithAsterisk text={t("RelationName")} />}
+                          name="IDENTIFIERNAME"
+                          value={formData.IDENTIFIERNAME}
+                          onChange={handleChange}
+                          variant="standard"
+                        />
+                      
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <Typography sx={{ fontWeight: 'bold' }}>
+                        {t("Gender")}
+                      </Typography>
+                      <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
+                        <RadioGroup row name="Gender" value={EkycResponseData.gender} onChange={handleChange}>
+                          <FormControlLabel value="M" control={<Radio disabled={true} />} label={t("Male")} />
+                          <FormControlLabel value="F" control={<Radio disabled={true} />} label={t("Female")} />
+                          <FormControlLabel value="O" control={<Radio disabled={true} />} label={t("Other")} />
+                        </RadioGroup>
+                      </FormControl>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        fullWidth
+                        label={t('DateOfBirth')}
+                        name="DateOfBirth"
+                        value={EkycResponseData.dateOfBirth || ''}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                        variant="filled"
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        fullWidth
+                        label={t('Address')}
+                        name="Address"
+                        value={EkycResponseData.addressEng || ''}
+                        multiline
+                        rows={2}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                        variant="filled"
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        fullWidth
+                        label={t('OwnerMaskedAadhar')}
+                        name="OwnerAadhar"
+                        value={EkycResponseData.maskedAadhaar || ""}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                        variant="filled"
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                    
+                          <TextField
+                            fullWidth
+                            label={< LabelWithAsterisk text={t("MobileNumber")} />}
+                            name="MOBILENUMBER"
+                            value={formData.MOBILENUMBER || ''}
+                            onChange={handleChange}
+                            variant="standard"
+                          />
+
+                          {otpFieldsVisible && (
+                            <Grid>
+                              <br></br>
+                              {!otpButtonDisabled && (
+                                <>
+                                  <Button variant="contained" color="primary" onClick={() => handleGenerateOtp()}>
+                                    {t("GenerateOTP")}
+                                  </Button>
+                                </>
+                              )}
+                              {otpButtonDisabled && (
+                                <Typography >
+                                  Resend OTP in {timer} seconds
+                                </Typography>
+
+                              )}
+                              <TextField
+                                fullWidth
+                                label={t('Enter OTP')}
+                                name="OwnerOTP"
+                                value={formData.OwnerOTP}
+                                onChange={handleChange}
+                                variant="standard"
+                              />
+
+                              <Button variant="contained" color="primary" onClick={() => handleVerifyOtp()}>
+                                Verify OTP
+                              </Button>
+                              <br></br>
+                            </Grid>
+                          )}
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <TextField
+                          fullWidth
+                          label={t('MobileVerification')}
+                          name="MOBILEVERIFY"
+                          value={formData.MOBILEVERIFY === null ? "NOT VERIFIED" : formData.MOBILEVERIFY}
+                          onChange={handleChange}
+                          InputProps={{
+                            readOnly: true,
+                          }}
+                          variant="filled"
+                        />
+                  </Grid>
+                  </Grid>
+                  <br></br>
+                  <Grid item xs={12} sm={12}>
+                    <Box display="flex" justifyContent="center" gap={2}>
+                        <Button variant="contained" color="primary" onClick={() => handleSave("EKYC")}>
+                          {t("Save")}
+                        </Button>
+                      <Button variant="contained" color="error" onClick={() => handleDelete()}>
+                        {t("DELETEOWNER")}
+                      </Button>
+                    </Box>
+                  </Grid>
+                </Paper>
+              </Grid>
+          }
+            {tabledata5EkycNotVerifed.map((owner, index) => (
+              <Grid item xs={12} key={index}>
+                <Paper elevation={3} sx={{ padding: 4, borderRadius: 2, backgroundColor: '#f7f7f7' }}>
+                  {!EkycResponseData &&
+                <Typography variant="h6" color="primary" gutterBottom>
+                    {t('OwnersToBeAddedine-Khatha')}
+                  </Typography>
+                  }
                   <Grid item xs={12} sm={2}>
                     <div style={{ marginLeft: '10px', position: 'relative', textAlign: 'center' }}>
                       <img
@@ -579,17 +790,7 @@ const OwnerDetails = () => {
                     </Grid>
 
                     <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label={t('NAMEMATCHSTATUS')}
-                        name="NameMatchscore"
-                        value={owner.NAMEMATCHSCORE > 60 ? OwnerEKYCVerfiedExists(owner.OWNERNUMBER) ?
-                          "Name Matching" : "New Owner" : "Name Not Matching" } 
-                        InputProps={{
-                          readOnly: true,
-                        }}
-                        variant="filled"
-                      />
+                   
                     </Grid>
                     <Grid item xs={12} sm={6}>
                       {editableIndex === index ? (
@@ -782,7 +983,7 @@ const OwnerDetails = () => {
                           fullWidth
                           label={t('MobileVerification')}
                           name="MOBILEVERIFY"
-                          value={owner.MOBILEVERIFY === null ? "NOT VERIFIED":owner.MOBILEVERIFY === null}
+                          value={owner.MOBILEVERIFY === null ? "NOT VERIFIED":owner.MOBILEVERIFY}
                           InputProps={{
                             readOnly: true,
                           }}
@@ -800,7 +1001,7 @@ const OwnerDetails = () => {
                   <Grid item xs={12} sm={12}>
                     <Box display="flex" justifyContent="center" gap={2}>
                       {editableIndex === index ? (
-                        <Button variant="contained" color="primary" onClick={handleSave}>
+                        <Button variant="contained" color="primary" onClick={() => handleSave("AFTEREKYC")}>
                           {t("Save")}
                         </Button>
                       ) : (
