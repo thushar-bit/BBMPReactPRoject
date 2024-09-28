@@ -13,6 +13,7 @@ import OwnerDetails from './Pages/OwnerDetails';
 import LocationDetails from './Pages/LocationDetails';
 import ClassificationDocumentUploadPage from './Pages/ClassificationDocumentUploadPage';
 import EKYCResponse from './Pages/EKYCResponse';
+import ESignPage from './Pages/E-SignPage';
 import ErrorPage from './Pages/ErrorPage';
 import Header from './Header';
 import Footer from './Footer';
@@ -79,6 +80,10 @@ const AppRoutes = () => {
             <Route
               path="/EKYCResponse"
              element={<EKYCResponse />}
+            />
+              <Route
+              path="/ESignPage"
+              element={<PrivateRoute element={<ESignPage />} />}
             />
             <Route path="*" element={<ErrorPage />} />
           </Routes>

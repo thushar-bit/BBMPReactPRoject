@@ -3,14 +3,14 @@ import { Dialog, DialogContent, DialogActions, Button, Typography, Box } from '@
 import Switch from '@mui/material/Switch';
 import { useTranslation } from 'react-i18next';
 import axiosInstance from '../components/Axios';
-
+import { useNavigate } from 'react-router-dom';
 const DisclaimerDialog = ({ open, onClose, onAgree }) => {
   const contentRef = useRef(null);
   const { t } = useTranslation();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isAgreed, setIsAgreed] = useState(false); 
   const [pdfUrl, setPdfUrl] = useState('');
-
+  const navigate = useNavigate();
   const handleAgree = () => {
     if (isAgreed) {
       setConfirmOpen(true);
@@ -41,7 +41,10 @@ const DisclaimerDialog = ({ open, onClose, onAgree }) => {
       console.error("Error fetching PDF: ", error);
     }
   };
-const onEsign = () => {
+const onEsign = async () => {
+  debugger
+ navigate("/ESignPage")
+  // Redirecting to the URL received from the API
 
 }
   const handleConfirmYes = () => {
@@ -114,7 +117,7 @@ const onEsign = () => {
           </DialogContent>
         
           <DialogActions>
-          <Button onClick={() => onEsign} color="primary">
+          <Button onClick={() => onEsign()} color="primary">
               E-Sign
             </Button>
             <Button onClick={() => setPdfUrl('')} color="primary">
