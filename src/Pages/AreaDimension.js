@@ -151,6 +151,20 @@ const handleAddressEdit = () => {
       [name]: value
     });
   };
+  const handleApparatmentChange = (e) => {
+    const { name, value } = e.target;
+    if(name === "ApartAddtionalArea"){
+      formData.ApartAddtionalArea = value;
+    
+    }else if(name === "ApartCarpetArea"){
+      formData.ApartCarpetArea = value;
+    }
+    formData.ApartSuperBuiltArea = parseFloat(formData.ApartAddtionalArea) + parseFloat(formData.ApartCarpetArea);
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  }
   const validateFormData = React.useCallback(async (formData) => {
     debugger
     const errors = {};
@@ -289,6 +303,8 @@ const handleAddressEdit = () => {
       setFormData(updatedFormData);
       debugger
       setMatrixData(MatrixData[0].KAVERIDOC_AVAILABLE)
+      
+      console.log(MatrixData)
       const validationErrors = await validateFormData(updatedFormData);
       debugger
       if (Object.keys(validationErrors).length > 0) {
@@ -423,9 +439,7 @@ const handleAddressEdit = () => {
         }
       
       }
-      if(formData.KaveriAreaSQFT !== formData.plotAreaSqFt){
-        toast.error("The Calculated Area is not matching the Deed Area .Please Meet ARO for Correction")
-      }
+      
       const data = {
         propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
         evenoroddsite: formData.oddSite === "Y" ? "ODD" : "EVEN",
@@ -619,7 +633,7 @@ const handleAddressEdit = () => {
                   label={<LabelWithAsterisk text={t('CarpetArea')} />}
                   name="ApartCarpetArea"
                   value={formData.ApartCarpetArea}
-                  onChange={handleChange}
+                  onChange={handleApparatmentChange}
                   type="number"
                   variant={isEditable ? "outlined" : "filled"}
                   InputProps={{
@@ -642,7 +656,7 @@ const handleAddressEdit = () => {
                   label={<LabelWithAsterisk text={t('AdditionalArea')} />}
                   name="ApartAddtionalArea"
                   value={formData.ApartAddtionalArea}
-                  onChange={handleChange}
+                  onChange={handleApparatmentChange}
                   type="number"
                   variant={isEditable ? "outlined" : "filled"}
                   InputProps={{
@@ -665,12 +679,13 @@ const handleAddressEdit = () => {
                   label={<LabelWithAsterisk text={t('SuperBuiltArea')} />}
                   name="ApartSuperBuiltArea"
                   value={formData.ApartSuperBuiltArea}
-                  onChange={handleChange}
+                  onChange={handleApparatmentChange}
                   type="number"
-                  variant={isEditable ? "outlined" : "filled"}
+                  variant={ "filled"}
                   InputProps={{
-                    readOnly: !isEditable,
-                    style: { backgroundColor: !isEditable ? '' : "#ffff" },
+                   // readOnly: !isEditable,
+                   readOnly: true,
+                //    style: { backgroundColor: !isEditable ? '' : "#ffff" },
                     endAdornment: (
                       <Tooltip title="Calculated as N-S * E-W">
                         <IconButton>
@@ -926,12 +941,12 @@ const handleAddressEdit = () => {
                       value={formData.KaveriAreaSQFT}
                       onChange={handleChange}
                       type="number"
-                      variant={MatrixData === "1" && isEditable ? "filled" : "outlined"}
+                      variant={MatrixData !== "1"  && isEditable ? "outlined": "filled" }
                       InputProps={{
-                        readOnly: MatrixData === "1" && isEditable? false : true,
-                        style: { backgroundColor: MatrixData === "1" && isEditable ? "#ffff" : "" },
+                        readOnly: MatrixData !== "1"  && isEditable ? false : true,
+                        style: { backgroundColor: (MatrixData !== "1") && isEditable ? "#ffff"  : ""  },
                         endAdornment: (
-                          <Tooltip title="Converted from Sq.ft">
+                          <Tooltip title="Converted from Sq.ft">   
                             <IconButton>
                               <InfoIcon />
                             </IconButton>
@@ -1431,10 +1446,10 @@ const handleAddressEdit = () => {
                       value={formData.KaveriAreaSQFT}
                       onChange={handleChange}
                       type="number"
-                      variant={MatrixData === "1" && isEditable ? "filled" : "outlined"}
+                      variant={MatrixData !== "1"  && isEditable ? "outlined": "filled" }
                       InputProps={{
-                        readOnly: MatrixData === "1" && isEditable? false : true,
-                        style: { backgroundColor: MatrixData === "1" && isEditable ? "#ffff" : "" },
+                        readOnly: MatrixData !== "1"  && isEditable ? false : true,
+                        style: { backgroundColor: (MatrixData !== "1") && isEditable ? "#ffff"  : ""  },
                         endAdornment: (
                           <Tooltip title="Converted from Sq.ft">
                             <IconButton>

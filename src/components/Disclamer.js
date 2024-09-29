@@ -1,15 +1,18 @@
 import React, { useRef, useState } from 'react';
-import { Dialog, DialogContent, DialogActions, Button, Typography, Box } from '@mui/material';
+import { Dialog, DialogContent, DialogActions, Button, Typography, Box ,CircularProgress} from '@mui/material';
 import Switch from '@mui/material/Switch';
 import { useTranslation } from 'react-i18next';
 import axiosInstance from '../components/Axios';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 const DisclaimerDialog = ({ open, onClose, onAgree }) => {
   const contentRef = useRef(null);
   const { t } = useTranslation();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isAgreed, setIsAgreed] = useState(false); 
+  const [loading, setLoading] = useState(false);
   const [pdfUrl, setPdfUrl] = useState('');
+  const [pdfEndorsmentUrl, setEndorsmentPdfUrl] = useState('');
   const navigate = useNavigate();
   const handleAgree = () => {
     if (isAgreed) {
@@ -23,8 +26,13 @@ const DisclaimerDialog = ({ open, onClose, onAgree }) => {
     setIsAgreed(!isAgreed); 
   };
 
-  const fetchPdf = async () => {
+  const fetchAcknowedgeMentPdf = async () => {
     try {
+      //for saving Matrix Details
+      const response1 = await axiosInstance.get(`Report/FinalSubmitValidation?propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&LoginId=crc`,)
+      if(response1.data === "SUCCESS")
+      {
+        setLoading(true)
       const response = await axiosInstance.get(
         `Report/GetFinalBBMPReport?propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}`,
         {
@@ -36,20 +44,63 @@ const DisclaimerDialog = ({ open, onClose, onAgree }) => {
       const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
       const pdfUrl = URL.createObjectURL(pdfBlob);
 
-      setPdfUrl(pdfUrl); 
+      setPdfUrl(pdfUrl);
+      setLoading(false) 
+    }
     } catch (error) {
       console.error("Error fetching PDF: ", error);
+      setLoading(false)
     }
   };
-const onEsign = async () => {
+  const RedirectBack = () => {
+    sessionStorage.removeItem("P_BOOKS_PROP_APPNO");
+    sessionStorage.removeItem("SETPROPERTYCODE");
+    sessionStorage.removeItem("SETPROPERYID");
+    sessionStorage.removeItem("DraftZoneId");
+    sessionStorage.removeItem("DraftWardId");
+  
+    
+    navigate("/BBDDraftGenerated")
+  } 
+  const fetchEndorsmentPdf = async () => {
+    try {
+      //for saving Matrix Details
+      setLoading(true)
+      const response = await axiosInstance.get(
+        `Report/GetEndorsementReport?propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}`,
+        {
+          responseType: 'blob', 
+        }
+      );
+
+      
+      const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+setPdfUrl("")
+      setEndorsmentPdfUrl(pdfUrl); 
+      setLoading(false)
+      toast.success("Please Download the Endorsment Document For Future Reference")
+    } catch (error) {
+      console.error("Error fetching PDF: ", error);
+      setLoading(false)
+    }
+  };
+// const onEsign = async () => {
+//   debugger
+//  navigate("/ESignPage")
+//   // Redirecting to the URL received from the API
+
+// }
+const onDownloadEndorsment = async () => {
   debugger
- navigate("/ESignPage")
-  // Redirecting to the URL received from the API
+  fetchEndorsmentPdf()
+ 
 
 }
+
   const handleConfirmYes = () => {
-   
-    fetchPdf();
+    toast.success("Please Download the Acknowlegement for Future Reference")
+    fetchAcknowedgeMentPdf();
     setIsAgreed(false);
     setConfirmOpen(false);
     onClose(); 
@@ -59,7 +110,29 @@ const onEsign = async () => {
     setConfirmOpen(false);
     onClose(); 
   };
+  function GradientCircularProgress() {
+    return (
+      <React.Fragment>
+        <svg width={0} height={0}>
+          <defs>
+            <linearGradient id="my_gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#e01cd5" />
+              <stop offset="100%" stopColor="#1CB5E0" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <CircularProgress sx={{ 'svg circle': { stroke: 'url(#my_gradient)' } }} />
+      </React.Fragment>
+    );
+  }
 
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <GradientCircularProgress />
+      </Box>
+    );
+  }
   return (
     <>
      
@@ -117,11 +190,28 @@ const onEsign = async () => {
           </DialogContent>
         
           <DialogActions>
-          <Button onClick={() => onEsign()} color="primary">
+          {/* <Button onClick={() => onEsign()} color="primary">
               E-Sign
-            </Button>
+            </Button> */}
+              <Button onClick={() => onDownloadEndorsment()} color="primary">
+              Download Endorsement
+            </Button> 
             <Button onClick={() => setPdfUrl('')} color="primary">
               Close PDF
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
+      {pdfEndorsmentUrl && (
+        <Dialog open={Boolean(pdfEndorsmentUrl)} onClose={() => setEndorsmentPdfUrl('')} maxWidth="md" fullWidth>
+          <DialogContent>
+            <iframe src={pdfEndorsmentUrl} width="100%" height="600px" title="PDF Viewer"></iframe>
+          </DialogContent>
+        
+          <DialogActions>
+          
+            <Button onClick={() => RedirectBack()} color="primary">
+              Finish
             </Button>
           </DialogActions>
         </Dialog>

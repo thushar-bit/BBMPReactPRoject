@@ -518,6 +518,7 @@ debugger
       toast.error("Please Upload the Document")
       return
     }
+   
     setIsDialogOpen(true);
   };
 
@@ -527,6 +528,7 @@ debugger
 
   const handleAgree = () => {
     // Save the agreement state here
+  
     setIsDialogOpen(false);
     // Navigate to the next page or perform any action
     // navigate('/ClassificationDocumentUploadPage');

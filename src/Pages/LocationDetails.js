@@ -243,10 +243,7 @@ const LocationDetails = () => {
   //  setfileExtension('');
   };
   const handleBack = () => {
-   
-    sessionStorage.removeItem("P_BOOKS_PROP_APPNO");
-    sessionStorage.removeItem("SETPROPERTYCODE");
-    sessionStorage.removeItem("SETPROPERYID");
+ 
     navigate("/OwnerDetails");
   }
   const handleKeyDown = (e) => {
