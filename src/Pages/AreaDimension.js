@@ -60,6 +60,7 @@ const AreaDimension = () => {
   const [isEditable, setIsEditable] = useState(false);
   const [isEditablecheckbandhi, setIsEditablecheckbandi] = useState(false);
   const navigate = useNavigate();
+  const [MatrixData,setMatrixData] = useState();
   const [isOddSiteEnabled, setIsOddSiteEnabled] = useState(false);
   const calculateArea = (numberOfSides, formData) => {
 
@@ -122,7 +123,10 @@ const handleAddressEdit = () => {
         formData.plotAreaSqMt = 0;
       }
     }
-   
+   if(name === 'KaveriAreaSQFT'){
+    const areaMtKave = value > 0 ? Math.round(value * 0.092903 * 100) / 100 : "Invalid Data";
+    formData.KaveriAreaSQMT = areaMtKave;
+   }
     if (name.startsWith('cal')) {
 
       const updatedFormData = {
@@ -169,9 +173,17 @@ const handleAddressEdit = () => {
         
       }
       if(formData.KaveriAreaSQFT !== formData.sqFt && formData.noofSides){
+        if(formData.KaveriAreaSQFT === 0){
+          errors.KaveriArea = "Please ensure Sq(ft) values are Entered and More than 0."
+        }
         const differencePercentage = (Math.abs(formData.KaveriAreaSQFT - formData.sqFt) / formData.sqFt) * 100;
         if (differencePercentage > 30) {
+          if(MatrixData === "1"){
           errors.acutalPercentageDifference = "The Deed SqFt value differs by more than 30% from the calculated SqFt value."
+          }else {
+            errors.acutalPercentageDifference = "The Site Area Sqft value differs by more than 30% from the calculated SqFt value."
+
+          }
         }
       }
 
@@ -187,18 +199,29 @@ const handleAddressEdit = () => {
       }
     } else {
       // Validate ns and ew
+      if(formData.propertyType !== 3){
       if (isInvalid(formData.ns)) {
         errors.nsEw = 'Please ensure N-S (ft) values are Entered and More than 0.';
       }
       else if (isInvalid(formData.ew)) {
         errors.nsEw = 'Please ensure E-W (ft) values are Entered and More than 0.';
       }
+    }
       debugger
       if(formData.propertyType !== 3){
+        if(formData.KaveriAreaSQFT === 0){
+          errors.KaveriArea = "Please ensure Sq(ft) values are Entered and More than 0."
+        }
       if(formData.KaveriAreaSQFT !== formData.plotAreaSqFt){
         const differencePercentage = (Math.abs(formData.KaveriAreaSQFT - formData.plotAreaSqFt) / formData.plotAreaSqFt) * 100;
         if (differencePercentage > 20) {
-          errors.acutalPercentageDifference = "The Deed SqFt value differs by more than 20% from the calculated SqFt value."
+          if(MatrixData === "1"){
+            errors.acutalPercentageDifference = "The Deed SqFt value differs by more than 20% from the calculated SqFt value."
+
+          }else {
+            errors.acutalPercentageDifference = "The Site Area Sqft value differs by more than 30% from the calculated SqFt value."
+
+          }
         }
       }
     }
@@ -221,7 +244,8 @@ const handleAddressEdit = () => {
         Table1: NCLTable1Data = [],
         Table2: NCLTable2Data = [],
         Table3: NCLTable3Data = [],
-        Table4: NCLTable4Data = []
+        Table4: NCLTable4Data = [],
+        Table5: MatrixData = []
       } = response2.data;
      
       const updatedFormData = {
@@ -263,9 +287,10 @@ const handleAddressEdit = () => {
         oddSite: NCLTable3Data.length > 0 ? NCLTable3Data[0].ODDSITE || '' : Table3Data.length > 0 ? Table3Data[0].ODDSITE || '' : '',
       }
       setFormData(updatedFormData);
-      
+      debugger
+      setMatrixData(MatrixData[0].KAVERIDOC_AVAILABLE)
       const validationErrors = await validateFormData(updatedFormData);
-
+      debugger
       if (Object.keys(validationErrors).length > 0) {
         setIsEditable(true)
         setIsEditablecheckbandi(true)
@@ -864,6 +889,7 @@ const handleAddressEdit = () => {
                   <FormControlLabel value="N" control={<Radio disabled={!isEditable} />} label={t("No")} />
                 </RadioGroup>
               </FormControl>
+              {MatrixData === "1" && 
               <Typography
                 variant="h6"
                 align="left"
@@ -876,6 +902,21 @@ const handleAddressEdit = () => {
                 {t("Area as per Deed Document")}
                 
               </Typography>
+}
+{MatrixData !== "1" &&
+              <Typography
+                variant="h6"
+                align="left"
+                gutterBottom
+                sx={{
+                  fontWeight: 'bold',
+                  marginBottom: 3,
+                }}
+              >
+                Site Area
+                
+              </Typography>
+}
               <Grid container spacing={3}>
               <Grid item xs={6} sm={3}>
               <TextField
@@ -885,9 +926,10 @@ const handleAddressEdit = () => {
                       value={formData.KaveriAreaSQFT}
                       onChange={handleChange}
                       type="number"
-                      variant={"filled"}
+                      variant={MatrixData === "1" && isEditable ? "filled" : "outlined"}
                       InputProps={{
-                        readOnly: true,
+                        readOnly: MatrixData === "1" && isEditable? false : true,
+                        style: { backgroundColor: MatrixData === "1" && isEditable ? "#ffff" : "" },
                         endAdornment: (
                           <Tooltip title="Converted from Sq.ft">
                             <IconButton>
@@ -908,7 +950,7 @@ const handleAddressEdit = () => {
                       type="number"
                       variant={"filled"}
                       InputProps={{
-                        readOnly: true,
+                        readOnly:  true,
                         endAdornment: (
                           <Tooltip title="Converted from Sq.ft">
                             <IconButton>
@@ -1352,6 +1394,7 @@ const handleAddressEdit = () => {
               </FormControl>
               <Typography variant="h6" sx={{ fontWeight: 'bold', }}>
               </Typography>
+              {MatrixData === "1" && 
               <Typography
                 variant="h6"
                 align="left"
@@ -1362,19 +1405,36 @@ const handleAddressEdit = () => {
                 }}
               >
                 {t("Area as per Deed Document")}
+                
               </Typography>
+}
+{MatrixData !== "1" &&
+              <Typography
+                variant="h6"
+                align="left"
+                gutterBottom
+                sx={{
+                  fontWeight: 'bold',
+                  marginBottom: 3,
+                }}
+              >
+                Site Area
+                
+              </Typography>
+}
               <Grid container spacing={3}>
               <Grid item xs={6} sm={3}>
               <TextField
                       fullWidth
                       label="Sq (ft)"
-                      name="Bookns"
+                      name="KaveriAreaSQFT"
                       value={formData.KaveriAreaSQFT}
                       onChange={handleChange}
                       type="number"
-                      variant={"filled"}
+                      variant={MatrixData === "1" && isEditable ? "filled" : "outlined"}
                       InputProps={{
-                        readOnly: true,
+                        readOnly: MatrixData === "1" && isEditable? false : true,
+                        style: { backgroundColor: MatrixData === "1" && isEditable ? "#ffff" : "" },
                         endAdornment: (
                           <Tooltip title="Converted from Sq.ft">
                             <IconButton>

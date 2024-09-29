@@ -247,7 +247,7 @@ const LocationDetails = () => {
     sessionStorage.removeItem("P_BOOKS_PROP_APPNO");
     sessionStorage.removeItem("SETPROPERTYCODE");
     sessionStorage.removeItem("SETPROPERYID");
-    navigate("/BBDDraft");
+    navigate("/OwnerDetails");
   }
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {

@@ -51,11 +51,11 @@ const AppRoutes = () => {
             /> 
              <Route
               path="/OwnerDetails"
-              element={<OwnerDetails />}
+              element={<PrivateRoute element={<OwnerDetails />} />}
             />
             <Route
               path="/LocationDetails"
-             element={<LocationDetails />}
+              element={<PrivateRoute element={<LocationDetails />} />}
             />
             <Route
               path="/AreaDimension"
@@ -79,7 +79,7 @@ const AppRoutes = () => {
             />
             <Route
               path="/EKYCResponse"
-             element={<EKYCResponse />}
+              element={<PrivateRoute element={<EKYCResponse />} />}
             />
               <Route
               path="/ESignPage"

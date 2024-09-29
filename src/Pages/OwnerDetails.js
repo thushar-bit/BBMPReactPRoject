@@ -134,7 +134,7 @@ debugger
   const handleDelete = async (index) => {
     try {
       const ownerToDelete = tabledata5EkycNotVerifed[index];
-      await axiosInstance.get(`BBMPCITZAPI/DEL_SEL_NCL_PROP_OWNER_TEMP?P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&propertyCode=${ownerToDelete.PROPERTYCODE}&ownerNumber=${ownerToDelete.OWNERNUMBER}`);
+      await axiosInstance.get(`Name_Match/DEL_SEL_NCL_PROP_OWNER_TEMP?P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&propertyCode=${ownerToDelete.PROPERTYCODE}&ownerNumber=${ownerToDelete.OWNERNUMBER}`);
       toast.error(`${t("ownerDeletedSuccess")}`);
       await fetchData();
     } catch (error) {
@@ -247,7 +247,8 @@ debugger
         toast.error(`${t("enterRelationName")}`)
         return
       }
-
+      let s = tabledata5EkycNotVerifed.some(x =>x.MOBILEVERIFY === "Verified");
+      if(!s){
       if (formData.MOBILENUMBER === null || formData.MOBILENUMBER === undefined) {
         toast.error(`${t("enterValidMobileNumber")}`)
         return
@@ -256,6 +257,7 @@ debugger
         toast.error(`${t("enterValidMobileNumber")}`)
         return
       }
+    }
 
       if(Type === "AFTEREKYC")
       {
@@ -274,7 +276,7 @@ debugger
       const queryString = new URLSearchParams(params).toString();
 
 
-      const response = await axiosInstance.get(`BBMPCITZAPI/UPD_NCL_PROPERTY_OWNER_TEMP_MOBILEVERIFY?${queryString}`);
+      const response = await axiosInstance.get(`Name_Match/UPD_NCL_PROPERTY_OWNER_TEMP_MOBILEVERIFY?${queryString}`);
       console.log(response.data);
       toast.success(`${t("ownerEditedSuccess")}`)
       await fetchData();
@@ -291,7 +293,7 @@ debugger
       const queryString = new URLSearchParams(params).toString();
 
 
-      const response = await axiosInstance.post(`BBMPCITZAPI/INS_NCL_PROPERTY_OWNER_TEMP_WITH_EKYCDATA?${queryString}`,EkycResponseData);
+      const response = await axiosInstance.post(`Name_Match/INS_NCL_PROPERTY_OWNER_TEMP_WITH_EKYCDATA?${queryString}`,EkycResponseData);
       console.log(response.data);
       toast.success(`${t("ownerEditedSuccess")}`)
       setEkycResponseData(null);
@@ -305,9 +307,9 @@ debugger
   const fetchData = React.useCallback(async () => {
     setLoading(true);
     try {
-      const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterTablesData_React?UlbCode=555&Page=OWNER_DETAILS');
-      const response2 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=OWNER_DETAILS`);
-      const response3 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=OWNER_DETAILS`);
+      const response1 = await axiosInstance.get('Name_Match/GetMasterTablesData_React?UlbCode=555&Page=OWNER_DETAILS');
+      const response2 = await axiosInstance.get(`Name_Match/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=OWNER_DETAILS`);
+      const response3 = await axiosInstance.get(`Name_Match/GET_PROPERTY_PENDING_CITZ_NCLTEMP_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=OWNER_DETAILS`);
       const { Table1:BBDTable1 = [] } = response2.data;
       const { Table2: NCLTable2 = [], Table1: NCLTable1Data = [], } = response3.data;
       const { Table:MasterTable1 = [] } = response1.data;
@@ -433,7 +435,7 @@ debugger
     } else {
       ownerNumber = row.SLNO;
     }
-    var response = await axiosInstance.get("BBMPCITZAPI/COPY_OWNER_FROM_BBDDRAFT_NCLTEMP?&P_BOOKS_PROP_APPNOAPPNO=" + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + "&propertyCode=" + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + "&ownerNumber=" + ownerNumber)
+    var response = await axiosInstance.get("Name_Match/COPY_OWNER_FROM_BBDDRAFT_NCLTEMP?&P_BOOKS_PROP_APPNOAPPNO=" + JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')) + "&propertyCode=" + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + "&ownerNumber=" + ownerNumber)
     console.log(response.data)
     const { Table1 = [] } = response.data;
     setTablesDataEkycNotVerifed(Table1);

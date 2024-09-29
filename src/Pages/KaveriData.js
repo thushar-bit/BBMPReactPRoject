@@ -310,15 +310,22 @@ debugger
     });
   }
   const handleNavigation = async () => {
+    if(formData.TypeOfUpload.length === 0){
+      toast.error("Please Select Any One Of the Options Above")
+      return
+    }
+  let TypeOfUpload = formData.TypeOfUpload ===  "RegistrationNumber" ? "1"  : formData.TypeOfUpload === "OldRegistrationNumber" ? "2" : formData.TypeOfUpload ===  "DoNotHaveRegistrationDeed" ? "3": ""
+    await axiosInstance.post(`BBMPCITZAPI/UPD_COL_NCL_PROPERTY_COMPARE_MATRIX_TEMP?BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&propertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&COLUMN_NAME=KAVERIDOC_AVAILABLE&COLUMN_VALUE=${TypeOfUpload}&loginID=23`);
+
     if(formData.TypeOfUpload === "DoNotHaveRegistrationDeed"){
       try{
-      await axiosInstance.post(`BBMPCITZAPI/UPD_COL_NCL_PROPERTY_COMPARE_MATRIX_TEMP?BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&propertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&COLUMN_NAME=KAVERIDOC_AVAILABLE&COLUMN_VALUE=3&loginID=23`);
       navigate("/OwnerDetails")
+      return
       }
       catch(error){
         console.log(error)
       }
-      
+      return
     }
     if (KAVERI_DOC_DETAILS.length > 0 && KAVERI_PROP_DETAILS.length > 0 && KAVERI_PARTIES_DETAILS.length > 0) {
       if (KAVERIEC_PROP_DETAILS.length > 0 && KAVERIEC_PARTIES_DETAILS.length > 0) {
@@ -413,7 +420,15 @@ debugger
           <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
             <RadioGroup row name="TypeOfUpload" value={formData.TypeOfUpload} onChange={handleChange}>
               <FormControlLabel value="RegistrationNumber" control={<Radio />} label={t("RegistrationNumber")} />
-              <FormControlLabel value="OldRegistrationNumber" control={<Radio />} label={t("oldRegistrationNumber")} />
+              <FormControlLabel value="OldRegistrationNumber" control={<Radio />} label={
+                 <>
+                {t("oldRegistrationNumber")}{" "}
+                <Typography component="span" style={{ color: 'red' }}>
+        {t("CaseRefertoARO")}
+      </Typography>
+                </>
+              }
+                />
               <FormControlLabel value="DoNotHaveRegistrationDeed" control={<Radio />} label={
     <>
       {t("DoNotHaveRegistrationDeed")}{" "}
