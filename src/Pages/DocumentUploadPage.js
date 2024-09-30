@@ -338,7 +338,9 @@ console.log("Component is rendered")
                     sm: '1rem',
                     md: '1.3rem',
                   }
-                }}>Title and Support Documents *    (One of the documents with * to be uploaded)   (Only when registration happened prior to 2004)</Typography>
+                }}>
+                  {t("DocumentTitle")}
+                </Typography>
               <Grid container spacing={4}>
 
 
@@ -420,7 +422,7 @@ console.log("Component is rendered")
                     fullWidth
 
                     // label={t("DocumentNumber :")}
-                    label={<LabelWithAsterisk text={t("DocumentNumber")} />}
+                    label={<LabelWithAsterisk text={t("DocumentNumber :")} />}
                     name="DocumentNumber"
                     value={formData.DocumentNumber}
                     onChange={handleChange}

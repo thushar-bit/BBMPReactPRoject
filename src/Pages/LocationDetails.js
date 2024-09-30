@@ -504,13 +504,12 @@ const LocationDetails = () => {
             }
           }}
         >
-         Location search
-         (Enter a landmark near your property to zoom into that area & then select your specific property)
+      {t("LocationTitle")}
         </Typography>
         {GoogleMapLoad &&
           <GoogleMaps lat={wardlat} long={wardLong} onLocationChange={handleAddressChange} />
         }
-       <Typography>  Please Click on the Map of Your Property to get the Address and Coordinates</Typography>
+       <Typography>  {t("Please Click on the Map of Your Property to get the Address and Coordinates")}</Typography>
        <Typography variant="h6"
           align="center"
           gutterBottom

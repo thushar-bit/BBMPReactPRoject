@@ -416,7 +416,7 @@ const handleSASDelete = () => {
             <TextField
               fullWidth
               variant="filled"
-              label={t("PropertyEID")}
+              label={t("propertyEID")}
               name="propertyEID"
               value={formData.propertyEID}
               onChange={handleChange}
@@ -498,7 +498,7 @@ const handleSASDelete = () => {
             <TextField
               fullWidth
               variant="filled"
-              label={t("Old Ward No")}
+              label={t("oldWardNo")}
               name="BBDOldWardNumber"
               value={formData.BBDOldWardNumber}
               onChange={handleChange}
@@ -518,7 +518,7 @@ const handleSASDelete = () => {
             <TextField
               fullWidth
               variant="filled"
-              label={t("Property Old Number")}
+              label={t("oldPropertyNo")}
               name="BBDOldPropertyNumber"
               value={formData.BBDOldPropertyNumber}
               onChange={handleChange}
@@ -538,7 +538,7 @@ const handleSASDelete = () => {
             <TextField
               fullWidth
               variant="filled"
-              label={t("SAS Base Application No")}
+              label={t("SASBaseApplicationNo")}
               name="BBDSasApplicationNumber"
               value={formData.BBDSasApplicationNumber}
               onChange={handleChange}
@@ -558,7 +558,7 @@ const handleSASDelete = () => {
             <TextField
               fullWidth
               variant="filled"
-              label={t("Property Address")}
+              label={t("PropertyAddress")}
               name="BBDAddress"
               value={formData.BBDAddress}
               onChange={handleChange}
@@ -577,7 +577,7 @@ const handleSASDelete = () => {
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth  variant="filled" >
               <InputLabel>
-                {t('Property Type')}
+                {t('PropertyType')}
               </InputLabel>
               <Select
                 name="BBDPropertyType"

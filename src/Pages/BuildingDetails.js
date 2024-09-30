@@ -716,7 +716,7 @@ if(RentedAreaEnabled){
                 <Grid item xs={12} sm={4}>
                   <TextField
                     fullWidth
-                    label={<LabelWithAsterisk text={"BESCOM Customer ID :"}/>}
+                    label={<LabelWithAsterisk text={t("BESCOMCustomerID")}/>}
                     name="BesomCustomerID"
                     value={formData.BesomCustomerID}
                     onChange={handleChange}
@@ -740,7 +740,7 @@ if(RentedAreaEnabled){
                 <Grid item xs={12} sm={4}>
                   <TextField
                     fullWidth
-                    label={"BWSSB Meter Number :"}
+                    label={t("BWSSBMeterNumber")}
                     name="BWSSBMeterNumber"
                     value={formData.BWSSBMeterNumber}
                     onChange={handleChange}
@@ -775,7 +775,7 @@ if(RentedAreaEnabled){
 ) : (
               BescomTable.length > 0 &&
               <> 
-                <Typography  variant="h6">Bescom Data</Typography>
+                <Typography  variant="h6">{t("Bescom Data")}</Typography>
               <TableContainer component={Paper} sx={{ mt: 4 }}>
                 <Table>
                   <TableHead>
@@ -785,9 +785,9 @@ if(RentedAreaEnabled){
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Escom Name")}</TableCell>
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("RR No")}</TableCell>
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Nature Of Business")}</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("MobileNo ")}</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Email ")}</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Address ")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("MobileNo")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Email")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Address")}</TableCell>
                 
                       
            
@@ -836,8 +836,8 @@ if(RentedAreaEnabled){
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("SelfUseArea")}</TableCell>
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("RentedArea")}</TableCell>
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("TotalArea")}</TableCell>
-                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>BESCOM Customer ID :</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>ಬಿ ಡಬ್ಲ್ಯೂ ಎಸ್ ಎಸ್ ಬಿ ಮೀಟರ್ ಸಂಖ್ಯೆ :</TableCell> 
+                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("BESCOMCustomerID")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("BWSSBMeterNumber")}</TableCell> 
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Edit")}</TableCell>
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Delete")}</TableCell>
                     </TableRow>

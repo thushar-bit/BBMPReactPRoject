@@ -565,7 +565,7 @@ debugger
                     <TableCell><strong>{t("PartyName")}</strong></TableCell>
 
                     <TableCell><strong>{t("Address")}</strong></TableCell>
-                    <TableCell><strong>{t("Id ProofType ")}</strong></TableCell>
+                    <TableCell><strong>{t("Id ProofType")}</strong></TableCell>
                     <TableCell><strong>{t("Id ProofNumber")}</strong></TableCell>
                     <TableCell><strong>{t("Party Type")}</strong></TableCell>
                     <TableCell><strong>{t("Admission Date")}</strong></TableCell>
@@ -716,7 +716,7 @@ debugger
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography variant="subtitle1"><strong>Executant Names</strong></Typography>
+                    <Typography variant="subtitle1"><strong>{t("Executant Names")}</strong></Typography>
                     {KAVERIEC_PARTIES_DETAILS && KAVERIEC_PARTIES_DETAILS.length > 0 ? (
                       KAVERIEC_PARTIES_DETAILS.map((item, index) => (
                         <Typography key={index} variant="body2">{item.ISCLAIMANTOREXECUTANT === 'E' ? item.OWNERNAME : ""}</Typography>
@@ -736,7 +736,7 @@ debugger
                 </TableRow>
                 <TableRow>
                   <TableCell>
-                    <Typography variant="subtitle1"><strong>Claimant Names</strong></Typography>
+                    <Typography variant="subtitle1"><strong>{t("Claimant Names")}</strong></Typography>
                     {KAVERIEC_PARTIES_DETAILS && KAVERIEC_PARTIES_DETAILS.length > 0 ? (
                       KAVERIEC_PARTIES_DETAILS.map((item, index) => (
                         <Typography key={index} variant="body2">{item.ISCLAIMANTOREXECUTANT === 'C' ? item.OWNERNAME : ""}</Typography>

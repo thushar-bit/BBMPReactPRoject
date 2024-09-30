@@ -928,7 +928,7 @@ const handleAddressEdit = () => {
                   marginBottom: 3,
                 }}
               >
-                Site Area
+                  {t("Site Area")}
                 
               </Typography>
 }
@@ -936,7 +936,7 @@ const handleAddressEdit = () => {
               <Grid item xs={6} sm={3}>
               <TextField
                       fullWidth
-                      label="Sq (ft)"
+                      label={t("Sq (ft)")}
                       name="KaveriAreaSQFT"
                       value={formData.KaveriAreaSQFT}
                       onChange={handleChange}
@@ -958,7 +958,7 @@ const handleAddressEdit = () => {
                       <Grid item xs={6} sm={3}>
                      <TextField
                       fullWidth
-                      label="Sq (mt)"
+                      label={t("Sq (mt)")}
                       name="KaveriAreaSQMT"
                       value={formData.KaveriAreaSQMT}
                       onChange={handleChange}
@@ -1016,7 +1016,7 @@ const handleAddressEdit = () => {
                   <Grid item xs={6} sm={3}>
                     <TextField
                       fullWidth
-                      label="N-S (ft)"
+                      label={t("N-S (ft)")}
                       name="Bookns"
                       value={formData.Bookns}
                       onChange={handleChange}
@@ -1037,7 +1037,7 @@ const handleAddressEdit = () => {
                   <Grid item xs={6} sm={3}>
                     <TextField
                       fullWidth
-                      label="E-W (ft)"
+                      label={t("E-W (ft)")}
                       name="Bookew"
                       value={formData.Bookew}
                       onChange={handleChange}
@@ -1059,7 +1059,7 @@ const handleAddressEdit = () => {
                   <Grid item xs={6} sm={3}>
                     <TextField
                       fullWidth
-                      label="PLOT AREA(N-S*E-W) (Sq.ft)"
+                      label={t("PLOT AREA(N-S*E-W)")}
                       name="BookplotAreaSqFt"
                       value={formData.BookplotAreaSqFt}
                       onChange={handleChange}
@@ -1080,7 +1080,7 @@ const handleAddressEdit = () => {
                   <Grid item xs={6} sm={3}>
                     <TextField
                       fullWidth
-                      label="(Sq.Mt)"
+                      label={t("Plot Area (Sq.Mt)")}
                       name="BookplotAreaSqMt"
                       value={formData.BookplotAreaSqMt}
                       onChange={handleChange}
@@ -1126,7 +1126,7 @@ const handleAddressEdit = () => {
                     <TextField
                       fullWidth
 
-                      label={<LabelWithAsterisk text={"E-W (ft)"} />}
+                      label={<LabelWithAsterisk text={t("E-W (ft)")} />}
                       name="ew"
                       value={formData.ew}
                       onChange={handleChange}
@@ -1148,7 +1148,7 @@ const handleAddressEdit = () => {
                   <Grid item xs={6} sm={3}>
                     <TextField
                       fullWidth
-                      label="PLOT AREA(N-S*E-W) (Sq.ft)"
+                      label={t("PLOT AREA(N-S*E-W)")}
                       name="plotAreaSqFt"
                       value={formData.plotAreaSqFt}
                       onChange={handleChange}
@@ -1169,7 +1169,7 @@ const handleAddressEdit = () => {
                   <Grid item xs={6} sm={3}>
                     <TextField
                       fullWidth
-                      label="(Sq.Mt)"
+                      label={t("Plot Area (Sq.Mt)")}
                       name="plotAreaSqMt"
                       value={formData.plotAreaSqMt}
                       onChange={handleChange}
@@ -1433,7 +1433,7 @@ const handleAddressEdit = () => {
                   marginBottom: 3,
                 }}
               >
-                Site Area
+               {t("Site Area")}
                 
               </Typography>
 }
@@ -1441,7 +1441,7 @@ const handleAddressEdit = () => {
               <Grid item xs={6} sm={3}>
               <TextField
                       fullWidth
-                      label="Sq (ft)"
+                      label={t("Sq (ft)")}
                       name="KaveriAreaSQFT"
                       value={formData.KaveriAreaSQFT}
                       onChange={handleChange}
@@ -1463,7 +1463,7 @@ const handleAddressEdit = () => {
                       <Grid item xs={6} sm={3}>
                      <TextField
                       fullWidth
-                      label="Sq (mt)"
+                      label={t("Sq (mt)")}
                       name="Bookns"
                       value={formData.KaveriAreaSQMT}
                       onChange={handleChange}
@@ -1519,7 +1519,7 @@ const handleAddressEdit = () => {
                   <Grid item xs={6} sm={3}>
                     <TextField
                       fullWidth
-                      label="N-S (ft)"
+                      label={t("N-S (ft)")}
                       name="ns"
                       value={formData.Bookns}
                       onChange={handleChange}
@@ -1541,7 +1541,7 @@ const handleAddressEdit = () => {
                   <Grid item xs={6} sm={3}>
                     <TextField
                       fullWidth
-                      label="E-W (ft)"
+                      label={t("E-W (ft)")}
                       name="ew"
                       value={formData.Bookew}
                       onChange={handleChange}
@@ -1563,7 +1563,7 @@ const handleAddressEdit = () => {
                   <Grid item xs={6} sm={3}>
                     <TextField
                       fullWidth
-                      label="PLOT AREA(N-S*E-W)"
+                      label={t("PLOT AREA(N-S*E-W)")}
                       name="BookplotAreaSqFt"
                       value={formData.BookplotAreaSqFt}
                       onChange={handleChange}
@@ -1584,7 +1584,7 @@ const handleAddressEdit = () => {
                   <Grid item xs={6} sm={3}>
                     <TextField
                       fullWidth
-                      label="Plot Area (Sq.Mt)"
+                      label={t("Plot Area (Sq.Mt)")}
                       name="BookplotAreaSqMt"
                       value={formData.BookplotAreaSqMt}
                       onChange={handleChange}
@@ -1606,7 +1606,7 @@ const handleAddressEdit = () => {
                     <TextField
                       fullWidth
 
-                      label={<LabelWithAsterisk text={"N-S (ft)"} />}
+                      label={<LabelWithAsterisk text={t("N-S (ft)")} />}
                       name="ns"
                       value={formData.ns}
                       onChange={handleChange}
@@ -1628,8 +1628,7 @@ const handleAddressEdit = () => {
                   <Grid item xs={6} sm={3}>
                     <TextField
                       fullWidth
-
-                      label={<LabelWithAsterisk text={"E-W (ft)"} />}
+                      label={<LabelWithAsterisk text={t("E-W (ft)")} />}
                       name="ew"
                       value={formData.ew}
                       onChange={handleChange}
@@ -1651,7 +1650,7 @@ const handleAddressEdit = () => {
                   <Grid item xs={6} sm={3}>
                     <TextField
                       fullWidth
-                      label="PLOT AREA(N-S*E-W)"
+                      label={t("PLOT AREA(N-S*E-W)")}
                       name="plotAreaSqFt"
                       value={formData.plotAreaSqFt}
                       onChange={handleChange}
@@ -1672,14 +1671,14 @@ const handleAddressEdit = () => {
                   <Grid item xs={6} sm={3}>
                     <TextField
                       fullWidth
-                      label="Plot Area (Sq.Mt)"
+                      label={t("Plot Area (Sq.Mt)")}
                       name="plotAreaSqMt"
                       value={formData.plotAreaSqMt}
                       onChange={handleChange}
                       type="number"
                       variant={"filled"}
                       InputProps={{
-                        readOnly: false,
+                        readOnly: true,
                         endAdornment: (
                           <Tooltip title="Converted from Sq.ft">
                             <IconButton>
@@ -1714,7 +1713,7 @@ const handleAddressEdit = () => {
                   <Grid item xs={6} sm={3}>
                     <TextField
                       fullWidth
-                      label="Built-UpArea(mt)"
+                      label={t("Built-UpArea(mt)")}
                       name="builtUpAreaSqMt"
                       value={formData.builtUpAreaSqMt}
                       onChange={handleChange}

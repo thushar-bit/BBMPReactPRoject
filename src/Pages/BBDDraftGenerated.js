@@ -104,17 +104,17 @@ try {
             }
           }}
         >
-         eKhata Roll-Out Status and Information
+         {t("eKhata Roll-Out Status and Information")}
         </Typography>
         
         <TableContainer component={Paper} sx={{ mt: 4, maxHeight: 900  }}>
   <Table stickyHeader aria-label="sticky table">
     <TableHead>
       <TableRow>
-        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>ZONE</TableCell>
-        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>ARO or Subdivision</TableCell>
-        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Ward Name and Number Where Draft eKhata rolled out</TableCell>
-        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Status of Draft eKhata rolled out in ward</TableCell>
+        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("ZONE")}</TableCell>
+        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("ARO or Subdivision")}</TableCell>
+        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Ward Name and Number Where Draft eKhata rolled out")}</TableCell>
+        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Status of Draft eKhata rolled out in ward")}</TableCell>
       </TableRow>
     </TableHead>
     <TableBody>

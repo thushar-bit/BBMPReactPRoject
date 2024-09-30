@@ -70,15 +70,15 @@ const MultiStoreyBuildingDetails = () => {
     }
     if (name === "SelectOwnerShareType" && value !== '0') {
       if (name === "SelectOwnerShareType" && value === '1') {
-        setOwnerSharetype("Owner Share Area(in Sq.mts.) :")
+        setOwnerSharetype(t("Owner Share Area(in Sq.mts.) :"))
 
       }
       else if (name === "SelectOwnerShareType" && value === '2') {
-        setOwnerSharetype("Owners Share Percent (in Percentile) : ")
+        setOwnerSharetype(t("Owners Share Percent (in Percentile) : "))
 
       }
       else if (name === "SelectOwnerShareType" && value === '3') {
-        setOwnerSharetype("Owner Share Number : ")
+        setOwnerSharetype(t("Owner Share Number : "))
 
       }
     }
@@ -186,17 +186,17 @@ const fetchData = React.useCallback(async () => {
       if (table13Item.PLOTAREAOWNERSHARE_AREA !== 0) {
         ownersharetypeValue = table13Item.PLOTAREAOWNERSHARE_AREA
         sharetype = "1";
-        setOwnerSharetype("Owner Share Area(in Sq.mts.) :")
+        setOwnerSharetype(t("Owner Share Area(in Sq.mts.) :"))
       }
       else if (table13Item.PLOTAREAOWNERSHARE_FRACTION !== 0) {
         ownersharetypeValue = table13Item.PLOTAREAOWNERSHARE_FRACTION
         sharetype = "3";
-          setOwnerSharetype("Owner Share Number : ")
+          setOwnerSharetype(t("Owner Share Number : "))
       }
       else if (table13Item.PLOTAREAOWNERSHARE_NOS !== 0) {
         ownersharetypeValue = table13Item.PLOTAREAOWNERSHARE_NOS
         sharetype = "2";
-    setOwnerSharetype("Owners Share Percent (in Percentile) : ")
+    setOwnerSharetype(t("Owners Share Percent (in Percentile) : "))
       }
       else {
         ownersharetypeValue = ""
@@ -688,7 +688,7 @@ if(isInitialEditable){
                 <Grid item xs={12} sm={4}>
                   <TextField
                     fullWidth
-                    label={<LabelWithAsterisk text={"BESCOM Customer ID :"}/>}
+                    label={<LabelWithAsterisk text={t("BESCOMCustomerID")}/>}
                     name="BesomCustomerID"
                     type="number"
                     value={formData.BesomCustomerID}
@@ -722,7 +722,7 @@ if(isInitialEditable){
 ) : (
               BescomTable.length > 0 &&
               <> 
-                <Typography  variant="h6">Bescom Data</Typography>
+                <Typography  variant="h6">{t("Bescom Data")}</Typography>
               <TableContainer component={Paper} sx={{ mt: 4 }}>
                 <Table>
                   <TableHead>
@@ -732,9 +732,9 @@ if(isInitialEditable){
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Escom Name")}</TableCell>
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("RR No")}</TableCell>
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Nature Of Business")}</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("MobileNo ")}</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Email ")}</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Address ")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("MobileNo")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Email")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Address")}</TableCell>
                 
                       
            

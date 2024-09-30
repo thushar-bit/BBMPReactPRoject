@@ -1024,7 +1024,7 @@ debugger
 
 
           <br></br>
-          <Typography>Actual Owners Applying For E-Khata</Typography>
+          <Typography>{t("ActualOwners")}</Typography>
 
           <TableContainer component={Paper} sx={{ mt: 4 }}>
             <Table>
