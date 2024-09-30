@@ -422,7 +422,7 @@ const resources = {
 "ownerShareTypeRequired": "Owner Share Type is required",
  "usageCategorydefault":"Usage Category Cannot be Select",
  "typeOfUseDefault":"Usage Category Cannot be Select",
-
+"Bescom Customer ID is required":"Bescom Customer ID is required",
 
 
       //error messages
@@ -848,6 +848,7 @@ const resources = {
 "occupancyRequired": "ಆಕ್ಯುಪೆನ್ಸಿ ಅಗತ್ಯವಿದೆ",
 "ownerShareAreaRequired": "ಮಾಲಿಕರ ಹಂಚಿಕೆ ಪ್ರದೇಶ ಅಗತ್ಯವಿದೆ",
 "ownerShareTypeRequired": "ಮಾಲಿಕರ ಹಂಚಿಕೆ ಪ್ರಕಾರ ಅಗತ್ಯವಿದೆ",
+"Bescom Customer ID is required":"ಬೆಸ್ಕಾಂ ಗ್ರಾಹಕ ಐಡಿ ಅಗತ್ಯವಿದೆ",
 //disclamer
 "disclamerMessage1":"ಒದಗಿಸಿದ ವಿವರಗಳು ಸರಿಯಾಗಿವೆ ಮತ್ತು ನೀವು ಅರ್ಜಿಯನ್ನು ಸಲ್ಲಿಸಲು ಬಯಸುವಿರಾ?",
 "disclamerMessage2":"ಕೋರ್ ವಾರ್ಡ್‌ಗಳ ಸಂದರ್ಭದಲ್ಲಿ [ದಕ್ಷಿಣ, ಪೂರ್ವ + ಪಶ್ಚಿಮ ವಲಯಗಳು], ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಮಾಲೀಕರ ಅಪ್‌ಟುಡೇಟ್ ಮಾಹಿತಿಯನ್ನು ಅವರ ಆಧಾರ್ ಇತ್ಯಾದಿಗಳೊಂದಿಗೆ ಸಲ್ಲಿಸಿದ ನಂತರ ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಎ-ಕಥಾ ಆಸ್ತಿಗಳನ್ನು ಎ-ಕಥಾ ನೀಡಲಾಗುತ್ತದೆ.",

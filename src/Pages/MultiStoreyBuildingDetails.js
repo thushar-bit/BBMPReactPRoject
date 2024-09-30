@@ -44,7 +44,7 @@ const MultiStoreyBuildingDetails = () => {
     Occupancy: Yup.string().required(`${t('occupancyRequired')}`),
     OwnersShareAreaSqmts: Yup.string().required(`${t('ownerShareAreaRequired')}`),
     SelectOwnerShareType: Yup.string().required(`${t('ownerShareTypeRequired')}`),
-    BesomCustomerID: Yup.string().required('Bescom Customer ID is required'),
+    BesomCustomerID: Yup.string().required(`${t('Bescom Customer ID is required')}`),
   });
   const [tableData, setTableData] = useState([
   ]);

@@ -44,7 +44,7 @@ const BuildingDetails = () => {
     SelfuseArea: Yup.string().required(`${t('selfUseAreaRequired')}`),
    // RentedArea:  Yup.string().required(`${t('rentedAreaRequired')}`),
     //  BWSSBMeterNumber: Yup.string().required('BWSSB Meter Number is required'),
-      BesomCustomerID: Yup.string().required('Bescom Customer ID is required'),
+      BesomCustomerID: Yup.string().required(`${t('Bescom Customer ID is required')}`),
 
   });
   const [tableData, setTableData] = useState([
