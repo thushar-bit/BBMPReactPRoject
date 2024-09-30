@@ -79,7 +79,7 @@ const DisclaimerDialog = ({ open, onClose, onAgree }) => {
 setPdfUrl("")
       setEndorsmentPdfUrl(pdfUrl); 
       setLoading(false)
-      toast.success("Please Download the Endorsment Document For Future Reference")
+      toast.success(`${t("Please Download the Endorsment Document For Future Reference")}`)
     } catch (error) {
       console.error("Error fetching PDF: ", error);
       setLoading(false)
@@ -99,7 +99,7 @@ const onDownloadEndorsment = async () => {
 }
 
   const handleConfirmYes = () => {
-    toast.success("Please Download the Acknowlegement for Future Reference")
+    toast.success(`${t("Please Download the Acknowlegement for Future Reference")}`)
     fetchAcknowedgeMentPdf();
     setIsAgreed(false);
     setConfirmOpen(false);

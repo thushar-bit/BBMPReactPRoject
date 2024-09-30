@@ -123,7 +123,7 @@ debugger
       formData.MOBILEVERIFY = "Verified";
       setOtpFieldsVisible(false);
     } else {
-      toast.error("Invalid OTP Entered");
+      toast.error(`${t("Invalid OTP Entered")}`);
     }
   };
   const handleEdit = (index) => {

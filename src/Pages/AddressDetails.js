@@ -534,7 +534,7 @@ const AddressDetails = () => {
           return
         }
         setSASTableData(Table);
-        toast.success("Details Fetched")
+        toast.success(`${t("detailsFetchedSuccess")}`)
       } catch (error) {
         toast.error(`${t("errorFetchingSasDetails")}`);
       } finally {

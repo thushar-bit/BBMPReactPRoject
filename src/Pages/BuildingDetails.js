@@ -160,7 +160,7 @@ const BuildingDetails = () => {
     // 
 if(RentedAreaEnabled){
   if(formData.RentedArea.length === 0){
-    toast.error("Please enter the Rented Area")
+    toast.error(`${t("Please enter the Rented Area")}`)
     return
   }
 }
@@ -234,25 +234,25 @@ if(RentedAreaEnabled){
   }
   const handleNavigation = () => {
     if(tableData.length === 0){
-      toast.error("Please Enter and Save the Building Details")
+      toast.error(`${t("Please Enter and Save the Building Details")}`)
       return
     }
     if(BescomTable.length > 0)
 {
     navigate('/ClassificationDocumentUploadPage');
 }else {
-  toast.error("BESCOM Needs to Be Verified")
+  toast.error(`${t("BESCOM Needs to Be Verified")}`)
   return
 }
   }
   const handleBescomVerify = async () => {
     
     if(formData.floornumber.length === 0){
-      toast.error("Please Provide Floor Number")
+      toast.error(`${t("Please Provide Floor Number")}`)
       return
     }
     if(formData.BesomCustomerID.length === 0){
-      toast.error("Please Provide BescomCustomerID or Account No")
+      toast.error(`${t("Please Provide BescomCustomerID or Account No")}`)
       return
     }
     setLoading(true)
@@ -268,12 +268,12 @@ if(RentedAreaEnabled){
     const queryString = new URLSearchParams(params1).toString();
     const BescomResponse = await axiosInstance.post(`Bescom/GetBescomData?${queryString}`);
     if(BescomResponse.data === "No Bescom Details Found"){
-      toast.error("No Bescom Details Found");
+      toast.error(`${t("No Bescom Details Found")}`);
      
       setLoading(false);
       return
     }
-    toast.success("Details Fetched Successfully")
+    toast.success(`${t("detailsFetchedSuccess")}`)
     setBescomTable(BescomResponse.data.Table || [])
    setLoading(false);
 

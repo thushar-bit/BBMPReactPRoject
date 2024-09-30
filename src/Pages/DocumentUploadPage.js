@@ -154,12 +154,12 @@ const DocumentUploadPage = () => {
     var propertyphoto2 = "";
     if (isEditable) {
       if (formData.DocumentDetails.length === 0) {
-        toast.error("Please Provide Document Details")
+        toast.error(`${t("Please Provide Document Details")}`)
         return
       }
     }
     if(tableData.length === 1){
-      toast.error("Only One Document Upload Allowed")
+      toast.error(`${t("Only One Document Upload Allowed")}`)
       return
     }
     if (selectedFile) {

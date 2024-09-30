@@ -430,11 +430,12 @@ const handleAddressEdit = () => {
       
       if (formData.oddSite === "Y") {
         if (formData.noofSides === "0" || formData.noofSides === "") {
-          toast.error("Please Select the no of Sides")
+          
+          toast.error(`${t("Please Select the no of Sides")}`)
           return
         }
         if(formData.sqFt === "Invalid Data" || formData.sqMt === "Invalid Data"){
-          toast.error("SqFt and SqMt cannot be Invalid")
+          toast.error(`${t("SqFt and SqMt cannot be Invalid")}`)
           return
         }
       

@@ -322,7 +322,7 @@ debugger
     var propertyphoto2 = "";
     if (isEditable) {
       if (formData.DocumentDetails.length === 0) {
-        toast.error("Please Provide Document Details")
+        toast.error(`${t("Please Provide Document Details")}`)
         return
       }
     }
@@ -330,7 +330,7 @@ debugger
       propertyphoto2 = await getPropertyphoto(selectedFile);
     }
     if(formData.DocumentNumber.length === 0){
-      toast.error("Please enter the Document Number");
+      toast.error(`${t("Please enter the Document Number")}`);
       return
     }
 
@@ -515,7 +515,7 @@ debugger
 
   const handleOpenDialog = () => {
     if(tableData.length === 0){
-      toast.error("Please Upload the Document")
+      toast.error(`${t("Please Upload the Document")}`)
       return
     }
    

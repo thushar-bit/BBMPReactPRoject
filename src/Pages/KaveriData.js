@@ -192,14 +192,14 @@ debugger
     const DocumetUploadDatas = await fetchData("InitialKaveri")
     if (formData.TypeOfUpload === null || formData.TypeOfUpload === null) {
       setTimeout(() => {
-        toast.error("Please Select the Document Radio Buttons");
+        toast.error(`${t("Please Select the Document Radio Buttons")}`);
       }, 100);
       return
     }
     if (formData.TypeOfUpload === "OldRegistrationNumber") {
       if (DocumetUploadDatas.data.length === 0) {
         setTimeout(() => {
-          toast.error("Please Upload the Document with Correct Document Number");
+          toast.error(`${t("Please Upload the Document with Correct Document Number")}`);
         }, 100)
         return
       }
@@ -226,7 +226,7 @@ debugger
 
         if (KAVERI_DOC_DETAILS.length === 0) {
           setTimeout(() => {
-            toast.error("Please Verify the Kaveri Document Number")
+            toast.error(`${t("Please Verify the Kaveri Document Number")}`)
           }, 100);
           setLoading(false)
           return
@@ -245,7 +245,7 @@ debugger
           fetchData("KAVERI_EC_DATA")
 
           setTimeout(() => {
-            toast.success("Details Fetched Successfull.You can Download the EC Certificate from the Above Table", {
+            toast.success("detailsFetchedSuccess", {
               position: "top-right",
               autoClose: 5000,
               hideProgressBar: false,
@@ -311,7 +311,7 @@ debugger
   }
   const handleNavigation = async () => {
     if(formData.TypeOfUpload.length === 0){
-      toast.error("Please Select Any One Of the Options Above")
+      toast.error(`${t("Please Select Any One Of the Options Above")}`)
       return
     }
   let TypeOfUpload = formData.TypeOfUpload ===  "RegistrationNumber" ? "1"  : formData.TypeOfUpload === "OldRegistrationNumber" ? "2" : formData.TypeOfUpload ===  "DoNotHaveRegistrationDeed" ? "3": ""
@@ -333,7 +333,7 @@ debugger
       }
       else {
         setTimeout(() => {
-          toast.error("Please Verify EC Data");
+          toast.error(`${t("Please Verify EC Data")}`);
         }, 200);
       }
 
@@ -347,21 +347,21 @@ debugger
           }
           else {
             setTimeout(() => {
-              toast.error("Please Verify EC Data");
+              toast.error(`${t("Please Verify EC Data")}`);
             }, 200);
             return
           }
         }
         else {
           setTimeout(() => {
-            toast.error("Please Check if the Document Uploaded Other than Encumbrance Certificate with the Correct Registration Number.If not Please Delete the Certificate and Upload the New Document with Correct Registation Number and Verify EC again to Continue");
+            toast.error(`${t("Please Check if the Document Uploaded Other than Encumbrance Certificate with the Correct Registration Number.If not Please Delete the Certificate and Upload the New Document with Correct Registation Number and Verify EC again to Continue")}`);
           }, 200);
           return
         }
       }
       else {
         setTimeout(() => {
-          toast.error("Please Upload the Document or Verify the Registration Number with the Kaveri");
+          toast.error(`${t("Please Upload the Document or Verify the Registration Number with the Kaveri")}`);
         }, 200);
         return
       }

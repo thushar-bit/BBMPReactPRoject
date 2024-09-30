@@ -116,11 +116,11 @@ const MultiStoreyBuildingDetails = () => {
   const handleBescomVerify = async () => {
     
     if(formData.floornumber.length === 0){
-      toast.error("Please Provide Floor Number")
+      toast.error(`${t("Please Provide Floor Number")}`)
       return
     }
     if(formData.BesomCustomerID.length === 0){
-      toast.error("Please Provide BescomCustomerID or Account No")
+      toast.error(`${t("Please Provide BescomCustomerID or Account No")}`)
       return
     }
     setLoading(true)
@@ -136,12 +136,12 @@ const MultiStoreyBuildingDetails = () => {
     const queryString = new URLSearchParams(params1).toString();
     const BescomResponse = await axiosInstance.post(`Bescom/GetBescomData?${queryString}`);
     if(BescomResponse.data === "No Bescom Details Found"){
-      toast.error("No Bescom Details Found")
+      toast.error(`${t("No Bescom Details Found")}`)
      
       setLoading(false);
       return
     }
-    toast.success("Details Fetched Successfully")
+    toast.success(`${t("detailsFetchedSuccess")}`)
     setBescomTable(BescomResponse.data.Table || [])
    setLoading(false);
 
@@ -321,7 +321,7 @@ if(isInitialEditable){
 {
     navigate('/ClassificationDocumentUploadPage');
 }else {
-  toast.error("Bescom Needs to Be Verified")
+  toast.error(`${t("Bescom Needs to Be Verified")}`)
   return
 }
   }
