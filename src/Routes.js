@@ -35,47 +35,47 @@ const AppRoutes = () => {
             <Route path="/" element={<Login />} />
             <Route
               path="/BBDDraftGenerated"
-              element={<PrivateRoute element={<BBDDraftGenerated />} />}
+              element={<PrivateRoute element={<BBDDraftGenerated />} requiredStep={1} />}
             /> 
              <Route
               path="/BBDDraft"
-              element={<PrivateRoute element={<BBDDraft />} />}
+              element={<PrivateRoute element={<BBDDraft />} requiredStep={2} />}
             /> 
              <Route
               path="/TaxDetails"
-             element={<TaxDetails />}
+              element={<PrivateRoute element={<TaxDetails />} requiredStep={3} />}
             />
              <Route
               path="/KaveriData"
-              element={<PrivateRoute element={<KaveriData />} />}
+              element={<PrivateRoute element={<KaveriData />} requiredStep={4}  />}
             /> 
              <Route
               path="/OwnerDetails"
-              element={<PrivateRoute element={<OwnerDetails />} />}
+              element={<PrivateRoute element={<OwnerDetails />} requiredStep={5} />}
             />
             <Route
               path="/LocationDetails"
-              element={<PrivateRoute element={<LocationDetails />} />}
+              element={<PrivateRoute element={<LocationDetails />} requiredStep={6} />}
             />
             <Route
               path="/AreaDimension"
-              element={<PrivateRoute element={<AreaDimension />} />}
+              element={<PrivateRoute element={<AreaDimension />}requiredStep={7}  />}
             />
             <Route
               path="/SiteDetails"
-              element={<PrivateRoute element={<SiteDetails />} />}
+              element={<PrivateRoute element={<SiteDetails />} requiredStep={8} />}
             />
             <Route
               path="/BuildingDetails"
-              element={<PrivateRoute element={<BuildingDetails />} />}
+              element={<PrivateRoute element={<BuildingDetails />} requiredStep={8} />}
             />
             <Route
               path="/MultiStoreyBuildingDetails"
-              element={<PrivateRoute element={<MultiStoreyBuildingDetails />} />}
+              element={<PrivateRoute element={<MultiStoreyBuildingDetails  />} requiredStep={8}/>}
             />
             <Route
               path="/ClassificationDocumentUploadPage"
-              element={<PrivateRoute element={<ClassificationDocumentUploadPage />} />}
+              element={<PrivateRoute element={<ClassificationDocumentUploadPage />} requiredStep={9} />}
             />
             <Route
               path="/EKYCResponse"

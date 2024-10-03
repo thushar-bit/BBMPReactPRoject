@@ -568,6 +568,7 @@ const handleAddressEdit = () => {
       toast.error(errorMessages);
       return;
     }
+    sessionStorage.setItem("userProgress", 8);
     if (formData.propertyType === 1) {
       navigate('/SiteDetails')
     } else if (formData.propertyType === 2) {

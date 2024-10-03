@@ -48,6 +48,7 @@ const BBDDraftGenerated = () => {
 try {
       sessionStorage.setItem('DraftZoneId', JSON.stringify(row.ZONEID));
       sessionStorage.setItem('DraftWardId', JSON.stringify(row.WARDID));
+      sessionStorage.setItem("userProgress", 2);
         navigate('/BBDDraft')
       } catch (error) {
 

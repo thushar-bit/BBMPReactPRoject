@@ -239,6 +239,7 @@ if(RentedAreaEnabled){
     }
     if(BescomTable.length > 0)
 {
+  sessionStorage.setItem("userProgress", 9);
     navigate('/ClassificationDocumentUploadPage');
 }else {
   toast.error(`${t("BESCOM Needs to Be Verified")}`)

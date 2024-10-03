@@ -121,7 +121,7 @@ if(isInitialEditable){
     navigate('/AreaDimension')
   }
   const handleNavigation = () => {
-
+    sessionStorage.setItem("userProgress", 9);
     navigate('/ClassificationDocumentUploadPage')
 
   }

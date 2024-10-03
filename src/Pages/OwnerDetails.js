@@ -16,18 +16,14 @@ const OwnerDetails = () => {
     MOBILEVERIFY: "",
     IDENTIFIERNAME: ""
   });
-
   const [tableData, setTableData] = useState([
   ]);
-
   const navigate = useNavigate();
   const location = useLocation();
   const [tabledata5EkycVerifed, setTablesDataEKYCVerified] = useState([]);
   const [tabledata5EkycNotVerifed, setTablesDataEkycNotVerifed] = useState([]);
   const [tablesdata8, setTableData8] = useState([]);
-  // const [propertytype, setPropertyType] = useState();
   const [coreArea, setCoreArea] = useState(0)
-
   const [loading, setLoading] = useState(false);
   const [editableIndex, setEditableIndex] = useState(-1);
   const [otpFieldsVisible, setOtpFieldsVisible] = useState(false);
@@ -36,23 +32,18 @@ const OwnerDetails = () => {
   const [otpNumber, setOtpNumber] = useState(0)
   const { t } = useTranslation();
   const [otpButtonDisabled, setOtpButtonDisabled] = useState(false);
-  const [timer, setTimer] = useState(30); // Initial countdown timer value in seconds
+  const [timer, setTimer] = useState(30); 
   const [countdownInterval, setCountdownInterval] = useState(null);
-
   const handleChange = (e) => {
 debugger
     const { name, value } = e.target;
-
     if (name === "MOBILENUMBER") {
-
       if (formData.MOBILENUMBER === value || value.trim() === "") {
         setOtpFieldsVisible(false);
         setAlertShown(false);
       } else {
        debugger
        let noOfMobile = tabledata5EkycNotVerifed.filter(row => row.MOBILENUMBER === value);
-        
-
         if(noOfMobile.length === 0){
         setOtpFieldsVisible(true);
         if (!alertShown) {
@@ -64,11 +55,6 @@ debugger
        formData.MOBILEVERIFY = "Verified";
        setOtpFieldsVisible(false);
       }
-
-
-
-
-        
       }
       if (name === "MOBILENUMBER") {
         if (/^\d{0,10}$/.test(value)) {
@@ -143,34 +129,20 @@ debugger
 
   };
 
-  const handleNavigation = () => {
-    // Extract owner numbers from tableData
-
-    const tableDataOwnerNumbers = tableData.map(item => item.OWNERNUMBER);
-    // Flags for the checks
-    //let allEKYCVerified = true;
-    let allNameMatchVerified = true;
-    let atLeastOneMobileVerified = true;
+  const handleNavigation = () => { 
+    
+debugger
+   
+    let atLeastOneMobileVerified = false;
     let relationshiptype = true;
     let relationname = true;
-    // Check all the required conditions
+   
     
-
+    if(tabledata5EkycVerifed.some(x=>x.MOBILEVERIFY === "Verified")){
+      atLeastOneMobileVerified = true;
+    }
     for (let data of tabledata5EkycVerifed) {
-      if (tableDataOwnerNumbers.includes(data.OWNERNUMBER)) { //retaining owners
-
-        if (tabledata5EkycVerifed.some(item => item.NAMEMATCHSCORE < 60)) {
-          allNameMatchVerified = false;
-        }
-        if (data.MOBILEVERIFY !== "Verified") {
-          atLeastOneMobileVerified = false;
-        }
-      }
-      else {
-
-        if (data.MOBILEVERIFY !== "Verified") {
-          atLeastOneMobileVerified = false;
-        }
+       
         if (data.IDENTIFIERNAME === null || data.IDENTIFIERNAME === "" || data.IDENTIFIERNAME === undefined) {
           relationname = false;
         }
@@ -178,35 +150,17 @@ debugger
           relationshiptype = false;
         }
       }
-    }
-
-
     if (atLeastOneMobileVerified && relationname && relationshiptype && tabledata5EkycVerifed.length > 0) {
       if (coreArea === 1) {
-        if (!allNameMatchVerified) {
-          
-          const ekycOwnerDetails = tabledata5EkycVerifed.map(({ OWNERNAME, OWNERNUMBER }) => ({
-            ownerName: OWNERNAME || "",
-            ownerNumber: OWNERNUMBER || 0
-          }));
-          sessionStorage.setItem("EKYC_OWNER_DETAILS", JSON.stringify(ekycOwnerDetails))
-          navigate("/LocationDetails")
-        } else if (allNameMatchVerified) {
-        
-          navigate("/LocationDetails")
-        }
-      }
-      else {
-        const ekycOwnerDetails = tabledata5EkycVerifed.map(({ OWNERNAME, OWNERNUMBER }) => ({
-          ownerName: OWNERNAME || "",
-          ownerNumber: OWNERNUMBER || 0
-        }));
-        sessionStorage.setItem("EKYC_OWNER_DETAILS", JSON.stringify(ekycOwnerDetails))
+        sessionStorage.setItem("userProgress", 6);
+        navigate("/LocationDetails")
+      }else {
+        sessionStorage.setItem("userProgress", 6);
         navigate("/LocationDetails")
       }
     }
     else {
-      if (!atLeastOneMobileVerified) {
+      if (atLeastOneMobileVerified) {
         toast.error(`${t("ownersMobileNotVerified")}`);
       }
       if (!relationname) {
@@ -292,7 +246,7 @@ debugger
 
       const queryString = new URLSearchParams(params).toString();
 
-
+     
       const response = await axiosInstance.post(`Name_Match/INS_NCL_PROPERTY_OWNER_TEMP_WITH_EKYCDATA?${queryString}`,EkycResponseData);
       console.log(response.data);
       toast.success(`${t("ownerEditedSuccess")}`)
@@ -1039,7 +993,7 @@ debugger
                   <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("OwnerPhoto")}</TableCell>
                   <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("MobileVerification")}</TableCell>
                   <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("E-KYCStatus")}</TableCell>
-                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("NAMEMATCHSTATUS")}</TableCell>
+                  {/* <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("NAMEMATCHSTATUS")}</TableCell> */}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -1072,12 +1026,12 @@ debugger
                         /></TableCell>
                         <TableCell>{row.MOBILEVERIFY}</TableCell>
                         <TableCell>{row.EKYCSTATUS}</TableCell>
-                        <TableCell>
+                        {/* <TableCell>
 
 
                           {row.NAMEMATCHSCORE > 60 ? OwnerEKYCVerfiedExists(row.OWNERNUMBER) ? "Name Matching" : "New Owner" : "Name Not Matching"}
 
-                        </TableCell>
+                        </TableCell> */}
                       </TableRow>
                     );
                   })

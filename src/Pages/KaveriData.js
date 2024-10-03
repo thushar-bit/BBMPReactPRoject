@@ -319,6 +319,7 @@ debugger
 
     if(formData.TypeOfUpload === "DoNotHaveRegistrationDeed"){
       try{
+        sessionStorage.setItem("userProgress", 5);
       navigate("/OwnerDetails")
       return
       }
@@ -329,6 +330,7 @@ debugger
     }
     if (KAVERI_DOC_DETAILS.length > 0 && KAVERI_PROP_DETAILS.length > 0 && KAVERI_PARTIES_DETAILS.length > 0) {
       if (KAVERIEC_PROP_DETAILS.length > 0 && KAVERIEC_PARTIES_DETAILS.length > 0) {
+        sessionStorage.setItem("userProgress", 5);
         navigate("/OwnerDetails");
       }
       else {
@@ -343,6 +345,7 @@ debugger
       if (DocumetUploadDatas.data.length > 0) {
         if (DocumetUploadDatas.data.length === 2) {
           if (KAVERIEC_PROP_DETAILS.length > 0 && KAVERIEC_PARTIES_DETAILS.length > 0) {
+            sessionStorage.setItem("userProgress", 5);
             navigate("/OwnerDetails");
           }
           else {

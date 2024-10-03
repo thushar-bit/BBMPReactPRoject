@@ -518,7 +518,7 @@ debugger
       toast.error(`${t("Please Upload the Document")}`)
       return
     }
-   
+    sessionStorage.setItem("userProgress", 9);
     setIsDialogOpen(true);
   };
 

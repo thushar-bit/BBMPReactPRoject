@@ -319,6 +319,7 @@ if(isInitialEditable){
     
     if(BescomTable.length > 0)
 {
+  sessionStorage.setItem("userProgress", 9);
     navigate('/ClassificationDocumentUploadPage');
 }else {
   toast.error(`${t("Bescom Needs to Be Verified")}`)

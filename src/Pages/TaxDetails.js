@@ -278,6 +278,7 @@ const TaxDetails = () => {
       }, 100)
         setIsEditable(false);
         setLoading(false);
+        sessionStorage.setItem("userProgress", 4);
           navigate('/KaveriData')
     
       } catch (error) {
@@ -295,6 +296,7 @@ const TaxDetails = () => {
         }, 500);
       }
     } else {
+      sessionStorage.setItem("userProgress", 4);
         navigate('/KaveriData')
     
     }

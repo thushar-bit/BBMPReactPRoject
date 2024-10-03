@@ -46,6 +46,8 @@ const DisclaimerDialog = ({ open, onClose, onAgree }) => {
 
       setPdfUrl(pdfUrl);
       setLoading(false) 
+    }else {
+      toast.error(response1.data)
     }
     } catch (error) {
       console.error("Error fetching PDF: ", error);

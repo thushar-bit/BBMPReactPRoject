@@ -138,7 +138,9 @@ const Login = () => {
           return
         }
         toast.success("Login Successfull !!");
+         sessionStorage.setItem("userProgress", 1);
         setTimeout(() => {
+          
            navigate("/BBDDraftGenerated");
         }, 500);
        
@@ -204,9 +206,9 @@ const Login = () => {
           <Typography
             level="h6"
             component="h6"
-            sx={{ fontSize: { xs: '3rem', md: '4rem' }, color: "#00000" }}
+            sx={{ fontSize: { xs: '3rem', md: '2.4rem' }, color: "#00000" }}
           >
-            Welcome Back!
+            Welcome to Faceless,Contactless ,Online Digital Ekatha Issuance System !
           </Typography>
           
           <FormControl sx={{ width: '100%', maxWidth: '500px' }}>

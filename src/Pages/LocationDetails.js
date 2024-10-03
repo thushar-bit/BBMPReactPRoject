@@ -325,10 +325,7 @@ const LocationDetails = () => {
         }
 
       }
-      if (formData.propertyType === "0") {
-        toast.error(`${t("Please Select the Property Type")}`)
-        return
-      }
+    
      
       
      
@@ -374,7 +371,7 @@ const LocationDetails = () => {
         setLoading(false);
 
       
-     
+        sessionStorage.setItem("userProgress", 7);
           navigate('/AreaDimension')
     
       } catch (error) {
@@ -395,7 +392,7 @@ const LocationDetails = () => {
 
      
 
-       
+      sessionStorage.setItem("userProgress", 7);
         navigate('/AreaDimension')
     
     }

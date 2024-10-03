@@ -137,7 +137,7 @@ const BBDDraft = () => {
       
       sessionStorage.setItem('SETPROPERYID', row.PROPERTYID);
       
-
+      sessionStorage.setItem("userProgress", 3);
         navigate('/TaxDetails')
     
     }
@@ -148,7 +148,7 @@ const BBDDraft = () => {
        
 
        
-       
+        sessionStorage.setItem("userProgress", 3);
           navigate('/TaxDetails')
      
 
