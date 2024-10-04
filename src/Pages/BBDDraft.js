@@ -50,6 +50,7 @@ const BBDDraft = () => {
   }, [navigate]);
 
   useEffect(() => {
+    sessionStorage.setItem("userProgress", 2);
     fetchData();
   }, [fetchData]);
 

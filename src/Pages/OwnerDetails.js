@@ -239,6 +239,8 @@ debugger
       debugger
       const params = {
         IDENTIFIERTYPE: formData.IDENTIFIERTYPEID || 0,
+        IdentifierName:formData.IDENTIFIERNAME,
+        NAMEMATCHSCORE:0,
         MOBILENUMBER: formData.MOBILENUMBER || "0",
         MOBILEVERIFY: formData.MOBILEVERIFY !== "" ? formData.MOBILEVERIFY : "NOT VERIFIED",
         loginId: 'crc'

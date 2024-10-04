@@ -28,13 +28,15 @@ const DisclaimerDialog = ({ open, onClose, onAgree }) => {
 
   const fetchAcknowedgeMentPdf = async () => {
     try {
+      debugger
       //for saving Matrix Details
       const response1 = await axiosInstance.get(`Report/FinalSubmitValidation?propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&LoginId=crc`,)
       if(response1.data === "SUCCESS")
       {
+      
         setLoading(true)
       const response = await axiosInstance.get(
-        `Report/GetFinalBBMPReport?propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}`,
+        `Report/GetFinalBBMPReport?propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&LoginId=crc`,
         {
           responseType: 'blob', 
         }
@@ -46,6 +48,7 @@ const DisclaimerDialog = ({ open, onClose, onAgree }) => {
 
       setPdfUrl(pdfUrl);
       setLoading(false) 
+      toast.success(`${t("Please Download the Acknowlegement for Future Reference")}`)
     }else {
       toast.error(response1.data)
     }
@@ -60,8 +63,7 @@ const DisclaimerDialog = ({ open, onClose, onAgree }) => {
     sessionStorage.removeItem("SETPROPERYID");
     sessionStorage.removeItem("DraftZoneId");
     sessionStorage.removeItem("DraftWardId");
-  
-    
+    sessionStorage.setItem("userProgress", 1);    
     navigate("/BBDDraftGenerated")
   } 
   const fetchEndorsmentPdf = async () => {
@@ -69,7 +71,7 @@ const DisclaimerDialog = ({ open, onClose, onAgree }) => {
       //for saving Matrix Details
       setLoading(true)
       const response = await axiosInstance.get(
-        `Report/GetEndorsementReport?propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}`,
+        `Report/GetEndorsementReport?propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&LoginId=crc`,
         {
           responseType: 'blob', 
         }
@@ -101,7 +103,7 @@ const onDownloadEndorsment = async () => {
 }
 
   const handleConfirmYes = () => {
-    toast.success(`${t("Please Download the Acknowlegement for Future Reference")}`)
+   
     fetchAcknowedgeMentPdf();
     setIsAgreed(false);
     setConfirmOpen(false);
@@ -162,6 +164,11 @@ const onDownloadEndorsment = async () => {
               <li>{t("disclamerMessage5")}</li>
               <li>{t("disclamerMessage6")}</li>
               <li>{t("disclamerMessage7")}</li>
+              <li>{t("disclamerMessage11")}</li>
+              <li>{t("disclamerMessage12")}</li>
+              <li>{t("disclamerMessage13")}</li>
+              <li>{t("disclamerMessage14")}</li>
+            
             </ol>
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>

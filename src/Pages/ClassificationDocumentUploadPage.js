@@ -64,6 +64,7 @@ const ClassificationDocumentUploadPage = () => {
   const [fileExtension, setfileExtension] = useState([]);
   const [isEditable, setIsEditable] = useState(false);
   const [isHaveDocument,setHaveDocument] = useState(false);
+  const [DOnothaveanyDocument,setDonotHaveAnyDocument] = useState(false)
   const [IsDocumentAvailable,setIsDocumentAvailable] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -88,7 +89,11 @@ debugger
         } else {
           updatedClassification = "0";
         }
-       
+       if(value === 57){
+        setDonotHaveAnyDocument(true)
+       }else{
+        setDonotHaveAnyDocument(false)
+       }
 
         const response = await axiosInstance.get(`BBMPCITZAPI/GET_NPM_MST_CLASS_DOCUMENT_BY_CATEGORY_SUBCLASS?PROPERTYCATEGORYID=${formData.propertyType}&CLASSIFICATIONID=1&SUBCLASSIFICATIONID=${value}`)
         const { Table } = response.data;
@@ -213,8 +218,15 @@ debugger
       }));
 
       if (NCLTable1.length > 0) {
+        if(NCLTable1[0].SUBCLASSIFICATIONID === 57){
+          setDonotHaveAnyDocument(true)
+        }
+        else {
+          setDonotHaveAnyDocument(false)
+        }
         if (NCLTable1[0].SUBCLASSIFICATIONID === null) {
           setIsClassificationEditable(false)
+         
         } else {
           setIsClassificationEditable(true)
           debugger
@@ -514,10 +526,16 @@ debugger
 
 
   const handleOpenDialog = () => {
+    if(DOnothaveanyDocument === false){
     if(tableData.length === 0){
       toast.error(`${t("Please Upload the Document")}`)
       return
     }
+  }
+  if (!isClassificationEditable) {
+    toast.error(`${t("saveClassificationBeforeUpload")}`);
+    return
+  }
     sessionStorage.setItem("userProgress", 9);
     setIsDialogOpen(true);
   };
@@ -658,7 +676,10 @@ debugger
                     {t("EditClassificationDetails")}
                   </Button></Grid>
                 }
+                  {!DOnothaveanyDocument &&
+                  <>
                 <Grid item xs={12} sm={4}></Grid>
+              
                 <Grid item xs={12} sm={4}>
                 <FormControl
     fullWidth
@@ -689,7 +710,9 @@ debugger
       {touched.DocumentType && errors.DocumentType ? errors.DocumentType : ''}
     </FormHelperText>
   </FormControl>
+                
                 </Grid>
+
                 {!IsDocumentAvailable && 
                 <Grid item xs={12} sm={4}>
                 <FormControl
@@ -841,9 +864,12 @@ debugger
                   <Button variant="contained" color="success" type="submit" >
                     {t("AddDocument+")}
                   </Button>
+                
                 </Grid>
+</>
+}
               </Grid>
-
+        
               <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
                 {t("DocumentsUploaded")}
               </Typography>

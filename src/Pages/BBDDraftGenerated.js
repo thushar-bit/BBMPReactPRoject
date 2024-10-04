@@ -38,6 +38,7 @@ const BBDDraftGenerated = () => {
   };
 
   useEffect(() => {
+    sessionStorage.setItem("userProgress", 1);
     fetchData();
   }, []);
 
