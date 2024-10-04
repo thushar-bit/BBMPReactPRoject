@@ -44,7 +44,7 @@ const BuildingDetails = () => {
     SelfuseArea: Yup.string().required(`${t('selfUseAreaRequired')}`),
    // RentedArea:  Yup.string().required(`${t('rentedAreaRequired')}`),
     //  BWSSBMeterNumber: Yup.string().required('BWSSB Meter Number is required'),
-      BesomCustomerID: Yup.string().required(`${t('Bescom Customer ID is required')}`),
+    //  BesomCustomerID: Yup.string().required(`${t('Bescom Customer ID is required')}`),
 
   });
   const [tableData, setTableData] = useState([
@@ -175,6 +175,12 @@ if(RentedAreaEnabled){
     else if (formData.SelfuseArea !== 0 && formData.SelfuseArea !== 0) {
       BUILDINGUSAGETYPEID = 6;
     }
+    if(BescomTable.length === 0){
+      if(formData.BesomCustomerID.length === 0){
+        toast.error("Please Enter the Bescom Customer Id or Account No")
+        return
+      }
+    }
     const data = {
       propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
       floornumberid: formData.floornumber,
@@ -256,6 +262,7 @@ if(RentedAreaEnabled){
       toast.error(`${t("Please Provide BescomCustomerID or Account No")}`)
       return
     }
+    
     setLoading(true)
     const params1 = {
       BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO')),
@@ -717,14 +724,12 @@ if(RentedAreaEnabled){
                 <Grid item xs={12} sm={4}>
                   <TextField
                     fullWidth
-                    label={<LabelWithAsterisk text={t("BESCOMCustomerID")}/>}
+                    label={t("BESCOMCustomerID")}
                     name="BesomCustomerID"
                     value={formData.BesomCustomerID}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className={touched.BesomCustomerID && !!errors.BesomCustomerID ? 'shake' : ''}
-                    error={touched.BesomCustomerID && !!errors.BesomCustomerID}
-                    helperText={touched.BesomCustomerID && errors.BesomCustomerID}
+       
                     InputProps={{
                       style: { backgroundColor: '#ffff' } ,
                       endAdornment: (
@@ -736,7 +741,9 @@ if(RentedAreaEnabled){
                       )
                     }}
                   />
+                  {BescomTable.length === 0 &&
                 <Button color="primary" onClick={handleBescomVerify}>{t("Verify with Bescom")}</Button>
+                  }
                 </Grid>
                 <Grid item xs={12} sm={4}>
                   <TextField

@@ -44,7 +44,7 @@ const MultiStoreyBuildingDetails = () => {
     Occupancy: Yup.string().required(`${t('occupancyRequired')}`),
     OwnersShareAreaSqmts: Yup.string().required(`${t('ownerShareAreaRequired')}`),
     SelectOwnerShareType: Yup.string().required(`${t('ownerShareTypeRequired')}`),
-    BesomCustomerID: Yup.string().required(`${t('Bescom Customer ID is required')}`),
+   // BesomCustomerID: Yup.string().required(`${t('Bescom Customer ID is required')}`),
   });
   const [tableData, setTableData] = useState([
   ]);
@@ -250,7 +250,14 @@ const fetchData = React.useCallback(async () => {
   }, [fetchData]);
   const handleSubmit = async (e) => {
 
-if(isInitialEditable){
+if(isInitialEditable)
+  {
+    if(BescomTable.length === 0){
+      if(formData.BesomCustomerID.length === 0){
+        toast.error("Please Enter the Bescom Customer Id")
+        return
+      }
+    }
     const data = {
       propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
       plotareaownersharE_AREA: formData.SelectOwnerShareType === "1" ? formData.OwnersShareAreaSqmts : 0,
@@ -689,15 +696,11 @@ if(isInitialEditable){
                 <Grid item xs={12} sm={4}>
                   <TextField
                     fullWidth
-                    label={<LabelWithAsterisk text={t("BESCOMCustomerID")}/>}
+                    label={t("BESCOMCustomerID")}
                     name="BesomCustomerID"
                     type="number"
                     value={formData.BesomCustomerID}
                     onChange={handleChange}
-                    onBlur={handleBlur}
-                    className={touched.BesomCustomerID && !!errors.BesomCustomerID ? 'shake' : ''}
-                    error={touched.BesomCustomerID && !!errors.BesomCustomerID}
-                    helperText={touched.BesomCustomerID && errors.BesomCustomerID}
                     InputProps={{
                       style: { backgroundColor:  isInitialEditable ? '#ffff': "" } ,
                       readOnly: !isInitialEditable,
@@ -710,7 +713,9 @@ if(isInitialEditable){
                       )
                     }}
                   />
+                  {BescomTable.length === 0 &&
                    <Button color="primary" onClick={handleBescomVerify}>{t("Verify with Bescom")}</Button>
+                  }
                 </Grid> 
                 </Grid>
                 <Grid item xs={12} sm={4}></Grid>
