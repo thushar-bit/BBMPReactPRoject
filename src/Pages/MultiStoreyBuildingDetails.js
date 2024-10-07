@@ -129,7 +129,7 @@ const MultiStoreyBuildingDetails = () => {
       propertycode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
       BescomAccountNumber: formData.BesomCustomerID,
       LoginId: "crc",
-      propertytype: 2,
+      propertytype: 3,
       FloorNumber: formData.floornumber
     };
     
@@ -713,9 +713,9 @@ if(isInitialEditable)
                       )
                     }}
                   />
-                  {BescomTable.length === 0 &&
+               
                    <Button color="primary" onClick={handleBescomVerify}>{t("Verify with Bescom")}</Button>
-                  }
+                
                 </Grid> 
                 </Grid>
                 <Grid item xs={12} sm={4}></Grid>

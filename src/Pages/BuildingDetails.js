@@ -741,9 +741,9 @@ if(RentedAreaEnabled){
                       )
                     }}
                   />
-                  {BescomTable.length === 0 &&
+                
                 <Button color="primary" onClick={handleBescomVerify}>{t("Verify with Bescom")}</Button>
-                  }
+                 
                 </Grid>
                 <Grid item xs={12} sm={4}>
                   <TextField
