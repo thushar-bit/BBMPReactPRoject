@@ -175,11 +175,11 @@ const handleAddressEdit = () => {
         errors.checkbandhi = `${t("Please ensure all Checkbandhi values are Entered")}`;
       }
     }
-    if (formData.propertyType === 3) {
-      if (isInvalid(formData.ApartCarpetArea) || isInvalid(formData.ApartAddtionalArea) || isInvalid(formData.ApartSuperBuiltArea)) {
-        errors.apartmentValues = `${t("Please ensure all Apartment values are Entered and More than 0")}`
-      }
-    }
+    // if (formData.propertyType === 3) {
+    //   if (isInvalid(formData.ApartCarpetArea) || isInvalid(formData.ApartAddtionalArea) || isInvalid(formData.ApartSuperBuiltArea)) {
+    //     errors.apartmentValues = `${t("Please ensure all Apartment values are Entered and More than 0")}`
+    //   }
+    // }
 
     if (formData.oddSite === "Y" && formData.propertyType !== 3 ) {
       if(formData.noofSides.length === 0){
@@ -632,7 +632,7 @@ const handleAddressEdit = () => {
                 <TextField
                   fullWidth
 
-                  label={<LabelWithAsterisk text={t('CarpetArea')} />}
+                  label={t('CarpetArea')}
                   name="ApartCarpetArea"
                   value={formData.ApartCarpetArea}
                   onChange={handleApparatmentChange}
@@ -655,7 +655,7 @@ const handleAddressEdit = () => {
                 <TextField
                   fullWidth
 
-                  label={<LabelWithAsterisk text={t('AdditionalArea')} />}
+                  label={t('AdditionalArea')}
                   name="ApartAddtionalArea"
                   value={formData.ApartAddtionalArea}
                   onChange={handleApparatmentChange}
@@ -678,7 +678,7 @@ const handleAddressEdit = () => {
                 <TextField
                   fullWidth
 
-                  label={<LabelWithAsterisk text={t('SuperBuiltArea')} />}
+                  label={t('SuperBuiltArea')}
                   name="ApartSuperBuiltArea"
                   value={formData.ApartSuperBuiltArea}
                   onChange={handleApparatmentChange}

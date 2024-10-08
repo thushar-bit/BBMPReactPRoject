@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../components/Axios';
 import ErrorPage from './ErrorPage';
 import LabelWithAsterisk from '../components/LabelWithAsterisk'
-
+import ViewSample from '../components/ViewSample';
 
 const TaxDetails = () => {
   const [formData, setFormData] = useState({
@@ -59,7 +59,7 @@ const TaxDetails = () => {
   const [loading, setLoading] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
   const [handleSASClicks, sethandleSASClicks] = useState(false);
-
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
  
   const [SAStableData, setSASTableData] = useState([]);
@@ -362,7 +362,12 @@ const handleSASDelete = () => {
   setSASTableData([])
 }
 
-
+const viewSample = () => {
+  setIsDialogOpen(true);
+}
+const handleCloseDialog = () => {
+  setIsDialogOpen(false);
+};
 
 
 
@@ -394,7 +399,11 @@ const handleSASDelete = () => {
     <Container maxWidth="lg">
       <Box sx={{ backgroundColor: '#f0f0f0', padding: 4, borderRadius: 2, mt: 8 }}>
         <ToastContainer />
-
+        <ViewSample
+        open={isDialogOpen}
+        onClose={handleCloseDialog}
+        TypofImage={"SAS"}
+      />
         <Typography
           variant="h3"
           align="center"
@@ -689,6 +698,7 @@ const handleSASDelete = () => {
                     onClick={handleSASClick}>
                     {t("VerifySASApplicationNumber")}
                   </Button>
+                  <Button color="primary" onClick={viewSample}>View Sample</Button>
                 </Grid>
 
 

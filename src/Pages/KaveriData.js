@@ -14,6 +14,7 @@ import '../components/Shake.css';
 import LabelWithAsterisk from '../components/LabelWithAsterisk'
 import DocumentUploadPage from './DocumentUploadPage';
 import MaskingValue from '../components/MaskingValue';
+import ViewSample from '../components/ViewSample';
 const KaveriData = () => {
   const [formData, setFormData] = useState({
     RegistrationNumber: "",
@@ -28,8 +29,8 @@ const KaveriData = () => {
   const [KAVERIEC_PARTIES_DETAILS, setKAVERIEC_PARTIES_DETAILS] = useState([]);
   const [DocumetUploadData, setDocumentUploadedData] = useState([]);
   const [loading, setLoading] = useState(false);
-
-
+  const [TypofImage,setTypofImage] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const navigate = useNavigate();
   const { t } = useTranslation();
   const DocumentUploadedValidation = (Table1) => {
@@ -220,7 +221,7 @@ debugger
 
     try {
       setLoading(true)
-
+debugger
       let response;
       if (formData.RegistrationNumber.length > 0 && formData.TypeOfUpload === "RegistrationNumber") {
 
@@ -231,9 +232,10 @@ debugger
           setLoading(false)
           return
         }
-        response = await axiosInstance.post(`KaveriAPI/GetKaveriECData?ECNumber=${formData.ECDocumentNumber}&RegistrationNoNumber=${formData.RegistrationNumber}&BOOKS_APP_NO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&PropertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&LoginId=crc`)
-      } else if (DocumetUploadDatas.data.length > 0 && formData.TypeOfUpload === "OldRegistrationNumber") {
-        response = await axiosInstance.post(`KaveriAPI/GetKaveriECData?ECNumber=${formData.ECDocumentNumber}&RegistrationNoNumber=${DocumetUploadDatas.data[0].ORDERNUMBER}&BOOKS_APP_NO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&PropertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&LoginId=crc`)
+        response = await axiosInstance.post(`KaveriAPI/GetKaveriECData?ECNumber=${formData.ECDocumentNumber}&RegistrationNoNumber=${formData.RegistrationNumber}&BOOKS_APP_NO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&PropertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&LoginId=crc&RegsiteredDateTime=${KAVERI_DOC_DETAILS[0].REGISTRATIONDATETIME}`)
+      } else if
+       (DocumetUploadDatas.data.length > 0 && formData.TypeOfUpload === "OldRegistrationNumber") {
+        response = await axiosInstance.post(`KaveriAPI/GetKaveriECData?ECNumber=${formData.ECDocumentNumber}&RegistrationNoNumber=${DocumetUploadDatas.data[0].ORDERNUMBER}&BOOKS_APP_NO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&PropertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&LoginId=crc&RegsiteredDateTime=${DocumetUploadDatas.data[0].ORDERDATE}`)
       }
 
     
@@ -372,7 +374,19 @@ debugger
 
 
   };
+  const viewSample = (TypeOfImage) => {
+    if(TypeOfImage === "DEED"){
+      setTypofImage("DEED")
 
+    }else {
+      setTypofImage("EC")
+
+    }
+    setIsDialogOpen(true);
+  }
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+  };
 
   function GradientCircularProgress() {
     return (
@@ -400,6 +414,11 @@ debugger
   return (
     <Container maxWidth="xl">
       <ToastContainer />
+      <ViewSample
+        open={isDialogOpen}
+        onClose={handleCloseDialog}
+        TypofImage={TypofImage}
+      />
       <Box sx={{ backgroundColor: '#f0f0f0', padding: 4, borderRadius: 2, mt: 8 }}>
         <Typography
           variant="h3"
@@ -468,15 +487,22 @@ debugger
               />
             </Grid>
             <Grid item xs={3}>
-              <Button
-                variant="contained"
-                color="success"
-                onClick={handleKaveriDocumentData}
-                style={{ height: '100%' }}
-              >
-                {t("KaveriDocumentData")}
-              </Button>
-            </Grid>
+  <Box display="flex" justifyContent="space-between" alignItems="center">
+    <Button
+      variant="contained"
+      color="success"
+      onClick={handleKaveriDocumentData}
+      style={{ height: '100%' }}
+    >
+      {t("KaveriDocumentData")}
+    </Button>
+    <Button color="primary" onClick={()=>viewSample("DEED")}>
+      View Sample
+    </Button>
+  </Box>
+</Grid>
+
+           
           </Grid>
         )}
         {(formData.TypeOfUpload === "RegistrationNumber" && KAVERI_DOC_DETAILS.length > 0 && KAVERI_PROP_DETAILS.length > 0 && KAVERI_PARTIES_DETAILS.length > 0) &&
@@ -639,6 +665,7 @@ debugger
           </Grid>
 
           <Grid item xs={3} style={{ display: 'flex', alignItems: 'center' }}>
+          <Box display="flex" justifyContent="space-between" alignItems="center">
             <Button
               variant="contained"
               color="success"
@@ -647,6 +674,10 @@ debugger
             >
               {t("FetchECData")}
             </Button>
+            <Button color="primary" onClick={()=>viewSample("EC")}>
+      View Sample
+    </Button>
+  </Box>
           </Grid>
         </Grid>
         <TableContainer component={Paper}>

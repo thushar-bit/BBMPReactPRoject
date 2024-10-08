@@ -208,7 +208,7 @@ const Login = () => {
             component="h6"
             sx={{ fontSize: { xs: '3rem', md: '2.4rem' }, color: "#00000" }}
           >
-            Welcome to Faceless,Contactless ,Online Digital Ekatha Issuance System !
+            Welcome to Faceless,Contactless ,Online enmass ekatha Issuance System !
           </Typography>
           
           <FormControl sx={{ width: '100%', maxWidth: '500px' }}>

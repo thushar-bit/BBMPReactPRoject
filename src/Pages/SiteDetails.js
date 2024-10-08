@@ -21,7 +21,7 @@ const SiteDetails = () => {
   const { t } = useTranslation();
   const validationSchema = React.useMemo(() => Yup.object().shape({
     features: Yup.string().required(`${t('usageCategoryRequired')}`).notOneOf(['0'], `${t('UsageCategoryInvalid')}`),
-    Typeofuse: Yup.string().required(`${t('typeOfUseRequired')}`).notOneOf(['0'], `${t('typeOfUseRequiredInvalid')}`),
+    // Typeofuse: Yup.string().required(`${t('typeOfUseRequired')}`).notOneOf(['0'], `${t('typeOfUseRequiredInvalid')}`),
     yearOfConstruction: Yup.string()
       .required(`${t('yearUsageRequired')}`)
 
@@ -64,7 +64,7 @@ if(isInitialEditable){
     const data = {
       propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
       featureheadid: formData.features,
-      featureid: formData.Typeofuse,
+      featureid: formData.Typeofuse || "0",
       builtyear: formData.yearOfConstruction,
       loginId: "crc",
       p_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))
@@ -250,17 +250,15 @@ if(isInitialEditable){
               </FormControl>
               <FormControl
                 fullWidth
-                error={touched.Typeofuse && !!errors.Typeofuse}
-                sx={{ marginBottom: 3 }}
-                className={touched.Typeofuse && !!errors.Typeofuse ? 'shake' : ''}
+      
               >
                 <InputLabel>
-                    <LabelWithAsterisk text={t('Typeofuse')} /></InputLabel>
+                   {t('Typeofuse')}</InputLabel>
                 <Select
                   name="Typeofuse"
                   value={formData.Typeofuse}
                   onChange={handleChange}
-                  onBlur={handleBlur}
+                
                   sx={{ backgroundColor: !isInitialEditable?  '':"#ffff" }}
                       inputProps={{ readOnly: !isInitialEditable }}
                 >
@@ -271,9 +269,7 @@ if(isInitialEditable){
                     </MenuItem>
                   ))}
                 </Select>
-                <FormHelperText>
-                  {touched.Typeofuse && errors.Typeofuse ? errors.Typeofuse : ''}
-                </FormHelperText>
+               
               </FormControl>
 
               <FormControl

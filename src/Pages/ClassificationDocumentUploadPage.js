@@ -70,6 +70,9 @@ const ClassificationDocumentUploadPage = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isClassificationEditable, setIsClassificationEditable] = useState(false);
   const handleDateChange = (date) => {
+    debugger
+    // let newdate = new Date();
+    // newdate = date;
     setSelectedDate(date);
   };
   const handleAkathaDropdownValueChange = async (e) => {

@@ -14,8 +14,11 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import '../components/Shake.css';
 import LabelWithAsterisk   from '../components/LabelWithAsterisk'
+import ViewSample from '../components/ViewSample';
 const MultiStoreyBuildingDetails = () => {
   const [ownersharetype, setOwnerSharetype] = useState("")
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  
   const [formData, setFormData] = useState({
 
     BlockName: '',
@@ -33,19 +36,18 @@ const MultiStoreyBuildingDetails = () => {
     ParkingFacility: 'N',
   });
   const { t } = useTranslation();
-  const validationSchema = Yup.object().shape({
+  const validationSchema = React.useMemo(() =>Yup.object().shape({
     BlockName: Yup.string().required(`${t('blockNumberRequired')}`),
     FlatNos: Yup.string().required(`${t('flatNumberRequired')}`),
     floornumber: Yup.string().required(`${t('floorNumberRequired')}`),
     features: Yup.string().required(`${t('usageCategoryRequired')}`),
     yearOfConstruction: Yup.string()
     .required(`${t('yearUsageRequired')}`),
-    Typeofuse: Yup.string().required(`${t('typeOfUseRequired')}`),
     Occupancy: Yup.string().required(`${t('occupancyRequired')}`),
     OwnersShareAreaSqmts: Yup.string().required(`${t('ownerShareAreaRequired')}`),
     SelectOwnerShareType: Yup.string().required(`${t('ownerShareTypeRequired')}`),
    // BesomCustomerID: Yup.string().required(`${t('Bescom Customer ID is required')}`),
-  });
+  }), [t]);
   const [tableData, setTableData] = useState([
   ]);
 
@@ -113,6 +115,13 @@ const MultiStoreyBuildingDetails = () => {
     });
 
   };
+  const viewSample = () => {
+    setIsDialogOpen(true);
+  }
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+  };
+
   const handleBescomVerify = async () => {
     
     if(formData.floornumber.length === 0){
@@ -212,7 +221,7 @@ const fetchData = React.useCallback(async () => {
       if (table13Item.PARKINGAVAILABLE === "Y") {
         setIsEditable(true);
       }
-      setFormData({
+      const updatedFormData = {
         BlockName: table13Item.BLOCKNUMBER || '',
         FlatNos: table13Item.FLATNO || '',
         floornumber: table13Item.FLOORNUMBERID || '',
@@ -226,7 +235,14 @@ const fetchData = React.useCallback(async () => {
         SelectOwnerShareType: sharetype || '',
         OwnersShareAreaSqmts: ownersharetypeValue || '',
         ParkingFacility: table13Item.PARKINGAVAILABLE || 'N',
-      });
+      }
+      setFormData(updatedFormData);
+      const isValid =await  validationSchema.isValid(updatedFormData);
+      if(isValid){
+        setInitialEditable(false);
+      }else{
+        setInitialEditable(true);
+      }
     } catch (error) {
       toast.error(`${t("errorSavingData")}`, error, {
         position: "top-right",
@@ -242,7 +258,7 @@ const fetchData = React.useCallback(async () => {
       }, 500);
     }
 
-  }, [navigate,t]);
+  }, [navigate,t,validationSchema]);
   React.useEffect(() => {
 
     fetchData();
@@ -273,7 +289,7 @@ if(isInitialEditable)
       rrno: formData.BesomCustomerID,
       yearofconstruction: formData.yearOfConstruction,
       floornumberid: formData.floornumber,
-      featureid: formData.Typeofuse,
+      featureid: formData.Typeofuse || "0",
       featureheadid: formData.features,
       p_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))
     };
@@ -357,6 +373,11 @@ if(isInitialEditable)
   return (
     <Container maxWidth="xl">
       <ToastContainer />
+      <ViewSample
+        open={isDialogOpen}
+        onClose={handleCloseDialog}
+        TypofImage={"BESCOM"}
+      />
       <Box sx={{ backgroundColor: '#f0f0f0', padding: 4, borderRadius: 2, mt: 8 }}>
         <Formik
           initialValues={formData}
@@ -385,6 +406,56 @@ if(isInitialEditable)
               >
               {t("DetailsOfUsageOfFlat")}
               </Typography>
+              <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+              {t("DataAvailableInBBMPBooks")} 
+              </Typography>
+              <TableContainer component={Paper} sx={{ mt: 4 }}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("BLOCKNO")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("FLOORNO")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("FlatNo")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("CARPETAREA")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("ADDITIONALAREA")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("SUPERBUILTUPAREA")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("PARKINGAVAILABLE")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("PARKINGUNITS")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("PARKINGAREA")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("OWNERSHARETYPE")}</TableCell>
+                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("SHARETYPEVALUE")}</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {tableData.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={12} align="center">
+                        {t("Nodataavailable")}  
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      tableData.map((row,index) => (
+                        <TableRow key={index}>
+                          <TableCell>{row.BLOCKNUMBER}</TableCell>
+                          <TableCell>{row.FLOORNUMBERID}</TableCell>
+                          <TableCell>{row.FLATNO}</TableCell>
+                          <TableCell>{row.CARPETAREA}</TableCell>
+                          <TableCell>{row.ADDITIONALAREA}</TableCell>
+                          <TableCell>{row.SUPERBUILTUPAREA}</TableCell>
+                          <TableCell>{row.PARKINGAVAILABLE}</TableCell>
+                          <TableCell>{row.PARKINGAREA}</TableCell>
+                          <TableCell>{row.SHARETYPE}</TableCell>
+                          <TableCell>{row.SHARETYPEVALUE}</TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <br></br>
+              <br></br>
+              <br></br>
               <Grid container spacing={4}>
                 <Grid item xs={12} sm={4}>
                   <TextField
@@ -497,16 +568,13 @@ if(isInitialEditable)
                 <Grid item xs={12} sm={4}>
                   <FormControl
                     fullWidth
-                    error={touched.Typeofuse && !!errors.Typeofuse}
-                    sx={{ marginBottom: 3 }}
-                    className={touched.Typeofuse && !!errors.Typeofuse ? 'shake' : ''}
+                 
                   >
-                    <InputLabel> <LabelWithAsterisk text={t('Typeofuse')} /></InputLabel>
+                    <InputLabel>{t('Typeofuse')}</InputLabel>
                     <Select
                       name="Typeofuse"
                       value={formData.Typeofuse}
                       onChange={handleChange}
-                      onBlur={handleBlur}
                       sx={{ backgroundColor: !isInitialEditable?  '':"#ffff" }}
                       inputProps={{ readOnly: !isInitialEditable }}
                     >
@@ -517,9 +585,6 @@ if(isInitialEditable)
                         </MenuItem>
                       ))}
                     </Select>
-                    <FormHelperText>
-                      {touched.Typeofuse && errors.Typeofuse ? errors.Typeofuse : ''}
-                    </FormHelperText>
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={4}>
@@ -715,7 +780,7 @@ if(isInitialEditable)
                   />
                
                    <Button color="primary" onClick={handleBescomVerify}>{t("Verify with Bescom")}</Button>
-                
+                   <Button color="primary" onClick={viewSample}>View Sample</Button>
                 </Grid> 
                 </Grid>
                 <Grid item xs={12} sm={4}></Grid>
@@ -764,9 +829,6 @@ if(isInitialEditable)
                           <TableCell>{row.MOBILE_NUMBER}</TableCell>
                           <TableCell>{row.EMAIL}</TableCell>
                           <TableCell>{row.ADDRESS}</TableCell>
-                     
-                      
-                        
                         </TableRow>
                       ))
                     )}
@@ -775,56 +837,6 @@ if(isInitialEditable)
               </TableContainer>
               </>
 )}
-                
-             
-              <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-              {t("DataAvailableInBBMPBooks")} 
-              </Typography>
-              <TableContainer component={Paper} sx={{ mt: 4 }}>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("BLOCKNO")}</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("FLOORNO")}</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("FlatNo")}</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("CARPETAREA")}</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("ADDITIONALAREA")}</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("SUPERBUILTUPAREA")}</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("PARKINGAVAILABLE")}</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("PARKINGUNITS")}</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("PARKINGAREA")}</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("OWNERSHARETYPE")}</TableCell>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("SHARETYPEVALUE")}</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {tableData.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={12} align="center">
-                        {t("Nodataavailable")}  
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      tableData.map((row,index) => (
-                        <TableRow key={index}>
-                          <TableCell>{row.BLOCKNUMBER}</TableCell>
-                          <TableCell>{row.FLOORNUMBERID}</TableCell>
-                          <TableCell>{row.FLATNO}</TableCell>
-                          <TableCell>{row.CARPETAREA}</TableCell>
-                          <TableCell>{row.ADDITIONALAREA}</TableCell>
-                          <TableCell>{row.SUPERBUILTUPAREA}</TableCell>
-                          <TableCell>{row.PARKINGAVAILABLE}</TableCell>
-                          <TableCell>{row.PARKINGAREA}</TableCell>
-                          <TableCell>{row.SHARETYPE}</TableCell>
-                          <TableCell>{row.SHARETYPEVALUE}</TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-
               <Box display="flex" justifyContent="center" gap={2} mt={3}>
                 <Button variant="contained" color="primary" onClick={back}>
                 {t("Previous")} 
@@ -835,9 +847,6 @@ if(isInitialEditable)
                 <Button variant="contained" color="success" type="submit">
                 {t('save')}
                 </Button>
-
-               
-           
               </Box>
             </Form>
           )}

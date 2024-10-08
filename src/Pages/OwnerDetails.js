@@ -136,10 +136,13 @@ debugger
     let atLeastOneMobileVerified = false;
     let relationshiptype = true;
     let relationname = true;
-   
+    let BookOwnerMisMatch = true;
     
     if(tabledata5EkycVerifed.some(x=>x.MOBILEVERIFY === "Verified")){
       atLeastOneMobileVerified = true;
+    }
+    if(tabledata5EkycVerifed.length !== tableData.length){
+      BookOwnerMisMatch = false;
     }
     for (let data of tabledata5EkycVerifed) {
        
@@ -150,7 +153,7 @@ debugger
           relationshiptype = false;
         }
       }
-    if (atLeastOneMobileVerified && relationname && relationshiptype && tabledata5EkycVerifed.length > 0) {
+    if (atLeastOneMobileVerified && relationname && relationshiptype && tabledata5EkycVerifed.length > 0 && BookOwnerMisMatch) {
       if (coreArea === 1) {
         sessionStorage.setItem("userProgress", 6);
         navigate("/LocationDetails")
@@ -162,6 +165,9 @@ debugger
     else {
       if (atLeastOneMobileVerified) {
         toast.error(`${t("ownersMobileNotVerified")}`);
+      }
+      if(!BookOwnerMisMatch){
+        toast.error("The No of Owners E-KYC Verified Should Match Book Owners");
       }
       if (!relationname) {
         toast.error(`${t("ownersRelationNameMissing")}`);

@@ -213,8 +213,8 @@ const LocationDetails = () => {
     const fileExtension = fileName.split('.').pop().toLowerCase();
 
 
-    if (!['jpg', 'jpeg', 'png'].includes(fileExtension)) {
-      toast.error(`${t("Please Select Only '.jpg','.jpeg','.png' File")}`);
+    if (!['jpg', 'jpeg'].includes(fileExtension)) {
+      toast.error(`${t("Please Select Only '.jpg','.jpeg' File")}`);
       e.target.value = null;
       setSelectedFile(null);
       return
@@ -340,7 +340,7 @@ const LocationDetails = () => {
         streetid: formData.streetid,
         streetName:formData.nclStreetName,
         doorno: formData.DoorPlotNo,
-        buildingname: formData.buildingname,   //sp change
+        buildingname: formData.buildingname,  
         areaorlocality: formData.areaorlocality,
         landmark: formData.NearestLandmark,
         pincode: formData.pincode,
@@ -776,7 +776,7 @@ const LocationDetails = () => {
                       disabled={!isEditable}
                     >
                       {t("Uploadfile")}
-                      <VisuallyHiddenInput type="file" accept=".jpg,.jpeg,.png" onChange={handleFileChange} />
+                      <VisuallyHiddenInput type="file" accept=".jpg,.jpeg" onChange={handleFileChange} />
                     </Button>
 
                   </Box>

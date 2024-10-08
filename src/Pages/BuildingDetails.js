@@ -15,7 +15,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import '../components/Shake.css';
-import LabelWithAsterisk from '../components/LabelWithAsterisk'
+import LabelWithAsterisk from '../components/LabelWithAsterisk';
+import ViewSample from '../components/ViewSample';
 const BuildingDetails = () => {
   const [formData, setFormData] = useState({
     BuildingNumber: "1",
@@ -40,7 +41,7 @@ const BuildingDetails = () => {
     features: Yup.string().required(`${t('usageCategoryRequired')}`),
     yearOfConstruction: Yup.string()
       .required(`${t('yearUsageRequired')}`),
-    Typeofuse: Yup.string().required(`${t('typeOfUseRequired')}`),
+    // Typeofuse: Yup.string().required(`${t('typeOfUseRequired')}`),
     SelfuseArea: Yup.string().required(`${t('selfUseAreaRequired')}`),
    // RentedArea:  Yup.string().required(`${t('rentedAreaRequired')}`),
     //  BWSSBMeterNumber: Yup.string().required('BWSSB Meter Number is required'),
@@ -54,6 +55,7 @@ const BuildingDetails = () => {
   const [tablesdata3, setTablesData3] = useState([]);
   const [tablesdata4, setTablesData4] = useState([]);
   const [tableYearMaster,setYearMaster] = useState([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [RentedAreaEnabled,setRentedAreaEnabled] = useState(true)
   const [BescomTable,setBescomTable] = useState([]);
   const [loading,setLoading] = useState(false);
@@ -189,7 +191,7 @@ if(RentedAreaEnabled){
       buildingusagetypeid: BUILDINGUSAGETYPEID,
       ulbcode: 555,
       featureheadid: formData.features,
-      featureid: formData.Typeofuse,
+      featureid: formData.Typeofuse || "0",
       builtyear: formData.yearOfConstruction,
       rrno: formData.BesomCustomerID || null,
       watermeterno: formData.BWSSBMeterNumber,
@@ -238,6 +240,12 @@ if(RentedAreaEnabled){
   const back = () => {
     navigate('/AreaDimension')
   }
+  const viewSample = () => {
+    setIsDialogOpen(true);
+  }
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+  };
   const handleNavigation = () => {
     if(tableData.length === 0){
       toast.error(`${t("Please Enter and Save the Building Details")}`)
@@ -399,6 +407,11 @@ if(RentedAreaEnabled){
   return (
     <Container maxWidth="xl">
       <ToastContainer />
+      <ViewSample
+        open={isDialogOpen}
+        onClose={handleCloseDialog}
+        TypofImage={"BESCOM"}
+      />
       <Box sx={{ backgroundColor: '#f0f0f0', padding: 4, borderRadius: 2, mt: 8 }}>
         <Formik
           initialValues={formData}
@@ -533,16 +546,12 @@ if(RentedAreaEnabled){
                 <Grid item xs={12} sm={4}>
                   <FormControl
                     fullWidth
-                    error={touched.Typeofuse && !!errors.Typeofuse}
-                    sx={{ marginBottom: 3 }}
-                    className={touched.Typeofuse && !!errors.Typeofuse ? 'shake' : ''}
                   >
-                    <InputLabel>      <LabelWithAsterisk text={t('Typeofuse')} /></InputLabel>
+                    <InputLabel>{t('Typeofuse')}</InputLabel>
                     <Select
                       name="Typeofuse"
                       value={formData.Typeofuse}
                       onChange={handleChange}
-                      onBlur={handleBlur}
                       sx={{ backgroundColor: '#ffff' }}
                     >
                       <MenuItem value="">--Select--</MenuItem>
@@ -552,9 +561,6 @@ if(RentedAreaEnabled){
                         </MenuItem>
                       ))}
                     </Select>
-                    <FormHelperText>
-                      {touched.Typeofuse && errors.Typeofuse ? errors.Typeofuse : ''}
-                    </FormHelperText>
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={4}>
@@ -743,7 +749,7 @@ if(RentedAreaEnabled){
                   />
                 
                 <Button color="primary" onClick={handleBescomVerify}>{t("Verify with Bescom")}</Button>
-                 
+                <Button color="primary" onClick={viewSample}>View Sample</Button>
                 </Grid>
                 <Grid item xs={12} sm={4}>
                   <TextField
