@@ -698,7 +698,7 @@ const handleCloseDialog = () => {
                     onClick={handleSASClick}>
                     {t("VerifySASApplicationNumber")}
                   </Button>
-                  <Button color="primary" onClick={viewSample}>View Sample</Button>
+                  <Button color="primary" onClick={viewSample}>{t("View Sample")}</Button>
                 </Grid>
 
 

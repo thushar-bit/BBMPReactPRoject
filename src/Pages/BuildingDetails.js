@@ -749,7 +749,7 @@ if(RentedAreaEnabled){
                   />
                 
                 <Button color="primary" onClick={handleBescomVerify}>{t("Verify with Bescom")}</Button>
-                <Button color="primary" onClick={viewSample}>View Sample</Button>
+                <Button color="primary" onClick={viewSample}>{t("View Sample")}</Button>
                 </Grid>
                 <Grid item xs={12} sm={4}>
                   <TextField

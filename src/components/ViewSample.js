@@ -13,7 +13,7 @@ const ViewSample = ({ open, onClose,TypofImage }) => {
       <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
         <DialogContent dividers style={{ maxHeight: '500px' }} ref={contentRef}>
           <Typography variant="h5" gutterBottom>
-            Sample Image
+            {t("Sample Image")}
           </Typography>
           {TypofImage === "BESCOM" &&
           <img

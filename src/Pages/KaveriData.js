@@ -497,7 +497,7 @@ debugger
       {t("KaveriDocumentData")}
     </Button>
     <Button color="primary" onClick={()=>viewSample("DEED")}>
-      View Sample
+    {t("View Sample")}
     </Button>
   </Box>
 </Grid>
@@ -675,7 +675,7 @@ debugger
               {t("FetchECData")}
             </Button>
             <Button color="primary" onClick={()=>viewSample("EC")}>
-      View Sample
+            {t("View Sample")}
     </Button>
   </Box>
           </Grid>
