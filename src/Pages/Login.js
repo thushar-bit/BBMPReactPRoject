@@ -56,7 +56,7 @@ const Login = () => {
       setTimer(30);
       const interval = setInterval(() => {
         setTimer(prevTimer => prevTimer - 1);
-      }, 500);
+      }, 1000);
       setTimeout(() => {
         setOtpButtonDisabled(false);
         clearInterval(interval);

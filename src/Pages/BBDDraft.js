@@ -159,6 +159,20 @@ const BBDDraft = () => {
       }
     }
   }
+  const handleObjectionNavigation = async (row) => {
+    //  navigate('/AddressDetails')
+
+
+   try {
+      sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(row.PROPERTYCODE));
+      sessionStorage.setItem("userProgress", 3);
+        navigate('/ObjectorsPage')
+      } catch (error) {
+
+        navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
+      }
+    }
+  
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -315,6 +329,7 @@ const BBDDraft = () => {
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("OwnerName")}</TableCell>
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Download")}</TableCell>
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("OpenProperty")}</TableCell>
+                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>File Objection</TableCell>
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("AssessmentNo")}</TableCell>
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Address")}</TableCell>
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("SASApplicationNo")}</TableCell>
@@ -340,7 +355,7 @@ const BBDDraft = () => {
                       <TableCell>{row.OWNERNAME}</TableCell>
                       <TableCell><Button color="primary" variant='outlined'>Draft EKatha</Button></TableCell>
                       <TableCell><Button color="primary" onClick={() => handleNavigation(row)}>{t("ClickHere")}</Button></TableCell>
-                      
+                      <TableCell><Button color="primary" onClick={() => handleObjectionNavigation(row)}>{t("ClickHere")}</Button></TableCell>
                       <TableCell>{row.ASSESMENTNUMBER}</TableCell>
                       <TableCell>{row.ADDRESS}</TableCell>
                       <TableCell>{row.SASAPPLICATIONNO}</TableCell>

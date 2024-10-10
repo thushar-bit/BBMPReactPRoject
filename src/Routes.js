@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './Pages/Login';
 import BBDDraft from './Pages/BBDDraft';
 import BBDDraftGenerated from './Pages/BBDDraftGenerated';
+import ObjectorsPage from './Pages/ObjectorsPage';
 import TaxDetails from './Pages/TaxDetails';
 import AreaDimension from './Pages/AreaDimension';
 import SiteDetails from './Pages/SiteDetails';
@@ -40,6 +41,10 @@ const AppRoutes = () => {
              <Route
               path="/BBDDraft"
               element={<PrivateRoute element={<BBDDraft />} requiredStep={2} />}
+            /> 
+                <Route
+              path="/ObjectorsPage"
+              element={<PrivateRoute element={<ObjectorsPage />} requiredStep={3} />}
             /> 
              <Route
               path="/TaxDetails"
