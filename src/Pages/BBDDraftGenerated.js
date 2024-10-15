@@ -41,10 +41,13 @@ const BBDDraftGenerated = () => {
     sessionStorage.setItem("userProgress", 1);
     fetchData();
   }, []);
-
+const handleWardGooglemap = (row) => {
+  sessionStorage.setItem('DraftZoneId', JSON.stringify(row.ZONEID));
+  navigate("/GoogleMapsWardCoordinates")
+}
   const handleNavigation = async (row) => {
     //  navigate('/AddressDetails')
-
+debugger
 
 try {
       sessionStorage.setItem('DraftZoneId', JSON.stringify(row.ZONEID));
@@ -117,6 +120,7 @@ try {
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("ARO or Subdivision")}</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Ward Name and Number Where Draft eKhata rolled out")}</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Status of Draft eKhata rolled out in ward")}</TableCell>
+        {/* <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Click here if you Don't know your Ward</TableCell> */}
       </TableRow>
     </TableHead>
     <TableBody>
@@ -147,6 +151,7 @@ try {
                 ) : ""}
               </TableCell>
               <TableCell>{row.STATUS}</TableCell>
+              {/* <TableCell><Button onClick={()=>handleWardGooglemap(row)}>Click here</Button></TableCell> */}
             </TableRow>
           );
         })

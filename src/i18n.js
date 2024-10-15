@@ -14,8 +14,10 @@ const resources = {
 
 
       //Address
-      "propertyEID": "Property EID",
+      "propertyEID": "Property EPID",
       "city": "City",
+      "BookNO":"Book No",
+      "PageNumber":"Page Number",
       "district": "District",
       "wardNumber": "	Ward No. and Ward Name",
       "oldWardNo":"Old Ward No",
@@ -457,6 +459,8 @@ const resources = {
 "Status of Draft eKhata rolled out in ward": "ವಾರ್ಡ್‌ನಲ್ಲಿ ರೋಲ್‌ಔಟ್ ಮಾಡಿದ ಡ್ರಾಫ್ಟ್ ಈಖಾತಾದ ಸ್ಥಿತಿ",
       //address
       "propertyEID": "ಸ್ವತ್ತಿನ ಇಐಡಿ ಸಂಖ್ಯೆ",
+      "BookNO":"ಪುಸ್ತಕ ಸಂಖ್ಯೆ",
+      "PageNumber":"ಪುಟ ಸಂಖ್ಯೆ",
       "city": "ನಗರ",
       "district": "ಜಿಲ್ಲೆ",
       "wardNumber": "ವಾರ್ಡ್ ಸಂಖ್ಯೆ ಮತ್ತು ವಾರ್ಡ್ ಹೆಸರು",

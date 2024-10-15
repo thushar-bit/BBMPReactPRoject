@@ -27,6 +27,7 @@ const BBDDraft = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const { t } = useTranslation();
   const fetchData = useCallback(async () => {
+    debugger
     setLoading(true)
     try {
       let response = await axiosInstance.get("BBMPCITZAPI/GetMasterZone")
@@ -105,11 +106,22 @@ const BBDDraft = () => {
       }
     }
   }
+  const handleAlphabeticalSearch = async (Alphbet) => {
+    debugger
+    try {
+    let response = await axiosInstance.get("BBMPCITZAPI/LOAD_BBD_RECORDS?ZoneId=" + formData.ZoneName + "&WardId=" + formData.WardName + "&SerachType=" + 6 + "&Search=" + Alphbet + "")
+    setPropertyData(response.data.Table || [])
+    }
+    catch(error){
+      console.log(error)
+    }
+  }
   const handleBack = () => {
     sessionStorage.removeItem("DraftZoneId")
     sessionStorage.removeItem("DraftWardId")
     navigate('/BBDDraftGenerated')
   }
+  const alphabet = Array.from(Array(26)).map((_, i) => String.fromCharCode(i + 65));
   const handleReset = () => {
 
 
@@ -227,7 +239,8 @@ const BBDDraft = () => {
             }
           }}
         >
-          {t("PendingPropertyList")}
+          {/* {t("PendingPropertyList")} */}
+          Welcome to Faceless, Contactless, Online enmass eKhata Issuance System
         </Typography>
         <Grid container spacing={4} alignItems={"center"}>
           <Grid item xs={12} sm={4} md={3}>
@@ -286,11 +299,11 @@ const BBDDraft = () => {
                 onChange={handleChange}
               >
                 <MenuItem value="0">--Select--</MenuItem>
-                <MenuItem value="1">Property EID</MenuItem>
+                <MenuItem value="1">Property EPID</MenuItem>
                 <MenuItem value="2">Owner Name</MenuItem>
                 <MenuItem value="3">Assessment No</MenuItem>
                 <MenuItem value="4">Property Address</MenuItem>
-                <MenuItem value="5">Sas Application No</MenuItem>
+                {/* <MenuItem value="5">Sas Application No</MenuItem> */}
               </Select>
             </FormControl>
           </Grid>
@@ -332,10 +345,10 @@ const BBDDraft = () => {
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>File Objection</TableCell>
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("AssessmentNo")}</TableCell>
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Address")}</TableCell>
-                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("SASApplicationNo")}</TableCell>
-           
-               
-                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Remarks")}</TableCell>
+                {/* <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("SASApplicationNo")}</TableCell> */}
+                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("BookNO")}</TableCell>
+                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("PageNumber")}</TableCell>
+                
               </TableRow>
             </TableHead>
             <TableBody>
@@ -353,19 +366,50 @@ const BBDDraft = () => {
                       <TableCell>{page * rowsPerPage + index + 1}</TableCell>
                       <TableCell>{row.PROPERTYID}</TableCell>
                       <TableCell>{row.OWNERNAME}</TableCell>
-                      <TableCell><Button color="primary" variant='outlined'>Draft EKatha</Button></TableCell>
+                      <TableCell><Button color="primary" >Draft EKatha</Button></TableCell>
                       <TableCell><Button color="primary" onClick={() => handleNavigation(row)}>{t("ClickHere")}</Button></TableCell>
                       <TableCell><Button color="primary" onClick={() => handleObjectionNavigation(row)}>{t("ClickHere")}</Button></TableCell>
                       <TableCell>{row.ASSESMENTNUMBER}</TableCell>
                       <TableCell>{row.ADDRESS}</TableCell>
-                      <TableCell>{row.SASAPPLICATIONNO}</TableCell>
-                      <TableCell></TableCell>
+                      {/* <TableCell>{row.SASAPPLICATIONNO}</TableCell> */}
+                      <TableCell>{row.BOOKNUMBER}</TableCell>
+                      <TableCell>{row.PAGENUMBER}</TableCell>
                     </TableRow>
                   ))
               )}
             </TableBody>
           </Table>
         </TableContainer>
+        <div>
+  <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '20px' }}>
+    {alphabet.map((letter) => (
+      <span
+        key={letter}
+        onClick={() => handleAlphabeticalSearch(letter)}
+        style={{
+          margin: '8px',
+          cursor: 'pointer',
+          color: '#3498db', // Cool blue color
+          fontSize: '17px',
+          fontFamily: 'Arial, sans-serif',
+          transition: 'color 0.3s ease, transform 0.2s ease',
+        }}
+        onMouseOver={(e) => {
+          e.target.style.color = '#2980b9'; // Darker blue on hover
+          e.target.style.transform = 'scale(1.1)'; // Slight scale up on hover
+        }}
+        onMouseOut={(e) => {
+          e.target.style.color = '#3498db'; // Reset to original color
+          e.target.style.transform = 'scale(1)'; // Reset scale
+        }}
+      >
+        {letter}
+      </span>
+    ))}
+  </div>
+</div>
+
+
         <TablePagination
           rowsPerPageOptions={[10, 25, 50, 100]}
           component="div"

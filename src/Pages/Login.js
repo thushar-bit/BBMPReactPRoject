@@ -206,9 +206,9 @@ const Login = () => {
           <Typography
             level="h6"
             component="h6"
-            sx={{ fontSize: { xs: '3rem', md: '2.4rem' }, color: "#00000" }}
+            sx={{ fontSize: { xs: '4rem', md: '4rem' }, color: "#00000" }}
           >
-            Welcome to Faceless,Contactless ,Online enmass ekatha Issuance System !
+            Welcome Back!
           </Typography>
           
           <FormControl sx={{ width: '100%', maxWidth: '500px' }}>
