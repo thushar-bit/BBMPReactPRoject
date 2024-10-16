@@ -119,7 +119,7 @@ try {
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("ZONE")}</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("ARO or Subdivision")}</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Ward Name and Number Where Draft eKhata rolled out")}</TableCell>
-        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Status of Draft eKhata rolled out in ward")}</TableCell>
+        {/* <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Status of Draft eKhata rolled out in ward")}</TableCell> */}
         {/* <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Click here if you Don't know your Ward</TableCell> */}
       </TableRow>
     </TableHead>
@@ -150,7 +150,7 @@ try {
                   </Button>
                 ) : ""}
               </TableCell>
-              <TableCell>{row.STATUS}</TableCell>
+              {/* <TableCell>{row.STATUS}</TableCell> */}
               {/* <TableCell><Button onClick={()=>handleWardGooglemap(row)}>Click here</Button></TableCell> */}
             </TableRow>
           );

@@ -122,14 +122,15 @@ const BBDDraft = () => {
     navigate('/BBDDraftGenerated')
   }
   const alphabet = Array.from(Array(26)).map((_, i) => String.fromCharCode(i + 65));
-  const handleReset = () => {
+  const handleReset = async () => {
+    let response = await axiosInstance.get(`BBMPCITZAPI/LOAD_BBD_RECORDS?ZoneId=${formData.ZoneName}&WardId=${formData.WardName}&SerachType=${0}&Search=${"thushar"}`)
+    setPropertyData(response.data.Table || [])
 
-
-    setPropertyData([]);
+    
     setFormData({
       ...formData,
-      ZoneName: "",
-      WardName: "",
+     // ZoneName: "",
+     // WardName: "",
       SelectType: "",
       Search: ""
     });
@@ -253,7 +254,8 @@ const BBDDraft = () => {
                 name="ZoneName"
                 value={formData.ZoneName}
                 onChange={handleChange}
-                sx={{ backgroundColor: "#ffff" }}
+                sx={{ backgroundColor: "" }}
+                inputProps={{ readOnly: true }}
               >
                 <MenuItem value="">--Select--</MenuItem>
                 {zoneData.map((item) => (
@@ -274,7 +276,8 @@ const BBDDraft = () => {
                 name="WardName"
                 value={formData.WardName}
                 onChange={handleChange}
-                sx={{ backgroundColor: "#ffff" }}
+                sx={{ backgroundColor: "" }}
+                inputProps={{ readOnly: true }}
               >
                 <MenuItem value="">--Select--</MenuItem>
                 {WardData.map((item) => (
@@ -342,7 +345,7 @@ const BBDDraft = () => {
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("OwnerName")}</TableCell>
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Download")}</TableCell>
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("OpenProperty")}</TableCell>
-                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>File Objection</TableCell>
+                {/* <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>File Objection</TableCell> */}
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("AssessmentNo")}</TableCell>
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Address")}</TableCell>
                 {/* <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("SASApplicationNo")}</TableCell> */}
@@ -368,7 +371,7 @@ const BBDDraft = () => {
                       <TableCell>{row.OWNERNAME}</TableCell>
                       <TableCell><Button color="primary" >Draft EKatha</Button></TableCell>
                       <TableCell><Button color="primary" onClick={() => handleNavigation(row)}>{t("ClickHere")}</Button></TableCell>
-                      <TableCell><Button color="primary" onClick={() => handleObjectionNavigation(row)}>{t("ClickHere")}</Button></TableCell>
+                      {/* <TableCell><Button color="primary" onClick={() => handleObjectionNavigation(row)}>{t("ClickHere")}</Button></TableCell> */}
                       <TableCell>{row.ASSESMENTNUMBER}</TableCell>
                       <TableCell>{row.ADDRESS}</TableCell>
                       {/* <TableCell>{row.SASAPPLICATIONNO}</TableCell> */}
@@ -410,15 +413,16 @@ const BBDDraft = () => {
 </div>
 
 
-        <TablePagination
-          rowsPerPageOptions={[10, 25, 50, 100]}
-          component="div"
-          count={propertyData.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
+<TablePagination
+  rowsPerPageOptions={[10, 25, 50, 100]}
+  component="div"
+  count={Math.ceil(propertyData.length / rowsPerPage)} // Calculate page count dynamically
+  rowsPerPage={rowsPerPage}
+  page={page}
+  onPageChange={handleChangePage}
+  onRowsPerPageChange={handleChangeRowsPerPage}
+/>
+
       </Box>
     </Container>
   );
