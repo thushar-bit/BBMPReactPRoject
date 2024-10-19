@@ -7,7 +7,7 @@ import {
 
 
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axiosInstance from '../components/Axios';
 import ErrorPage from './ErrorPage';
 import '../components/Shake.css';
@@ -18,19 +18,30 @@ const BBDDraftGenerated = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [Data, setData] = useState([]);
-
+  const location = useLocation();
+  const [LoginDetails,setLoginDetails] = useState('')
  
   const { t } = useTranslation();
   const fetchData = async () => {
     try {
       setLoading(true)
     var response = await axiosInstance.get("BBMPCITZAPI/GET_PROPERTY_BBD_Draft_Generated_Wards")
+    debugger
     const uniqueData = response.data.Table.filter(
         (value, index, self) =>
-          index === self.findIndex((t) => t.AROID === value.AROID )
+          index === self.findIndex((t) => t.WARDID === value.WARDID )
       );
     setData(uniqueData || [])
+    debugger
     setLoading(false)
+    const params = new URLSearchParams(location.search);
+      const LoginData = params.get('LoginData');
+      if (LoginData !== null && LoginData !== undefined) {
+        let response4 = await axiosInstance.get("Auth/DecryptJson?encryptedXML="+LoginData)
+        console.log(response4.data)
+        setLoginDetails(response4.data)
+        sessionStorage.setItem("LoginData", JSON.stringify(response4.data)); 
+      }
     }
     catch(error){
       return <ErrorPage errorMessage={error} />;
@@ -111,7 +122,17 @@ try {
         >
          {t("eKhata Roll-Out Status and Information")}
         </Typography>
-        
+        <Typography 
+        variant="body1" 
+        sx={{ color: 'red', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '1.2rem' }}
+      >
+
+NOTE 1: IF YOU DON'T FIND YOUR PROPERTY IN THE WARD LIST, TRY AFTER FEW DAYS AS ABOUT 1-LAKH PROPERTIES eKHATA IS BEING DIGITIZED(21 Lakh have been released at present).
+</Typography>
+<Typography 
+        variant="body1" 
+        sx={{ color: 'red', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '1.2rem' }}
+      >NOTE 2: You can see your Ward Number & Name in Property Tax Receipt for your property.</Typography>
         <TableContainer component={Paper} sx={{ mt: 4, maxHeight: 900  }}>
   <Table stickyHeader aria-label="sticky table">
     <TableHead>
@@ -135,14 +156,14 @@ try {
        
         .map((row, index, arr) => {
           const showZoneName = index === 0 || row.ZONEID !== arr[index - 1].ZONEID;
-          
+          const showAROName = index === 0 || row.AROID !== arr[index - 1].AROID;
 
           return (
             <TableRow key={index}>
              
               <TableCell>{showZoneName ? row.ZONENAME : ""}</TableCell>
              
-              <TableCell>{ row.ARONAME}</TableCell>
+              <TableCell>{showAROName ?  row.ARONAME : ""}</TableCell>
               <TableCell>
                 {row.WARDNAME ? (
                   <Button color="primary" onClick={() => handleNavigation(row)}>

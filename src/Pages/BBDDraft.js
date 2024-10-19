@@ -1,6 +1,6 @@
 import React, { useState, useEffect ,useCallback} from 'react';
 import {
-  TextField, Button, Grid, Box, Container, Typography, CircularProgress,
+  TextField, Button, Grid, Box, Container, Typography, CircularProgress, Dialog, DialogContent,
   FormControl, MenuItem, Select, InputLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
   TablePagination
 } from '@mui/material';
@@ -24,8 +24,12 @@ const BBDDraft = () => {
   const [zoneData, setZoneData] = useState([]);
   const [WardData, setWardData] = useState([]);
   const [page, setPage] = useState(0);
+  const [pdfUrl, setPdfUrl] = useState('');
+  const [selectedLetter, setSelectedLetter] = useState(null);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [LoginData,setLoginData] = useState()
   const { t } = useTranslation();
+  
   const fetchData = useCallback(async () => {
     debugger
     setLoading(true)
@@ -40,6 +44,7 @@ const BBDDraft = () => {
       setPropertyData(response2.data.Table || [])
       
       setLoading(false)
+      setLoginData(JSON.parse(sessionStorage.getItem('LoginData')))
     } catch (error) {
       navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
     }
@@ -116,10 +121,11 @@ const BBDDraft = () => {
       console.log(error)
     }
   }
+  
   const handleBack = () => {
     sessionStorage.removeItem("DraftZoneId")
     sessionStorage.removeItem("DraftWardId")
-    navigate('/BBDDraftGenerated')
+    navigate('/')
   }
   const alphabet = Array.from(Array(26)).map((_, i) => String.fromCharCode(i + 65));
   const handleReset = async () => {
@@ -185,8 +191,100 @@ const BBDDraft = () => {
         navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
       }
     }
-  
+  const viewDraftEkatha = async (row) => {
+    debugger
+     if(row.PROPERTYCODE === null || row.PROPERTYCODE  === undefined|| row.PROPERTYCODE.length === 0){
+    toast.error("Property Code does not exist for this property")
+      return
+    }
+    else if( row.BOOKNUMBER === null ||  row.BOOKNUMBER === undefined|| row.BOOKNUMBER.length === 0  ){
+    toast.error("Book Number does not exist for this property")
+      return
+    }
+      else if(row.BOOKID === null || row.BOOKID === undefined || row.BOOKID.length === 0){
+      toast.error("Book Id does not exist for this property")
+      return
+      }
+   const data = {
+    
+      propertyCode: row.PROPERTYCODE.toString() || "",
+      properytyId: row.PROPERTYID ? row.PROPERTYID.toString() : "",
+      bookNumber: row.BOOKNUMBER.toString(),
+      bookId: row.BOOKID.toString()
+    }
+   try {
+ const response = await axiosInstance.post(
+  `Report/DownloadDraftPDF`,
+  data,
+  {
+    responseType: 'blob', 
+  }
+);
 
+
+const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
+const pdfUrl = URL.createObjectURL(pdfBlob);
+
+setPdfUrl(pdfUrl);
+   }
+   catch(error){
+  console.log(error)
+   }
+  }
+    const handleBBMPRedirection = async (row) => {
+  
+     // const response = await axiosInstance.get("Auth/EncryptJsons?UserId=")
+    //  const response = await axiosInstance.get("Auth/DecryptJson")
+debugger
+try {
+  let now = new Date();
+  let txtDate = now.getFullYear().toString() +
+                (now.getMonth() + 1).toString().padStart(2, '0') +
+                now.getDate().toString().padStart(2, '0') + 'T' +
+                now.getHours().toString().padStart(2, '0') + ':' +
+                now.getMinutes().toString().padStart(2, '0') + ':' +
+                now.getSeconds().toString().padStart(2, '0');
+    if(LoginData !== null && LoginData !== undefined){
+    //  window.location.href = "https://bbmpeaasthi.karnataka.gov.in/CitzLogin.aspx";
+    const data = {
+      userId: LoginData.UserId,
+      propertyCode: row.PROPERTYCODE.toString(),
+      propertyEPID:  row.PROPERTYID ? row.PROPERTYID.toString() : "",
+      sessionValues: "",
+      execTime: txtDate,
+      isLogin: true
+      }
+      
+      const response5 = await axiosInstance.post("Auth/EncryptJsons",data)
+      let re = response5.data;
+   // window.location.href = "https://bbmpeaasthi.karnataka.gov.in/forms/CitzBookModuleHome.aspx?BookDraft="+re;
+    window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_test2/forms/CitzBookModuleHome.aspx?BookDraft="+re;
+    }
+    else {
+      alert("Please Log-In To Update Property Information Or To File Objections. Click On The Get e-Khatha Link After Logging In.")
+      const data = {
+        userId: "",
+        propertyCode: row.PROPERTYCODE.toString(),
+        propertyEPID: row.PROPERTYID ? row.PROPERTYID.toString() : "",
+        sessionValues: "",
+        execTime: txtDate,
+        isLogin: false
+        }
+       
+
+console.log(txtDate); // Outputs: "20241018T13:44:09" (for example)
+
+       // let json = "{\"UserId\":\"" + Convert.ToString(Session["LoginId"]) + "\",\"PropertyCode\":\"\",\"PropertyEPID\":\"\",\"SessionValues\":[],\"ExecTime\":\"" + txtDate + "\"}";
+        
+        const response = await axiosInstance.post("Auth/EncryptJsons",data)
+     // window.location.href = "https://bbmpeaasthi.karnataka.gov.in/CitzLogin.aspx?BookDraft="+response.data;
+      window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_test2/CitzLogin.aspx?BookDraft="+response.data;
+    }
+  }
+    catch(error){
+      console.log(error)
+    }
+    }
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -224,6 +322,17 @@ const BBDDraft = () => {
     <Container maxWidth="lg">
       <Box sx={{ backgroundColor: '#f0f0f0', padding: 4, borderRadius: 2, mt: 8 }}>
         <ToastContainer />
+        {pdfUrl && (
+          
+        <Dialog open={Boolean(pdfUrl)} onClose={() => setPdfUrl('')} maxWidth="md" fullWidth>
+          <DialogContent>
+            <iframe src={pdfUrl} width="100%" height="600px" title="PDF Viewer"></iframe>
+          </DialogContent>
+          
+          </Dialog>
+          
+        )}
+          
         <Typography
           variant="h6"
           align="center"
@@ -369,8 +478,9 @@ const BBDDraft = () => {
                       <TableCell>{page * rowsPerPage + index + 1}</TableCell>
                       <TableCell>{row.PROPERTYID}</TableCell>
                       <TableCell>{row.OWNERNAME}</TableCell>
-                      <TableCell><Button color="primary" >Draft EKatha</Button></TableCell>
-                      <TableCell><Button color="primary" onClick={() => handleNavigation(row)}>{t("ClickHere")}</Button></TableCell>
+                      <TableCell><Button color="primary" onClick={() => viewDraftEkatha(row)} >Draft EKatha</Button></TableCell>
+                      {/* <TableCell><Button color="primary" onClick={() => handleNavigation(row)}>{t("ClickHere")}</Button></TableCell> */}
+                      <TableCell><Button color="primary" onClick={() => handleBBMPRedirection(row)}>{t("ClickHere")}</Button></TableCell>
                       {/* <TableCell><Button color="primary" onClick={() => handleObjectionNavigation(row)}>{t("ClickHere")}</Button></TableCell> */}
                       <TableCell>{row.ASSESMENTNUMBER}</TableCell>
                       <TableCell>{row.ADDRESS}</TableCell>
@@ -387,42 +497,51 @@ const BBDDraft = () => {
   <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '20px' }}>
     {alphabet.map((letter) => (
       <span
-        key={letter}
-        onClick={() => handleAlphabeticalSearch(letter)}
-        style={{
+      key={letter}
+      onClick={() => {
+          handleAlphabeticalSearch(letter);
+          setSelectedLetter(letter); // Set the clicked letter as selected
+      }}
+      style={{
           margin: '8px',
           cursor: 'pointer',
-          color: '#3498db', // Cool blue color
+          color: selectedLetter === letter ? '#e74c3c' : '#3498db', // Change color if selected
           fontSize: '17px',
           fontFamily: 'Arial, sans-serif',
           transition: 'color 0.3s ease, transform 0.2s ease',
-        }}
-        onMouseOver={(e) => {
-          e.target.style.color = '#2980b9'; // Darker blue on hover
+          fontWeight: selectedLetter === letter ? 'bold' : 'normal', // Make it bold if selected
+      }}
+      onMouseOver={(e) => {
+          e.target.style.color = selectedLetter === letter ? '#c0392b' : '#2980b9'; // Darker blue or red on hover
           e.target.style.transform = 'scale(1.1)'; // Slight scale up on hover
-        }}
-        onMouseOut={(e) => {
-          e.target.style.color = '#3498db'; // Reset to original color
+      }}
+      onMouseOut={(e) => {
+          e.target.style.color = selectedLetter === letter ? '#e74c3c' : '#3498db'; // Reset to original color
           e.target.style.transform = 'scale(1)'; // Reset scale
-        }}
-      >
-        {letter}
-      </span>
+      }}
+  >
+      {letter}
+  </span>
+      
     ))}
+    <Button  onClick={() => handleAlphabeticalSearch("9")} >Others</Button>
   </div>
 </div>
 
 
 <TablePagination
-  rowsPerPageOptions={[10, 25, 50, 100]}
-  component="div"
-  count={Math.ceil(propertyData.length / rowsPerPage)} // Calculate page count dynamically
-  rowsPerPage={rowsPerPage}
-  page={page}
-  onPageChange={handleChangePage}
-  onRowsPerPageChange={handleChangeRowsPerPage}
-/>
-
+          rowsPerPageOptions={[10, 25, 50, 100]}
+          component="div"
+          count={propertyData.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          labelRowsPerPage="Properties per Page:"
+          labelDisplayedRows={({ from, to, count }) => 
+            `Properties : ${from}–${to} of ${count !== -1 ? count : `more than ${to}`} `
+          }
+        />
       </Box>
     </Container>
   );

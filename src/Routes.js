@@ -7,6 +7,7 @@ import BBDDraftGenerated from './Pages/BBDDraftGenerated';
 import ObjectorsPage from './Pages/ObjectorsPage';
 import TaxDetails from './Pages/TaxDetails';
 import AreaDimension from './Pages/AreaDimension';
+import GoogleMapsWardCoordinates from './Pages/GetWardByCoordintes';
 import SiteDetails from './Pages/SiteDetails';
 import BuildingDetails from './Pages/BuildingDetails';
 import MultiStoreyBuildingDetails from './Pages/MultiStoreyBuildingDetails';
@@ -33,16 +34,21 @@ const AppRoutes = () => {
         <div className="App">
           <Breadcrumbs />
           <Routes>
-            <Route path="/" element={<Login />} />
-            <Route
+            <Route path="/" element={<BBDDraftGenerated />} />
+            <Route path="/BBDDraft" element={<BBDDraft />} />
+            {/* <Route
               path="/BBDDraftGenerated"
               element={<PrivateRoute element={<BBDDraftGenerated />} requiredStep={1} />}
+            />  */}
+            <Route
+              path="/GoogleMapsWardCoordinates"
+              element={<PrivateRoute element={<GoogleMapsWardCoordinates />} requiredStep={1} />}
             /> 
-             <Route
+             {/* <Route
               path="/BBDDraft"
-              element={<PrivateRoute element={<BBDDraft />} requiredStep={2} />}
-            /> 
-                <Route
+              element={<PrivateRoute element={<BBDDraft />} requiredStep={1} />}
+            />  */}
+                {/* <Route
               path="/ObjectorsPage"
               element={<PrivateRoute element={<ObjectorsPage />} requiredStep={3} />}
             /> 
@@ -89,7 +95,7 @@ const AppRoutes = () => {
               <Route
               path="/ESignPage"
               element={<PrivateRoute element={<ESignPage />} />}
-            />
+            /> */}
             <Route path="*" element={<ErrorPage />} />
           </Routes>
         </div>

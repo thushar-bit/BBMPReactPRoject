@@ -60,7 +60,7 @@ const ObjectorsPage = () => {
     IsCommuncationAddress:"Y",
     TypeOfUpload:"",
     MOBILENUMBER:"",
-    communicationAddress:""
+    communicationAddress:"N"
   });
   const { t } = useTranslation();
  
@@ -68,7 +68,7 @@ const ObjectorsPage = () => {
   const navigate = useNavigate();
 
  
-  //const [fileExtension, setfileExtension] = useState([]);
+ 
   const [loading, setLoading] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
   const [tabledata5EkycVerifed, setTablesDataEKYCVerified] = useState([]);
@@ -76,14 +76,14 @@ const ObjectorsPage = () => {
   const [KAVERI_DOC_DETAILS, setKAVERI_DOC_DETAILS] = useState([]);
   const [KAVERI_PROP_DETAILS, setKAVERI_PROP_DETAILS] = useState([]);
   const [KAVERI_PARTIES_DETAILS, setKAVERI_PARTIES_DETAILS] = useState([]);
-  const [DocumetUploadData, setDocumentUploadedData] = useState([]);
+  const [tabledata5EkycNotVerifed, setTablesDataEkycNotVerifed] = useState([]);
   const location = useLocation();
   const [editableIndex, setEditableIndex] = useState(-1);
   const [otpFieldsVisible, setOtpFieldsVisible] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileExtension, setfileExtension] = useState([]);
   const [EkycResponseData,setEkycResponseData] = useState(null);
-  const [tableData, setTableData] = useState([]);
+  
   const [otpNumber, setOtpNumber] = useState(0)
   const [otpButtonDisabled, setOtpButtonDisabled] = useState(false);
   const [timer, setTimer] = useState(30); 
@@ -192,7 +192,7 @@ const ObjectorsPage = () => {
     }
   };
  
-  const [SAStableData, setSASTableData] = useState([]);
+ 
   const fetchData = React.useCallback(async () => {
     setLoading(true);
     
@@ -264,14 +264,13 @@ const ObjectorsPage = () => {
     }
     setLoading(false);
   }, [t]);
-  const handleOddSiteChange = (e) => {
-  }
+  
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
   const handleChange = (e) => {
-
+debugger
     const { name, value } = e.target;
     if(name === "communicationAddress"){
         if(value === "Y"){
@@ -282,12 +281,12 @@ const ObjectorsPage = () => {
         }
       
     }
-    else if(name === ""){
-
+    else if(name === "ReasonCategory"){
+        if(value !== "3"){
+            formData.TypeOfUpload = ""
+        }
     }
-    else if(name === ""){
-
-    }
+    
     
     setFormData({
       ...formData,
@@ -361,6 +360,10 @@ const ObjectorsPage = () => {
     setSelectedFile(null);
     setfileExtension('');
   }
+  const handleFileDocumentDelete = () => {
+    setSelectedFile(null);
+    setfileExtension('');
+  }
  
   
   const handleBack = () => {
@@ -417,6 +420,89 @@ const ObjectorsPage = () => {
     window.location.href = response.data;
   };
   
+  const handleSave = async (Type) => {
+
+    try {
+
+      if (otpFieldsVisible) {
+        toast.error(`${t("verifyOtp")}`)
+        return
+      }
+      if (formData.IDENTIFIERTYPEID === null || formData.IDENTIFIERTYPEID === undefined || formData.IDENTIFIERTYPEID === 0) {
+        toast.error(`${t("selectRelationshipType")}`)
+        return
+      }
+      if (formData.IDENTIFIERTYPEID.length === 0) {
+        toast.error(`${t("selectRelationshipType")}`)
+        return
+      }
+      if (formData.IDENTIFIERNAME === null || formData.IDENTIFIERNAME === undefined) {
+        toast.error(`${t("enterRelationName")}`)
+        return
+      }
+      if (formData.IDENTIFIERNAME.length <= 0) {
+        toast.error(`${t("enterRelationName")}`)
+        return
+      }
+      let s = tabledata5EkycNotVerifed.some(x =>x.MOBILEVERIFY === "Verified");
+      if(!s){
+      if (formData.MOBILENUMBER === null || formData.MOBILENUMBER === undefined) {
+        toast.error(`${t("enterValidMobileNumber")}`)
+        return
+      }
+      if (formData.MOBILENUMBER.length <= 0 && formData.MOBILENUMBER.length < 10) {
+        toast.error(`${t("enterValidMobileNumber")}`)
+        return
+      }
+    }
+
+      if(Type === "AFTEREKYC")
+      {
+      setEditableIndex(-1);
+      const params = {
+        P_BOOKS_PROP_APPNO: 1,
+        propertyCode: formData.PROPERTYCODE,
+        ownerNumber: formData.OWNERNUMBER,
+        IDENTIFIERTYPE: formData.IDENTIFIERTYPEID || 0,
+        IDENTIFIERNAME_EN: formData.IDENTIFIERNAME || "",
+        MOBILENUMBER: formData.MOBILENUMBER || "0",
+        MOBILEVERIFY: formData.MOBILEVERIFY !== "" ? formData.MOBILEVERIFY : "NOT VERIFIED",
+        loginId: 'crc'
+      };
+
+      const queryString = new URLSearchParams(params).toString();
+
+
+      const response = await axiosInstance.get(`Name_Match/UPD_NCL_PROPERTY_OWNER_TEMP_MOBILEVERIFY?${queryString}`);
+      console.log(response.data);
+      toast.success(`${t("ownerEditedSuccess")}`)
+      await fetchData();
+    }
+    else if(Type === "EKYC"){
+      debugger
+      const params = {
+        IDENTIFIERTYPE: formData.IDENTIFIERTYPEID || 0,
+        IdentifierName:formData.IDENTIFIERNAME,
+        NAMEMATCHSCORE:0,
+        MOBILENUMBER: formData.MOBILENUMBER || "0",
+        MOBILEVERIFY: formData.MOBILEVERIFY !== "" ? formData.MOBILEVERIFY : "NOT VERIFIED",
+        loginId: 'crc'
+      };
+
+      const queryString = new URLSearchParams(params).toString();
+
+     
+      const response = await axiosInstance.post(`Name_Match/INS_NCL_PROPERTY_OWNER_TEMP_WITH_EKYCDATA?${queryString}`,EkycResponseData);
+      console.log(response.data);
+      toast.success(`${t("ownerEditedSuccess")}`)
+      setEkycResponseData(null);
+      await fetchData();
+    }
+    } catch (error) {
+      toast.error(`${t("errorSavingData")}`, error)
+    }
+
+  };
   const handleSubmit = async (e) => {
     
     if (e.key === 'Enter') {
@@ -772,12 +858,11 @@ const ObjectorsPage = () => {
 
           <Box display="flex" alignItems="center">
                     <Typography variant="body1" sx={{ ml: 1 }}>
-                     Aadhar Authentication (if you do not want to give Aadhar ,you can file physical objection application to ARO office) 
+                     Aadhar Authentication <span style={{ color: 'red' }}> (If you do not want to give Aadhar ,you can file physical objection application to ARO office) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
                     </Typography>
                     <Button variant="contained" color="primary" onClick={() => AddEKYCOwner()}>
                         {t("VerifyE-KYC")}
                       </Button>
-
                   </Box>
 
 </Grid>
@@ -959,7 +1044,19 @@ const ObjectorsPage = () => {
                         />
                   </Grid>
                   </Grid>
+                  <br></br>
+                  <Grid item xs={12} sm={12}>
+                    <Box display="flex" justifyContent="center" gap={2}>
+                        <Button variant="contained" color="primary" onClick={() => handleSave("EKYC")}>
+                          {t("Save")}
+                        </Button>
+                     
+                    </Box>
+                  </Grid>
+               
+              
                   </>
+                  
       }
         </Grid>
         <Typography>Actual Objectors with E-Kyc Verifed</Typography>
@@ -1022,7 +1119,7 @@ const ObjectorsPage = () => {
 
           <Box display="flex" alignItems="center">
                     <Typography variant="body1" sx={{ ml: 1 }}>
-                      Upload detailed objection in writing with your signatures,name,mobile and address :
+                      Upload detailed objection in writing with your signatures,name,mobile Number and address : 
                     </Typography>
                     <Button
                       component="label"
@@ -1392,7 +1489,17 @@ const ObjectorsPage = () => {
             {t("Uploadfile")}
             <VisuallyHiddenInput type="file" accept=".pdf" onChange={handleFileChange} />
           </Button>
-
+          {selectedFile && (
+                    <Box display="flex" alignItems="center" mt={2}>
+                      <Typography variant="body1">{selectedFile.name}</Typography>
+                      <Button color="error" onClick={handleFileDelete} sx={{ ml: 2 }}>
+                        {t("Delete")}
+                      </Button>
+                    </Box>
+                  )}
+                  <Typography variant="body1" sx={{ ml: 1, color: '#df1414' }}>
+                    {t("MaximumFileSizeMB")}
+                  </Typography>
         </Box>
 </Grid>
 }
