@@ -371,7 +371,7 @@ debugger
     
     sessionStorage.removeItem("SETPROPERTYCODE");
     sessionStorage.removeItem("SETPROPERYID");
-    navigate("/BBDDraft");
+    navigate("/PropertyList");
   }
   const EditOwnerDetailsFromEKYCData = async (txno, ownerType) => {
     

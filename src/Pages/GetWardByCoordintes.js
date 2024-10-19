@@ -1,7 +1,9 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { GoogleMap, useJsApiLoader, MarkerF  } from '@react-google-maps/api';
+import { Dialog, DialogContent, DialogActions, Button, Typography} from '@mui/material';
 import ward_boundaries from "../assets/ward_boundaries.json"
 import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../components/Axios';
 import '../components/GooglemapsWard.css';
 const containerStyle = {
   width: '100%',
@@ -28,6 +30,7 @@ const GoogleMapsWardCoordinates = ({ }) => {
  
   const [markerPosition, setMarkerPosition] = useState(center);
   const [address, setAddress] = useState('');
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const inputRef = useRef(null);
   const mapRef = useRef(null);
   const [wardName, setWardName] = useState('Not Found');
@@ -43,19 +46,31 @@ const GoogleMapsWardCoordinates = ({ }) => {
   const onUnmount = useCallback(function callback(map) {
     // Clean up function when map unmounts
   }, []);
-
+ 
+  const handleConfirmYes = () => {
+    setConfirmOpen(false);
+    onClose(); 
+    handleNavigation();
+  };
+const onClose = () => {
+  setConfirmOpen(false);
+}
+  const handleConfirmNo = () => {
+    setConfirmOpen(false);
+    onClose(); 
+  };
   const handleMapClick = async (event) => {
     const clickedLocation = event.latLng;
     const lat = clickedLocation.lat();
     const lng = clickedLocation.lng();
     setMarkerPosition({ lat, lng });
     setCenter({ lat, lng });
-    alert(`Lattitude:${lat},Longitude: ${lng}`);
+   // alert(`Lattitude:${lat},Longitude: ${lng}`);
     getWard(lat,lng);
     try {
       const address = await getPlaceDetails(lat, lng);
       setAddress(address);
-      alert(`Address ${address}`);
+      // alert(`Address ${address}`);
       //if (onLocationChange) onLocationChange({ lat, lng, address });
     } catch (error) {
       alert('Failed to fetch place details');
@@ -112,9 +127,9 @@ const GoogleMapsWardCoordinates = ({ }) => {
         setMarkerPosition({ lat, lng });
         setAddress(place.formatted_address);
         setCenter({ lat, lng });
-        alert(`Lattitude:${lat},Longitude:${lng}`);
+      //  alert(`Lattitude:${lat},Longitude:${lng}`);
         getWard(lat,lng);
-        alert(`Address ${place.formatted_address}`);
+        // alert(`Address ${place.formatted_address}`);
         //if (onLocationChange) onLocationChange({ lat, lng, address: place.formatted_address });
       });
     }
@@ -134,8 +149,8 @@ const GoogleMapsWardCoordinates = ({ }) => {
           setAddress(place.formatted_address);
           setCenter({ lat, lng });
   
-          alert(`Latitude: ${lat}, Longitude: ${lng}`);
-          alert(`Address: ${place.formatted_address}`);
+       //   alert(`Latitude: ${lat}, Longitude: ${lng}`);
+          // alert(`Address: ${place.formatted_address}`);
           getWard(lat,lng);
        //   if (onLocationChange) {
         //    onLocationChange({ lat, lng, address: place.formatted_address });
@@ -193,6 +208,7 @@ const GoogleMapsWardCoordinates = ({ }) => {
               const wardNo = feature.properties.WARD_NO.toString();
               setWardName(wardName);
               setWardNumber(wardNo);
+              setConfirmOpen(true)
             } else {
               // If the point is outside, calculate the distance
               const nearestDistance = getNearestDistance(lat, lon, polygon);
@@ -213,17 +229,30 @@ const GoogleMapsWardCoordinates = ({ }) => {
     }
   };
 const handleNavigation =async  () =>{
+  try {
     debugger
     if(wardNumber === "Not Found"){
         alert("Please Search or Select your Location on Map");
         return
     }
-  // var response1 = await axiosInstance.get("BBMPCITZAPI/GetMasterWard?ZoneId=" + JSON.parse(sessionStorage.getItem('DraftZoneId')))
-  //let ward =  setWardData(response1.data.Table)
- //  response1.data.Table.filter(x=>x.WARDNUMBER === wardNumber);
-    sessionStorage.setItem('DraftWardId', JSON.stringify(wardNumber));
+   var response1 = await axiosInstance.get("BBMPCITZAPI/GET_WARD_BY_WARDNUMBER?wardNumber=" + wardNumber)
+  // let ward =  setWardData(response1.data.Table)
+  if(response1.data.Table.length !== 0){
+  sessionStorage.setItem('DraftZoneId', JSON.stringify(response1.data.Table[0].ZONEID));
+    sessionStorage.setItem('DraftWardId', JSON.stringify(response1.data.Table[0].WARDID));
     sessionStorage.setItem("userProgress", 2);
-    navigate('/BBDDraft')
+    sessionStorage.setItem("FromGoogleMaps","1")
+    navigate('/PropertyList')
+  }
+  else{
+    alert("No Zone and Ward Found")
+    return
+  }
+  }
+    catch(error)
+    {
+      console.log(error)
+    }
 }
   // Find the nearest distance from a point to a polygon's vertices
   const getNearestDistance = (lat, lon, polygon) => {
@@ -281,13 +310,23 @@ const handleNavigation =async  () =>{
         <MarkerF position={markerPosition} />
       </GoogleMap>
 
-      <div className="result-section"  onClick={handleNavigation}>
-        <div className="address" id="place-address">📍 {address}</div>
+      {/* <div className="result-section"  onClick={handleNavigation}>
+     
         <div className="nearby-ward-card">
           <div id="result1" className="ward-name">Ward Name: {wardName}</div>
           <div id="result2" className="ward-number">Ward No: {wardNumber}</div>
         </div>
-      </div>
+      </div> */}
+        <Dialog open={confirmOpen} onClose={handleConfirmNo} maxWidth="md" fullWidth>
+        <DialogContent>
+          <Typography variant="h5">The selected Property Belongs to <span style={{ color: 'red' }}>'{wardName}'</span> Ward and Ward Number is  <span style={{ color: 'red' }}>{wardNumber}</span>. Do you wish to continue ? </Typography>
+        
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleConfirmYes} color="primary">{("Yes")}</Button>
+          <Button onClick={handleConfirmNo} color="secondary">{("No")}</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   ) : <></>;
 };

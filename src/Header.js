@@ -108,7 +108,7 @@ const Header = () => {
       </Toolbar>
       
       <Toolbar sx={{ bgcolor: '#7DAAAE' }}>
-  <Button color="inherit" sx={{ flexGrow: 0.1 ,fontSize:'1rem' }} onClick={() => handleRefresh('https://bbmpeaasthi.karnataka.gov.in/citizen_core/')}>
+  <Button color="inherit" sx={{ flexGrow: 0.1 ,fontSize:'1rem' }} onClick={() => handleRefresh('https://bbmpeaasthi.karnataka.gov.in')}>
     ಮುಖಪುಟ
   </Button>
 

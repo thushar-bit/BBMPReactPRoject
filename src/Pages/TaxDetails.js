@@ -187,7 +187,7 @@ const TaxDetails = () => {
     sessionStorage.removeItem("P_BOOKS_PROP_APPNO");
     sessionStorage.removeItem("SETPROPERTYCODE");
     sessionStorage.removeItem("SETPROPERYID");
-    navigate("/BBDDraft");
+    navigate("/PropertyList");
   }
  
   

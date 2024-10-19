@@ -64,7 +64,8 @@ try {
       sessionStorage.setItem('DraftZoneId', JSON.stringify(row.ZONEID));
       sessionStorage.setItem('DraftWardId', JSON.stringify(row.WARDID));
       sessionStorage.setItem("userProgress", 2);
-        navigate('/BBDDraft')
+      sessionStorage.setItem("FromGoogleMaps","2")
+        navigate('/PropertyList')
       } catch (error) {
 
         navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
@@ -141,7 +142,7 @@ NOTE 1: IF YOU DON'T FIND YOUR PROPERTY IN THE WARD LIST, TRY AFTER FEW DAYS AS 
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("ARO or Subdivision")}</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Ward Name and Number Where Draft eKhata rolled out")}</TableCell>
         {/* <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Status of Draft eKhata rolled out in ward")}</TableCell> */}
-        {/* <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Click here if you Don't know your Ward</TableCell> */}
+      
       </TableRow>
     </TableHead>
     <TableBody>
@@ -155,15 +156,15 @@ NOTE 1: IF YOU DON'T FIND YOUR PROPERTY IN THE WARD LIST, TRY AFTER FEW DAYS AS 
         Data
        
         .map((row, index, arr) => {
-          const showZoneName = index === 0 || row.ZONEID !== arr[index - 1].ZONEID;
-          const showAROName = index === 0 || row.AROID !== arr[index - 1].AROID;
+         // const showZoneName = index === 0 || row.ZONEID !== arr[index - 1].ZONEID;
+        //  const showAROName = index === 0 || row.AROID !== arr[index - 1].AROID;
 
           return (
             <TableRow key={index}>
              
-              <TableCell>{showZoneName ? row.ZONENAME : ""}</TableCell>
+              <TableCell>{ row.ZONENAME }</TableCell>
              
-              <TableCell>{showAROName ?  row.ARONAME : ""}</TableCell>
+              <TableCell>{ row.ARONAME}</TableCell>
               <TableCell>
                 {row.WARDNAME ? (
                   <Button color="primary" onClick={() => handleNavigation(row)}>
@@ -172,7 +173,7 @@ NOTE 1: IF YOU DON'T FIND YOUR PROPERTY IN THE WARD LIST, TRY AFTER FEW DAYS AS 
                 ) : ""}
               </TableCell>
               {/* <TableCell>{row.STATUS}</TableCell> */}
-              {/* <TableCell><Button onClick={()=>handleWardGooglemap(row)}>Click here</Button></TableCell> */}
+             
             </TableRow>
           );
         })

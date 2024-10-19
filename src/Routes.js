@@ -2,8 +2,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './Pages/Login';
-import BBDDraft from './Pages/BBDDraft';
-import BBDDraftGenerated from './Pages/BBDDraftGenerated';
+import PropertyList from './Pages/BBDDraft';
 import ObjectorsPage from './Pages/ObjectorsPage';
 import TaxDetails from './Pages/TaxDetails';
 import AreaDimension from './Pages/AreaDimension';
@@ -24,6 +23,7 @@ import PrivateRoute from './components/PrivateRoute';
 import { AuthProvider } from './context/AuthProvider';
 import ScrollToTop from './components/ScrollTop';
 import KaveriData from './Pages/KaveriData';
+import BBDDraftGenerated from './Pages/BBDDraftGenerated';
 
 const AppRoutes = () => {
   return (
@@ -35,14 +35,14 @@ const AppRoutes = () => {
           <Breadcrumbs />
           <Routes>
             <Route path="/" element={<BBDDraftGenerated />} />
-            <Route path="/BBDDraft" element={<BBDDraft />} />
+            <Route path="/PropertyList" element={<PropertyList />} />
             {/* <Route
               path="/BBDDraftGenerated"
               element={<PrivateRoute element={<BBDDraftGenerated />} requiredStep={1} />}
             />  */}
             <Route
               path="/GoogleMapsWardCoordinates"
-              element={<PrivateRoute element={<GoogleMapsWardCoordinates />} requiredStep={1} />}
+              element={<GoogleMapsWardCoordinates />} 
             /> 
              {/* <Route
               path="/BBDDraft"

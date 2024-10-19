@@ -1,6 +1,6 @@
 import React, { useState, useEffect ,useCallback} from 'react';
 import {
-  TextField, Button, Grid, Box, Container, Typography, CircularProgress, Dialog, DialogContent,
+  TextField, Button, Grid, Box, Container, Typography, CircularProgress, Dialog, DialogContent,DialogActions,
   FormControl, MenuItem, Select, InputLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
   TablePagination
 } from '@mui/material';
@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../components/Axios';
 
-const BBDDraft = () => {
+const PropertyList = () => {
   const [formData, setFormData] = useState({
     ZoneName: "",
     WardName: "",
@@ -125,7 +125,13 @@ const BBDDraft = () => {
   const handleBack = () => {
     sessionStorage.removeItem("DraftZoneId")
     sessionStorage.removeItem("DraftWardId")
+   let goo =  JSON.parse(sessionStorage.getItem('FromGoogleMaps'))
+   debugger
+   if(goo === 2){
     navigate('/')
+   }else {
+    navigate("/GoogleMapsWardCoordinates")
+   }
   }
   const alphabet = Array.from(Array(26)).map((_, i) => String.fromCharCode(i + 65));
   const handleReset = async () => {
@@ -191,26 +197,22 @@ const BBDDraft = () => {
         navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
       }
     }
+    const finalEktha =  () => {
+      window.location.href = "https://bbmpeaasthi.karnataka.gov.in/office/frmKhathaDownload.aspx";
+    }
   const viewDraftEkatha = async (row) => {
     debugger
      if(row.PROPERTYCODE === null || row.PROPERTYCODE  === undefined|| row.PROPERTYCODE.length === 0){
     toast.error("Property Code does not exist for this property")
       return
     }
-    else if( row.BOOKNUMBER === null ||  row.BOOKNUMBER === undefined|| row.BOOKNUMBER.length === 0  ){
-    toast.error("Book Number does not exist for this property")
-      return
-    }
-      else if(row.BOOKID === null || row.BOOKID === undefined || row.BOOKID.length === 0){
-      toast.error("Book Id does not exist for this property")
-      return
-      }
+    
    const data = {
     
       propertyCode: row.PROPERTYCODE.toString() || "",
       properytyId: row.PROPERTYID ? row.PROPERTYID.toString() : "",
-      bookNumber: row.BOOKNUMBER.toString(),
-      bookId: row.BOOKID.toString()
+      bookNumber: row.BOOKNUMBER ? row.BOOKNUMBER.toString() : "",
+      bookId: row.BOOKID ? row.BOOKID.toString() : ""
     }
    try {
  const response = await axiosInstance.post(
@@ -233,8 +235,7 @@ setPdfUrl(pdfUrl);
   }
     const handleBBMPRedirection = async (row) => {
   
-     // const response = await axiosInstance.get("Auth/EncryptJsons?UserId=")
-    //  const response = await axiosInstance.get("Auth/DecryptJson")
+     
 debugger
 try {
   let now = new Date();
@@ -257,8 +258,8 @@ try {
       
       const response5 = await axiosInstance.post("Auth/EncryptJsons",data)
       let re = response5.data;
-   // window.location.href = "https://bbmpeaasthi.karnataka.gov.in/forms/CitzBookModuleHome.aspx?BookDraft="+re;
-    window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_test2/forms/CitzBookModuleHome.aspx?BookDraft="+re;
+    window.location.href = "https://bbmpeaasthi.karnataka.gov.in/forms/CitzBookModuleHome.aspx?BookDraft="+re;
+  //  window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_test2/forms/CitzBookModuleHome.aspx?BookDraft="+re;
     }
     else {
       alert("Please Log-In To Update Property Information Or To File Objections. Click On The Get e-Khatha Link After Logging In.")
@@ -277,8 +278,8 @@ console.log(txtDate); // Outputs: "20241018T13:44:09" (for example)
        // let json = "{\"UserId\":\"" + Convert.ToString(Session["LoginId"]) + "\",\"PropertyCode\":\"\",\"PropertyEPID\":\"\",\"SessionValues\":[],\"ExecTime\":\"" + txtDate + "\"}";
         
         const response = await axiosInstance.post("Auth/EncryptJsons",data)
-     // window.location.href = "https://bbmpeaasthi.karnataka.gov.in/CitzLogin.aspx?BookDraft="+response.data;
-      window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_test2/CitzLogin.aspx?BookDraft="+response.data;
+      window.location.href = "https://bbmpeaasthi.karnataka.gov.in/CitzLogin.aspx?BookDraft="+response.data;
+    //  window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_test2/CitzLogin.aspx?BookDraft="+response.data;
     }
   }
     catch(error){
@@ -328,7 +329,11 @@ console.log(txtDate); // Outputs: "20241018T13:44:09" (for example)
           <DialogContent>
             <iframe src={pdfUrl} width="100%" height="600px" title="PDF Viewer"></iframe>
           </DialogContent>
-          
+          <DialogActions>
+      <Button onClick={() => setPdfUrl('')} color="primary">
+        Close
+      </Button>
+    </DialogActions>
           </Dialog>
           
         )}
@@ -478,7 +483,7 @@ console.log(txtDate); // Outputs: "20241018T13:44:09" (for example)
                       <TableCell>{page * rowsPerPage + index + 1}</TableCell>
                       <TableCell>{row.PROPERTYID}</TableCell>
                       <TableCell>{row.OWNERNAME}</TableCell>
-                      <TableCell><Button color="primary" onClick={() => viewDraftEkatha(row)} >Draft EKatha</Button></TableCell>
+                      <TableCell>{row.PROPERTYSTATUS === "APR" ? <Button color="primary" onClick={() => finalEktha()} >Final EKatha</Button>  : <Button color="primary" onClick={() => viewDraftEkatha(row)} >Draft EKatha</Button>} </TableCell>
                       {/* <TableCell><Button color="primary" onClick={() => handleNavigation(row)}>{t("ClickHere")}</Button></TableCell> */}
                       <TableCell><Button color="primary" onClick={() => handleBBMPRedirection(row)}>{t("ClickHere")}</Button></TableCell>
                       {/* <TableCell><Button color="primary" onClick={() => handleObjectionNavigation(row)}>{t("ClickHere")}</Button></TableCell> */}
@@ -547,4 +552,4 @@ console.log(txtDate); // Outputs: "20241018T13:44:09" (for example)
   );
 };
 
-export default BBDDraft;
+export default PropertyList;
