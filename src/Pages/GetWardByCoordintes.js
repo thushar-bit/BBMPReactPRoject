@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { GoogleMap, useJsApiLoader, MarkerF  } from '@react-google-maps/api';
-import { Dialog, DialogContent, DialogActions, Button, Typography} from '@mui/material';
+import { Dialog, DialogContent, DialogActions, Button, Typography,Box} from '@mui/material';
 import ward_boundaries from "../assets/ward_boundaries.json"
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../components/Axios';
@@ -286,7 +286,47 @@ const handleNavigation =async  () =>{
     return distance;
   };
   return isLoaded ? (
+    
     <div className="map-container">
+      
+      <Typography
+          variant="h6"
+          align="center"
+          gutterBottom
+          sx={{
+            fontWeight: 'bold',
+            fontFamily: "sans-serif",
+            marginBottom: 3,
+            color: '#1565c0',
+            fontSize: {
+              xs: '.2rem',
+              sm: '2rem',
+              md: '2rem',
+            }
+          }}
+        >
+        
+        Welcome to Faceless, Contactless, Online enmass eKhata Issuance System
+        </Typography>
+        <Typography
+          variant="h6"
+          align="center"
+          gutterBottom
+          sx={{
+            fontWeight: 'bold',
+            fontFamily: "sans-serif",
+            marginBottom: 3,
+            color: '#1565c0',
+            fontSize: {
+              xs: '.2rem',
+              sm: '2rem',
+              md: '2rem',
+            }
+          }}
+        >
+        
+       Select your Property
+        </Typography>
       <div className="input-section">
         <input
           id="pac-input"

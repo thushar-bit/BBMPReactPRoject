@@ -355,7 +355,7 @@ console.log(txtDate); // Outputs: "20241018T13:44:09" (for example)
           }}
         >
           {/* {t("PendingPropertyList")} */}
-          Welcome to Faceless, Contactless, Online enmass eKhata Issuance System
+         Property List
         </Typography>
         <Grid container spacing={4} alignItems={"center"}>
           <Grid item xs={12} sm={4} md={3}>

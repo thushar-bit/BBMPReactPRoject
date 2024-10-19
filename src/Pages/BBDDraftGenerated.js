@@ -115,26 +115,43 @@ try {
             marginBottom: 3,
             color: '#1565c0',
             fontSize: {
-              xs: '1.5rem',
+              xs: '.2rem',
               sm: '2rem',
               md: '2.5rem',
             }
           }}
         >
-         {t("eKhata Roll-Out Status and Information")}
+        
+        Welcome to Faceless, Contactless, Online enmass eKhata Issuance System
         </Typography>
+        <Box sx={{ backgroundColor: '#ffffff', padding: 1, borderRadius: 2, mt: 1 }}>
+        <Typography
+  variant="body1"
+  sx={{
+    color: '#1565c0',
+    fontFamily: 'Arial, sans-serif',
+    fontWeight: 'bold',
+    fontSize: '1rem',
+    textAlign: 'center', // Correct alignment property
+  }}
+>
+  {t("eKhata Roll-Out Status and Information")}
+</Typography>
+
         <Typography 
         variant="body1" 
-        sx={{ color: 'red', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '1.2rem' }}
+        sx={{ color: 'red', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '0.9rem' }}
       >
 
 NOTE 1: IF YOU DON'T FIND YOUR PROPERTY IN THE WARD LIST, TRY AFTER FEW DAYS AS ABOUT 1-LAKH PROPERTIES eKHATA IS BEING DIGITIZED(21 Lakh have been released at present).
 </Typography>
 <Typography 
         variant="body1" 
-        sx={{ color: 'red', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '1.2rem' }}
+        sx={{ color: 'red', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '0.9rem' }}
       >NOTE 2: You can see your Ward Number & Name in Property Tax Receipt for your property.</Typography>
+      </Box>
         <TableContainer component={Paper} sx={{ mt: 4, maxHeight: 900  }}>
+          
   <Table stickyHeader aria-label="sticky table">
     <TableHead>
       <TableRow>
