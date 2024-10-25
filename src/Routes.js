@@ -44,6 +44,10 @@ const AppRoutes = () => {
               path="/GoogleMapsWardCoordinates"
               element={<GoogleMapsWardCoordinates />} 
             /> 
+            <Route
+              path="/ObjectorsPage"
+              element={<ObjectorsPage />}  />
+            
              {/* <Route
               path="/BBDDraft"
               element={<PrivateRoute element={<BBDDraft />} requiredStep={1} />}

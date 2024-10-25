@@ -14,7 +14,7 @@ const resources = {
 
 
       //Address
-      "propertyEID": "Property EPID",
+      "propertyEID": "Property ePID",
       "city": "City",
       "BookNO":"Book No",
       "PageNumber":"Page Number",

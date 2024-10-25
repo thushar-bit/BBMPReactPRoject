@@ -94,13 +94,14 @@ const ObjectionDocumentUploadPage = () => {
 
 
   const fetchData = React.useCallback(async () => {
-    
+    debugger
     try {
       const response1 = await axiosInstance.get('BBMPCITZAPI/GetMasterDocByCategoryOrClaimType?ULBCODE=555&CATEGORYID=1');
-      const response2 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=DOCUMENT_DETAILS`);;
+    //  const response2 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('OBJECTIONID'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=DOCUMENT_DETAILS`);;
+      const response2 = await axiosInstance.get(`ObjectionAPI/GET_PROPERTY_OBJECTORS_CITZ_NCLTEMP?ULBCODE=555&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&objectionid=${JSON.parse(sessionStorage.getItem('OBJECTIONID'))}`);
       const { Table1 = [] } = response1.data;
-      const { Table1: NCLTable1 = [] } = response2.data;
-      setTableData(NCLTable1.length > 0 ? NCLTable1 : []);
+      const { Table5: NCLTable5 = [] } = response2.data;
+      setTableData(NCLTable5.length > 0 ? NCLTable5 : []);
       setTablesData2(Table1.length > 0 ? Table1 : []);
     } catch (error) {
       toast.error(`${t("errorSavingData")}`, error, {
@@ -189,15 +190,15 @@ const ObjectionDocumentUploadPage = () => {
       orderdate: selectedDate,
       documenttypeid: formData.DocumentType,
       ulbcode: 555,
-      p_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))
+      objectionId: JSON.parse(sessionStorage.getItem('OBJECTIONID'))
       //  createdip: string
 
     }
 
     try {
-      await axiosInstance.post('BBMPCITZAPI/NCL_PROPERTY_ID_TEMP_INS?ID_BASIC_PROPERTY=0', data
+      await axiosInstance.post('ObjectionAPI/NCL_OBJECTION_OBJECTION_DOCUMENTS_TEMP_INS?ID_BASIC_PROPERTY=0', data
       )
-      await axiosInstance.post(`BBMPCITZAPI/UPD_COL_NCL_PROPERTY_COMPARE_MATRIX_TEMP?BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&propertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&COLUMN_NAME=KAVERIDOC_AVAILABLE&COLUMN_VALUE=2&loginID=23`);
+   
       
       await toast.success(`${t("detailsSavedSuccess")}`, {
         position: "top-right",
@@ -265,10 +266,10 @@ const ObjectionDocumentUploadPage = () => {
       propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
       documentid: row.DOCUMENTID,
       ulbcode: 555,
-      p_BOOKS_PROP_APPNO: JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))
+      ObjectionId: JSON.parse(sessionStorage.getItem('OBJECTIONID'))
     }
     try {
-      await axiosInstance.post('BBMPCITZAPI/NCL_PROPERTY_ID_TEMP_DEL?ID_BASIC_PROPERTY=0', data
+      await axiosInstance.post('ObjectionAPI/NCL_PROPERTY_OBJECTION_DOCUMENT_TEMP_DEL', data
       )
       
       await toast.success(`${t("detailsDeletedSuccess")}`, {
@@ -314,7 +315,7 @@ console.log("Component is rendered")
   return (
     
      
-      <Box sx={{ backgroundColor: '#f0f0f0', padding: 4, borderRadius: 2, mt: 8 }}>
+      <Box sx={{ backgroundColor: '#f0f0f0',  borderRadius: 2,  }}>
         <Formik
           initialValues={formData}
           validationSchema={validationSchema}
@@ -504,7 +505,7 @@ console.log("Component is rendered")
                     ) : (
                       tableData.map((row,index) => (
                         <TableRow key={index}>
-                          <TableCell>{row.DOCUMENTID}</TableCell>
+                          <TableCell>{row.DOC_SCAN_ID}</TableCell>
                           <TableCell>{row.DOCUMENTTYPEDESCRIPTION}</TableCell>
                           <TableCell>{row.DOCUMENTDETAILS}</TableCell>
                           <TableCell>{row.ORDERNUMBER}</TableCell>

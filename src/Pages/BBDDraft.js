@@ -190,6 +190,8 @@ const PropertyList = () => {
 
    try {
       sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(row.PROPERTYCODE));
+      sessionStorage.setItem('OBJECTIONID', "101");
+      sessionStorage.setItem('SETPROPERYID', row.PROPERTYID);
       sessionStorage.setItem("userProgress", 3);
         navigate('/ObjectorsPage')
       } catch (error) {
@@ -215,6 +217,7 @@ const PropertyList = () => {
       bookId: row.BOOKID ? row.BOOKID.toString() : ""
     }
    try {
+    setLoading(true)
  const response = await axiosInstance.post(
   `Report/DownloadDraftPDF`,
   data,
@@ -226,18 +229,71 @@ const PropertyList = () => {
 
 const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
 const pdfUrl = URL.createObjectURL(pdfBlob);
+if(row.ASSESMENTNUMBER !== null || row.ASSESMENTNUMBER  !== undefined|| row.ASSESMENTNUMBER.length > 0){
+  let response2 = await axiosInstance.get(`BBMPCITZAPI/LOAD_BBD_RECORDS?ZoneId=${JSON.parse(sessionStorage.getItem('DraftZoneId'))}&WardId=${JSON.parse(sessionStorage.getItem('DraftWardId'))}&SerachType=${3}&Search=${row.ASSESMENTNUMBER}`)
+  setPropertyData(response2.data.Table || [])
 
+}
+else if(row.OWNERNAME !== null || row.OWNERNAME  !== undefined|| row.OWNERNAME.length > 0){
+  let response2 = await axiosInstance.get(`BBMPCITZAPI/LOAD_BBD_RECORDS?ZoneId=${JSON.parse(sessionStorage.getItem('DraftZoneId'))}&WardId=${JSON.parse(sessionStorage.getItem('DraftWardId'))}&SerachType=${2}&Search=${row.OWNERNAME}`)
+  setPropertyData(response2.data.Table || [])
+ }
 setPdfUrl(pdfUrl);
+setLoading(false)
    }
    catch(error){
+    setLoading(false)
   console.log(error)
+  if(row.ASSESMENTNUMBER !== null || row.ASSESMENTNUMBER  !== undefined|| row.ASSESMENTNUMBER.length > 0){
+    let response2 = await axiosInstance.get(`BBMPCITZAPI/LOAD_BBD_RECORDS?ZoneId=${JSON.parse(sessionStorage.getItem('DraftZoneId'))}&WardId=${JSON.parse(sessionStorage.getItem('DraftWardId'))}&SerachType=${3}&Search=${row.ASSESMENTNUMBER}`)
+    setPropertyData(response2.data.Table || [])
+
+  }
+  else if(row.OWNERNAME !== null || row.OWNERNAME  !== undefined|| row.OWNERNAME.length > 0){
+    let response2 = await axiosInstance.get(`BBMPCITZAPI/LOAD_BBD_RECORDS?ZoneId=${JSON.parse(sessionStorage.getItem('DraftZoneId'))}&WardId=${JSON.parse(sessionStorage.getItem('DraftWardId'))}&SerachType=${2}&Search=${row.OWNERNAME}`)
+    setPropertyData(response2.data.Table || [])
+   }
    }
   }
     const handleBBMPRedirection = async (row) => {
   
-     
+      let prpEID = "";
 debugger
 try {
+// if( row.PROPERTYID === "" || row.PROPERTYID === null)
+//   {
+//   if(row.PROPERTYCODE === null || row.PROPERTYCODE  === undefined|| row.PROPERTYCODE.length === 0){
+//     toast.error("Property Code does not exist for this property")
+//       return
+//     }
+    
+    
+//    const data = {
+    
+//       propertyCode: row.PROPERTYCODE.toString() || "",
+//       properytyId: row.PROPERTYID ? row.PROPERTYID.toString() : "",
+//       bookNumber: row.BOOKNUMBER ? row.BOOKNUMBER.toString() : "",
+//       bookId: row.BOOKID ? row.BOOKID.toString() : ""
+//     }
+   
+//     setLoading(true)
+//  const response = await axiosInstance.post(
+//   `Report/DownloadDraftPDF`,
+//   data,
+//   {
+//     responseType: 'blob', 
+//   }
+// );
+// prpEID = response.data.PropertyId;
+// }
+if(row.PROPERTYID === null || row.PROPERTYID  === undefined|| row.PROPERTYID.length === 0){
+  alert("Property ePID is not Generated . Please Click on Draft Ekatha to Generate the Property ePID And Click Here")
+    return
+  }
+  if(row.PROPERTYCODE === null || row.PROPERTYCODE  === undefined|| row.PROPERTYCODE.length === 0){
+         toast.error("Property Code does not exist for this property")
+           return
+         }
   let now = new Date();
   let txtDate = now.getFullYear().toString() +
                 (now.getMonth() + 1).toString().padStart(2, '0') +
@@ -286,6 +342,38 @@ console.log(txtDate); // Outputs: "20241018T13:44:09" (for example)
       console.log(error)
     }
     }
+    function base64ToBlob(base64, type = "application/octet-stream") {
+      const binStr = atob(base64);
+      const len = binStr.length;
+      const arr = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+          arr[i] = binStr.charCodeAt(i);
+      }
+      return new Blob([arr], { type: type });
+  }
+    const handlePageDownload = async (row) => {
+      debugger
+      setLoading(true)
+     try {
+   const response = await axiosInstance.post(
+    `Report/DownloadPagePDF?BookNo=${row.BOOKID}&pageno=${row.PAGENUMBER}`,
+    {
+      responseType: 'blob', 
+    }
+  );
+  debugger
+  const pdfBlob =base64ToBlob(response.data, 'application/pdf');
+  const pdfUrl = URL.createObjectURL(pdfBlob);
+  
+  setPdfUrl(pdfUrl);
+  setLoading(false)
+ 
+}
+     catch(error){
+      setLoading(false)
+    console.log(error)
+     }
+    }  
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -327,7 +415,8 @@ console.log(txtDate); // Outputs: "20241018T13:44:09" (for example)
           
         <Dialog open={Boolean(pdfUrl)} onClose={() => setPdfUrl('')} maxWidth="md" fullWidth>
           <DialogContent>
-            <iframe src={pdfUrl} width="100%" height="600px" title="PDF Viewer"></iframe>
+             <iframe src={pdfUrl} width="100%" height="600px" title="PDF Viewer"></iframe> 
+           
           </DialogContent>
           <DialogActions>
       <Button onClick={() => setPdfUrl('')} color="primary">
@@ -459,7 +548,7 @@ console.log(txtDate); // Outputs: "20241018T13:44:09" (for example)
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("OwnerName")}</TableCell>
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Download")}</TableCell>
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("OpenProperty")}</TableCell>
-                {/* <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>File Objection</TableCell> */}
+          {/* <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>File Objection</TableCell>   */}
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("AssessmentNo")}</TableCell>
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Address")}</TableCell>
                 {/* <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("SASApplicationNo")}</TableCell> */}
@@ -486,12 +575,12 @@ console.log(txtDate); // Outputs: "20241018T13:44:09" (for example)
                       <TableCell>{row.PROPERTYSTATUS === "APR" ? <Button color="primary" onClick={() => finalEktha()} >Final EKatha</Button>  : <Button color="primary" onClick={() => viewDraftEkatha(row)} >Draft EKatha</Button>} </TableCell>
                       {/* <TableCell><Button color="primary" onClick={() => handleNavigation(row)}>{t("ClickHere")}</Button></TableCell> */}
                       <TableCell><Button color="primary" onClick={() => handleBBMPRedirection(row)}>{t("ClickHere")}</Button></TableCell>
-                      {/* <TableCell><Button color="primary" onClick={() => handleObjectionNavigation(row)}>{t("ClickHere")}</Button></TableCell> */}
+                        {/* <TableCell><Button color="primary" onClick={() => handleObjectionNavigation(row)}>{t("ClickHere")}</Button></TableCell>   */}
                       <TableCell>{row.ASSESMENTNUMBER}</TableCell>
                       <TableCell>{row.ADDRESS}</TableCell>
                       {/* <TableCell>{row.SASAPPLICATIONNO}</TableCell> */}
                       <TableCell>{row.BOOKNUMBER}</TableCell>
-                      <TableCell>{row.PAGENUMBER}</TableCell>
+                      <TableCell>{row.PAGENUMBER ? <Button color="primary" onClick={() => handlePageDownload(row)}>{row.PAGENUMBER}</Button> : ""}</TableCell>
                     </TableRow>
                   ))
               )}

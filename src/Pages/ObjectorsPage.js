@@ -14,6 +14,7 @@ import ErrorPage from './ErrorPage';
 import LabelWithAsterisk from '../components/LabelWithAsterisk'
 import MaskingValue from '../components/MaskingValue';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import GetAppIcon from '@mui/icons-material/GetApp';
 import { styled } from '@mui/material/styles';
 import ObjectionDocumentUploadPage from './ObjectionDocumentUploadPage';
 const VisuallyHiddenInput = styled('input')({
@@ -57,70 +58,78 @@ const ObjectorsPage = () => {
     BBDPropertyCategory:"",
     ReasonCategory:"",
     ReasonDetails:"",
-    IsCommuncationAddress:"Y",
+  
     TypeOfUpload:"",
     MOBILENUMBER:"",
-    communicationAddress:"N"
+    EMAIL:"",
+    communicationAddress:"N",
+    ReasonExtension:"",
+    ReasonDocument:"",
+    NameExtension:"",
+    NameDocument:""
   });
   const { t } = useTranslation();
  
 
   const navigate = useNavigate();
-
+  const location = useLocation();
  
  
   const [loading, setLoading] = useState(false);
-  const [isEditable, setIsEditable] = useState(false);
-  const [tabledata5EkycVerifed, setTablesDataEKYCVerified] = useState([]);
+  const [isEditable, setIsEditable] = useState(true);
   const [tablesdata8, setTableData8] = useState([]);
+  const [KaveriDocumentold,setKaveriDocumentOld] = useState([])
   const [KAVERI_DOC_DETAILS, setKAVERI_DOC_DETAILS] = useState([]);
   const [KAVERI_PROP_DETAILS, setKAVERI_PROP_DETAILS] = useState([]);
   const [KAVERI_PARTIES_DETAILS, setKAVERI_PARTIES_DETAILS] = useState([]);
-  const [tabledata5EkycNotVerifed, setTablesDataEkycNotVerifed] = useState([]);
-  const location = useLocation();
+ 
+
+  const [tableIdentifier,setIdentifier] = useState([])
   const [editableIndex, setEditableIndex] = useState(-1);
   const [otpFieldsVisible, setOtpFieldsVisible] = useState(false);
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedNameFile, setSelectedNameFile] = useState(null);
+  const [selectedReasonFile, setSelectedReasonFile] = useState(null);
   const [fileExtension, setfileExtension] = useState([]);
   const [EkycResponseData,setEkycResponseData] = useState(null);
   
-  const [otpNumber, setOtpNumber] = useState(0)
-  const [otpButtonDisabled, setOtpButtonDisabled] = useState(false);
-  const [timer, setTimer] = useState(30); 
-  const [countdownInterval, setCountdownInterval] = useState(null);
+ 
   const [isCommunicationAddress,setIsCommunicationAddress] = useState(false)
   
  
-  React.useEffect(() => {
-    return () => {
-      clearInterval(countdownInterval);
-    };
-  }, [countdownInterval]);
-  const handleGenerateOtp = async (index) => {
+ 
+  const handleDownload = (base64Data, documentdescription) => {
     try {
-      const response = await axiosInstance.get("E-KYCAPI/SendOTP?OwnerMobileNo=" + formData.MOBILENUMBER);
-      toast.success(response.data.otpResponseMessage);
-     
-      setOtpNumber(response.data.otp);
-      formData.MOBILEVERIFY = "NOT VERIFIED";
-      setOtpButtonDisabled(true);
-      setTimer(30);
-      const interval = setInterval(() => {
-        setTimer(prevTimer => prevTimer - 1);
-      }, 1000);
+    const filename = `${documentdescription}`;
+debugger
+    const mimeTypes = {
+      jpg: 'image/jpeg',
+      jpeg: 'image/jpeg',
+      png: 'image/png',
+      pdf: 'application/pdf',
+      doc: 'application/msword',
+      docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    };
+
+    const mimeType = mimeTypes[".pdf"] || 'application/octet-stream';
 
 
-      setTimeout(() => {
-        setOtpButtonDisabled(false);
-        clearInterval(interval);
-      }, 30000);
+    const byteCharacters = atob(base64Data);
+    const byteNumbers = new Array(byteCharacters.length).fill().map((_, i) => byteCharacters.charCodeAt(i));
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: mimeType });
 
 
-      setCountdownInterval(interval);
-    } catch (error) {
-      console.log("failed to send otp" + error)
-    }
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    link.click();
 
+
+    URL.revokeObjectURL(link.href);
+  }
+  catch(error){
+    console.log(error)
+  }
   };
   const handleKaveriDocumentData = async () => {
 
@@ -128,32 +137,25 @@ const ObjectorsPage = () => {
       toast.error(`${t("Please Enter the Registration Number")}`);
       return
     }
-
+if(tablesdata8.length ===0){
+  toast.error("Please Verify with Atleast one EKYC Owner")
+  return
+}
 
     try {
       setLoading(true)
-
-      let response = await axiosInstance.post(`KaveriAPI/GetKaveriDocData?RegistrationNoNumber=${formData.RegistrationNumber}&BOOKS_APP_NO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&PropertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&LoginId=crc`)
-      await axiosInstance.post(`BBMPCITZAPI/UPD_COL_NCL_PROPERTY_COMPARE_MATRIX_TEMP?BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&propertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&COLUMN_NAME=KAVERIDOC_AVAILABLE&COLUMN_VALUE=1&loginID=23`);
-
-
-
+      let response = await axiosInstance.post(`ObjectionAPI/GetObjectionKaveriDocData?RegistrationNoNumber=${formData.RegistrationNumber}&objectionid=${JSON.parse(sessionStorage.getItem('OBJECTIONID'))}&PropertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&LoginId=crc`)
       const result = response.data;
-
       if (result.success) {
-
-
-        await fetchData("KAVERI_DOC_DATA")
+        await fetchData("Kaveri")
         setLoading(false)
       }
       else {
         setTimeout(() => {
           toast.error(result.message)
         }, 200);
-
         setLoading(false)
         return
-
       }
       setTimeout(() => {
         toast.success(`${t("detailsFetchedSuccess")}`, {
@@ -182,58 +184,95 @@ const ObjectorsPage = () => {
       }, 1000);
     }
   };
-  const handleVerifyOtp = () => {
-    if (formData.OwnerOTP === otpNumber.toString()) {
-      toast.success(`${t("otpVerifiedSuccess")}`);
-      formData.MOBILEVERIFY = "Verified";
-      setOtpFieldsVisible(false);
-    } else {
-      toast.error(`${t("Invalid OTP Entered")}`);
-    }
-  };
  
  
-  const fetchData = React.useCallback(async () => {
+  const fetchData = React.useCallback(async (ISKaveri) => {
     setLoading(true);
-    
+    debugger
     let response2 = null;
-    let book = JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))
+
+    let objectionid = null;
+
+    
+       objectionid = JSON.parse(sessionStorage.getItem('OBJECTIONID'));
+      
+    
+    
     try {
-      const response = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=ADDRESS`);
-      if(book !== null){
-       response2 = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_NCLTEMP_React?ULBCODE=555&P_BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=TAX_DETAILS`);
-      }
-      else {
-        response2 = null
-      }
-     
-
-      const { Table1 = [], Table5 = [], } = response.data;
-      let NCLtable1Item = [];
-     
       
-      if (response2) {
-        const {  Table1: NCLTABLE1 = [] } = response2.data;
-        NCLtable1Item = NCLTABLE1.length > 0 ? NCLTABLE1[0] : [];
-       
-       
-       
-       
+      const response = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT_React?ULBCODE=555&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=ADDRESS`);
+      if(objectionid === "1"){
+       response2 = await axiosInstance.get(`ObjectionAPI/GET_PROPERTY_OBJECTORS_CITZ_NCLTEMP?ULBCODE=555&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&objectionid=${1}`);
+      }else{
+        response2 = await axiosInstance.get(`ObjectionAPI/GET_PROPERTY_OBJECTORS_CITZ_NCLTEMP?ULBCODE=555&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&objectionid=${JSON.parse(sessionStorage.getItem('OBJECTIONID'))}`);
+      }
+      const {Table1:Identifier=[],Table2:TableMain=[],Table3:TableReasons=[],Table4:TableOwner=[],Table5:KaveriDocument=[],Table6:ReasonDocument=[],Table7:TableKaveriDocument=[],Table8:TableKaveriprop=[],Table9:TableKaveriParties=[]} = response2.data;
+      setIdentifier(Identifier.length > 0 ? Identifier : [])
+      setTableData8(TableOwner.length > 0 ? TableOwner : [])
+      setKaveriDocumentOld(KaveriDocument.length > 0 ? KaveriDocument : [])
+      setKAVERI_DOC_DETAILS(TableKaveriDocument.length > 0 ? TableKaveriDocument : [])
+      setKAVERI_PROP_DETAILS(TableKaveriprop.length > 0 ? TableKaveriprop : [])
+      setKAVERI_PARTIES_DETAILS(TableKaveriParties.length > 0 ? TableKaveriParties : [])
+      debugger
+      const allDocuments = [...ReasonDocument]; 
 
-      } else {
+ if(ISKaveri === "Kaveri"){
+  setKaveriDocumentOld(KaveriDocument.length > 0 ? KaveriDocument : [])
+  setKAVERI_DOC_DETAILS(TableKaveriDocument.length > 0 ? TableKaveriDocument : [])
+  setKAVERI_PROP_DETAILS(TableKaveriprop.length > 0 ? TableKaveriprop : [])
+  setKAVERI_PARTIES_DETAILS(TableKaveriParties.length > 0 ? TableKaveriParties : [])
+  return
+ }
+      
+      let response3 = []
+      response3 = TableMain;
+      if (response3.length > 0 && ISKaveri !== "Kaveri") {
+        let reasonDocuments = allDocuments.filter(x => x.TYPEOFDOCUMENT === "R");
+        let nameDocuments = allDocuments.filter(x => x.TYPEOFDOCUMENT === "N");
+        const { Table1 = [], Table5 = [], } = response.data;
+        const table1Item = Table1.length > 0 ? Table1[0] : [];
+        const table5Item = Table5.length > 0 ? Table5[0] : [];
+       
+        setFormData({
+          communicationAddress:TableMain.length > 0? TableMain[0].ISCOMMUNICATION :"N",
+          TypeOfUpload:TableMain.length > 0? TableMain[0].TYPEOFKAVERIUPLOAD :"",
+          ReasonCategory:TableReasons.length > 0 ?TableReasons[0].REASONID.toString() : "",
+          ReasonDetails:TableReasons.length > 0 ?TableReasons[0].REASONDETAILS : "",
+          doorno:TableOwner.length > 0 ? TableOwner[0].DOORNO : "",
+          areaorlocality: TableOwner.length > 0 ?TableOwner[0].LOCALITY : "",
+          buildingname:TableOwner.length > 0 ? TableOwner[0].BUILDINGNAME : "",
+          pincode:TableOwner.length > 0 ? TableOwner[0].PINCODE : "",
+          ReasonExtension: reasonDocuments.length > 0 ? reasonDocuments[0].DOCUMENTDETAILS : "",
+          ReasonDocument: reasonDocuments.length > 0 ? reasonDocuments[0].SCANNEDDOCUMENT : "",
+          NameExtension:nameDocuments.length > 0 ?nameDocuments[0].DOCUMENTDETAILS:"" ,
+          NameDocument:nameDocuments.length > 0 ?nameDocuments[0].SCANNEDDOCUMENT:"",
+          propertyEID: table1Item.PROPERTYID || '',
+          address: table1Item.ADDRESS || '',
+          district: table1Item.DISTRICTNAME || '',
+          BBDOldWardNumber:table1Item.OLDWARDNUMBER198 || "",
+          BBDOldPropertyNumber:table1Item.MUNICIPALOLDNUMBER || "",
+          BBDSasApplicationNumber:table1Item.PUID || "",
+          BBDAddress:table1Item.ADDRESS ? table1Item.ADDRESS : "",
+          BBDPropertyType:table1Item.PROPERTYCATEGORYID  ? table1Item.PROPERTYCATEGORYID : "0",
+          BBDPropertyCategory:table1Item.PROPERTYCLASSIFICATIONID ? table1Item.PROPERTYCLASSIFICATIONID === 1 ? "ನಮೂನೆ-ಎ ವಹಿ" : "ನಮೂನೆ-ಬಿ ವಹಿ": "",
+          wardNumber: table1Item.WARDID || '',
+          wardName: table1Item.WARDNAME || "",
+          propertyNumber: table1Item.PROPERTYCODE || '',
+          ulbname: table1Item.ULBNAME || '',
+          ownerName: table5Item.OWNERNAME || '',
+          streetName: table1Item.STREETNAME_EN || '',
+        });
+        if(TableMain[0].ISCOMMUNICATION === "Y"){
+          setIsCommunicationAddress(true)
+        }else {
+          setIsCommunicationAddress(false)
+        }
+      } else if(ISKaveri !== "Kaveri") {
         setIsEditable(true)
-      }
-      
+        const { Table1 = [], Table5 = [], } = response.data;
       const table1Item = Table1.length > 0 ? Table1[0] : [];
-
       const table5Item = Table5.length > 0 ? Table5[0] : [];
-
-      
-     
-   
-
       setFormData({
-        propertyType: NCLtable1Item.PROPERTYCATEGORYID || "0",
         propertyEID: table1Item.PROPERTYID || '',
         address: table1Item.ADDRESS || '',
         district: table1Item.DISTRICTNAME || '',
@@ -249,13 +288,9 @@ const ObjectorsPage = () => {
         ulbname: table1Item.ULBNAME || '',
         ownerName: table5Item.OWNERNAME || '',
         streetName: table1Item.STREETNAME_EN || '',
-        verifySASNUM: NCLtable1Item.PUID !== null ? NCLtable1Item.PUID || "" : "",
       });
-
-   
+      }
       
-     
-    
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -286,7 +321,15 @@ debugger
             formData.TypeOfUpload = ""
         }
     }
-    
+    if (name === "pincode") {
+      if (/^\d{0,6}$/.test(value)) {
+        setFormData({
+          ...formData,
+          [name]: value
+        });
+      }
+      return
+    }
     
     setFormData({
       ...formData,
@@ -310,7 +353,7 @@ debugger
   React.useEffect(() => {
     const params = new URLSearchParams(location.search);
     const txnno = params.get('txnno');
-
+try {
     if (txnno !== null && txnno !== undefined) {
      
       console.log('E-KYC completed successfully with txnno:', txnno);
@@ -328,15 +371,19 @@ debugger
     }
 
     fetchData();
+  }
+  catch(error){
+    console.log(error)
+  }  
   }, [location.search,fetchData]);
 
-  const handleFileChange = (e) => {
+  const handleReasonFileChange = (e) => {
     const file = e.target.files[0];
     const maxSize = 5 * 1024 * 1024;
     if (file && file.size > maxSize) {
       toast.error(`${t('fileSizeExceeded')}`);
       e.target.value = null;
-      setSelectedFile(null);
+      setSelectedReasonFile(null);
       return;
     }
     const fileName = file.name;
@@ -344,24 +391,50 @@ debugger
     if (!['pdf'].includes(fileExtension)) {
       toast.error(`${t("selectPdfFileOnly ")}`);
       e.target.value = null;
-      setSelectedFile(null);
+      setSelectedReasonFile(null);
       return
     }
     setfileExtension(fileExtension);
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setSelectedFile(file);
+        setSelectedReasonFile(file);
       };
       reader.readAsDataURL(file);
     }
   };
-  const handleFileDelete = () => {
-    setSelectedFile(null);
+  const handleNameFileChange = (e) => {
+    const file = e.target.files[0];
+    const maxSize = 5 * 1024 * 1024;
+    if (file && file.size > maxSize) {
+      toast.error(`${t('fileSizeExceeded')}`);
+      e.target.value = null;
+      setSelectedNameFile(null);
+      return;
+    }
+    const fileName = file.name;
+    const fileExtension = fileName.split('.').pop().toLowerCase();
+    if (!['pdf'].includes(fileExtension)) {
+      toast.error(`${t("selectPdfFileOnly ")}`);
+      e.target.value = null;
+      setSelectedNameFile(null);
+      return
+    }
+    setfileExtension(fileExtension);
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSelectedNameFile(file);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  const handleFileNameDelete = () => {
+    setSelectedNameFile(null);
     setfileExtension('');
   }
-  const handleFileDocumentDelete = () => {
-    setSelectedFile(null);
+  const handleFileReasonDelete = () => {
+    setSelectedReasonFile(null);
     setfileExtension('');
   }
  
@@ -384,6 +457,7 @@ debugger
         {
        
       formData.IDENTIFIERNAME = ekycResponse.data.identifierNameEng;
+
         setEkycResponseData(ekycResponse.data);
         setFormData((prevState) => ({
           ...prevState,
@@ -406,15 +480,12 @@ debugger
 
   };
   const AddEKYCOwner = async () => {
-    debugger
-    var ownerNumber = 1;
+    
+    
 
-    if (tabledata5EkycVerifed.length > 0) {
-      const maxOwnerNumber = Math.max(...tabledata5EkycVerifed.map(item => item.OWNERNUMBER));
-      ownerNumber = maxOwnerNumber + 1;
-    }
+    
     sessionStorage.setItem("OWNERTYPE", JSON.stringify("NEWOWNER"))
-    var response = await axiosInstance.post("E-KYCAPI/RequestEKYC?OwnerNumber=" + ownerNumber + "&BOOK_APP_NO=" + 1+ "&PROPERTY_CODE=" + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')))
+    var response = await axiosInstance.post("E-KYCAPI/INS_NCL_OBJECTION_MAIN?ULBCODE=" + 555 +  "&Propertycode=" + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + "&PropertyEID="+JSON.parse(sessionStorage.getItem('SETPROPERYID')) )
 
 
     window.location.href = response.data;
@@ -444,17 +515,16 @@ debugger
         toast.error(`${t("enterRelationName")}`)
         return
       }
-      let s = tabledata5EkycNotVerifed.some(x =>x.MOBILEVERIFY === "Verified");
-      if(!s){
+     
       if (formData.MOBILENUMBER === null || formData.MOBILENUMBER === undefined) {
         toast.error(`${t("enterValidMobileNumber")}`)
         return
       }
-      if (formData.MOBILENUMBER.length <= 0 && formData.MOBILENUMBER.length < 10) {
+      if (formData.MOBILENUMBER.length <= 0 || formData.MOBILENUMBER.length < 10 || formData.MOBILENUMBER.length > 11) {
         toast.error(`${t("enterValidMobileNumber")}`)
         return
       }
-    }
+    
 
       if(Type === "AFTEREKYC")
       {
@@ -467,9 +537,11 @@ debugger
         IDENTIFIERNAME_EN: formData.IDENTIFIERNAME || "",
         MOBILENUMBER: formData.MOBILENUMBER || "0",
         MOBILEVERIFY: formData.MOBILEVERIFY !== "" ? formData.MOBILEVERIFY : "NOT VERIFIED",
+        EMAIL:formData.EMAIL,
+        PROPERTYID:JSON.parse(sessionStorage.getItem('SETPROPERYID')),
         loginId: 'crc'
       };
-
+debugger
       const queryString = new URLSearchParams(params).toString();
 
 
@@ -479,21 +551,25 @@ debugger
       await fetchData();
     }
     else if(Type === "EKYC"){
-      debugger
+      
       const params = {
         IDENTIFIERTYPE: formData.IDENTIFIERTYPEID || 0,
         IdentifierName:formData.IDENTIFIERNAME,
         NAMEMATCHSCORE:0,
         MOBILENUMBER: formData.MOBILENUMBER || "0",
         MOBILEVERIFY: formData.MOBILEVERIFY !== "" ? formData.MOBILEVERIFY : "NOT VERIFIED",
-        loginId: 'crc'
+        loginId: 'crc',
+        EMAIL:formData.EMAIL,
+        PROPERTYID:JSON.parse(sessionStorage.getItem('SETPROPERYID')),
       };
 
       const queryString = new URLSearchParams(params).toString();
 
      
-      const response = await axiosInstance.post(`Name_Match/INS_NCL_PROPERTY_OWNER_TEMP_WITH_EKYCDATA?${queryString}`,EkycResponseData);
+      const response = await axiosInstance.post(`ObjectionAPI/INS_NCL_PROPERTY_OBJECTOR_TEMP_WITH_EKYCDATA?${queryString}`,EkycResponseData);
       console.log(response.data);
+      debugger
+      sessionStorage.setItem('OBJECTIONID',response.data.Table[0].OBJECTIONID)
       toast.success(`${t("ownerEditedSuccess")}`)
       setEkycResponseData(null);
       await fetchData();
@@ -503,20 +579,145 @@ debugger
     }
 
   };
-  const handleSubmit = async (e) => {
+  const getPropertyphoto = (selectedFile) => {
+    return new Promise((resolve, reject) => {
+      if (!selectedFile) {
+        resolve(''); // Return an empty string if no file is selected
+        return;
+      }
+      const reader = new FileReader();
+      reader.readAsDataURL(selectedFile);
+      reader.onloadend = () => {
+        const propertyphoto = reader.result.split(',')[1];
+        resolve(propertyphoto);
+      };
+      reader.onerror = (error) => {
+        reject(error);
+      };
+    });
+  };
+  const handleValidation = async () =>{
+    debugger
+    let propertyDocumentName = "";
+    let PropertyDocumentReason = ""
+    try {
+    if (selectedNameFile !== null) {
+      propertyDocumentName = await getPropertyphoto(selectedNameFile);
+    }
+    if(propertyDocumentName.length === 0)
+      {
+        if(formData.NameDocument.length === 0){
+      toast.error("Please Upload the Name Document");
+      return false
+        }
+    }
+    if(formData.ReasonCategory === 0 || formData.ReasonCategory.length === 0)
+      {
+      toast.error("Please Select the Reason ");
+      return false
+    }
+    if(formData.ReasonCategory !== "3" && formData.ReasonCategory !== "5"){
+      if(selectedReasonFile !== null) {
+      PropertyDocumentReason = await getPropertyphoto(selectedReasonFile);
+      }
+      if(PropertyDocumentReason.length === 0)
+        {
+          if(formData.ReasonDocument.length === 0){
+        toast.error("Please Upload the Reason Document")
+        return false
+          }
+      }
+      }
+      if(formData.ReasonCategory === "5")
+        {
+        if(formData.ReasonDetails.length === 0){
+          toast.error("Please enter the Reason Details")
+          return false
+        }
+      }
+      if(tablesdata8.length ===0){
+        toast.error("Please Verify with Atleast one EKYC Owner")
+        return false
+      }
+      if(formData.ReasonCategory === "3"){
+        await fetchData("Kaveri")
+      if(formData.TypeOfUpload.length === 0){
+        toast.error("Please Select the Type of Registration Document")
+        return false
+      }
+      else if(formData.TypeOfUpload === "RegistrationNumber") {
+        
+        if(KAVERI_DOC_DETAILS.length === 0){
+          toast.error("Please Verify with the Registation No")
+          return false
+        }
+      }
+      else if(formData.TypeOfUpload === "OldRegistrationNumber"){
+       
+        if(KaveriDocumentold.length === 0){
+        toast.error("Please Upload the Kaveri Document")
+        
+        return false
+        }
+      }
+    }
+      return true
+    }
+      catch(error){
+toast.error(error)
+console.log(error)
+      }
+    }
+
+
+  
+  const handleFinalSubmit = async (e) => {
     
     if (e.key === 'Enter') {
       e.preventDefault();
     }
-    if (isEditable) {  //change sp
+       
+    let propertyDocumentName = "";
+    let PropertyDocumentReason = ""
+    if (isEditable) { 
+      debugger
+      let IsValidation = await handleValidation() 
+      
+      if(IsValidation){ 
       setLoading(true);
+      if(selectedReasonFile !== null) {
+        PropertyDocumentReason = await getPropertyphoto(selectedReasonFile);
+        }
+        if (selectedNameFile !== null) {
+          propertyDocumentName = await getPropertyphoto(selectedNameFile);
+        }
+        if(formData.ReasonCategory === "3"){
+          if(formData.TypeOfUpload === ""){
+           await fetchData()
+          }
+        }
       const data = {
-       propertyCode: formData.propertyNumber,
-        categoryId: formData.propertyType,
-        loginId: "crc",
+        objectionid: JSON.parse(sessionStorage.getItem('OBJECTIONID')),
+        propertycode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
+        scanneddocumentobjection: propertyDocumentName,
+        reasondocument: PropertyDocumentReason,
+        iscommunicationaddress: formData.communicationAddress,
+        reasonid: formData.ReasonCategory,
+        reasondetails: formData.ReasonDetails ?? "",
+        ulbcode: 555,
+        namedocumentdetails: selectedNameFile !== null  ? selectedNameFile.name : "",
+        reasondocumentdetails: selectedReasonFile !== null ? selectedReasonFile.name : "",
+        documentextension: "pdf",
+        doorno: formData.doorno,
+        buildingname: formData.buildingname,
+        arealocatlity: formData.areaorlocality,
+        pincode: formData.pincode,
+        createdby: "thushar",
+        typeofdocument:formData.TypeOfUpload
       };
+      debugger
       try {
-        await axiosInstance.post('BBMPCITZAPI/INS_UPD_NCL_PROPERTY_CATEGORY_SASDATA_TEMP', data
+        await axiosInstance.post('ObjectionAPI/INS_NCL_PROPERTY_OBJECTORS_FINAL_SUBMIT', data
         )
         setTimeout(() => {
         toast.success(`${t("detailsSavedSuccess")}`, {
@@ -529,9 +730,10 @@ debugger
           progress: undefined,
         });
       }, 100)
-        setIsEditable(false);
+       // setIsEditable(false);
+       fetchData();
         setLoading(false);
-        sessionStorage.setItem("userProgress", 4);
+        // sessionStorage.setItem("userProgress", 4);
       } catch (error) {
         await toast.error(`${t("errorSavingData")}`, error, {
           position: "top-right",
@@ -552,6 +754,8 @@ debugger
     
     }
     setLoading(false);
+  }
+
   }
     
 
@@ -586,7 +790,7 @@ debugger
   }
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="xl">
       <Box sx={{ backgroundColor: '#f0f0f0', padding: 4, borderRadius: 2, mt: 8 }}>
         <ToastContainer />
      
@@ -860,11 +1064,13 @@ debugger
                     <Typography variant="body1" sx={{ ml: 1 }}>
                      Aadhar Authentication <span style={{ color: 'red' }}> (If you do not want to give Aadhar ,you can file physical objection application to ARO office) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
                     </Typography>
+                    {tablesdata8.length === 0 &&
                     <Button variant="contained" color="primary" onClick={() => AddEKYCOwner()}>
                         {t("VerifyE-KYC")}
                       </Button>
+}
                   </Box>
-
+               
 </Grid>
 <br></br>
 <br></br>
@@ -874,7 +1080,7 @@ debugger
       {EkycResponseData !== null &&
       <>
       <Grid item xs={12} sm={2}>
-                    <div style={{ marginLeft: '10px', position: 'relative', textAlign: 'center' }}>
+                    <div style={{ marginLeft: '20px', position: 'relative', textAlign: 'center' }}>
                       <img
                         src={`data:image/png;base64,${EkycResponseData.photoBytes}`}
                         alt="No Images Found"
@@ -913,9 +1119,10 @@ debugger
                             name="IDENTIFIERTYPEID"
                             value={formData.IDENTIFIERTYPEID}
                             onChange={handleChange}
+                            sx={{backgroundColor: "#ffff" }}
                           >
                             <MenuItem value="">--Select--</MenuItem>
-                            {tablesdata8.map((item) => (
+                            {tableIdentifier.map((item) => (
                               <MenuItem key={item.IDENTIFIERTYPEID} value={item.IDENTIFIERTYPEID}>
                                 {item.IDENTIFIERTYPE_EN}
                               </MenuItem>
@@ -932,7 +1139,11 @@ debugger
                           name="IDENTIFIERNAME"
                           value={formData.IDENTIFIERNAME}
                           onChange={handleChange}
-                          variant="standard"
+                          variant="outlined"
+                          InputProps={{
+                           
+                            style: { backgroundColor:  "#ffff" },
+                          }}
                         />
                       
                     </Grid>
@@ -995,55 +1206,33 @@ debugger
                             name="MOBILENUMBER"
                             value={formData.MOBILENUMBER || ''}
                             onChange={handleChange}
-                            variant="standard"
+                            variant="outlined"
+                            InputProps={{
+                           
+                              style: { backgroundColor:  "#ffff" },
+                            }}
                           />
 
-                          {otpFieldsVisible && (
-                            <Grid>
-                              <br></br>
-                              {!otpButtonDisabled && (
-                                <>
-                                  <Button variant="contained" color="primary" onClick={() => handleGenerateOtp()}>
-                                    {t("GenerateOTP")}
-                                  </Button>
-                                </>
-                              )}
-                              {otpButtonDisabled && (
-                                <Typography >
-                                  Resend OTP in {timer} seconds
-                                </Typography>
-
-                              )}
-                              <TextField
-                                fullWidth
-                                label={t('Enter OTP')}
-                                name="OwnerOTP"
-                                value={formData.OwnerOTP}
-                                onChange={handleChange}
-                                variant="standard"
-                              />
-
-                              <Button variant="contained" color="primary" onClick={() => handleVerifyOtp()}>
-                                Verify OTP
-                              </Button>
-                              <br></br>
-                            </Grid>
-                          )}
-                    </Grid>
+                         
+                              </Grid>
+                  
                     <Grid item xs={12} sm={6}>
                         <TextField
                           fullWidth
-                          label={t('MobileVerification')}
-                          name="MOBILEVERIFY"
-                          value={formData.MOBILEVERIFY === null ? "NOT VERIFIED" : formData.MOBILEVERIFY}
+                          label={t('Email')}
+                          name="EMAIL"
+                          value={formData.EMAIL}
                           onChange={handleChange}
                           InputProps={{
-                            readOnly: true,
+                           
+                            style: { backgroundColor:  "#ffff" },
                           }}
-                          variant="filled"
+                          variant="outlined"
                         />
                   </Grid>
+                 
                   </Grid>
+                  
                   <br></br>
                   <Grid item xs={12} sm={12}>
                     <Box display="flex" justifyContent="center" gap={2}>
@@ -1070,27 +1259,27 @@ debugger
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("Address")}</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("MobileNumber")}</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("OwnerPhoto")}</TableCell>
-        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("MobileVerification")}</TableCell>
-        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("E-KYCStatus")}</TableCell>
+        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   EMAIL</TableCell>
+        {/* <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("E-KYCStatus")}</TableCell> */}
         {/* <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("NAMEMATCHSTATUS")}</TableCell> */}
       </TableRow>
     </TableHead>
     <TableBody>
-      {tabledata5EkycVerifed.length === 0 ? (
+      {tablesdata8.length === 0 ? (
         <TableRow>
           <TableCell colSpan={12} align="center">
             {t("Nodataavailable")}
           </TableCell>
         </TableRow>
       ) : (
-        tabledata5EkycVerifed.map((row,index) => {
+        tablesdata8.map((row,index) => {
 
           return (
             <TableRow key={index}>
               <TableCell>{row.OWNERNUMBER}</TableCell>
-              <TableCell>{row.OWNERNAME}</TableCell>
-              <TableCell>{row.IDENTIFIERNAME}</TableCell>
-              <TableCell>{row.OWNERADDRESS}</TableCell>
+              <TableCell>{row.OBJECTIONNAME_EN}</TableCell>
+              <TableCell>{row.IDENTIFIERNAME_EN}</TableCell>
+              <TableCell>{row.OBJECTIONADDRESS_EN}</TableCell>
               <TableCell>{MaskingValue({value:row.MOBILENUMBER,maskingLength:4}) || 'N/A'}</TableCell>
               <TableCell> <img
                 src={`data:image/png;base64,${row.OWNERPHOTO}`}
@@ -1103,8 +1292,8 @@ debugger
                   borderRadius: '8px',
                 }}
               /></TableCell>
-              <TableCell>{row.MOBILEVERIFY}</TableCell>
-              <TableCell>{row.EKYCSTATUS}</TableCell>
+              <TableCell>{row.EMAIL}</TableCell>
+              {/* <TableCell>{row.EKYCSTATUS}</TableCell> */}
             
             </TableRow>
           );
@@ -1115,36 +1304,48 @@ debugger
 </TableContainer>
 <br></br>
           
-          <Grid item xs={12} sm={6}>
+<Grid item xs={12} sm={6}>
+  <Box display="flex" alignItems="center" flexDirection="row" flexWrap="wrap">
+    <Typography variant="body1" sx={{ ml: 1 }}>
+      Upload detailed objection in writing with your signatures, name, mobile number, and address:
+    </Typography>
+    
+    <Button
+      component="label"
+      variant="contained"
+      disabled={false}
+      startIcon={<CloudUploadIcon />}
+      sx={{ ml: 2 }}
+    >
+      {t("Uploadfile")}
+      <VisuallyHiddenInput type="file" accept=".pdf" onChange={handleNameFileChange} />
+    </Button>
 
-          <Box display="flex" alignItems="center">
-                    <Typography variant="body1" sx={{ ml: 1 }}>
-                      Upload detailed objection in writing with your signatures,name,mobile Number and address : 
-                    </Typography>
-                    <Button
-                      component="label"
-                      variant="contained"
-                      disabled={false}
-                      startIcon={<CloudUploadIcon />}
-                      sx={{ ml: 2 }}
-                      
-                    >
-                      {t("Uploadfile")}
-                      <VisuallyHiddenInput type="file" accept=".pdf" onChange={handleFileChange} />
-                    </Button>
-                    {selectedFile && (
-                    <Box display="flex" alignItems="center" mt={2}>
-                      <Typography variant="body1">{selectedFile.name}</Typography>
-                      <Button color="error" onClick={handleFileDelete} sx={{ ml: 2 }}>
-                        {t("Delete")}
-                      </Button>
-                    </Box>
-                  )}
-                  <Typography variant="body1" sx={{ ml: 1, color: '#df1414' }}>
-                    {t("MaximumFileSizeMB")}
-                  </Typography>
-                  </Box>
+    {selectedNameFile && (
+      <Box display="flex" alignItems="center" sx={{ ml: 2 }}>
+        <Typography variant="body1">{selectedNameFile.name}</Typography>
+        <Button color="error" onClick={handleFileNameDelete} sx={{ ml: 2 }}>
+          {t("Delete")}
+        </Button>
+      </Box>
+    )}
+
+    <Typography variant="body1" sx={{ ml: 1, color: '#df1414' }}>
+      {t("MaximumFileSizeMB")}
+    </Typography>
+
+    {formData.NameExtension && (
+      <Box display="flex" alignItems="center" sx={{ ml: 2 }}>
+        <Typography variant="body1" sx={{ mr: 1, color: '#df1414'  }}>Document Uploaded:</Typography>
+        <Typography variant="body1" sx={{ mr: 2 }}>{formData.NameExtension}</Typography>
+        <IconButton onClick={() => handleDownload(formData.NameDocument, formData.NameExtension)}>
+          <GetAppIcon color="primary" />
+        </IconButton>
+      </Box>
+    )}
+  </Box>
 </Grid>
+
 <br></br>
 <Grid item xs={12} sm={6}>
 
@@ -1168,14 +1369,10 @@ debugger
                   <TextField
                     fullWidth
                     label={<LabelWithAsterisk text={t('doorPlotNo')} />}
-                    name="DoorPlotNo"
-                    value={formData.DoorPlotNo}
+                    name="doorno"
+                    value={formData.doorno}
                     onChange={handleChange}
                     variant={isEditable ? "outlined" : "filled"}
-                  //  onBlur={handleBlur}
-                  //  className={touched.DoorPlotNo && !!errors.DoorPlotNo ? 'shake' : ''}
-                 //   error={touched.DoorPlotNo && !!errors.DoorPlotNo}
-                //    helperText={touched.DoorPlotNo && errors.DoorPlotNo}
                     InputProps={{
                       readOnly: !isEditable,
                       style: { backgroundColor: !isEditable ? '' : "#ffff" },
@@ -1191,7 +1388,6 @@ debugger
                     value={formData.buildingname}
                     onChange={handleChange}
                     variant={isEditable ? "outlined" : "filled"}
-                  
                     InputProps={{
                       readOnly: !isEditable,
                       style: { backgroundColor: !isEditable ? '' : "#ffff" },
@@ -1205,7 +1401,7 @@ debugger
                     fullWidth
                    label={<LabelWithAsterisk text={t('areaLocality')} />}
                     name="areaorlocality"
-                    value={formData.NearestLandmark}
+                    value={formData.areaorlocality}
                     onChange={handleChange}
                  //   onBlur={handleBlur}
                   
@@ -1226,10 +1422,6 @@ debugger
                     type="number"
                     value={formData.pincode}
                     onChange={handleChange}
-                  //  onBlur={handleBlur}
-                   // className={touched.pincode && !!errors.pincode ? 'shake' : ''}
-                 //   error={touched.pincode && !!errors.pincode}
-                 //   helperText={touched.pincode && errors.pincode}
                     variant={isEditable ? "outlined" : "filled"}
                     InputProps={{
                       readOnly: !isEditable,
@@ -1305,7 +1497,7 @@ debugger
           
         </Grid>
 }
-        {formData.TypeOfUpload === "RegistrationNumber" && (
+        {formData.TypeOfUpload === "RegistrationNumber" && formData.ReasonCategory === "3" && (
           <Grid container spacing={6} alignItems="center">
             <Grid item xs={8}>
               <TextField
@@ -1345,7 +1537,7 @@ debugger
            
           </Grid>
         )}
-        {(formData.TypeOfUpload === "RegistrationNumber" && KAVERI_DOC_DETAILS.length > 0 && KAVERI_PROP_DETAILS.length > 0 && KAVERI_PARTIES_DETAILS.length > 0) &&
+        {(formData.TypeOfUpload === "RegistrationNumber" && formData.ReasonCategory === "3" && KAVERI_DOC_DETAILS.length > 0 && KAVERI_PROP_DETAILS.length > 0 && KAVERI_PARTIES_DETAILS.length > 0) &&
           <TableContainer component={Paper} style={{ marginTop: 16 }}>
             <Table>
               <TableHead>
@@ -1467,7 +1659,7 @@ debugger
 
         }
 
-        {formData.TypeOfUpload === "OldRegistrationNumber" &&
+        {formData.TypeOfUpload === "OldRegistrationNumber" && formData.ReasonCategory === "3" &&
 
           <ObjectionDocumentUploadPage />
         }
@@ -1487,12 +1679,12 @@ debugger
             
           >
             {t("Uploadfile")}
-            <VisuallyHiddenInput type="file" accept=".pdf" onChange={handleFileChange} />
+            <VisuallyHiddenInput type="file" accept=".pdf" onChange={handleReasonFileChange} />
           </Button>
-          {selectedFile && (
+          {selectedReasonFile && (
                     <Box display="flex" alignItems="center" mt={2}>
-                      <Typography variant="body1">{selectedFile.name}</Typography>
-                      <Button color="error" onClick={handleFileDelete} sx={{ ml: 2 }}>
+                      <Typography variant="body1">{selectedReasonFile.name}</Typography>
+                      <Button color="error" onClick={handleFileReasonDelete} sx={{ ml: 2 }}>
                         {t("Delete")}
                       </Button>
                     </Box>
@@ -1500,6 +1692,18 @@ debugger
                   <Typography variant="body1" sx={{ ml: 1, color: '#df1414' }}>
                     {t("MaximumFileSizeMB")}
                   </Typography>
+                  {formData.ReasonExtension ?
+                  <>                  <Typography>Document Uploaded :</Typography>
+                  <Typography>{formData.ReasonExtension}</Typography>
+                 
+                              <IconButton onClick={() => handleDownload(formData.ReasonDocument, formData.ReasonExtension)}>
+                                <GetAppIcon color='primary' />
+                              </IconButton>
+                              </>
+                              :
+                              ""
+                              
+                            }
         </Box>
 </Grid>
 }
@@ -1535,11 +1739,11 @@ debugger
                   <Button variant="contained" color="primary" onClick={handleBack}>
                     {t("Previous")}
                   </Button>
-                  <Button variant="contained" color="primary" onClick={handleAddressEdit}>
+                  {/* <Button variant="contained" color="primary" onClick={handleAddressEdit}>
                       {t("Edit")}
-                    </Button>
-                  <Button variant="contained" color="success" onClick={handleSubmit} >
-                  Finish
+                    </Button> */}
+                  <Button variant="contained" color="success" onClick={handleFinalSubmit} >
+                  Submit
                   </Button>
                 </Box>
               </Grid>
