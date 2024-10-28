@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   TextField, Button, Grid, Box, Container, Typography, CircularProgress, Tooltip, IconButton, 
   FormControl,  MenuItem, Select, InputLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,Radio
-  ,FormControlLabel,RadioGroup
+  ,FormControlLabel,RadioGroup, Card, Divider
 } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import { toast, ToastContainer } from 'react-toastify';
@@ -100,7 +100,7 @@ const ObjectorsPage = () => {
   const handleDownload = (base64Data, documentdescription) => {
     try {
     const filename = `${documentdescription}`;
-debugger
+
     const mimeTypes = {
       jpg: 'image/jpeg',
       jpeg: 'image/jpeg',
@@ -184,24 +184,34 @@ if(tablesdata8.length ===0){
       }, 1000);
     }
   };
- 
+  const DocumentUploadedValidation = (Table1) => {
+
+    if (Table1.length === 0) {
+      return { isValid: false, data: [] };
+    }
+    else {
+      return { isValid: true, data: Table1 };
+    }
+  }
  
   const fetchData = React.useCallback(async (ISKaveri) => {
     setLoading(true);
-    debugger
+    
     let response2 = null;
 
-    let objectionid = null;
+    let objectionid = "0";
 
     
        objectionid = JSON.parse(sessionStorage.getItem('OBJECTIONID'));
       
-    
+  if(objectionid === undefined || objectionid === null || objectionid === ""){
+     objectionid = "0";
+  }
     
     try {
       
       const response = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT_React?ULBCODE=555&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=ADDRESS`);
-      if(objectionid === "1"){
+      if(objectionid === "0"){
        response2 = await axiosInstance.get(`ObjectionAPI/GET_PROPERTY_OBJECTORS_CITZ_NCLTEMP?ULBCODE=555&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&objectionid=${1}`);
       }else{
         response2 = await axiosInstance.get(`ObjectionAPI/GET_PROPERTY_OBJECTORS_CITZ_NCLTEMP?ULBCODE=555&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&objectionid=${JSON.parse(sessionStorage.getItem('OBJECTIONID'))}`);
@@ -213,15 +223,24 @@ if(tablesdata8.length ===0){
       setKAVERI_DOC_DETAILS(TableKaveriDocument.length > 0 ? TableKaveriDocument : [])
       setKAVERI_PROP_DETAILS(TableKaveriprop.length > 0 ? TableKaveriprop : [])
       setKAVERI_PARTIES_DETAILS(TableKaveriParties.length > 0 ? TableKaveriParties : [])
-      debugger
+      
       const allDocuments = [...ReasonDocument]; 
-
+      let objs = {}
  if(ISKaveri === "Kaveri"){
   setKaveriDocumentOld(KaveriDocument.length > 0 ? KaveriDocument : [])
   setKAVERI_DOC_DETAILS(TableKaveriDocument.length > 0 ? TableKaveriDocument : [])
   setKAVERI_PROP_DETAILS(TableKaveriprop.length > 0 ? TableKaveriprop : [])
   setKAVERI_PARTIES_DETAILS(TableKaveriParties.length > 0 ? TableKaveriParties : [])
-  return
+  objs = DocumentUploadedValidation(TableKaveriDocument.length > 0 ? TableKaveriDocument : [])
+  return objs
+ }
+ if(ISKaveri === "KaveriDocument"){
+  setKaveriDocumentOld(KaveriDocument.length > 0 ? KaveriDocument : [])
+  setKAVERI_DOC_DETAILS(TableKaveriDocument.length > 0 ? TableKaveriDocument : [])
+  setKAVERI_PROP_DETAILS(TableKaveriprop.length > 0 ? TableKaveriprop : [])
+  setKAVERI_PARTIES_DETAILS(TableKaveriParties.length > 0 ? TableKaveriParties : [])
+  objs = DocumentUploadedValidation(KaveriDocument.length > 0 ? KaveriDocument : [])
+  return objs
  }
       
       let response3 = []
@@ -305,7 +324,7 @@ if(tablesdata8.length ===0){
   }, [fetchData]);
 
   const handleChange = (e) => {
-debugger
+
     const { name, value } = e.target;
     if(name === "communicationAddress"){
         if(value === "Y"){
@@ -441,7 +460,7 @@ try {
   
   const handleBack = () => {
    
-    
+    sessionStorage.removeItem("OBJECTIONID");
     sessionStorage.removeItem("SETPROPERTYCODE");
     sessionStorage.removeItem("SETPROPERYID");
     navigate("/PropertyList");
@@ -541,7 +560,7 @@ try {
         PROPERTYID:JSON.parse(sessionStorage.getItem('SETPROPERYID')),
         loginId: 'crc'
       };
-debugger
+
       const queryString = new URLSearchParams(params).toString();
 
 
@@ -568,7 +587,7 @@ debugger
      
       const response = await axiosInstance.post(`ObjectionAPI/INS_NCL_PROPERTY_OBJECTOR_TEMP_WITH_EKYCDATA?${queryString}`,EkycResponseData);
       console.log(response.data);
-      debugger
+      
       sessionStorage.setItem('OBJECTIONID',response.data.Table[0].OBJECTIONID)
       toast.success(`${t("ownerEditedSuccess")}`)
       setEkycResponseData(null);
@@ -611,23 +630,43 @@ debugger
       return false
         }
     }
-    if(formData.ReasonCategory === 0 || formData.ReasonCategory.length === 0)
-      {
-      toast.error("Please Select the Reason ");
-      return false
-    }
-    if(formData.ReasonCategory !== "3" && formData.ReasonCategory !== "5"){
-      if(selectedReasonFile !== null) {
-      PropertyDocumentReason = await getPropertyphoto(selectedReasonFile);
+    
+      debugger
+      if(formData.communicationAddress === "Y"){
+        if(formData.doorno === null|| formData.doorno === undefined || formData.doorno === ""){
+          toast.error("Please Enter the Door No")
+          return false
+        }
+        if(formData.areaorlocality === null || formData.areaorlocality === undefined || formData.areaorlocality === ""){
+          toast.error("Please Enter the Area of Locality")
+          return false
+        }
+        if(formData.pincode === null || formData.pincode === undefined || formData.pincode === ""){
+          toast.error("Please Enter the Pincode")
+          return false
+        }else if(formData.pincode.length < 6){
+          toast.error("The Pincode must be 6 Digits")
+          return false
+        }
       }
-      if(PropertyDocumentReason.length === 0)
+      if(formData.ReasonCategory === 0 || formData.ReasonCategory.length === 0)
         {
-          if(formData.ReasonDocument.length === 0){
-        toast.error("Please Upload the Reason Document")
+        toast.error("Please Select the Reason ");
         return false
-          }
       }
-      }
+      debugger
+      if(formData.ReasonCategory !== "3" && formData.ReasonCategory !== "5"){
+        if(selectedReasonFile !== null) {
+        PropertyDocumentReason = await getPropertyphoto(selectedReasonFile);
+        }
+        if(PropertyDocumentReason.length === 0)
+          {
+            if(formData.ReasonDocument.length === 0){
+          toast.error("Please Upload the Reason Document")
+          return false
+            }
+        }
+        }
       if(formData.ReasonCategory === "5")
         {
         if(formData.ReasonDetails.length === 0){
@@ -640,23 +679,29 @@ debugger
         return false
       }
       if(formData.ReasonCategory === "3"){
-        await fetchData("Kaveri")
-      if(formData.TypeOfUpload.length === 0){
+      
+        
+      if(formData.TypeOfUpload === "" || formData.TypeOfUpload === undefined || formData.TypeOfUpload === null){
+        setTimeout(() => {
         toast.error("Please Select the Type of Registration Document")
+      }, 100)
         return false
       }
       else if(formData.TypeOfUpload === "RegistrationNumber") {
-        
-        if(KAVERI_DOC_DETAILS.length === 0){
+        let kaveridata =  await fetchData("Kaveri")
+        if(kaveridata.data.length === 0){
+          setTimeout(() => {
           toast.error("Please Verify with the Registation No")
+        }, 100)
           return false
         }
       }
       else if(formData.TypeOfUpload === "OldRegistrationNumber"){
-       
-        if(KaveriDocumentold.length === 0){
+        let KaveriDcoumentdata =  await fetchData("KaveriDocument")
+        if(KaveriDcoumentdata.data.length === 0){
+          setTimeout(() => {
         toast.error("Please Upload the Kaveri Document")
-        
+      }, 100)
         return false
         }
       }
@@ -680,22 +725,36 @@ console.log(error)
     let propertyDocumentName = "";
     let PropertyDocumentReason = ""
     if (isEditable) { 
-      debugger
+      
       let IsValidation = await handleValidation() 
       
       if(IsValidation){ 
       setLoading(true);
-      if(selectedReasonFile !== null) {
+      debugger
+    
+        if(selectedReasonFile !== null){
         PropertyDocumentReason = await getPropertyphoto(selectedReasonFile);
         }
-        if (selectedNameFile !== null) {
-          propertyDocumentName = await getPropertyphoto(selectedNameFile);
+         if(PropertyDocumentReason.length > 0){
+          PropertyDocumentReason = PropertyDocumentReason
+        }else if(formData.ReasonDocument.length > 0){
+          PropertyDocumentReason =  formData.ReasonDocument;
         }
-        if(formData.ReasonCategory === "3"){
-          if(formData.TypeOfUpload === ""){
-           await fetchData()
-          }
+      
+           if(selectedNameFile !== null){
+        propertyDocumentName = await getPropertyphoto(selectedNameFile);
         }
+         if(propertyDocumentName.length > 0){
+          propertyDocumentName = propertyDocumentName;
+        }else if(formData.NameDocument.length > 0){
+          propertyDocumentName = formData.NameDocument;
+        }
+        
+        // if(formData.ReasonCategory === "3"){
+        //   if(formData.TypeOfUpload === ""){
+        //    await fetchData()
+        //   }
+        // }
       const data = {
         objectionid: JSON.parse(sessionStorage.getItem('OBJECTIONID')),
         propertycode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
@@ -705,8 +764,8 @@ console.log(error)
         reasonid: formData.ReasonCategory,
         reasondetails: formData.ReasonDetails ?? "",
         ulbcode: 555,
-        namedocumentdetails: selectedNameFile !== null  ? selectedNameFile.name : "",
-        reasondocumentdetails: selectedReasonFile !== null ? selectedReasonFile.name : "",
+        namedocumentdetails: selectedNameFile !== null  ? selectedNameFile.name : formData.NameExtension,
+        reasondocumentdetails: selectedReasonFile !== null ? selectedReasonFile.name : formData.ReasonExtension,
         documentextension: "pdf",
         doorno: formData.doorno,
         buildingname: formData.buildingname,
@@ -715,7 +774,7 @@ console.log(error)
         createdby: "thushar",
         typeofdocument:formData.TypeOfUpload
       };
-      debugger
+      
       try {
         await axiosInstance.post('ObjectionAPI/INS_NCL_PROPERTY_OBJECTORS_FINAL_SUBMIT', data
         )
@@ -731,8 +790,10 @@ console.log(error)
         });
       }, 100)
        // setIsEditable(false);
-       fetchData();
-        setLoading(false);
+ //   await   fetchData();
+ setLoading(false);
+    handleBack();
+    setLoading(false);
         // sessionStorage.setItem("userProgress", 4);
       } catch (error) {
         await toast.error(`${t("errorSavingData")}`, error, {
@@ -749,6 +810,7 @@ console.log(error)
         }, 500);
       }
     } else {
+      setLoading(false);
       sessionStorage.setItem("userProgress", 4);
        
     
@@ -1051,7 +1113,7 @@ console.log(error)
               fontSize: {
                 xs: '1.5rem',
                 sm: '2rem',
-                md: '2.5rem',
+                md: '2rem',
               }
             }}
           >
@@ -1061,7 +1123,7 @@ console.log(error)
           <Grid item xs={12} sm={6}>
 
           <Box display="flex" alignItems="center">
-                    <Typography variant="body1" sx={{ ml: 1 }}>
+                    <Typography variant="h6" sx={{ ml: 1 }}>
                      Aadhar Authentication <span style={{ color: 'red' }}> (If you do not want to give Aadhar ,you can file physical objection application to ARO office) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
                     </Typography>
                     {tablesdata8.length === 0 &&
@@ -1253,7 +1315,7 @@ console.log(error)
   <Table>
     <TableHead>
       <TableRow>
-        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("OwnerNo.")}</TableCell>
+        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("Slno.")}</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("OwnerName")}</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("Father/Mother/Husband/SpouseName")}</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("Address")}</TableCell>
@@ -1305,63 +1367,76 @@ console.log(error)
 <br></br>
           
 <Grid item xs={12} sm={6}>
-  <Box display="flex" alignItems="center" flexDirection="row" flexWrap="wrap">
-    <Typography variant="body1" sx={{ ml: 1 }}>
-      Upload detailed objection in writing with your signatures, name, mobile number, and address:
-    </Typography>
-    
-    <Button
-      component="label"
-      variant="contained"
-      disabled={false}
-      startIcon={<CloudUploadIcon />}
-      sx={{ ml: 2 }}
-    >
-      {t("Uploadfile")}
-      <VisuallyHiddenInput type="file" accept=".pdf" onChange={handleNameFileChange} />
-    </Button>
+      <Card sx={{ p: 3, boxShadow: 3, borderRadius: 2, border: '1px solid #e0e0e0' }}>
+        <Box display="flex" alignItems="center" flexDirection="column" textAlign="center" mb={2}>
+          <Typography variant="h5" color="primary" gutterBottom>
+          {t("Upload detailed objection in writing with your signature, name, mobile number, and address")}
+          </Typography>
+          <Divider sx={{ width: '100%', mb: 2 }} />
 
-    {selectedNameFile && (
-      <Box display="flex" alignItems="center" sx={{ ml: 2 }}>
-        <Typography variant="body1">{selectedNameFile.name}</Typography>
-        <Button color="error" onClick={handleFileNameDelete} sx={{ ml: 2 }}>
-          {t("Delete")}
-        </Button>
-      </Box>
-    )}
+       
 
-    <Typography variant="body1" sx={{ ml: 1, color: '#df1414' }}>
-      {t("MaximumFileSizeMB")}
-    </Typography>
+          <Button
+            component="label"
+            variant="contained"
+            startIcon={<CloudUploadIcon />}
+            sx={{ mt: 2, mb: 2, px: 3, py: 1 }}
+          >
+            {t("Uploadfile")}
+            <VisuallyHiddenInput type="file" accept=".pdf" onChange={handleNameFileChange} />
+          </Button>
 
-    {formData.NameExtension && (
-      <Box display="flex" alignItems="center" sx={{ ml: 2 }}>
-        <Typography variant="body1" sx={{ mr: 1, color: '#df1414'  }}>Document Uploaded:</Typography>
-        <Typography variant="body1" sx={{ mr: 2 }}>{formData.NameExtension}</Typography>
-        <IconButton onClick={() => handleDownload(formData.NameDocument, formData.NameExtension)}>
-          <GetAppIcon color="primary" />
-        </IconButton>
-      </Box>
-    )}
-  </Box>
-</Grid>
+          {selectedNameFile && (
+            <Box display="flex" alignItems="center" justifyContent="center" mt={2} sx={{ color: 'text.secondary' }}>
+              <Typography variant="h6">{selectedNameFile.name}</Typography>
+              <Button color="error" onClick={handleFileNameDelete} sx={{ ml: 2 }}>
+                {t("Delete")}
+              </Button>
+            </Box>
+          )}
+          
+          <Typography variant="caption" sx={{ mt: 1, color: '#df1414',fontSize:'1rem'  }}>
+            {t("MaximumFileSizeMB")}
+          </Typography>
+        </Box>
+
+        {formData.NameExtension && (
+          <Box display="flex" alignItems="center" justifyContent="center" mt={2} sx={{ p: 1, backgroundColor: '#f9f9f9', borderRadius: 1 }}>
+            <Typography variant="h6" color="InfoText" sx={{ mr: 1 }}>
+              {t("Uploaded Document:")}
+            </Typography>
+            <Typography variant="h6" color="primary" sx={{ mr: 2 }}>
+              {formData.NameExtension}
+            </Typography>
+            <IconButton onClick={() => handleDownload(formData.NameDocument, formData.NameExtension)}>
+              <GetAppIcon color="primary" />
+            </IconButton>
+          </Box>
+        )}
+      </Card>
+    </Grid>
 
 <br></br>
 <Grid item xs={12} sm={6}>
-
-          <Box display="flex" alignItems="center">
-                    <Typography variant="body1" sx={{ ml: 1 }}>
-                      Is Communication Address is different than Aadhar Address :
-                    </Typography>
-                    <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
-                <RadioGroup row name="communicationAddress" value={formData.communicationAddress} onChange={handleChange}>
-                  <FormControlLabel value="Y" control={<Radio disabled={!isEditable} />} label={t("Yes")} />
-                  <FormControlLabel value="N" control={<Radio disabled={!isEditable} />} label={t("No")} />
-                </RadioGroup>
-              </FormControl>
-
-                  </Box>
+  <Box display="flex" alignItems="center">
+    <Typography variant="body1" sx={{ ml: 1, mr: 2 }}>
+      Is Communication Address different than Aadhar Address:
+    </Typography>
+    <FormControl component="fieldset" sx={{ml: 1, mb: 0.5 }}>
+      <RadioGroup
+        row
+        name="communicationAddress"
+        value={formData.communicationAddress}
+        onChange={handleChange}
+        sx={{ display: 'flex', alignItems: 'center' }}
+      >
+        <FormControlLabel value="Y" control={<Radio disabled={!isEditable} />} label={t("Yes")} sx={{ mr: 4 }} />
+        <FormControlLabel value="N" control={<Radio disabled={!isEditable} />} label={t("No")} />
+      </RadioGroup>
+    </FormControl>
+  </Box>
 </Grid>
+
 {isCommunicationAddress &&
 <Grid container spacing={2}>
  
@@ -1665,63 +1740,71 @@ console.log(error)
         }
         {((formData.ReasonCategory === "1") || (formData.ReasonCategory === "2") || (formData.ReasonCategory === "4")) &&
               <Grid item xs={12} sm={6}>
-
-<Box display="flex" alignItems="center">
-          <Typography variant="body1" sx={{ ml: 1 }}>
-            Upload File :
-          </Typography>
-          <Button
-            component="label"
-            variant="contained"
-            disabled={false}
-            startIcon={<CloudUploadIcon />}
-            sx={{ ml: 2 }}
-            
-          >
-            {t("Uploadfile")}
-            <VisuallyHiddenInput type="file" accept=".pdf" onChange={handleReasonFileChange} />
-          </Button>
-          {selectedReasonFile && (
-                    <Box display="flex" alignItems="center" mt={2}>
-                      <Typography variant="body1">{selectedReasonFile.name}</Typography>
+              <Card sx={{ p: 3, boxShadow: 3, borderRadius: 2, border: '1px solid #e0e0e0' }}>
+                <Box display="flex" alignItems="center" flexDirection="column" textAlign="center" mb={2}>
+                  <Typography variant="h6" color="primary" gutterBottom>
+                  {t("Upload file with relevant documents")}
+                  </Typography>
+                  <Divider sx={{ width: '100%', mb: 2 }} />
+    
+                  
+    
+                  <Button
+                    component="label"
+                    variant="contained"
+                    startIcon={<CloudUploadIcon />}
+                    sx={{ mt: 2, mb: 2, px: 3, py: 1 }}
+                  >
+                    {t("Uploadfile")}
+                    <VisuallyHiddenInput type="file" accept=".pdf" onChange={handleReasonFileChange} />
+                  </Button>
+    
+                  {selectedReasonFile && (
+                    <Box display="flex" alignItems="center" justifyContent="center" mt={2} sx={{ color: 'text.secondary' }}>
+                      <Typography variant="h6">{selectedReasonFile.name}</Typography>
                       <Button color="error" onClick={handleFileReasonDelete} sx={{ ml: 2 }}>
                         {t("Delete")}
                       </Button>
                     </Box>
                   )}
-                  <Typography variant="body1" sx={{ ml: 1, color: '#df1414' }}>
+    
+                  <Typography variant="body2" sx={{ mt: 1, color: '#df1414',fontSize:'1rem' }}>
                     {t("MaximumFileSizeMB")}
                   </Typography>
-                  {formData.ReasonExtension ?
-                  <>                  <Typography>Document Uploaded :</Typography>
-                  <Typography>{formData.ReasonExtension}</Typography>
-                 
-                              <IconButton onClick={() => handleDownload(formData.ReasonDocument, formData.ReasonExtension)}>
-                                <GetAppIcon color='primary' />
-                              </IconButton>
-                              </>
-                              :
-                              ""
-                              
-                            }
-        </Box>
-</Grid>
+                </Box>
+    
+                {formData.ReasonExtension && (
+                  <Box display="flex" alignItems="center" justifyContent="center" mt={2} sx={{ p: 1, backgroundColor: '#f9f9f9', borderRadius: 1 }}>
+                    <Typography variant="h6" color="textSecondary" sx={{ mr: 1 }}>
+                      {t("Uploaded Document:")}
+                    </Typography>
+                    <Typography variant="h6" color="primary" sx={{ mr: 2 }}>
+                      {formData.ReasonExtension}
+                    </Typography>
+                    <IconButton onClick={() => handleDownload(formData.ReasonDocument, formData.ReasonExtension)}>
+                      <GetAppIcon color="primary" />
+                    </IconButton>
+                  </Box>
+                )}
+              </Card>
+            </Grid>
 }
 <br></br>
 {formData.ReasonCategory === "5"&&
-<Grid item xs={12} sm={6}>
+<Grid item xs={14} sm={7}>
 
           <Box display="flex" alignItems="center">
-                    <Typography variant="body1" sx={{ ml: 1 }}>
+                    <Typography variant="h6" sx={{ ml: 1 }}>
                       Please State the Reason :
                     </Typography>
                     <TextField
-                    fullWidth
+                    
                     multiline 
                     label={<LabelWithAsterisk text={"Reason"} />}
                     name="ReasonDetails"
                     value={formData.ReasonDetails}
                     onChange={handleChange}
+                    sx={{ ml: 1, width: '50%' }} 
                     variant={isEditable ? "outlined" : "filled"}
                     InputProps={{
                       readOnly: !isEditable,
