@@ -58,7 +58,7 @@ const ObjectorsPage = () => {
     BBDPropertyCategory:"",
     ReasonCategory:"",
     ReasonDetails:"",
-  
+    MOBILEVERIFY:"",
     TypeOfUpload:"",
     MOBILENUMBER:"",
     EMAIL:"",
@@ -82,8 +82,8 @@ const ObjectorsPage = () => {
   const [KAVERI_DOC_DETAILS, setKAVERI_DOC_DETAILS] = useState([]);
   const [KAVERI_PROP_DETAILS, setKAVERI_PROP_DETAILS] = useState([]);
   const [KAVERI_PARTIES_DETAILS, setKAVERI_PARTIES_DETAILS] = useState([]);
- 
-
+  const [otpNumber, setOtpNumber] = useState(0)
+  const [alertShown, setAlertShown] = useState(false);
   const [tableIdentifier,setIdentifier] = useState([])
   const [editableIndex, setEditableIndex] = useState(-1);
   const [otpFieldsVisible, setOtpFieldsVisible] = useState(false);
@@ -91,7 +91,9 @@ const ObjectorsPage = () => {
   const [selectedReasonFile, setSelectedReasonFile] = useState(null);
   const [fileExtension, setfileExtension] = useState([]);
   const [EkycResponseData,setEkycResponseData] = useState(null);
-  
+  const [otpButtonDisabled, setOtpButtonDisabled] = useState(false);
+  const [timer, setTimer] = useState(30); 
+  const [countdownInterval, setCountdownInterval] = useState(null);
  
   const [isCommunicationAddress,setIsCommunicationAddress] = useState(false)
   
@@ -340,6 +342,14 @@ if(tablesdata8.length ===0){
             formData.TypeOfUpload = ""
         }
     }
+    if(name === "TypeOfUpload"){
+      if(value === "OldRegistrationNumber"){
+      if(tablesdata8.length === 0){
+        toast.error("Please Verify with Atleast One Ekyc Owner");
+       formData.TypeOfUpload = ""
+      }
+    }
+    }
     if (name === "pincode") {
       if (/^\d{0,6}$/.test(value)) {
         setFormData({
@@ -349,13 +359,94 @@ if(tablesdata8.length ===0){
       }
       return
     }
+    debugger
+    if (name === "MOBILENUMBER") {
+      if (formData.MOBILENUMBER === value || value.trim() === "") {
+        setOtpFieldsVisible(false);
+        setAlertShown(false);
+      } else {
+       debugger
+       let noOfMobile = tablesdata8.filter(row => row.MOBILENUMBER === value);
+        if(noOfMobile.length === 0){
+        setOtpFieldsVisible(true);
+        formData.MOBILEVERIFY = "NOT VERIFIED";
+        if (!alertShown) {
+          alert(`${t("MobileValidation")}`);
+          setAlertShown(true);
+          formData.MOBILEVERIFY = "NOT VERIFIED";
+        }
+      }
+      else {
+        
+       formData.MOBILEVERIFY = "VERIFIED";
+       setOtpFieldsVisible(false);
+      }
+      }
+      if (name === "MOBILENUMBER") {
+        if (/^\d{0,10}$/.test(value)) {
+          setFormData(prevFormData => ({
+            ...prevFormData,
+            [name]: value
+          }));
+        }
+        return
+      }
+    }
     
     setFormData({
       ...formData,
       [name]: value
     });
   };
- 
+  React.useEffect(() => {
+    return () => {
+      clearInterval(countdownInterval);
+    };
+  }, [countdownInterval]);
+  const handleGenerateOtp = async (index) => {
+    try {
+      const response = await axiosInstance.get("E-KYCAPI/SendOTP?OwnerMobileNo=" + formData.MOBILENUMBER);
+      toast.success(response.data.otpResponseMessage);
+     
+      setOtpNumber(response.data.otp);
+    //  formData.MOBILEVERIFY = "NOT VERIFIED";
+      setOtpButtonDisabled(true);
+      setTimer(30);
+      const interval = setInterval(() => {
+        setTimer(prevTimer => prevTimer - 1);
+      }, 1000);
+
+
+      setTimeout(() => {
+        setOtpButtonDisabled(false);
+        clearInterval(interval);
+      }, 30000);
+
+
+      setCountdownInterval(interval);
+      setFormData({
+        ...formData,
+        MOBILEVERIFY: "NOT VERIFIED",
+      });
+    } catch (error) {
+      console.log("failed to send otp" + error)
+    }
+
+  };
+
+  const handleVerifyOtp = () => {
+    if (formData.OwnerOTP === otpNumber.toString()) {
+      toast.success(`${t("otpVerifiedSuccess")}`);
+    //  formData.MOBILEVERIFY = "Verified";
+      setOtpFieldsVisible(false);
+      setFormData({
+        ...formData,
+        MOBILEVERIFY: "VERIFIED",
+      });
+    } else {
+      toast.error(`${t("Invalid OTP Entered")}`);
+    }
+  };
   const handleAddressEdit = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -370,11 +461,12 @@ if(tablesdata8.length ===0){
     }
   };
   React.useEffect(() => {
+    debugger
     const params = new URLSearchParams(location.search);
     const txnno = params.get('txnno');
 try {
     if (txnno !== null && txnno !== undefined) {
-     
+     debugger
       console.log('E-KYC completed successfully with txnno:', txnno);
       setTimeout(() => {
         toast.success("E-KYC completed successfully");
@@ -408,7 +500,7 @@ try {
     const fileName = file.name;
     const fileExtension = fileName.split('.').pop().toLowerCase();
     if (!['pdf'].includes(fileExtension)) {
-      toast.error(`${t("selectPdfFileOnly ")}`);
+      toast.error(`${t("selectPdfFileOnly")}`);
       e.target.value = null;
       setSelectedReasonFile(null);
       return
@@ -434,7 +526,7 @@ try {
     const fileName = file.name;
     const fileExtension = fileName.split('.').pop().toLowerCase();
     if (!['pdf'].includes(fileExtension)) {
-      toast.error(`${t("selectPdfFileOnly ")}`);
+      toast.error(`${t("selectPdfFileOnly")}`);
       e.target.value = null;
       setSelectedNameFile(null);
       return
@@ -501,13 +593,18 @@ try {
   const AddEKYCOwner = async () => {
     
     
-
+try {
     
     sessionStorage.setItem("OWNERTYPE", JSON.stringify("NEWOWNER"))
     var response = await axiosInstance.post("E-KYCAPI/INS_NCL_OBJECTION_MAIN?ULBCODE=" + 555 +  "&Propertycode=" + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + "&PropertyEID="+JSON.parse(sessionStorage.getItem('SETPROPERYID')) )
 
 
     window.location.href = response.data;
+}
+    catch(error)
+    {
+      console.log(error)
+    }
   };
   
   const handleSave = async (Type) => {
@@ -602,7 +699,7 @@ try {
     return new Promise((resolve, reject) => {
       if (!selectedFile) {
         resolve(''); // Return an empty string if no file is selected
-        return;
+        return "";
       }
       const reader = new FileReader();
       reader.readAsDataURL(selectedFile);
@@ -618,20 +715,24 @@ try {
   const handleValidation = async () =>{
     debugger
     let propertyDocumentName = "";
-    let PropertyDocumentReason = ""
+    let PropertyDocumentReason = "";
     try {
     if (selectedNameFile !== null) {
       propertyDocumentName = await getPropertyphoto(selectedNameFile);
     }
-    if(propertyDocumentName.length === 0)
+    if(propertyDocumentName === "" || propertyDocumentName === undefined ||propertyDocumentName === null)
       {
-        if(formData.NameDocument.length === 0){
+        if(formData.NameDocument === "" || formData.NameDocument === undefined || formData.NameDocument === null){
       toast.error("Please Upload the Name Document");
       return false
         }
     }
     
       debugger
+      if(formData.communicationAddress === "" || formData.communicationAddress === null|| formData.communicationAddress === undefined){
+        toast.error("Please Select the Communication Address Option")
+        return false
+      }
       if(formData.communicationAddress === "Y"){
         if(formData.doorno === null|| formData.doorno === undefined || formData.doorno === ""){
           toast.error("Please Enter the Door No")
@@ -649,7 +750,7 @@ try {
           return false
         }
       }
-      if(formData.ReasonCategory === 0 || formData.ReasonCategory.length === 0)
+      if(formData.ReasonCategory === 0 || formData.ReasonCategory === "" || formData.ReasonCategory === undefined || formData.ReasonCategory === null)
         {
         toast.error("Please Select the Reason ");
         return false
@@ -659,7 +760,7 @@ try {
         if(selectedReasonFile !== null) {
         PropertyDocumentReason = await getPropertyphoto(selectedReasonFile);
         }
-        if(PropertyDocumentReason.length === 0)
+        if(PropertyDocumentReason === "" || PropertyDocumentReason === undefined || PropertyDocumentReason === null)
           {
             if(formData.ReasonDocument.length === 0){
           toast.error("Please Upload the Reason Document")
@@ -669,7 +770,7 @@ try {
         }
       if(formData.ReasonCategory === "5")
         {
-        if(formData.ReasonDetails.length === 0){
+        if(formData.ReasonDetails === "" || formData.ReasonDetails === undefined || formData.ReasonDetails === null){
           toast.error("Please enter the Reason Details")
           return false
         }
@@ -855,9 +956,33 @@ console.log(error)
     <Container maxWidth="xl">
       <Box sx={{ backgroundColor: '#f0f0f0', padding: 4, borderRadius: 2, mt: 8 }}>
         <ToastContainer />
-     
         <Typography
-          variant="h3"
+  variant="body1"
+  sx={{
+    color: '#1565c0',
+    fontFamily: 'Arial, sans-serif',
+    fontWeight: 'bold',
+    fontSize: '2rem',
+    textAlign: 'center', // Correct alignment property
+  }}
+>
+Objection can be filed only to stop issuance of final eKhata or against issued final eKhata
+</Typography>
+<Typography
+  variant="body1"
+  sx={{
+    color: '#1565c0',
+    fontFamily: 'Arial, sans-serif',
+    fontWeight: 'bold',
+    fontSize: '1.5rem',
+    textAlign: 'center', // Correct alignment property
+  }}
+>
+(module for corrections in eKhata will be released separately)
+</Typography>
+<br></br>
+        <Typography
+          variant="h5"
           align="center"
           gutterBottom
           sx={{
@@ -868,7 +993,7 @@ console.log(error)
             fontSize: {
               xs: '1.5rem',
               sm: '2rem',
-              md: '2.5rem',
+              md: '2rem',
             }
           }}
         >
@@ -1274,11 +1399,72 @@ console.log(error)
                               style: { backgroundColor:  "#ffff" },
                             }}
                           />
+  {otpFieldsVisible && (
+                            <Grid>
+                              <br></br>
+                              {!otpButtonDisabled && (
+                                <>
+                                  <Button variant="contained" color="primary" onClick={() => handleGenerateOtp()}>
+                                    {t("GenerateOTP")}
+                                  </Button>
+                                </>
+                              )}
+                              {otpButtonDisabled && (
+                                <Typography >
+                                  Resend OTP in {timer} seconds
+                                </Typography>
 
+                              )}
+                              <br></br>
+                              <br></br>
+                              
+                              <TextField
+                                fullWidth
+                                label={t('Enter OTP')}
+                                name="OwnerOTP"
+                                value={formData.OwnerOTP}
+                                onChange={handleChange}
+                                variant="filled"
+                                InputProps={{
+                           
+                                  style: { backgroundColor:  "#ffff" },
+                                }}
+                              />
+<br></br><br></br>
+                              <Button variant="contained" color="primary" onClick={() => handleVerifyOtp()}>
+                                Verify OTP
+                              </Button>
+                              <br></br>
+                            </Grid>
+                          )}
                          
                               </Grid>
                   
                     <Grid item xs={12} sm={6}>
+                    {/* <TextField
+                          fullWidth
+                          label={t('MobileVerification')}
+                          name="MOBILEVERIFY"
+                          value={formData.MOBILEVERIFY}
+                          onChange={handleChange}
+                          InputProps={{
+                            readOnly: true,
+                          }}
+                          variant="filled"
+                        /> */}
+                        <Typography sx={{
+            fontWeight: 'bold',
+            fontFamily: "sans-serif",
+            marginTop: 2,
+            color: '#',
+            fontSize: {
+              xs: '1rem',
+              sm: '1rem',
+              md: '1.2rem',
+            }
+          }}>{t('MobileVerification')} : {formData.MOBILEVERIFY}</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
                         <TextField
                           fullWidth
                           label={t('Email')}
@@ -1292,7 +1478,6 @@ console.log(error)
                           variant="outlined"
                         />
                   </Grid>
-                 
                   </Grid>
                   
                   <br></br>
@@ -1315,13 +1500,14 @@ console.log(error)
   <Table>
     <TableHead>
       <TableRow>
-        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("Slno.")}</TableCell>
+        {/* <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("Slno.")}</TableCell> */}
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("OwnerName")}</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("Father/Mother/Husband/SpouseName")}</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("Address")}</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("MobileNumber")}</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("OwnerPhoto")}</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   EMAIL</TableCell>
+        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}> {t('MobileVerification')}</TableCell>
         {/* <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("E-KYCStatus")}</TableCell> */}
         {/* <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("NAMEMATCHSTATUS")}</TableCell> */}
       </TableRow>
@@ -1338,7 +1524,7 @@ console.log(error)
 
           return (
             <TableRow key={index}>
-              <TableCell>{row.OWNERNUMBER}</TableCell>
+              {/* <TableCell>{row.OWNERNUMBER}</TableCell> */}
               <TableCell>{row.OBJECTIONNAME_EN}</TableCell>
               <TableCell>{row.IDENTIFIERNAME_EN}</TableCell>
               <TableCell>{row.OBJECTIONADDRESS_EN}</TableCell>
@@ -1354,8 +1540,8 @@ console.log(error)
                   borderRadius: '8px',
                 }}
               /></TableCell>
-              <TableCell>{row.EMAIL}</TableCell>
-              {/* <TableCell>{row.EKYCSTATUS}</TableCell> */}
+              <TableCell>{row.EMAIL === undefined|| ""}</TableCell>
+              <TableCell>{row.MOBILEVERIFY}</TableCell>
             
             </TableRow>
           );
@@ -1520,7 +1706,7 @@ console.log(error)
                     sx={{ marginBottom: 3 }}
                  //   className={touched.streetid && !!errors.streetid ? 'shake' : ''}
                   >
-                    <InputLabel>Reason /Basis for Objection <span style={{ color: 'red' }}> *</span>
+                    <InputLabel>Reason /Basis for Objection to not issue ekhata<span style={{ color: 'red' }}> *</span>
                     </InputLabel>
                     <Select
                       name="ReasonCategory"
