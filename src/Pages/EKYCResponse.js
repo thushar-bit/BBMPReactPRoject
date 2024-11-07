@@ -39,7 +39,8 @@ const EKYCResponse = () => {
         const response = await axiosInstance.get(`E-KYCAPI/UPDATE_EKYC_OWNER_VAULT_RESPONSE?${queryString}`);
         if (response.status === 200) {
           
-          navigate(`/OwnerDetails?txnno=${txnno}`);
+          //navigate(`/OwnerDetails?txnno=${txnno}`);
+          navigate(`/ObjectorsPage?txnno=${txnno}`);
         } else {
 
           console.error('Failed to update E-KYC owner vault response:', response);

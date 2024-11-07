@@ -29,10 +29,11 @@ const AppRoutes = () => {
   return (
     <AuthProvider>
       <Router basename="/citizen_core/">
+        {/* <Router basename="/objection_form_test/"> */}
       <ScrollToTop />
         <Header />
         <div className="App">
-          <Breadcrumbs />
+          {/* <Breadcrumbs /> */}
           <Routes>
             <Route path="/" element={<BBDDraftGenerated />} />
             <Route path="/PropertyList" element={<PropertyList />} />
@@ -44,10 +45,13 @@ const AppRoutes = () => {
               path="/GoogleMapsWardCoordinates"
               element={<GoogleMapsWardCoordinates />} 
             /> 
-            <Route
+            {/* <Route
               path="/ObjectorsPage"
-              element={<ObjectorsPage />}  />
-            
+              element={<ObjectorsPage />}  /> */}
+                {/* <Route
+              path="/EKYCResponse"
+              element={<EKYCResponse />}  /> */}
+           
              {/* <Route
               path="/BBDDraft"
               element={<PrivateRoute element={<BBDDraft />} requiredStep={1} />}
@@ -92,10 +96,7 @@ const AppRoutes = () => {
               path="/ClassificationDocumentUploadPage"
               element={<PrivateRoute element={<ClassificationDocumentUploadPage />} requiredStep={9} />}
             />
-            <Route
-              path="/EKYCResponse"
-              element={<PrivateRoute element={<EKYCResponse />} />}
-            />
+           
               <Route
               path="/ESignPage"
               element={<PrivateRoute element={<ESignPage />} />}

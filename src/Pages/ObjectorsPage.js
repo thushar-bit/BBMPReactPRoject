@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   TextField, Button, Grid, Box, Container, Typography, CircularProgress, Tooltip, IconButton, 
   FormControl,  MenuItem, Select, InputLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,Radio
-  ,FormControlLabel,RadioGroup, Card, Divider
+  ,FormControlLabel,RadioGroup, Card, Divider,Dialog, DialogContent, DialogActions
 } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import { toast, ToastContainer } from 'react-toastify';
@@ -78,23 +78,22 @@ const ObjectorsPage = () => {
   const [loading, setLoading] = useState(false);
   const [isEditable, setIsEditable] = useState(true);
   const [tablesdata8, setTableData8] = useState([]);
-  const [KaveriDocumentold,setKaveriDocumentOld] = useState([])
   const [KAVERI_DOC_DETAILS, setKAVERI_DOC_DETAILS] = useState([]);
   const [KAVERI_PROP_DETAILS, setKAVERI_PROP_DETAILS] = useState([]);
   const [KAVERI_PARTIES_DETAILS, setKAVERI_PARTIES_DETAILS] = useState([]);
   const [otpNumber, setOtpNumber] = useState(0)
   const [alertShown, setAlertShown] = useState(false);
   const [tableIdentifier,setIdentifier] = useState([])
-  const [editableIndex, setEditableIndex] = useState(-1);
+ 
   const [otpFieldsVisible, setOtpFieldsVisible] = useState(false);
   const [selectedNameFile, setSelectedNameFile] = useState(null);
   const [selectedReasonFile, setSelectedReasonFile] = useState(null);
-  const [fileExtension, setfileExtension] = useState([]);
+  // const [fileExtension, setfileExtension] = useState([]);
   const [EkycResponseData,setEkycResponseData] = useState(null);
   const [otpButtonDisabled, setOtpButtonDisabled] = useState(false);
   const [timer, setTimer] = useState(30); 
   const [countdownInterval, setCountdownInterval] = useState(null);
- 
+  const [pdfUrl, setPdfUrl] = useState('');
   const [isCommunicationAddress,setIsCommunicationAddress] = useState(false)
   
  
@@ -221,7 +220,7 @@ if(tablesdata8.length ===0){
       const {Table1:Identifier=[],Table2:TableMain=[],Table3:TableReasons=[],Table4:TableOwner=[],Table5:KaveriDocument=[],Table6:ReasonDocument=[],Table7:TableKaveriDocument=[],Table8:TableKaveriprop=[],Table9:TableKaveriParties=[]} = response2.data;
       setIdentifier(Identifier.length > 0 ? Identifier : [])
       setTableData8(TableOwner.length > 0 ? TableOwner : [])
-      setKaveriDocumentOld(KaveriDocument.length > 0 ? KaveriDocument : [])
+      // setKaveriDocumentOld(KaveriDocument.length > 0 ? KaveriDocument : [])
       setKAVERI_DOC_DETAILS(TableKaveriDocument.length > 0 ? TableKaveriDocument : [])
       setKAVERI_PROP_DETAILS(TableKaveriprop.length > 0 ? TableKaveriprop : [])
       setKAVERI_PARTIES_DETAILS(TableKaveriParties.length > 0 ? TableKaveriParties : [])
@@ -229,7 +228,7 @@ if(tablesdata8.length ===0){
       const allDocuments = [...ReasonDocument]; 
       let objs = {}
  if(ISKaveri === "Kaveri"){
-  setKaveriDocumentOld(KaveriDocument.length > 0 ? KaveriDocument : [])
+  // setKaveriDocumentOld(KaveriDocument.length > 0 ? KaveriDocument : [])
   setKAVERI_DOC_DETAILS(TableKaveriDocument.length > 0 ? TableKaveriDocument : [])
   setKAVERI_PROP_DETAILS(TableKaveriprop.length > 0 ? TableKaveriprop : [])
   setKAVERI_PARTIES_DETAILS(TableKaveriParties.length > 0 ? TableKaveriParties : [])
@@ -237,7 +236,7 @@ if(tablesdata8.length ===0){
   return objs
  }
  if(ISKaveri === "KaveriDocument"){
-  setKaveriDocumentOld(KaveriDocument.length > 0 ? KaveriDocument : [])
+  // setKaveriDocumentOld(KaveriDocument.length > 0 ? KaveriDocument : [])
   setKAVERI_DOC_DETAILS(TableKaveriDocument.length > 0 ? TableKaveriDocument : [])
   setKAVERI_PROP_DETAILS(TableKaveriprop.length > 0 ? TableKaveriprop : [])
   setKAVERI_PARTIES_DETAILS(TableKaveriParties.length > 0 ? TableKaveriParties : [])
@@ -319,7 +318,7 @@ if(tablesdata8.length ===0){
       return <ErrorPage errorMessage={error} />;
     }
     setLoading(false);
-  }, [t]);
+  }, []);
   
   useEffect(() => {
     fetchData();
@@ -447,19 +446,7 @@ if(tablesdata8.length ===0){
       toast.error(`${t("Invalid OTP Entered")}`);
     }
   };
-  const handleAddressEdit = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-
-    if (isEditable === false) {
-      setIsEditable(true);
-    } else {
-      setIsEditable(false);
-    }
-  };
+  
   React.useEffect(() => {
     debugger
     const params = new URLSearchParams(location.search);
@@ -505,7 +492,7 @@ try {
       setSelectedReasonFile(null);
       return
     }
-    setfileExtension(fileExtension);
+ //   setfileExtension(fileExtension);
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -531,7 +518,7 @@ try {
       setSelectedNameFile(null);
       return
     }
-    setfileExtension(fileExtension);
+  //  setfileExtension(fileExtension);
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -542,11 +529,11 @@ try {
   };
   const handleFileNameDelete = () => {
     setSelectedNameFile(null);
-    setfileExtension('');
+  //  setfileExtension('');
   }
   const handleFileReasonDelete = () => {
     setSelectedReasonFile(null);
-    setfileExtension('');
+  //  setfileExtension('');
   }
  
   
@@ -644,7 +631,7 @@ try {
 
       if(Type === "AFTEREKYC")
       {
-      setEditableIndex(-1);
+     
       const params = {
         P_BOOKS_PROP_APPNO: 1,
         propertyCode: formData.PROPERTYCODE,
@@ -814,7 +801,38 @@ toast.error(error)
 console.log(error)
       }
     }
-
+    const fetchAcknowedgeMentPdf = async () => {
+      try {
+        debugger
+        //for saving Matrix Details
+     //   const response1 = await axiosInstance.get(`Report/FinalSubmitValidation?propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&BOOKS_PROP_APPNO=${JSON.parse(sessionStorage.getItem('P_BOOKS_PROP_APPNO'))}&LoginId=crc`,)
+      //  if(response1.data === "SUCCESS")
+      //  {
+        
+          setLoading(true)
+        const response = await axiosInstance.get(
+          `Report/GetFinalObjectionAcknowledgementReport?propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&OBJECTIONID=${JSON.parse(sessionStorage.getItem('OBJECTIONID'))}&LoginId=crc&WardId=${JSON.parse(sessionStorage.getItem('DraftWardId'))}`,
+          {
+            responseType: 'blob',  
+          }
+        );
+  
+        
+        const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+  
+        setPdfUrl(pdfUrl);
+        setLoading(false) 
+        toast.success(`${t("Please Download the Acknowlegement for Future Reference")}`)
+      // }
+      // else {
+      //   toast.error(response1.data)
+      // }
+      } catch (error) {
+        console.error("Error fetching PDF: ", error);
+        setLoading(false)
+      }
+    };
 
   
   const handleFinalSubmit = async (e) => {
@@ -836,18 +854,14 @@ console.log(error)
         if(selectedReasonFile !== null){
         PropertyDocumentReason = await getPropertyphoto(selectedReasonFile);
         }
-         if(PropertyDocumentReason.length > 0){
-          PropertyDocumentReason = PropertyDocumentReason
-        }else if(formData.ReasonDocument.length > 0){
+        if(formData.ReasonDocument.length > 0){
           PropertyDocumentReason =  formData.ReasonDocument;
         }
       
            if(selectedNameFile !== null){
         propertyDocumentName = await getPropertyphoto(selectedNameFile);
         }
-         if(propertyDocumentName.length > 0){
-          propertyDocumentName = propertyDocumentName;
-        }else if(formData.NameDocument.length > 0){
+        if(formData.NameDocument.length > 0){
           propertyDocumentName = formData.NameDocument;
         }
         
@@ -893,7 +907,8 @@ console.log(error)
        // setIsEditable(false);
  //   await   fetchData();
  setLoading(false);
-    handleBack();
+    //handleBack();
+    await fetchAcknowedgeMentPdf();
     setLoading(false);
         // sessionStorage.setItem("userProgress", 4);
       } catch (error) {
@@ -999,6 +1014,21 @@ Objection can be filed only to stop issuance of final eKhata or against issued f
         >
           {t("DataAvailableInBBMPBooks")}
         </Typography>
+        {pdfUrl && (
+        <Dialog open={Boolean(pdfUrl)} onClose={() => setPdfUrl('')} maxWidth="md" fullWidth>
+          <DialogContent>
+            <iframe src={pdfUrl} width="100%" height="600px" title="PDF Viewer"></iframe>
+          </DialogContent>
+        
+          <DialogActions>
+        
+              
+            <Button onClick={() => setPdfUrl('')} color="primary">
+              Close PDF
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
         <Grid container spacing={4}>
           <Grid item xs={12} sm={6}>
             <TextField
@@ -1698,7 +1728,8 @@ Objection can be filed only to stop issuance of final eKhata or against issued f
               <br></br>
 
               <Grid item xs={12} sm={6}>
-
+              <InputLabel>Reason /Basis for Objection to not issue ekhata<span style={{ color: 'red' }}> *</span>
+              </InputLabel>
                   <FormControl
                     fullWidth
 
@@ -1706,8 +1737,7 @@ Objection can be filed only to stop issuance of final eKhata or against issued f
                     sx={{ marginBottom: 3 }}
                  //   className={touched.streetid && !!errors.streetid ? 'shake' : ''}
                   >
-                    <InputLabel>Reason /Basis for Objection to not issue ekhata<span style={{ color: 'red' }}> *</span>
-                    </InputLabel>
+                    
                     <Select
                       name="ReasonCategory"
                       value={formData.ReasonCategory}
