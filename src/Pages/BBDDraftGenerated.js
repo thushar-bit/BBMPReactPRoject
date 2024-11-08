@@ -103,7 +103,7 @@ try {
 
   return (
     <Container maxWidth="lg">
-      <Box sx={{ backgroundColor: '#f0f0f0', padding: 4, borderRadius: 2, mt: 8 }}>
+      <Box sx={{ backgroundColor: '#f0f0f0', padding: 1, borderRadius: 2, mt: 2 }}>
       
         <Typography
           variant="h6"
