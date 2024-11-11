@@ -219,8 +219,8 @@ const resources = {
        //Kaveri
        "KAVERISERVICESDATA":"KAVERI REGISTRATION DATA",
        
-       "RegistrationNumber":"Registration Number (If Registration Happened After 2003)",
-       "oldRegistrationNumber":"For Document Upload (Only when registration happened prior to 2003)",
+       "RegistrationNumber":"Registration Number (If Registration Happened After 01/04/2004)",
+       "oldRegistrationNumber":"For Document Upload (Only when Registration happened prior to 01/04/2004)",
        "DoNotHaveRegistrationDeed":"I Do Not Have Registration Deed",
        "CaseRefertoARO":" (Case Will be Referred to ARO)",
        "KaveriDocumentData":"Get Kaveri Document Data",
@@ -277,7 +277,7 @@ const resources = {
        "Oneoftheaccompany":"(* One of the accompanying documents must be uploaded)",
        "DocumentType":"Document Type :",
        "DocumentRegisteredDate":"Document Registered Date (dd-mm-yyyy)",
-        "DocumentTitle":"Title and Support Documents * (One of the documents with * to be uploaded) (Only when registration happened prior to 2003)",
+        "DocumentTitle":"Title and Support Documents * (One of the documents with * to be uploaded) (Only when registration happened prior to 01/04/2004)",
        "DocumentDetails":"Document Details:",
        "DocumentNumber :":"Document Number :",
        "MaximumFileSizeMB":"Maximum File Size should not exceed 5 MB",
@@ -655,8 +655,8 @@ const resources = {
       "Nodataavailable":"ಯಾವುದೇ ಡೇಟಾ ಲಭ್ಯವಿಲ್ಲ",
       //Kaveri
       "KAVERISERVICESDATA":"ಕಾವೇರಿ ನೋಂದಣಿ ದತ್ತಾಂಶ",
-      "RegistrationNumber":"ನೋಂದಣಿ ಸಂಖ್ಯೆ (2003 ರ ನಂತರ ನೋಂದಣಿ ಸಂಭವಿಸಿದಾಗ)",
-      "oldRegistrationNumber":"ಡಾಕ್ಯುಮೆಂಟ್ ಅಪ್‌ಲೋಡ್‌ಗಾಗಿ (2003 ರ ಮೊದಲು ನೋಂದಣಿ ಸಂಭವಿಸಿದಾಗ ಮಾತ್ರ)",
+      "RegistrationNumber":"ನೋಂದಣಿ ಸಂಖ್ಯೆ (01/04/2004 ರ ನಂತರ ನೋಂದಣಿ ಸಂಭವಿಸಿದಾಗ)",
+      "oldRegistrationNumber":"ಡಾಕ್ಯುಮೆಂಟ್ ಅಪ್‌ಲೋಡ್‌ಗಾಗಿ (01/04/2004 ರ ಮೊದಲು ನೋಂದಣಿ ಸಂಭವಿಸಿದಾಗ ಮಾತ್ರ)",
       "DoNotHaveRegistrationDeed":"ನನ್ನ ಬಳಿ ನೋಂದಣಿ ಪತ್ರವಿಲ್ಲ",
       "CaseRefertoARO":"(ಪ್ರಕರಣವನ್ನು ARO ಗೆ ಉಲ್ಲೇಖಿಸಲಾಗುತ್ತದೆ)",
       "KaveriDocumentData":"ಕಾವೇರಿ ಡಾಕ್ಯುಮೆಂಟ್ ಡೇಟಾವನ್ನು ಪಡೆಯಿರಿ",
@@ -715,7 +715,7 @@ const resources = {
       "Oneoftheaccompany":"(* ಜೊತೆಯಲ್ಲಿರುವ ದಾಖಲೆಗಳಲ್ಲಿ ಒಂದನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಬೇಕು)",
       "DocumentType":"ಡಾಕ್ಯುಮೆಂಟ್ ಪ್ರಕಾರ :",
       "DocumentRegisteredDate":"ಡಾಕ್ಯುಮೆಂಟ್ ನೋಂದಾಯಿತ ದಿನಾಂಕ (dd-mm-yyyy)",
-      "DocumentTitle":"ಶೀರ್ಷಿಕೆ ಮತ್ತು ಬೆಂಬಲ ದಾಖಲೆಗಳು * (ಅಪ್‌ಲೋಡ್ ಮಾಡಬೇಕಾದ * ದಾಖಲೆಗಳಲ್ಲಿ ಒಂದು) (2003 ರ ಮೊದಲು ನೋಂದಣಿ ಸಂಭವಿಸಿದಾಗ ಮಾತ್ರ)",
+      "DocumentTitle":"ಶೀರ್ಷಿಕೆ ಮತ್ತು ಬೆಂಬಲ ದಾಖಲೆಗಳು * (ಅಪ್‌ಲೋಡ್ ಮಾಡಬೇಕಾದ * ದಾಖಲೆಗಳಲ್ಲಿ ಒಂದು) (01/04/2004 ರ ಮೊದಲು ನೋಂದಣಿ ಸಂಭವಿಸಿದಾಗ ಮಾತ್ರ)",
 
       "DocumentDetails":"ಡಾಕ್ಯುಮೆಂಟ್ ವಿವರಗಳು:",
       "DocumentNumber :":"ಡಾಕ್ಯುಮೆಂಟ್ ಸಂಖ್ಯೆ :",

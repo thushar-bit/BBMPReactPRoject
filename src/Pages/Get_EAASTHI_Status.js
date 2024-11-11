@@ -55,14 +55,14 @@ console.log(error)
     <Table>
       <TableHead>
         <TableRow>
-          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>NO OF APPL SUBMITTED TODAY</TableCell> 
-          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>NO OF APPL SUBMITTED TILL TODAY</TableCell>
-          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>NO OF APPL FORWARDED TO ARO TODAY</TableCell>
-          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>NO OF APPL FORWARDED TO ARO TILL TODAY</TableCell>
-          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>NO OF APPL AUTO APPROVED TILL TODAY</TableCell>
-          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>NO OF APPL TODAY AUTO APPROVED</TableCell>
-          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>NO OF APPL APPROVED TILL TODAY</TableCell>
-          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>NO OF APPL TODAY APPROVED</TableCell>
+          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>NO OF APPLICATION SUBMITTED TODAY</TableCell> 
+          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>NO OF APPLICATION SUBMITTED TILL TODAY</TableCell>
+          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>NO OF APPLICATION FORWARDED TO ARO TODAY</TableCell>
+          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>NO OF APPLICATION FORWARDED TO ARO TILL TODAY</TableCell>
+          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>NO OF APPLICATION AUTO APPROVED TILL TODAY</TableCell>
+          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>NO OF APPLICATION TODAY AUTO APPROVED</TableCell>
+          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>NO OF APPLICATION APPROVED TILL TODAY</TableCell>
+          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>NO OF APPLICATION TODAY APPROVED</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>

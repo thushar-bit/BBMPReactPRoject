@@ -1015,20 +1015,31 @@ Objection can be filed only to stop issuance of final eKhata or against issued f
           {t("DataAvailableInBBMPBooks")}
         </Typography>
         {pdfUrl && (
-        <Dialog open={Boolean(pdfUrl)} onClose={() => setPdfUrl('')} maxWidth="md" fullWidth>
-          <DialogContent>
-            <iframe src={pdfUrl} width="100%" height="600px" title="PDF Viewer"></iframe>
-          </DialogContent>
-        
-          <DialogActions>
-        
-              
-            <Button onClick={() => setPdfUrl('')} color="primary">
-              Close PDF
-            </Button>
-          </DialogActions>
-        </Dialog>
-      )}
+  <Dialog open={Boolean(pdfUrl)} onClose={() => setPdfUrl('')} maxWidth="md" fullWidth>
+    <DialogContent>
+      <iframe src={pdfUrl} width="100%" height="600px" title="PDF Viewer"></iframe>
+    </DialogContent>
+    <DialogActions>
+      {/* Button to download the PDF with a custom filename */}
+      <Button
+        onClick={() => {
+          const link = document.createElement('a');
+          link.href = pdfUrl;
+          link.download = 'OBJECTION ACKNOWLEDGMENT.pdf'; // Set your desired filename here
+          link.click();
+        }}
+        color="primary"
+      >
+        Download PDF
+      </Button>
+
+      <Button onClick={() => setPdfUrl('')} color="primary">
+        Close PDF
+      </Button>
+    </DialogActions>
+  </Dialog>
+)}
+
         <Grid container spacing={4}>
           <Grid item xs={12} sm={6}>
             <TextField

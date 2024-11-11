@@ -50,12 +50,15 @@ const AppRoutes = () => {
               path="/Get_EAASTHI_Status"
               element={<Get_EAASTHI_Status />} 
             /> 
-            {/* <Route
+            <Route
               path="/ObjectorsPage"
-              element={<ObjectorsPage />}  /> */}
+              element={<ObjectorsPage />}  /> 
+              <Route
+              path="/EKYCResponse"
+              element={<EKYCResponse />}  />
                 {/* <Route
               path="/EKYCResponse"
-              element={<EKYCResponse />}  /> */}
+              element={<EKYCResponse />}  />
            
              {/* <Route
               path="/BBDDraft"

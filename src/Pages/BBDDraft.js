@@ -263,98 +263,88 @@ const PropertyList = () => {
   //     }
   //   }
   // }
-//   const handleObjectionNavigation = async (row) => {
-//     //  navigate('/AddressDetails')
-//     if(row.PROPERTYID === null || row.PROPERTYID  === undefined|| row.PROPERTYID.length === 0){
-//       alert("Property ePID is not Generated . Please Click on Draft Ekatha to Generate the Property ePID And Click Here")
-//         return
-//       }
-//       if(row.PROPERTYCODE === null || row.PROPERTYCODE  === undefined|| row.PROPERTYCODE.length === 0){
-//              toast.error("Property Code does not exist for this property")
-//                return
-//              }
-//              try{
-//               let now = new Date();
-//   let txtDate = now.getFullYear().toString() +
-//                 (now.getMonth() + 1).toString().padStart(2, '0') +
-//                 now.getDate().toString().padStart(2, '0') + 'T' +
-//                 now.getHours().toString().padStart(2, '0') + ':' +
-//                 now.getMinutes().toString().padStart(2, '0') + ':' +
-//                 now.getSeconds().toString().padStart(2, '0');
-//              if(LoginData !== null && LoginData !== undefined){
-//               const data = {
-//                 userId: LoginData.UserId,
-//                 propertyCode: row.PROPERTYCODE.toString(),
-//                 propertyEPID:  row.PROPERTYID ? row.PROPERTYID.toString() : "",
-//                 sessionValues: "",
-//                 execTime: txtDate,
-//                 isLogin: true
-//                 }
+  const handleObjectionNavigation = async (row) => {
+    
+    if(row.PROPERTYID === null || row.PROPERTYID  === undefined|| row.PROPERTYID.length === 0){
+      alert("Property ePID is not Generated . Please Click on Draft Ekatha to Generate the Property ePID And Click Here")
+        return
+      }
+      if(row.PROPERTYCODE === null || row.PROPERTYCODE  === undefined|| row.PROPERTYCODE.length === 0){
+             toast.error("Property Code does not exist for this property")
+               return
+             }
+             try{
+              let now = new Date();
+  let txtDate = now.getFullYear().toString() +
+                (now.getMonth() + 1).toString().padStart(2, '0') +
+                now.getDate().toString().padStart(2, '0') + 'T' +
+                now.getHours().toString().padStart(2, '0') + ':' +
+                now.getMinutes().toString().padStart(2, '0') + ':' +
+                now.getSeconds().toString().padStart(2, '0');
+             if(LoginData !== null && LoginData !== undefined){
+              const data = {
+                userId: LoginData.UserId,
+                propertyCode: row.PROPERTYCODE.toString(),
+                propertyEPID:  row.PROPERTYID ? row.PROPERTYID.toString() : "",
+                sessionValues: "",
+                execTime: txtDate,
+                isLogin: true
+                }
                 
-//                 const response5 = await axiosInstance.post("Auth/EncryptJsons",data)
-//                 let re = response5.data;
-//                 sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(row.PROPERTYCODE));
-//        sessionStorage.setItem('OBJECTIONID', "0"); //should pass from the table.
-//        sessionStorage.setItem('SETPROPERYID', row.PROPERTYID);
-//               window.location.href = "https://bbmpeaasthi.karnataka.gov.in/objection_form_test/ObjectorsPage?BookDraft="+re;
-//             }
-//             else {
-//               alert("Please Log-In To Update Property Information Or To File Objections. Click On The Get e-Khatha Link After Logging In.")
-//               const data = {
-//                 userId: "",
-//                 propertyCode: row.PROPERTYCODE.toString(),
-//                 propertyEPID: row.PROPERTYID ? row.PROPERTYID.toString() : "",
-//                 sessionValues: "",
-//                 execTime: txtDate,
-//                 isLogin: false
-//                 }
+                const response5 = await axiosInstance.post("Auth/EncryptJsons",data)
+                let re = response5.data;
+                sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(row.PROPERTYCODE));
+       sessionStorage.setItem('OBJECTIONID', JSON.stringify(row.OBJECTIONID)); //should pass from the table.
+       sessionStorage.setItem('SETPROPERYID', row.PROPERTYID);
+              window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_core/ObjectorsPage?BookDraft="+re;
+            }
+            else {
+              alert("Please Log-In To Update Property Information Or To File Objections. Click On The Get e-Khatha Link After Logging In.")
+              const data = {
+                userId: "",
+                propertyCode: row.PROPERTYCODE.toString(),
+                propertyEPID: row.PROPERTYID ? row.PROPERTYID.toString() : "",
+                sessionValues: "",
+                execTime: txtDate,
+                isLogin: false
+                }
                
         
-//         console.log(txtDate); // Outputs: "20241018T13:44:09" (for example)
+        console.log(txtDate); // Outputs: "20241018T13:44:09" (for example)
         
-//                // let json = "{\"UserId\":\"" + Convert.ToString(Session["LoginId"]) + "\",\"PropertyCode\":\"\",\"PropertyEPID\":\"\",\"SessionValues\":[],\"ExecTime\":\"" + txtDate + "\"}";
+               // let json = "{\"UserId\":\"" + Convert.ToString(Session["LoginId"]) + "\",\"PropertyCode\":\"\",\"PropertyEPID\":\"\",\"SessionValues\":[],\"ExecTime\":\"" + txtDate + "\"}";
                 
-//                 const response = await axiosInstance.post("Auth/EncryptJsons",data)
-//               window.location.href = "https://bbmpeaasthi.karnataka.gov.in/CitzLogin.aspx?BookDraft="+response.data;
-//             //  window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_test2/CitzLogin.aspx?BookDraft="+response.data;
-//             }
-//           }
-//           catch(error){
-// console.log(error)
-//           }
-//   //  try {
-//   //     sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(row.PROPERTYCODE));
-//   //     sessionStorage.setItem('OBJECTIONID', "0"); //should pass from the table.
-//   //     sessionStorage.setItem('SETPROPERYID', row.PROPERTYID);
-//   //     sessionStorage.setItem("userProgress", 3);
-//   //       navigate('/ObjectorsPage')
-//   //     } catch (error) {
-
-//   //       navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
-//   //     }
-//     }
-    const handleObjectionNavigation = async (row) => {
-      //  navigate('/AddressDetails')
+                const response = await axiosInstance.post("Auth/EncryptJsons",data)
+              window.location.href = "https://bbmpeaasthi.karnataka.gov.in/CitzLogin.aspx?BookDraft="+response.data;
+            //  window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_test2/CitzLogin.aspx?BookDraft="+response.data;
+            }
+          }
+          catch(error){
+console.log(error)
+          }
+    }
+//     const handleObjectionNavigation = async (row) => {
+//       //  navigate('/AddressDetails')
   
   
-     try {
-if(row.OBJECTIONID === "" || row.OBJECTIONID === null || row.OBJECTIONID === undefined){
-  sessionStorage.setItem('OBJECTIONID', "0");
-}else {
-  sessionStorage.setItem('OBJECTIONID', JSON.stringify(row.OBJECTIONID));
-}
+//      try {
+// if(row.OBJECTIONID === "" || row.OBJECTIONID === null || row.OBJECTIONID === undefined){
+//   sessionStorage.setItem('OBJECTIONID', "0");
+// }else {
+//   sessionStorage.setItem('OBJECTIONID', JSON.stringify(row.OBJECTIONID));
+// }
 
 
-        sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(row.PROPERTYCODE));
+//         sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(row.PROPERTYCODE));
     
-        sessionStorage.setItem('SETPROPERYID', JSON.stringify(row.PROPERTYID));
-        sessionStorage.setItem("userProgress", 3);
-          navigate('/ObjectorsPage')
-        } catch (error) {
+//         sessionStorage.setItem('SETPROPERYID', JSON.stringify(row.PROPERTYID));
+//         sessionStorage.setItem("userProgress", 3);
+//           navigate('/ObjectorsPage')
+//         } catch (error) {
   
-          navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
-        }
-      }
+//           navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
+//         }
+//       }
     const finalEktha =  () => {
       window.location.href = "https://bbmpeaasthi.karnataka.gov.in/office/frmKhathaDownload.aspx";
     }
