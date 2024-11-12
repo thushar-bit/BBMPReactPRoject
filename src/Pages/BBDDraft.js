@@ -27,7 +27,7 @@ const PropertyList = () => {
   const [pdfUrl, setPdfUrl] = useState('');
   const [selectedLetter, setSelectedLetter] = useState(null);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [LoginData,setLoginData] = useState()
+  const [LoginData,setLoginData] = useState("")
   const { t } = useTranslation();
   
   const fetchData = useCallback(async (page = 1, rowsPerPage = 10) => {
@@ -160,7 +160,8 @@ const PropertyList = () => {
             pageSize: rowsPerPage,
           },
         });
-        
+        setPage(0);
+        setRowsPerPage(10);
       //  axiosInstance.get("BBMPCITZAPI/LOAD_BBD_RECORDS?ZoneId=" + formData.ZoneName + "&WardId=" + formData.WardName + "&SerachType=" + formData.SelectType + "&Search=" + formData.Search + "")
         setPropertyData(response.data.Table || [])
       }
@@ -183,6 +184,8 @@ const PropertyList = () => {
     
   //  await axiosInstance.get("BBMPCITZAPI/LOAD_BBD_RECORDS?ZoneId=" + formData.ZoneName + "&WardId=" + formData.WardName + "&SerachType=" + 6 + "&Search=" + Alphbet + "")
     setPropertyData(response.data.Table || [])
+    setPage(0);
+    setRowsPerPage(10);
     }
     catch(error){
       console.log(error)
@@ -217,7 +220,8 @@ const PropertyList = () => {
    // await axiosInstance.get(`BBMPCITZAPI/LOAD_BBD_RECORDS?ZoneId=${formData.ZoneName}&WardId=${formData.WardName}&SerachType=${0}&Search=${"thushar"}`)
     setPropertyData(response.data.Table || [])
     setSelectedLetter(null)
-    
+    setPage(0);
+    setRowsPerPage(10);
     setFormData({
       ...formData,
      // ZoneName: "",
@@ -296,10 +300,11 @@ const PropertyList = () => {
                 sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(row.PROPERTYCODE));
        sessionStorage.setItem('OBJECTIONID', JSON.stringify(row.OBJECTIONID)); //should pass from the table.
        sessionStorage.setItem('SETPROPERYID', row.PROPERTYID);
+       sessionStorage.setItem('SETLOGINID', LoginData.UserId);
               window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_core/ObjectorsPage?BookDraft="+re;
             }
             else {
-              alert("Please Log-In To Update Property Information Or To File Objections. Click On The Get e-Khatha Link After Logging In.")
+              alert("Please Log-In To File Objections. Click On The File Objection Link After Logging In.")
               const data = {
                 userId: "",
                 propertyCode: row.PROPERTYCODE.toString(),
@@ -785,7 +790,7 @@ console.log(txtDate); // Outputs: "20241018T13:44:09" (for example)
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("OwnerName")}</TableCell>
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Download")}</TableCell>
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("OpenProperty")}</TableCell>
-                {/* <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Object not to issue final eKhata</TableCell>   */}
+                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Object not to issue final eKhata</TableCell>  
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("AssessmentNo")}</TableCell>
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Address")}</TableCell>
                 {/* <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("SASApplicationNo")}</TableCell> */}
@@ -810,7 +815,7 @@ console.log(txtDate); // Outputs: "20241018T13:44:09" (for example)
                       <TableCell style={{ padding: '0.5em 1em' }}>{row.OWNERNAME}</TableCell>
                       <TableCell style={{ padding: '0.5em 1em' }}>{row.PROPERTYSTATUS === "APR" ? <Button color="primary" style={{ width: '8rem',height:"0.1rem" }}   onClick={() => finalEktha()} >Final eKhata</Button>  : <Button color="primary" style={{ width: '8rem',height:"0.1rem" }}  onClick={() => viewDraftEkatha(row) } >Draft Ekhata</Button>} </TableCell>
                       <TableCell style={{ padding: '0.5em 1em' }}>{row.PROPERTYSTATUS === "APR" ? "": <Button color="primary" style={{ width: '8rem',height:"0.1rem" }}  onClick={() => handleBBMPRedirection(row)}>{t("ClickHere")}</Button>}</TableCell>
-                        {/* <TableCell style={{ padding: '0.5em 0.5em' }}><Button color="primary" style={{ width: '8rem',height:"0.1rem" }}  onClick={() => handleObjectionNavigation(row)}>{t("ClickHere")}</Button></TableCell>   */}
+                         <TableCell style={{ padding: '0.5em 0.5em' }}><Button color="primary" style={{ width: '8rem',height:"0.1rem" }}  onClick={() => handleObjectionNavigation(row)}>{t("ClickHere")}</Button></TableCell> 
                       <TableCell style={{ padding: '0.5em 1em' }}>{row.ASSESMENTNUMBER}</TableCell>
                       <TableCell style={{ width: '10rem',height:"0.1rem" }}>{row.ADDRESS}</TableCell>
                       <TableCell style={{ padding: '0.5em 1em' }}>{row.BOOKNUMBER}</TableCell>
@@ -821,9 +826,6 @@ console.log(txtDate); // Outputs: "20241018T13:44:09" (for example)
             </TableBody>
           </Table>
         </TableContainer>
-        
-
-
         <TablePagination
   rowsPerPageOptions={[10, 25, 50, 100]}
   component="div"

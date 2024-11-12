@@ -47,7 +47,7 @@ const ObjectorsPage = () => {
     landmark: '',
     pincode: '',
     propertyphoto: '',
-    loginId: 'crc',
+    loginId: '',
     wardNumber: "",
     wardName: "",
     BBDOldWardNumber: "",
@@ -145,7 +145,7 @@ if(tablesdata8.length ===0){
 
     try {
       setLoading(true)
-      let response = await axiosInstance.post(`ObjectionAPI/GetObjectionKaveriDocData?RegistrationNoNumber=${formData.RegistrationNumber}&objectionid=${JSON.parse(sessionStorage.getItem('OBJECTIONID'))}&PropertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&LoginId=crc`)
+      let response = await axiosInstance.post(`ObjectionAPI/GetObjectionKaveriDocData?RegistrationNoNumber=${formData.RegistrationNumber}&objectionid=${JSON.parse(sessionStorage.getItem('OBJECTIONID'))}&PropertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&LoginId=${JSON.parse(sessionStorage.getItem('SETLOGINID'))}`)
       const result = response.data;
       if (result.success) {
         await fetchData("Kaveri")
@@ -642,7 +642,7 @@ try {
         MOBILEVERIFY: formData.MOBILEVERIFY !== "" ? formData.MOBILEVERIFY : "NOT VERIFIED",
         EMAIL:formData.EMAIL,
         PROPERTYID:JSON.parse(sessionStorage.getItem('SETPROPERYID')),
-        loginId: 'crc'
+        loginId: JSON.parse(sessionStorage.getItem('SETLOGINID'))
       };
 
       const queryString = new URLSearchParams(params).toString();
@@ -661,7 +661,7 @@ try {
         NAMEMATCHSCORE:0,
         MOBILENUMBER: formData.MOBILENUMBER || "0",
         MOBILEVERIFY: formData.MOBILEVERIFY !== "" ? formData.MOBILEVERIFY : "NOT VERIFIED",
-        loginId: 'crc',
+        loginId: JSON.parse(sessionStorage.getItem('SETLOGINID')),
         EMAIL:formData.EMAIL,
         PROPERTYID:JSON.parse(sessionStorage.getItem('SETPROPERYID')),
       };
@@ -811,7 +811,7 @@ console.log(error)
         
           setLoading(true)
         const response = await axiosInstance.get(
-          `Report/GetFinalObjectionAcknowledgementReport?propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&OBJECTIONID=${JSON.parse(sessionStorage.getItem('OBJECTIONID'))}&LoginId=crc&WardId=${JSON.parse(sessionStorage.getItem('DraftWardId'))}`,
+          `Report/GetFinalObjectionAcknowledgementReport?propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&OBJECTIONID=${JSON.parse(sessionStorage.getItem('OBJECTIONID'))}&LoginId=${JSON.parse(sessionStorage.getItem('SETLOGINID'))}&WardId=${JSON.parse(sessionStorage.getItem('DraftWardId'))}`,
           {
             responseType: 'blob',  
           }
@@ -886,7 +886,7 @@ console.log(error)
         buildingname: formData.buildingname,
         arealocatlity: formData.areaorlocality,
         pincode: formData.pincode,
-        createdby: "thushar",
+        createdby: JSON.parse(sessionStorage.getItem('SETLOGINID')),
         typeofdocument:formData.TypeOfUpload
       };
       

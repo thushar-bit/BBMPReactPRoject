@@ -56,6 +56,10 @@ const handleWardGooglemap = (row) => {
   sessionStorage.setItem('DraftZoneId', JSON.stringify(row.ZONEID));
   navigate("/GoogleMapsWardCoordinates")
 }
+const handleBack =() => {
+  sessionStorage.clear();
+  window.location.href = "https://bbmpeaasthi.karnataka.gov.in";
+}
   const handleNavigation = async (row) => {
     //  navigate('/AddressDetails')
 debugger
@@ -124,6 +128,11 @@ try {
         
         Welcome to Faceless, Contactless, Online enmass eKhata Issuance System
         </Typography>
+        <Box display="flex" justifyContent="right" gap={1} mt={0.1} width="100%">
+      <Button variant="contained" color="primary" onClick={handleBack}>
+      {t("Previous")}
+            </Button>
+            </Box>
         <Box sx={{ backgroundColor: '#ffffff', padding: 1, borderRadius: 2, mt: 1 }}>
         <Typography
   variant="body1"
@@ -200,6 +209,7 @@ NOTE 1: IF YOU DON'T FIND YOUR PROPERTY IN THE WARD LIST, TRY AFTER FEW DAYS AS 
 </TableContainer>
         
       </Box>
+     
     </Container>
   );
 };

@@ -55,14 +55,15 @@ console.log(error)
     <Table>
       <TableHead>
         <TableRow>
-          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>NO OF APPLICATION SUBMITTED TODAY</TableCell> 
           <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>NO OF APPLICATION SUBMITTED TILL TODAY</TableCell>
-          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>NO OF APPLICATION FORWARDED TO ARO TODAY</TableCell>
-          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>NO OF APPLICATION FORWARDED TO ARO TILL TODAY</TableCell>
+          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>NO OF APPLICATION FORWARDED TO CW TILL TODAY</TableCell>
           <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>NO OF APPLICATION AUTO APPROVED TILL TODAY</TableCell>
-          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>NO OF APPLICATION TODAY AUTO APPROVED</TableCell>
           <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>NO OF APPLICATION APPROVED TILL TODAY</TableCell>
+          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>NO OF APPLICATION SUBMITTED TODAY</TableCell> 
+          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>NO OF APPLICATION FORWARDED TO CW TODAY</TableCell>
+          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>NO OF APPLICATION TODAY AUTO APPROVED</TableCell>
           <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>NO OF APPLICATION TODAY APPROVED</TableCell>
+
         </TableRow>
       </TableHead>
       <TableBody>
@@ -76,13 +77,13 @@ console.log(error)
           propertyData
             .map((row, index) => (
               <TableRow key={index} style={{ height: '0.1em' }}>
-                <TableCell style={{ padding: '0.5em 1em' }} >{row.NO_OF_APPLICATIONS_TODAY_SUBMITTED}</TableCell>
                 <TableCell style={{ padding: '0.5em 1em' }}>{row.NO_OF_APPLICATIONS_UNTIL_TODAY_SUBMITTED}</TableCell>
-                <TableCell style={{ padding: '0.5em 1em' }}>{row.NO_OF_APPLICATIONS_FORWARDED_TO_ARO_TODAY}</TableCell>
-                <TableCell style={{ padding: '0.5em 1em' }}>{row.NO_OF_APPLICATIONS_FORWARDED_TO_ARO_UNTIL_TODAY}</TableCell>
+                <TableCell style={{ padding: '0.5em 1em' }}>{row.NO_OF_APPLICATIONS_FORWARDED_TO_CW_UNTIL_TODAY}</TableCell>
                 <TableCell style={{ padding: '0.5em 1em' }}>{row.TOTAL_AUTO_APPROVED_TILL_TODAY}</TableCell>
-                <TableCell style={{ padding: '0.5em 1em' }}>{row.TODAY_AUTO_APPROVED}</TableCell>
                 <TableCell style={{ padding: '0.5em 1em' }}>{row.TOTAL_APPL_APPROVED_TILL_TODAY}</TableCell>
+                <TableCell style={{ padding: '0.5em 1em' }} >{row.NO_OF_APPLICATIONS_TODAY_SUBMITTED}</TableCell>
+                <TableCell style={{ padding: '0.5em 1em' }}>{row.NO_OF_APPLICATIONS_FORWARDED_TO_CW_TODAY}</TableCell>
+                <TableCell style={{ padding: '0.5em 1em' }}>{row.TODAY_AUTO_APPROVED}</TableCell>
                 <TableCell style={{ padding: '0.5em 1em' }}>{row.TODAY_APPL_APPROVED}</TableCell>
               </TableRow>
             ))
