@@ -7,6 +7,7 @@ import ObjectorsPage from './Pages/ObjectorsPage';
 import TaxDetails from './Pages/TaxDetails';
 import AreaDimension from './Pages/AreaDimension';
 import GoogleMapsWardCoordinates from './Pages/GetWardByCoordintes';
+import UploadECPage from './Pages/UploadECPage';
 import Get_EAASTHI_Status from "./Pages/Get_EAASTHI_Status";
 import SiteDetails from './Pages/SiteDetails';
 import BuildingDetails from './Pages/BuildingDetails';
@@ -56,6 +57,9 @@ const AppRoutes = () => {
               <Route
               path="/EKYCResponse"
               element={<EKYCResponse />}  />
+               <Route
+              path="/UploadECPage"
+              element={<UploadECPage />}  />
                 {/* <Route
               path="/EKYCResponse"
               element={<EKYCResponse />}  />
