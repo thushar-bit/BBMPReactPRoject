@@ -73,6 +73,7 @@ const UploadECPage = () => {
   const [RegistationDate,setRegistationDate] = useState("")
   const [selectedOldFile, setSelectedOldFile] = useState(null);
   const [IsNewData,setISNewData] = useState(false)
+  const [IsAllowECDocumnet,setIsAllowECDocument] = useState(false)
   const handleDownload = (base64Data, documentdescription) => {
     try {
     const filename = `${documentdescription}`;
@@ -128,7 +129,7 @@ const UploadECPage = () => {
           ecNumber: formData.ECDocumentNumber,
           registrationNoNumber: RegistationNumber,
           propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
-          loginId: "crc",
+          loginId: JSON.parse(sessionStorage.getItem('SETLOGINID')).toString(),
         //  regsiteredDateTime:"2024-11-14T10:02:03.416Z" 
         regsiteredDateTime:RegistationDate
         
@@ -198,25 +199,28 @@ const UploadECPage = () => {
   if(Reqid === undefined || Reqid === null || Reqid === ""){
      Reqid = "0";
   }
+  let propertycode = JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))
+
+  let book_app_no = JSON.parse(sessionStorage.getItem('BOOKS_PROP_APPNO'))
     try {
       const response = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT_React?ULBCODE=555&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=ADDRESS`);
    
-       response2 = await axiosInstance.get(`KaveriAPI/GET_KAVERI_UPLOAD_DETAILS?ReqId=${Reqid}&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&BOOKS_APP_NO=${JSON.parse(sessionStorage.getItem('BOOKS_PROP_APPNO'))}`);
+       response2 = await axiosInstance.get(`KaveriAPI/GET_KAVERI_UPLOAD_DETAILS?ReqId=${Reqid}&Propertycode=${propertycode}&BOOKS_APP_NO=${book_app_no}`);
     
       const {Table:KaveriDOCDetails =[],Table1:KaveriOLDDocDetails =[],Table2:KaveriECDOCDetails=[],Table3:KaveriECOwnerDetails=[]} = response2.data;
       
         if(KaveriDOCDetails.length > 0){
           setISNewData(true)
+          setIsAllowECDocument(KaveriDOCDetails[0].STATUS === "REC" ? true : false )
           setRegistrationNumber(KaveriDOCDetails[0].REGISTRATIONNUMBER)
           setRegistationDate(KaveriDOCDetails[0].REGISTRATIONDATETIME)
         }else if(KaveriOLDDocDetails.length > 0) {
+          setIsAllowECDocument(KaveriDOCDetails[0].STATUS === "REC"  ? true : false )
           setRegistrationNumber(KaveriOLDDocDetails[0].ORDERNUMBER)
           setRegistationDate(KaveriOLDDocDetails[0].ORDERDATE)
           setISNewData(false)
         }
-        else{
-
-        }
+        
         setKAVERIEC_PROP_DETAILS(KaveriECDOCDetails.length > 0 ? KaveriECDOCDetails : [])
         setKAVERIEC_PARTIES_DETAILS(KaveriECOwnerDetails.length > 0 ? KaveriECOwnerDetails : [])
         const { Table1 = [], Table5 = [], } = response.data;
@@ -385,13 +389,13 @@ console.log(error)
        
       
          
-        
-       
+        let loginID = JSON.parse(sessionStorage.getItem('SETLOGINID')).toString();
+       let propcode = JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')).toString();
        const data = {
-          propertycode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
+          propertycode: propcode,
           reqId: formData.RequestId,
           kaveriECDoc: propertyDocumentName,
-          loginId: 'crc',
+          loginId: loginID ,
           kaveriDocName:selectedOldFile !== null ? selectedOldFile.name : formData.NewECDocumentExtension,
         }
       
@@ -798,6 +802,12 @@ Upload EC Document
         <br></br>
         <Typography>{t("KaveriMessage2")}</Typography>
         <br></br>
+        <Typography>{t("KaveriMessage3")}</Typography>
+        <br></br>
+        <Typography>{t("KaveriMessage4")}</Typography>
+        <br></br>
+        <Typography>{t("KaveriMessage5")}</Typography>
+        <br></br>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={9}>
             <TextField
@@ -823,6 +833,7 @@ Upload EC Document
 
           <Grid item xs={3} style={{ display: 'flex', alignItems: 'center' }}>
           <Box display="flex" justifyContent="space-between" alignItems="center">
+          {IsAllowECDocumnet === false &&
             <Button
               variant="contained"
               color="success"
@@ -831,6 +842,7 @@ Upload EC Document
             >
               {t("FetchECData")}
             </Button>
+}
             {/* <Button color="primary" onClick={()=>viewSample("EC")}>
             {t("View Sample")}
     </Button> */}
@@ -953,10 +965,11 @@ Upload EC Document
                   <Button variant="contained" color="primary" onClick={handleBack}>
                     {t("Previous")}
                   </Button>
-                
+                  {IsAllowECDocumnet === false &&
                   <Button variant="contained" color="success" onClick={handleFinalSubmit} >
                   Submit
                   </Button>
+}
                 </Box>
               </Grid>
       </Box>

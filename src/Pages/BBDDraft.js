@@ -267,6 +267,87 @@ const PropertyList = () => {
   //     }
   //   }
   // }
+  const handleUploadECNavigation = async (row) => {
+    debugger
+    if(row.PROPERTYID === null || row.PROPERTYID  === undefined|| row.PROPERTYID.length === 0){
+      alert("Property ePID is not Generated . Please Click on Draft Ekatha to Generate the Property ePID And Click Here")
+        return
+      }
+      if(row.PROPERTYCODE === null || row.PROPERTYCODE  === undefined|| row.PROPERTYCODE.length === 0){
+             toast.error("Property Code does not exist for this property")
+               return
+             }
+             try{
+              let now = new Date();
+  let txtDate = now.getFullYear().toString() +
+                (now.getMonth() + 1).toString().padStart(2, '0') +
+                now.getDate().toString().padStart(2, '0') + 'T' +
+                now.getHours().toString().padStart(2, '0') + ':' +
+                now.getMinutes().toString().padStart(2, '0') + ':' +
+                now.getSeconds().toString().padStart(2, '0');
+             if(LoginData !== null && LoginData !== undefined){
+              const data = {
+                userId: LoginData.UserId,
+                propertyCode: row.NPM_PROPERTYCODE.toString(),
+                propertyEPID:  row.PROPERTYID ? row.PROPERTYID.toString() : "",
+                sessionValues: "",
+                execTime: txtDate,
+                isLogin: true
+                }
+                
+                const response5 = await axiosInstance.post("Auth/EncryptJsons",data)
+                let re = response5.data;
+                sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(row.NPM_PROPERTYCODE));
+    
+                sessionStorage.setItem('SETPROPERYID', JSON.stringify(row.PROPERTYID));
+                sessionStorage.setItem('BOOKS_PROP_APPNO', JSON.stringify(row.BOOKS_PROP_APPNO));
+                sessionStorage.setItem('Reqid', JSON.stringify(row.REQID));
+                
+       sessionStorage.setItem('SETLOGINID', LoginData.UserId);
+              window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_core/UploadECPage?BookDraft="+re;
+            }
+            else {
+              alert("Please Log-In To Upload EC. Click On The File Objection Link After Logging In.")
+              const data = {
+                userId: "",
+                propertyCode: row.PROPERTYCODE.toString(),
+                propertyEPID: row.PROPERTYID ? row.PROPERTYID.toString() : "",
+                sessionValues: "",
+                execTime: txtDate,
+                isLogin: false
+                }
+               
+        
+        console.log(txtDate); // Outputs: "20241018T13:44:09" (for example)
+        
+              // let json = "{\"UserId\":\"" + Convert.ToString(Session["LoginId"]) + "\",\"PropertyCode\":\"\",\"PropertyEPID\":\"\",\"SessionValues\":[],\"ExecTime\":\"" + txtDate + "\"}";
+                
+                const response = await axiosInstance.post("Auth/EncryptJsons",data)
+              window.location.href = "https://bbmpeaasthi.karnataka.gov.in/CitzLogin.aspx?BookDraft="+response.data;
+           //  window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_test2/CitzLogin.aspx?BookDraft="+response.data;
+            }
+          }
+          catch(error){
+console.log(error)
+          }
+                    
+  }
+  //     const handleUploadECNavigation = async (row) => {
+  //     //  navigate('/AddressDetails')
+  // debugger
+  //                  sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(row.PROPERTYCODE));
+    
+  //               sessionStorage.setItem('SETPROPERYID', JSON.stringify(row.PROPERTYID));
+  //               sessionStorage.setItem('BOOKS_PROP_APPNO', JSON.stringify(row.BOOKS_PROP_APPNO));
+  //               sessionStorage.setItem('Reqid', JSON.stringify(row.REQID));
+  //    try {
+
+  //         navigate('/UploadECPage')
+  //       } catch (error) {
+  
+  //         navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
+  //       }
+  //     }
   const handleObjectionNavigation = async (row) => {
     
     if(row.PROPERTYID === null || row.PROPERTYID  === undefined|| row.PROPERTYID.length === 0){
@@ -299,8 +380,8 @@ const PropertyList = () => {
                 let re = response5.data;
                 sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(row.PROPERTYCODE));
        sessionStorage.setItem('OBJECTIONID', JSON.stringify(row.OBJECTIONID)); //should pass from the table.
-       sessionStorage.setItem('SETPROPERYID', row.PROPERTYID);
-       sessionStorage.setItem('SETLOGINID', LoginData.UserId);
+       sessionStorage.setItem('SETPROPERYID', JSON.stringify(row.PROPERTYID));
+       sessionStorage.setItem('SETLOGINID', JSON.stringify(LoginData.UserId));
               window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_core/ObjectorsPage?BookDraft="+re;
             }
             else {
@@ -328,6 +409,7 @@ const PropertyList = () => {
 console.log(error)
           }
     }
+  
 //     const handleObjectionNavigation = async (row) => {
 //       //  navigate('/AddressDetails')
   
@@ -790,7 +872,8 @@ console.log(txtDate); // Outputs: "20241018T13:44:09" (for example)
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("OwnerName")}</TableCell>
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Download")}</TableCell>
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("OpenProperty")}</TableCell>
-                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Object not to issue final eKhata</TableCell>  
+                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Object not to issue final eKhata</TableCell> 
+                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Ready for Registration at Sub Registrar</TableCell> 
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("AssessmentNo")}</TableCell>
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Address")}</TableCell>
                 {/* <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("SASApplicationNo")}</TableCell> */}
@@ -816,6 +899,28 @@ console.log(txtDate); // Outputs: "20241018T13:44:09" (for example)
                       <TableCell style={{ padding: '0.5em 1em' }}>{row.PROPERTYSTATUS === "APR" ? <Button color="primary" style={{ width: '8rem',height:"0.1rem" }}   onClick={() => finalEktha()} >Final eKhata</Button>  : <Button color="primary" style={{ width: '8rem',height:"0.1rem" }}  onClick={() => viewDraftEkatha(row) } >Draft Ekhata</Button>} </TableCell>
                       <TableCell style={{ padding: '0.5em 1em' }}>{row.PROPERTYSTATUS === "APR" ? "": <Button color="primary" style={{ width: '8rem',height:"0.1rem" }}  onClick={() => handleBBMPRedirection(row)}>{t("ClickHere")}</Button>}</TableCell>
                          <TableCell style={{ padding: '0.5em 0.5em' }}><Button color="primary" style={{ width: '8rem',height:"0.1rem" }}  onClick={() => handleObjectionNavigation(row)}>{t("ClickHere")}</Button></TableCell> 
+                         <TableCell style={{ padding: '0.5em 0.5em' }}>
+  {row.PROPERTYSTATUS === "APR" && row.ISTRANSACTABLE === "Y" ? (
+    "Yes"
+  ) : row.PROPERTYSTATUS === "APR" && row.ISTRANSACTABLE !== "Y" ? (
+    <Button 
+      color="primary" 
+      style={{ width: '8rem', height: '1.5rem' }} 
+      onClick={() => handleUploadECNavigation(row)}
+    >
+      {t("Upload EC")}
+    </Button>
+  ) : (
+    ""
+  )}
+</TableCell>
+{/* <TableCell style={{ padding: '0.5em 1em' }}> <Button 
+      color="primary" 
+      style={{ width: '8rem', height: '1.5rem' }} 
+      onClick={() => handleUploadECNavigation(row)}
+    >
+      {t("Upload EC")}
+    </Button></TableCell> */}
                       <TableCell style={{ padding: '0.5em 1em' }}>{row.ASSESMENTNUMBER}</TableCell>
                       <TableCell style={{ width: '10rem',height:"0.1rem" }}>{row.ADDRESS}</TableCell>
                       <TableCell style={{ padding: '0.5em 1em' }}>{row.BOOKNUMBER}</TableCell>

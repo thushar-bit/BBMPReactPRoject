@@ -886,7 +886,7 @@ console.log(error)
         buildingname: formData.buildingname,
         arealocatlity: formData.areaorlocality,
         pincode: formData.pincode,
-        createdby: JSON.parse(sessionStorage.getItem('SETLOGINID')),
+        createdby: JSON.parse(sessionStorage.getItem('SETLOGINID')).toString(),
         typeofdocument:formData.TypeOfUpload
       };
       
