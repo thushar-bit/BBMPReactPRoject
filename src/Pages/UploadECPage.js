@@ -143,7 +143,7 @@ const UploadECPage = () => {
               sessionStorage.setItem("Reqid", result.requestId);
               fetchData();
               setTimeout(() => {
-                toast.success("detailsFetchedSuccess", {
+                toast.success("Details Fetched Success", {
                   position: "top-right",
                   autoClose: 5000,
                   hideProgressBar: false,
@@ -203,7 +203,7 @@ const UploadECPage = () => {
 
   let book_app_no = JSON.parse(sessionStorage.getItem('BOOKS_PROP_APPNO'))
     try {
-      const response = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT_React?ULBCODE=555&Propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&Page=ADDRESS`);
+      const response = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT_React?ULBCODE=555&Propertycode=${JSON.parse(sessionStorage.getItem('SETBOOKPROPERTYCODE'))}&Page=ADDRESS`);
    
        response2 = await axiosInstance.get(`KaveriAPI/GET_KAVERI_UPLOAD_DETAILS?ReqId=${Reqid}&Propertycode=${propertycode}&BOOKS_APP_NO=${book_app_no}`);
     
@@ -211,11 +211,11 @@ const UploadECPage = () => {
       
         if(KaveriDOCDetails.length > 0){
           setISNewData(true)
-          setIsAllowECDocument(KaveriDOCDetails[0].STATUS === "REC" ? true : false )
+          setIsAllowECDocument(KaveriECDOCDetails[0].STATUS === "REC" ? true : false )
           setRegistrationNumber(KaveriDOCDetails[0].REGISTRATIONNUMBER)
           setRegistationDate(KaveriDOCDetails[0].REGISTRATIONDATETIME)
         }else if(KaveriOLDDocDetails.length > 0) {
-          setIsAllowECDocument(KaveriDOCDetails[0].STATUS === "REC"  ? true : false )
+          setIsAllowECDocument(KaveriECDOCDetails[0].STATUS === "REC"  ? true : false )
           setRegistrationNumber(KaveriOLDDocDetails[0].ORDERNUMBER)
           setRegistationDate(KaveriOLDDocDetails[0].ORDERDATE)
           setISNewData(false)
@@ -305,6 +305,8 @@ const UploadECPage = () => {
     sessionStorage.removeItem("Reqid");
     sessionStorage.removeItem("SETPROPERTYCODE");
     sessionStorage.removeItem("SETPROPERYID");
+    sessionStorage.removeItem("BOOKS_PROP_APPNO")
+    sessionStorage.removeItem("SETBOOKPROPERTYCODE")
     navigate("/PropertyList");
   }
  
@@ -394,16 +396,16 @@ console.log(error)
        const data = {
           propertycode: propcode,
           reqId: formData.RequestId,
-          kaveriECDoc: propertyDocumentName,
+          kaveriECDoc: propertyDocumentName || "No PDF Required",
           loginId: loginID ,
-          kaveriDocName:selectedOldFile !== null ? selectedOldFile.name : formData.NewECDocumentExtension,
+          kaveriDocName:selectedOldFile !== null ? selectedOldFile.name : formData.NewECDocumentExtension || "No PDF Required",
         }
       
       try {
         await axiosInstance.post('KaveriAPI/INS_KAVERI_API_ECDOC_SUBMIT', data
         )
         setTimeout(() => {
-        toast.success(`${t("detailsSavedSuccess")}`, {
+        toast.success(`${t("Details Saved Successfully")}`, {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -960,8 +962,17 @@ Upload EC Document
         <br></br>
 </>
 <br></br>
+{IsAllowECDocumnet  &&
+<Box display="flex" justifyContent="center" gap={2}>
+<Typography variant='h6'>EC Submitted Successfully !!</Typography>
+</Box>
+}
+<br></br>
+
               <Grid item xs={12}>
+             
                 <Box display="flex" justifyContent="center" gap={2}>
+              
                   <Button variant="contained" color="primary" onClick={handleBack}>
                     {t("Previous")}
                   </Button>

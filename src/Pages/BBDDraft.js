@@ -273,7 +273,7 @@ const PropertyList = () => {
       alert("Property ePID is not Generated . Please Click on Draft Ekatha to Generate the Property ePID And Click Here")
         return
       }
-      if(row.PROPERTYCODE === null || row.PROPERTYCODE  === undefined|| row.PROPERTYCODE.length === 0){
+      if(row.NPM_PROPERTYCODE === null || row.NPM_PROPERTYCODE  === undefined|| row.NPM_PROPERTYCODE.length === 0){
              toast.error("Property Code does not exist for this property")
                return
              }
@@ -298,7 +298,7 @@ const PropertyList = () => {
                 const response5 = await axiosInstance.post("Auth/EncryptJsons",data)
                 let re = response5.data;
                 sessionStorage.setItem('SETPROPERTYCODE', JSON.stringify(row.NPM_PROPERTYCODE));
-    
+                sessionStorage.setItem('SETBOOKPROPERTYCODE', JSON.stringify(row.PROPERTYCODE));
                 sessionStorage.setItem('SETPROPERYID', JSON.stringify(row.PROPERTYID));
                 sessionStorage.setItem('BOOKS_PROP_APPNO', JSON.stringify(row.BOOKS_PROP_APPNO));
                 sessionStorage.setItem('Reqid', JSON.stringify(row.REQID));
