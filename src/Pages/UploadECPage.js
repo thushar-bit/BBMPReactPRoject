@@ -211,11 +211,11 @@ const UploadECPage = () => {
       
         if(KaveriDOCDetails.length > 0){
           setISNewData(true)
-          setIsAllowECDocument(KaveriECDOCDetails[0].STATUS === "REC" ? true : false )
+          setIsAllowECDocument(KaveriECDOCDetails.length > 0 ?KaveriECDOCDetails[0].STATUS === "REC" ? true : false : false )
           setRegistrationNumber(KaveriDOCDetails[0].REGISTRATIONNUMBER)
           setRegistationDate(KaveriDOCDetails[0].REGISTRATIONDATETIME)
         }else if(KaveriOLDDocDetails.length > 0) {
-          setIsAllowECDocument(KaveriECDOCDetails[0].STATUS === "REC"  ? true : false )
+          setIsAllowECDocument(KaveriECDOCDetails.length > 0 ? KaveriECDOCDetails[0].STATUS === "REC"  ? true : false : false)
           setRegistrationNumber(KaveriOLDDocDetails[0].ORDERNUMBER)
           setRegistationDate(KaveriOLDDocDetails[0].ORDERDATE)
           setISNewData(false)
@@ -364,7 +364,7 @@ console.log(error)
       e.preventDefault();
     }
        
-    let propertyDocumentName = "";
+    let propertyDocumentName = null;
  
    
       
@@ -396,7 +396,7 @@ console.log(error)
        const data = {
           propertycode: propcode,
           reqId: formData.RequestId,
-          kaveriECDoc: propertyDocumentName || "No PDF Required",
+          kaveriECDoc: propertyDocumentName,
           loginId: loginID ,
           kaveriDocName:selectedOldFile !== null ? selectedOldFile.name : formData.NewECDocumentExtension || "No PDF Required",
         }
