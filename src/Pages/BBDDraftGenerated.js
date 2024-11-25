@@ -5,7 +5,8 @@ import {
   
 } from '@mui/material';
 
-
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axiosInstance from '../components/Axios';
@@ -106,9 +107,11 @@ try {
   }
 
   return (
+    
     <Container maxWidth="lg">
+       
       <Box sx={{ backgroundColor: '#f0f0f0', padding: 1, borderRadius: 2, mt: 2 }}>
-      
+      <ToastContainer />
         <Typography
           variant="h6"
           align="center"

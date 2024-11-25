@@ -15,7 +15,7 @@ import LabelWithAsterisk from '../components/LabelWithAsterisk'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import { styled } from '@mui/material/styles';
-
+import ViewSample from '../components/ViewSample';
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
     clipPath: 'inset(50%)',
@@ -74,6 +74,9 @@ const UploadECPage = () => {
   const [selectedOldFile, setSelectedOldFile] = useState(null);
   const [IsNewData,setISNewData] = useState(false)
   const [IsAllowECDocumnet,setIsAllowECDocument] = useState(false)
+  const [IsOtherOptionSelected,setIsOtherOptionSelected] = useState(false)
+  const [TypofImage,setTypofImage] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const handleDownload = (base64Data, documentdescription) => {
     try {
     const filename = `${documentdescription}`;
@@ -131,14 +134,14 @@ const UploadECPage = () => {
           propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
           loginId: JSON.parse(sessionStorage.getItem('SETLOGINID')).toString(),
         //  regsiteredDateTime:"2024-11-14T10:02:03.416Z" 
-        regsiteredDateTime:RegistationDate
-        
+        regsiteredDateTime:RegistationDate,
+        registrationType:IsNewData === true ? 1 : 2
       }    
   let  response = await axiosInstance.post(`KaveriAPI/GetKaveriEC`,data)
           const result = response.data;
           debugger
           if (result.success) {
-            if (result.ecDataExists) {
+            
               formData.RequestId = result.requestId;
               sessionStorage.setItem("Reqid", result.requestId);
               fetchData();
@@ -154,15 +157,6 @@ const UploadECPage = () => {
                 });
               }, 500)
             }
-            else {
-              setLoading(false)
-    
-              setTimeout(() => {
-                toast.error(`${t("registrationNumberNotExist")}`);
-              }, 100)
-              return
-            }
-          }
           else {
     
             setLoading(false)
@@ -183,6 +177,7 @@ const UploadECPage = () => {
             draggable: true,
             progress: undefined,
           });
+          console.log(error)
           setTimeout(() => {
             navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
           }, 1000);
@@ -208,17 +203,23 @@ const UploadECPage = () => {
        response2 = await axiosInstance.get(`KaveriAPI/GET_KAVERI_UPLOAD_DETAILS?ReqId=${Reqid}&Propertycode=${propertycode}&BOOKS_APP_NO=${book_app_no}`);
     
       const {Table:KaveriDOCDetails =[],Table1:KaveriOLDDocDetails =[],Table2:KaveriECDOCDetails=[],Table3:KaveriECOwnerDetails=[]} = response2.data;
-      
+      debugger
         if(KaveriDOCDetails.length > 0){
           setISNewData(true)
-          setIsAllowECDocument(KaveriECDOCDetails.length > 0 ?KaveriECDOCDetails[0].STATUS === "REC" ? true : false : false )
-          setRegistrationNumber(KaveriDOCDetails[0].REGISTRATIONNUMBER)
-          setRegistationDate(KaveriDOCDetails[0].REGISTRATIONDATETIME)
-        }else if(KaveriOLDDocDetails.length > 0) {
-          setIsAllowECDocument(KaveriECDOCDetails.length > 0 ? KaveriECDOCDetails[0].STATUS === "REC"  ? true : false : false)
-          setRegistrationNumber(KaveriOLDDocDetails[0].ORDERNUMBER)
-          setRegistationDate(KaveriOLDDocDetails[0].ORDERDATE)
-          setISNewData(false)
+          setIsAllowECDocument(KaveriECDOCDetails.length > 0 ?(KaveriECDOCDetails[0].STATUS === "REC" || KaveriECDOCDetails[0].STATUS === "APR") ? true : false : false );
+          setRegistrationNumber(KaveriDOCDetails[0].REGISTRATIONNUMBER);
+          setRegistationDate(KaveriDOCDetails[0].REGISTRATIONDATETIME);
+        }
+        else if(KaveriOLDDocDetails.length > 0) {
+          setIsAllowECDocument(KaveriECDOCDetails.length > 0 ?( KaveriECDOCDetails[0].STATUS === "REC" || KaveriECDOCDetails[0].STATUS === "APR") ? true : false : false);
+          setRegistrationNumber(KaveriOLDDocDetails[0].ORDERNUMBER);
+          setRegistationDate(KaveriOLDDocDetails[0].ORDERDATE);
+          setISNewData(false);
+        }
+        else if(KaveriDOCDetails.length === 0 && KaveriOLDDocDetails.length === 0) {
+          setIsOtherOptionSelected(true);
+          setISNewData(false);
+          setIsAllowECDocument(true);
         }
         
         setKAVERIEC_PROP_DETAILS(KaveriECDOCDetails.length > 0 ? KaveriECDOCDetails : [])
@@ -405,7 +406,7 @@ console.log(error)
         await axiosInstance.post('KaveriAPI/INS_KAVERI_API_ECDOC_SUBMIT', data
         )
         setTimeout(() => {
-        toast.success(`${t("Details Saved Successfully")}`, {
+        toast.success(`${t("Details Submitted Successfully")}`, {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -414,16 +415,17 @@ console.log(error)
           draggable: true,
           progress: undefined,
         });
-      }, 100)
+      }, 500)
        // setIsEditable(false);
  //   await   fetchData();
  setLoading(false);
     //handleBack();
     navigate("/")
-    
+     
     setLoading(false);
         // sessionStorage.setItem("userProgress", 4);
       } catch (error) {
+        console.log(error)
         await toast.error(`${t("errorSavingData")}`, error, {
           position: "top-right",
           autoClose: 5000,
@@ -448,8 +450,19 @@ console.log(error)
 
   }
     
+  const viewSample = (TypeOfImage) => {
+    if(TypeOfImage === "DEED"){
+      setTypofImage("DEED")
 
-  
+    }else {
+      setTypofImage("EC")
+
+    }
+    setIsDialogOpen(true);
+  }
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+  };
 
   
 
@@ -483,6 +496,11 @@ console.log(error)
     <Container maxWidth="xl">
       <Box sx={{ backgroundColor: '#f0f0f0', padding: 4, borderRadius: 2, mt: 8 }}>
         <ToastContainer />
+        <ViewSample
+        open={isDialogOpen}
+        onClose={handleCloseDialog}
+        TypofImage={TypofImage}
+      />
         <Typography
   variant="body1"
   sx={{
@@ -744,7 +762,7 @@ Upload EC Document
              
 
       <br></br>    
-      {IsNewData === false && (
+      {IsNewData === false  && IsOtherOptionSelected === false &&(
 <Grid item xs={12} sm={6}>
       <Card sx={{ p: 3, boxShadow: 3, borderRadius: 2, border: '1px solid #e0e0e0' }}>
         <Box display="flex" alignItems="center" flexDirection="column" textAlign="center" mb={2}>
@@ -810,6 +828,33 @@ Upload EC Document
         <br></br>
         <Typography>{t("KaveriMessage5")}</Typography>
         <br></br>
+        {IsNewData === true &&  IsOtherOptionSelected === false &&
+        <>
+        <Box display="flex" justifyContent="center" gap={2}>
+<Typography variant='h6'>After 2004 Registration Deed No :- {RegistationNumber}</Typography>
+</Box>
+
+<Box display="flex" justifyContent="center" gap={2}>
+<Typography variant='h6'>Registation Deed Date  :- {RegistationDate}</Typography>
+</Box>
+<br></br>
+</>
+
+}
+{IsNewData  === false &&  IsOtherOptionSelected === false &&
+        <>
+<Box display="flex" justifyContent="center" gap={2}>
+<Typography variant='h6'>Before 2004 Registation Deed No :- {RegistationNumber}</Typography>
+</Box>
+<Box display="flex" justifyContent="center" gap={2}>
+<Typography variant='h6'>Before 2004 Registation Date :- {RegistationDate}</Typography>
+</Box>
+<Box display="flex" justifyContent="center" gap={2}>
+<Typography variant='h6'  sx={{ color: 'red', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '0.9rem' }}>Note :- If you are unable to fetch EC Details .Please Contact your Respective ARO .</Typography>
+</Box>
+<br></br>
+</>
+}
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={9}>
             <TextField
@@ -845,9 +890,9 @@ Upload EC Document
               {t("FetchECData")}
             </Button>
 }
-            {/* <Button color="primary" onClick={()=>viewSample("EC")}>
+            <Button color="primary" onClick={()=>viewSample("EC")}>
             {t("View Sample")}
-    </Button> */}
+    </Button>
   </Box>
           </Grid>
         </Grid>
@@ -962,9 +1007,14 @@ Upload EC Document
         <br></br>
 </>
 <br></br>
-{IsAllowECDocumnet  &&
+{IsAllowECDocumnet && IsOtherOptionSelected === false &&
 <Box display="flex" justifyContent="center" gap={2}>
 <Typography variant='h6'>EC Submitted Successfully !!</Typography>
+</Box>
+}
+{IsOtherOptionSelected  &&
+<Box display="flex" justifyContent="center" gap={2}>
+<Typography variant='h6'>No Registration Deed Available For this !!</Typography>
 </Box>
 }
 <br></br>

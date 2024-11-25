@@ -2,9 +2,9 @@ import axios from 'axios';
 
 
 
-const baseURL = "https://localhost:44368/v1/"  //local
+//const baseURL = "https://localhost:44368/v1/"  //local
 //const baseURL = "https://bbmpeaasthi.karnataka.gov.in/objection_api_test/v1" //testurl
-//const baseURL = "https://bbmpeaasthi.karnataka.gov.in/BBMPCoreAPI/v1" //liveurl
+const baseURL = "https://bbmpeaasthi.karnataka.gov.in/BBMPCoreAPI/v1" //liveurl
 
 const instance = axios.create({
   baseURL: `${baseURL}`,
