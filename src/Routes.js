@@ -9,6 +9,7 @@ import AreaDimension from './Pages/AreaDimension';
 import GoogleMapsWardCoordinates from './Pages/GetWardByCoordintes';
 import UploadECPage from './Pages/UploadECPage';
 import Get_EAASTHI_Status from "./Pages/Get_EAASTHI_Status";
+import GetDailyReport from "./Pages/GetDailyReport";
 import SiteDetails from './Pages/SiteDetails';
 import BuildingDetails from './Pages/BuildingDetails';
 import MultiStoreyBuildingDetails from './Pages/MultiStoreyBuildingDetails';
@@ -51,6 +52,10 @@ const AppRoutes = () => {
               path="/Get_EAASTHI_Status"
               element={<Get_EAASTHI_Status />} 
             /> 
+             <Route
+              path="/GetDailyReport"
+              element={<GetDailyReport />} 
+            />
             <Route
               path="/ObjectorsPage"
               element={<ObjectorsPage />}  /> 

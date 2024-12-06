@@ -126,15 +126,22 @@ const UploadECPage = () => {
         try {
           setLoading(true)
     debugger
-       
+    let loginId = sessionStorage.getItem('SETLOGINID');
+    try {
+        loginId = JSON.parse(loginId);
+    } catch (e) {
+        loginId = loginId || ""; 
+    }
+    
+    console.log(loginId.toString());
+    
       const data = {
         
           ecNumber: formData.ECDocumentNumber,
           registrationNoNumber: RegistationNumber,
           propertyCode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
-          loginId: JSON.parse(sessionStorage.getItem('SETLOGINID')).toString(),
-        //  regsiteredDateTime:"2024-11-14T10:02:03.416Z" 
-        regsiteredDateTime:RegistationDate,
+          loginId: loginId.toString(), 
+        registeredDateTime:RegistationDate ? RegistationDate:null,
         registrationType:IsNewData === true ? 1 : 2
       }    
   let  response = await axiosInstance.post(`KaveriAPI/GetKaveriEC`,data)
@@ -196,7 +203,8 @@ const UploadECPage = () => {
   }
   let propertycode = JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))
 
-  let book_app_no = JSON.parse(sessionStorage.getItem('BOOKS_PROP_APPNO'))
+  let book_app_no = "0"
+  book_app_no = JSON.parse(sessionStorage.getItem('BOOKS_PROP_APPNO')) || "0"
     try {
       const response = await axiosInstance.get(`BBMPCITZAPI/GET_PROPERTY_PENDING_CITZ_BBD_DRAFT_React?ULBCODE=555&Propertycode=${JSON.parse(sessionStorage.getItem('SETBOOKPROPERTYCODE'))}&Page=ADDRESS`);
    
