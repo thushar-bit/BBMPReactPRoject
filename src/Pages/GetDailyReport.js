@@ -2,7 +2,7 @@ import React, { useState, useEffect ,useCallback} from 'react';
 import {
   Button,  Box, Container, Typography,
  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
- 
+ CircularProgress
 } from '@mui/material';
 import 'react-toastify/dist/ReactToastify.css';
 import axiosInstance from '../components/Axios';
@@ -10,15 +10,39 @@ import axiosInstance from '../components/Axios';
 
 const GetDailyReport = () => {
     const [propertyData, setPropertyData] = useState([]);
+    const [loading,setLoading] = useState(false);
+    const [formattedDate,setFormattedDate] = useState("")
+    const [totals1,settotals] = useState([]);
     const fetchData = async () => {
         debugger
         try {
-           
+          setLoading(true)
             let response = await axiosInstance.get("Report/GetEAASTHIDailyReport")
         setPropertyData(response.data.Table || [])
+        const today = new Date(); // Get current date
+        setFormattedDate(`${String(today.getDate()).padStart(2, "0")}-${String(
+        today.getMonth() + 1
+    ).padStart(2, "0")}-${today.getFullYear()}`)
+    debugger
+    const totals = {
+      TOTAL_RECEIVED: response.data.Table.reduce((sum, row) => sum + (row.TOTAL_RECEIVED || 0), 0),
+      YEST_RECEIVED: response.data.Table.reduce((sum, row) => sum + (row.YEST_RECEIVED || 0), 0),
+      ACTIVE_CW: response.data.Table.reduce((sum, row) => sum + (row.ACTIVE_CW || 0), 0),
+      ACTIVE_ARO: response.data.Table.reduce((sum, row) => sum + (row.ACTIVE_ARO || 0), 0),
+      ARO_APPROVED: response.data.Table.reduce((sum, row) => sum + (row.ARO_APPROVED || 0), 0),
+      AUTO_APPROVED: response.data.Table.reduce((sum, row) => sum + (row.AUTO_APPROVED || 0), 0),
+      YEST_CW_DISPOSED_COUNT: response.data.Table.reduce((sum, row) => sum + (row.YEST_CW_DISPOSED_COUNT || 0), 0),
+      YEST_RI_DISPOSED_COUNT: response.data.Table.reduce((sum, row) => sum + (row.YEST_RI_DISPOSED_COUNT || 0), 0),
+      YEST_AR0_DISPOSED_COUNT: response.data.Table.reduce((sum, row) => sum + (row.YEST_AR0_DISPOSED_COUNT || 0), 0),
+      CW_PENDING_COUNT: response.data.Table.reduce((sum, row) => sum + (row.CW_PENDING_COUNT || 0), 0),
+      ARO_PENDING_COUNT: response.data.Table.reduce((sum, row) => sum + (row.ARO_PENDING_COUNT || 0), 0),
+      RI_PENDING_COUNT: response.data.Table.reduce((sum, row) => sum + (row.RI_PENDING_COUNT || 0), 0),
+  };
+  settotals(totals || [])
+        setLoading(false)
         }
 catch(error){
-   
+  setLoading(false)
 console.log(error)
 }
     }
@@ -50,7 +74,31 @@ console.log(error)
     useEffect( () => {
         fetchData();
       }, []);
+      function GradientCircularProgress() {
+        return (
+          <React.Fragment>
+            <svg width={0} height={0}>
+              <defs>
+                <linearGradient id="my_gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#e01cd5" />
+                  <stop offset="100%" stopColor="#1CB5E0" />
+                </linearGradient>
+              </defs>
+            </svg>
+            <CircularProgress sx={{ 'svg circle': { stroke: 'url(#my_gradient)' } }} />
+          </React.Fragment>
+        );
+      }
+    
+      if (loading) {
+        return (
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+            <GradientCircularProgress />
+          </Box>
+        );
+      }
     return (
+      
         <Container maxWidth="xl">
        <Box sx={{ backgroundColor: '#f0f0f0', padding: 1, borderRadius: 2, mt: 1 }}>
        <Typography
@@ -70,7 +118,7 @@ console.log(error)
           }}
         >
         
-          Daily Report
+          Daily Report - {formattedDate}
         </Typography>
         <TableContainer component={Paper} sx={{ mt: 4, border: '1px solid #ddd' }}>
   <Table sx={{ borderCollapse: 'collapse' }}>
@@ -102,42 +150,44 @@ console.log(error)
           Active No of
         </TableCell>
         <TableCell
-          colSpan={3}
+          colSpan={2}
           style={{ ...cellStyle, borderRight: '4px solid #ddd' }}
         >
           e-Khatha Approved
         </TableCell>
         <TableCell
-          colSpan={2}
+          colSpan={3}
           style={{ ...cellStyle, borderRight: '4px solid #ddd' }}
         >
           Disposal in 24-hour
         </TableCell>
-        <TableCell colSpan={2} style={cellStyle}>
+        <TableCell colSpan={3} style={cellStyle}>
           Pending with
         </TableCell>
       </TableRow>
       {/* Subheaders */}
       <TableRow>
-        <TableCell style={subCellStyle}>Total</TableCell>
+        <TableCell  style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>Total</TableCell>
         <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>
           In 24 Hours
         </TableCell>
-        <TableCell style={subCellStyle}>CW Login</TableCell>
+        <TableCell  style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>CW Login</TableCell>
         <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>
           ARO Login
         </TableCell>
-        <TableCell style={subCellStyle}>By ARO</TableCell>
-        <TableCell style={subCellStyle}>Automate</TableCell>
-        <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>
+        <TableCell  style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>By ARO</TableCell>
+        <TableCell  style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>Automate</TableCell>
+        {/* <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>
           Total
-        </TableCell>
-        <TableCell style={subCellStyle}>Case Worker</TableCell>
+        </TableCell> */}
+        <TableCell  style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>Case Worker</TableCell>
+        <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>RI</TableCell>
         <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>
           ARO
         </TableCell>
-        <TableCell style={subCellStyle}>Case Worker</TableCell>
-        <TableCell style={subCellStyle}>ARO</TableCell>
+        <TableCell  style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>Case Worker</TableCell>
+        <TableCell  style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>ARO</TableCell>
+        <TableCell style={subCellStyle}>RI</TableCell>
       </TableRow>
     </TableHead>
     <TableBody>
@@ -151,48 +201,73 @@ console.log(error)
         propertyData.map((row, index) => (
           <TableRow key={index}>
             <TableCell style={bodyCellStyle}>
-            {row.ZONENAME}
+            {row.ZONENAME_EN}
             </TableCell>
             <TableCell style={bodyCellStyle}>
-            {row.WARDNUMBER} - {row.WARDNAME}
+            {row.WARDNUMBER} - {row.WARDNAME_EN}
             </TableCell>
             <TableCell style={bodyCellStyle}>
-              {row.APPLICATIONS_RECEIVED}
+              {row.TOTAL_RECEIVED}
             </TableCell>
             <TableCell style={bodyCellStyle}>
-              {row.APPLICATIONS_RECEIVED}
+              {row.YEST_RECEIVED}
             </TableCell>
             <TableCell style={bodyCellStyle}>
-              {row.NO_OF_APPLICATIONS_TODAY_SUBMITTED}
+              {row.ACTIVE_CW}
             </TableCell>
             <TableCell style={bodyCellStyle}>
-              {row.NO_OF_APPLICATIONS_FORWARDED_TO_CW_TODAY}
+              {row.ACTIVE_ARO}
             </TableCell>
             <TableCell style={bodyCellStyle}>
-              {row.APPROVED_ARO}
+              {row.ARO_APPROVED}
             </TableCell>
             <TableCell style={bodyCellStyle}>
-              {row.AUTO_APPROVED}
+              {row.AUTO_APPROVED }
+            </TableCell>
+            {/* <TableCell style={bodyCellStyle}>
+              {row.ARO_APPROVED + row.AUTO_APPROVED}
+            </TableCell> */}
+            <TableCell style={bodyCellStyle}>
+              {row.YEST_CW_DISPOSED_COUNT}
             </TableCell>
             <TableCell style={bodyCellStyle}>
-              {row.TODAY_AUTO_APPROVED}
+              {row.YEST_RI_DISPOSED_COUNT}
             </TableCell>
             <TableCell style={bodyCellStyle}>
-              {row.TODAY_AUTO_APPROVED}
+              {row.YEST_AR0_DISPOSED_COUNT}
             </TableCell>
             <TableCell style={bodyCellStyle}>
-              {row.TODAY_AUTO_APPROVED}
+              {row.CW_PENDING_COUNT}
             </TableCell>
             <TableCell style={bodyCellStyle}>
-              {row.PENDING_IN_CW}
+              {row.ARO_PENDING_COUNT}
             </TableCell>
             <TableCell style={bodyCellStyle}>
-              {row.PENDING_IN_ARO}
+              {row.RI_PENDING_COUNT}
             </TableCell>
           </TableRow>
+          
         ))
       )}
+       <TableRow>
+                <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }} colSpan={2}>
+                    Total
+                </TableCell>
+                <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>{totals1.TOTAL_RECEIVED}</TableCell>
+                <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>{totals1.YEST_RECEIVED}</TableCell>
+                <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>{totals1.ACTIVE_CW}</TableCell>
+                <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>{totals1.ACTIVE_ARO}</TableCell>
+                <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>{totals1.ARO_APPROVED}</TableCell>
+                <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>{totals1.AUTO_APPROVED}</TableCell>
+                <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>{totals1.YEST_CW_DISPOSED_COUNT}</TableCell>
+                <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>{totals1.YEST_RI_DISPOSED_COUNT}</TableCell>
+                <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>{totals1.YEST_AR0_DISPOSED_COUNT}</TableCell>
+                <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>{totals1.CW_PENDING_COUNT}</TableCell>
+                <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>{totals1.ARO_PENDING_COUNT}</TableCell>
+                <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>{totals1.RI_PENDING_COUNT}</TableCell>
+            </TableRow>
     </TableBody>
+    
   </Table>
 </TableContainer>
             </Box>
