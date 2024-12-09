@@ -6,13 +6,24 @@ import {
 } from '@mui/material';
 import 'react-toastify/dist/ReactToastify.css';
 import axiosInstance from '../components/Axios';
-
+import { useNavigate } from 'react-router-dom';
 
 const GetDailyReport = () => {
     const [propertyData, setPropertyData] = useState([]);
     const [loading,setLoading] = useState(false);
     const [formattedDate,setFormattedDate] = useState("")
     const [totals1,settotals] = useState([]);
+    const navigate = useNavigate();
+    const fetchDailyDetails = (row,reportType) => {
+      debugger
+      navigate("/DailyReportDetails", {
+        state: {
+            WARDNUMBER: row,
+            REPORTTYPE: reportType
+        }
+    });
+
+    }
     const fetchData = async () => {
         debugger
         try {
@@ -46,6 +57,7 @@ catch(error){
 console.log(error)
 }
     }
+  
   
     const cellStyle = {
         fontWeight: 'bold',
@@ -207,43 +219,43 @@ console.log(error)
             {row.WARDNUMBER} - {row.WARDNAME_EN}
             </TableCell>
             <TableCell style={bodyCellStyle}>
-              {row.TOTAL_RECEIVED}
+            <Button color="primary" style={{ width: '2rem',height:"0.1rem" }} onClick={() =>fetchDailyDetails(row.WARDNUMBER,"TOTAL_RECEIVED")}>{row.TOTAL_RECEIVED}</Button>
             </TableCell>
             <TableCell style={bodyCellStyle}>
-              {row.YEST_RECEIVED}
+            <Button color="primary" style={{ width: '2rem',height:"0.1rem" }} onClick={() =>fetchDailyDetails(row.WARDNUMBER,"YEST_RECEIVED")}>{row.YEST_RECEIVED}</Button> 
             </TableCell>
             <TableCell style={bodyCellStyle}>
-              {row.ACTIVE_CW}
+            {row.ACTIVE_CW}
             </TableCell>
             <TableCell style={bodyCellStyle}>
-              {row.ACTIVE_ARO}
+            {row.ACTIVE_ARO}
             </TableCell>
             <TableCell style={bodyCellStyle}>
-              {row.ARO_APPROVED}
+            {row.ARO_APPROVED}
             </TableCell>
             <TableCell style={bodyCellStyle}>
-              {row.AUTO_APPROVED }
+            {row.AUTO_APPROVED}
             </TableCell>
             {/* <TableCell style={bodyCellStyle}>
               {row.ARO_APPROVED + row.AUTO_APPROVED}
             </TableCell> */}
             <TableCell style={bodyCellStyle}>
-              {row.YEST_CW_DISPOSED_COUNT}
+            <Button color="primary" style={{ width: '2rem',height:"0.1rem" }} onClick={() =>fetchDailyDetails(row.WARDNUMBER,"YEST_CW_DISPOSED_COUNT")}>{row.YEST_CW_DISPOSED_COUNT}</Button> 
             </TableCell>
             <TableCell style={bodyCellStyle}>
-              {row.YEST_RI_DISPOSED_COUNT}
+            <Button color="primary" style={{ width: '2rem',height:"0.1rem" }} onClick={() =>fetchDailyDetails(row.WARDNUMBER,"YEST_RI_DISPOSED_COUNT")}>{row.YEST_RI_DISPOSED_COUNT}</Button> 
             </TableCell>
             <TableCell style={bodyCellStyle}>
-              {row.YEST_AR0_DISPOSED_COUNT}
+            <Button color="primary" style={{ width: '2rem',height:"0.1rem" }} onClick={() =>fetchDailyDetails(row.WARDNUMBER,"YEST_AR0_DISPOSED_COUNT")}> {row.YEST_AR0_DISPOSED_COUNT}</Button> 
             </TableCell>
             <TableCell style={bodyCellStyle}>
-              {row.CW_PENDING_COUNT}
+            <Button color="primary" style={{ width: '2rem',height:"0.1rem" }} onClick={() =>fetchDailyDetails(row.WARDNUMBER,"CW_PENDING_COUNT")}>{row.CW_PENDING_COUNT}</Button> 
             </TableCell>
             <TableCell style={bodyCellStyle}>
-              {row.ARO_PENDING_COUNT}
+            <Button color="primary" style={{ width: '2rem',height:"0.1rem" }} onClick={() =>fetchDailyDetails(row.WARDNUMBER,"ARO_PENDING_COUNT")}>{row.ARO_PENDING_COUNT}</Button> 
             </TableCell>
             <TableCell style={bodyCellStyle}>
-              {row.RI_PENDING_COUNT}
+            <Button color="primary" style={{ width: '2rem',height:"0.1rem" }} onClick={() =>fetchDailyDetails(row.WARDNUMBER,"RI_PENDING_COUNT")}>{row.RI_PENDING_COUNT}</Button>
             </TableCell>
           </TableRow>
           

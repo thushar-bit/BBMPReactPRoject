@@ -411,8 +411,22 @@ console.log(error)
         }
       
       try {
-        await axiosInstance.post('KaveriAPI/INS_KAVERI_API_ECDOC_SUBMIT', data
+      let response3 =  await axiosInstance.post('KaveriAPI/INS_KAVERI_API_ECDOC_SUBMIT', data
         )
+        if(response3.data.Table[0].CORRECTION_COUNT > 0){
+          setTimeout(() => {
+            toast.error(`${t("This Property is in Correction, after Correction approval by ARO then only you will Be Able to Submit EC.")}`, {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+          }, 500)
+          return
+        }
         setTimeout(() => {
         toast.success(`${t("Details Submitted Successfully")}`, {
           position: "top-right",
