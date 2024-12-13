@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './Pages/Login';
 import PropertyList from './Pages/BBDDraft';
 import ObjectorsPage from './Pages/ObjectorsPage';
+import PendanceReport from './Pages/PendanceReport'
 import TaxDetails from './Pages/TaxDetails';
 import AreaDimension from './Pages/AreaDimension';
 import GoogleMapsWardCoordinates from './Pages/GetWardByCoordintes';
@@ -60,6 +61,10 @@ const AppRoutes = () => {
              <Route
               path="/DailyReportDetails"
               element={<DailyReportDetails />} 
+            />
+              <Route
+              path="/PendanceReport"
+              element={<PendanceReport />} 
             />
             <Route
               path="/ObjectorsPage"
