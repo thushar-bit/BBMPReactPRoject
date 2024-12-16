@@ -14,8 +14,9 @@ const PendanceReport = () => {
   const [formData, setFormData] = useState({
     ZoneName: "",
     WardName: "",
-    SelectType: "",
-    Search: ""
+    AROName: "",
+    Search: "",
+    ReportType:"AROType",
   });
 
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ const PendanceReport = () => {
   const [formattedDate,setFormattedDate] = useState("")
   const [propertyData, setPropertyData] = useState([]);
   const [zoneData, setZoneData] = useState([]);
+  const [AROData, setAROData] = useState([]);
   const [WardData, setWardData] = useState([]);
   const [page, setPage] = useState(0);
   const [pdfUrl, setPdfUrl] = useState('');
@@ -38,8 +40,7 @@ const PendanceReport = () => {
       let response = await axiosInstance.get("BBMPCITZAPI/GetMasterZone")
       setZoneData(response.data.Table || [])
       
-      var response1 = await axiosInstance.get("BBMPCITZAPI/GetMasterWard?ZoneId=" + 101)
-      setWardData(response1.data.Table)
+    
    debugger
      
       setPropertyData([])
@@ -49,15 +50,11 @@ const PendanceReport = () => {
   ).padStart(2, "0")}-${today.getFullYear()}`)
       setLoading(false)
       
-      setLoginData(JSON.parse(sessionStorage.getItem('LoginData')))
+     
     } catch (error) {
       navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
     }
-    setFormData(prevData => ({
-      ...prevData,
-      ZoneName: JSON.parse(sessionStorage.getItem('DraftZoneId')),
-      WardName: JSON.parse(sessionStorage.getItem('DraftWardId'))
-    }));
+   
   }, [navigate]);
 
   useEffect( () => {
@@ -65,19 +62,99 @@ const PendanceReport = () => {
     fetchData();
   }, [fetchData]);
 
-const handleChange = () => {
-
+const handleChange = async (e) => {
+  const { name, value } = e.target;
+  if(name === "ZoneName" && formData.ReportType === "WardType" && value !== "All")
+    {
+  var response1 = await axiosInstance.get("BBMPCITZAPI/GetMasterWard?ZoneId=" + value)
+  setWardData(response1.data.Table)
+  }
+  if(name === "ZoneName" && formData.ReportType === "AROType" && value !== "All")
+    {
+  var response1 = await axiosInstance.get("Report/GET_ARO_BY_ZONE?zoneid=" + value)
+  setAROData(response1.data.Table)
+  }
+  if(name === "AROName" && formData.ReportType === "AROType" && value !== "All")
+    {
+  var response1 = await axiosInstance.get("Report/GET_WARD_BY_ARO?AROID=" + value)
+  setWardData(response1.data.Table)
+  }
+  
+  setFormData({
+    ...formData,
+    [name]: value
+  });
 }
- const handleBack = () => {
+const handleRadioChange = async (e) => {
+  const { name, value } = e.target;
 
- }
+  setFormData({
+    ...formData,
+    ZoneName: "",
+    WardName:"",
+    AROName:"",
+    [name]:value
+  });
+}
+const handleValidation = (ZoneName,AROName,WardName) => {
+  if(ZoneName === "" || AROName === "" || WardName === "")
+    {
+    return "0";
+  }
+  if(ZoneName === "All" && AROName === "All" && WardName === "All"){
+    formData.ZoneName = 0;
+    formData.AROName = 0;
+    formData.WardName = 0;
+    return "1"; //no condition
+  }
+  else if(AROName === "All" && WardName === "All")
+  {
+    formData.AROName = 0;
+    formData.WardName = 0;
+    return "2"; //based on zone
+  }
+  else if(WardName === "All")
+    {
+      formData.WardName = 0;
+      return "3"; //based on zone and ARO
+    }
+    else {
+      return "4" //based on 3 values
+    }
+   
+} 
  const handleSearch = () => {
 
+    let valid = handleValidation(formData.ZoneName,formData.AROName,formData.ZoneName,formData.WardName);
+    if(valid === "0"){
+      toast.error("Please Select All fields");
+      return
+    }
+    const response = axiosInstance.get(`Report/GET_PENDENCE_REPORT?ZoneId=${formData.ZoneName}&AROId=${formData.AROName}&WARDID=${formData.WardName}&SEARCHTYPE=${valid}`);
+    setPropertyData(response.data.Table || [])
  }
 const handleReset = () => {
-
+  const response = axiosInstance.get(`Report/GET_PENDENCE_REPORT?ZoneId=${0}&AROId=${0}&WARDID=${0}&SEARCHTYPE=${"1"}`);
+  setPropertyData(response.data.Table || [])
+  setFormData({
+    ...formData,
+    ZoneName: "",
+    WardName:"",
+    AROName:"",
+    ReportType:"AROType"
+  });
 }
 const getBBDRecord = () => {
+
+}
+const fetchDailyDetails = (row) => {
+  debugger
+  navigate("/PendanceReportDetails", {
+    state: {
+        WARDNUMBER: row,
+        
+    }
+});
 
 }
   function GradientCircularProgress() {
@@ -133,26 +210,15 @@ const getBBDRecord = () => {
        
                 <Grid item xs={6} sm={3}         align="center">
           <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
-            <RadioGroup row name="TypeOfUpload" value={formData.TypeOfUpload} onChange={handleChange}>
-              <FormControlLabel value="RegistrationNumber" control={<Radio />} label={"Based on Zone And ARO Report"} />
-              <FormControlLabel value="OldRegistrationNumber" control={<Radio />} label={
+            <RadioGroup row name="ReportType" value={formData.ReportType} onChange={handleRadioChange}>
+              <FormControlLabel value="AROType" control={<Radio />} label={"Based on Zone And ARO Report"} />
+              <FormControlLabel value="WardType" control={<Radio />} label={
                  <>
                {"Based on Zone and Ward Report"}
-                {/* <Typography component="span" style={{ color: 'red' }}>
-        {t("CaseRefertoARO")}
-      </Typography> */}
-                </>
+             </>
               }
                 />
-              {/* <FormControlLabel value="DoNotHaveRegistrationDeed" control={<Radio />} label={
-    <>
-      {t("DoNotHaveRegistrationDeed")}{" "}
-      <Typography component="span" style={{ color: 'red' }}>
-        {t("CaseRefertoARO")}
-      </Typography>
-    </>
-  }
-/> */}
+              
             </RadioGroup>
           </FormControl>
           
@@ -172,7 +238,7 @@ const getBBDRecord = () => {
                 sx={{ backgroundColor: "#ffff" }}
               
               >
-                <MenuItem value="">--Select--</MenuItem>
+                <MenuItem value="All">--All--</MenuItem>
                 {zoneData.map((item) => (
                   <MenuItem key={item.ZONEID} value={item.ZONEID}>
                     {item.ZONENAME}
@@ -181,6 +247,7 @@ const getBBDRecord = () => {
               </Select>
             </FormControl>
           </Grid>
+          {formData.ReportType === "AROType" &&
           <Grid item xs={12} sm={3} md={4}>
             <FormControl
               fullWidth
@@ -188,21 +255,22 @@ const getBBDRecord = () => {
             >
               <InputLabel>{t("ARO Name")}</InputLabel>
               <Select
-                name="SelectType"
+                name="AROName"
                 sx={{ backgroundColor: "#ffff" }}
                
-                value={formData.SelectType}
+                value={formData.AROName}
                 onChange={handleChange}
               >
-                <MenuItem value="0">--Select--</MenuItem>
-                <MenuItem value="1">Property EPID</MenuItem>
-                <MenuItem value="2">Owner Name</MenuItem>
-                <MenuItem value="3">Assessment No</MenuItem>
-                <MenuItem value="4">Property Address</MenuItem>
-                <MenuItem value="7">Book No</MenuItem> 
+            <MenuItem value="All">--All--</MenuItem>
+                {AROData.map((item) => (
+                  <MenuItem key={item.AROID} value={item.AROID}>
+                    {item.ARONAME_EN}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Grid>
+}
           <Grid item xs={12} sm={3} md={4}>
             <FormControl
               fullWidth
@@ -216,7 +284,7 @@ const getBBDRecord = () => {
                 sx={{ backgroundColor: "#ffff" }}
                
               >
-                <MenuItem value="">--Select--</MenuItem>
+                <MenuItem value="All">--All--</MenuItem>
                 {WardData.map((item) => (
                   <MenuItem key={item.WARDID} value={item.WARDID}>
                     {item.WARDNAME}
@@ -247,12 +315,14 @@ const getBBDRecord = () => {
             <TableRow>
         </TableRow>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }} colSpan={3} align='center' ></TableCell>
-        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }} colSpan={4} align='center' >      No of ekhata Application Pending with</TableCell>
+        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }} colSpan={4} align='center'> No of ekhata Application Pending with</TableCell>
               
                
               <TableRow>
               <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }} colSpan={1} align='center' >Zone Name</TableCell> 
+              {formData.ReportType === "AROType" &&
               <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }} colSpan={1} align='center' >ARO Name</TableCell> 
+            }
               <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' , borderRight: '4px solid #ddd' }} colSpan={1} align='center' >Ward Name</TableCell> 
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }} colSpan={1} align='center' >Case Worker</TableCell> 
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }} colSpan={1} align='center' >ARO</TableCell>
@@ -291,10 +361,12 @@ const getBBDRecord = () => {
                     <TableRow  style={{ height: '0.1em' }}>
                     
                       <TableCell style={{ padding: '0.5em 1em' }} colSpan={1} align='center' >RajarajeshwariNagar</TableCell>
+                      {formData.ReportType === "AROType" &&
                       <TableCell style={{ padding: '0.5em 1em' }}colSpan={1} align='center' >RAJARAJESHWARINAGAR</TableCell>
-                     
+                     }
+{formData.ReportType === "AROType" ?
                       <TableCell style={{ padding: '0.5em 1em' }}colSpan={1} align='center' >129 - Jnanabharathi ward</TableCell>
-                      
+                       :   <TableCell style={{ padding: '0.5em 1em' }}colSpan={1} align='center' > <Button color="primary"  onClick={() =>fetchDailyDetails("123")}>129 - Jnanabharathi ward</Button></TableCell>}
                        
                       <TableCell style={{ padding: '0.5em 1em' }}colSpan={1} align='center' >212312312312323</TableCell>
                       <TableCell style={{ width: '10rem',height:"0.1rem" }}colSpan={1} align='center' >31231231232</TableCell>

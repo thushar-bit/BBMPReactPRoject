@@ -29,6 +29,7 @@ import { AuthProvider } from './context/AuthProvider';
 import ScrollToTop from './components/ScrollTop';
 import KaveriData from './Pages/KaveriData';
 import BBDDraftGenerated from './Pages/BBDDraftGenerated';
+import PendanceReportDetails from './Pages/PendanceReportDetails';
 
 const AppRoutes = () => {
   return (
@@ -65,6 +66,10 @@ const AppRoutes = () => {
               <Route
               path="/PendanceReport"
               element={<PendanceReport />} 
+            />
+              <Route
+              path="/PendanceReportDetails"
+              element={<PendanceReportDetails />} 
             />
             <Route
               path="/ObjectorsPage"
