@@ -30,6 +30,8 @@ import ScrollToTop from './components/ScrollTop';
 import KaveriData from './Pages/KaveriData';
 import BBDDraftGenerated from './Pages/BBDDraftGenerated';
 import PendanceReportDetails from './Pages/PendanceReportDetails';
+import ECDailyReport from './Pages/ECDailyReport';
+import SearchProperty from './Pages/SearchProperty';
 
 const AppRoutes = () => {
   return (
@@ -80,6 +82,12 @@ const AppRoutes = () => {
                <Route
               path="/UploadECPage"
               element={<UploadECPage />}  />
+              <Route 
+              path='/ECDailyReport'
+              element={<ECDailyReport/>}/>
+                 <Route 
+              path='/SearchProperty'
+              element={<SearchProperty/>}/>
                 {/* <Route
               path="/EKYCResponse"
               element={<EKYCResponse />}  />
