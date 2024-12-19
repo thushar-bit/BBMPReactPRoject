@@ -4,7 +4,7 @@ import {
 } from '@mui/material';
 import axiosInstance from '../components/Axios';
 import { useNavigate, useLocation } from 'react-router-dom';
-const EKYCResponse = () => {
+const EKYCSearchResponse = () => {
 
 
   const navigate = useNavigate();
@@ -40,7 +40,7 @@ const EKYCResponse = () => {
         if (response.status === 200) {
           
           
-          navigate(`/ObjectorsPage?txnno=${txnno}`);
+          navigate(`/SearchProperty?txnno=${txnno}`);
          
         } else {
 
@@ -122,4 +122,4 @@ const EKYCResponse = () => {
   );
 };
 
-export default EKYCResponse;
+export default EKYCSearchResponse;

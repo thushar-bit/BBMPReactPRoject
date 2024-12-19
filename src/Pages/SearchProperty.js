@@ -53,14 +53,13 @@ const SearchProperty = () => {
     SASNumber:"",
     IDExtension:"",
     IDDocument:"",
+    SEARCHNAME:"",
+    MOBILEVERIFY1:"",
+    EMAIL1:""
   });
   const { t } = useTranslation();
- 
-
   const navigate = useNavigate();
   const location = useLocation();
- 
- 
   const [loading, setLoading] = useState(false);
   const [isEditable, setIsEditable] = useState(true);
   const [handleSASClicks, sethandleSASClicks] = useState(false);
@@ -68,11 +67,10 @@ const SearchProperty = () => {
   const [tablesdata8, setTableData8] = useState([]);
   const [otpNumber, setOtpNumber] = useState(0)
   const [alertShown, setAlertShown] = useState(false);
-  const [tableIdentifier,setIdentifier] = useState([]);
   const [zoneData, setZoneData] = useState([]);
   const [WardData, setWardData] = useState([]);
   const [otpFieldsVisible, setOtpFieldsVisible] = useState(false);
-  const [selectedReasonFile, setSelectedReasonFile] = useState(null);
+  const [selectedIDFile, setSelectedIDFile] = useState(null);
   const [EkycResponseData,setEkycResponseData] = useState(null);
   const [otpButtonDisabled, setOtpButtonDisabled] = useState(false);
   const [timer, setTimer] = useState(30); 
@@ -117,59 +115,7 @@ const SearchProperty = () => {
     console.log(error)
   }
   };
-  const handleKaveriDocumentData = async () => {
-
-    if (formData.SASNumber.length === 0) {
-      toast.error(`${t("Please Enter the Registration Number")}`);
-      return
-    }
-if(tablesdata8.length ===0){
-  toast.error("Please Verify with Atleast one EKYC Owner")
-  return
-}
-
-    try {
-      setLoading(true)
-      let response = await axiosInstance.post(`ObjectionAPI/GetObjectionKaveriDocData?RegistrationNoNumber=${formData.SASNumber}&objectionid=${JSON.parse(sessionStorage.getItem('OBJECTIONID'))}&PropertyCode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&LoginId=${JSON.parse(sessionStorage.getItem('SETLOGINID'))}`)
-      const result = response.data;
-      if (result.success) {
-        await fetchData()
-        setLoading(false)
-      }
-      else {
-        setTimeout(() => {
-          toast.error(result.message)
-        }, 200);
-        setLoading(false)
-        return
-      }
-      setTimeout(() => {
-        toast.success(`${t("detailsFetchedSuccess")}`, {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-
-        });
-      }, 500)
-    }
-    catch (error) {
-      toast.error(`${t("errorSavingData")}` + error, {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-      setTimeout(() => {
-        navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
-      }, 1000);
-    }
-  };
+ 
  
   const handleSASDelete = () => {
     setSASTableData([])
@@ -214,7 +160,7 @@ debugger
         }
       
     }
-    if(name === "ZoneName"){
+    if(name === "ZoneName" && value !== ""){
         var response1 = await axiosInstance.get("BBMPCITZAPI/GetMasterWard?ZoneId=" + value)
         setWardData(response1.data.Table)
     }
@@ -276,22 +222,16 @@ debugger
     try {
       const response = await axiosInstance.get("E-KYCAPI/SendOTP?OwnerMobileNo=" + formData.MOBILENUMBER);
       toast.success(response.data.otpResponseMessage);
-     
       setOtpNumber(response.data.otp);
-    //  formData.MOBILEVERIFY = "NOT VERIFIED";
       setOtpButtonDisabled(true);
       setTimer(30);
       const interval = setInterval(() => {
         setTimer(prevTimer => prevTimer - 1);
       }, 1000);
-
-
       setTimeout(() => {
         setOtpButtonDisabled(false);
         clearInterval(interval);
       }, 30000);
-
-
       setCountdownInterval(interval);
       setFormData({
         ...formData,
@@ -300,7 +240,6 @@ debugger
     } catch (error) {
       console.log("failed to send otp" + error)
     }
-
   };
 
   const handleVerifyOtp = () => {
@@ -317,8 +256,8 @@ debugger
     }
   };
   const handleSASClick = async () => {
-
-    if (!formData.verifySASNUM || formData.verifySASNUM.length === 0) {
+debugger
+    if (!formData.SASNumber || formData.SASNumber.length === 0) {
       toast.error(`${t("provideSasAppNumber")}`);
       return;
     }
@@ -333,7 +272,7 @@ debugger
         const response = await axiosInstance.get(
           'BBMPCITZAPI/GetTaxDetails', {
           params: {
-            applicationNo: formData.verifySASNUM,
+            applicationNo: formData.SASNumber,
             propertycode: "123",
             P_BOOKS_PROP_APPNO: "123",
             loginId: 'crc'
@@ -388,13 +327,13 @@ try {
   }  
   }, [location.search,fetchData]);
 
-  const handleReasonFileChange = (e) => {
+  const handleIDFileChange = (e) => {
     const file = e.target.files[0];
     const maxSize = 5 * 1024 * 1024;
     if (file && file.size > maxSize) {
       toast.error(`${t('fileSizeExceeded')}`);
       e.target.value = null;
-      setSelectedReasonFile(null);
+      setSelectedIDFile(null);
       return;
     }
     const fileName = file.name;
@@ -402,22 +341,22 @@ try {
     if (!['pdf'].includes(fileExtension)) {
       toast.error(`${t("selectPdfFileOnly")}`);
       e.target.value = null;
-      setSelectedReasonFile(null);
+      setSelectedIDFile(null);
       return
     }
  //   setfileExtension(fileExtension);
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setSelectedReasonFile(file);
+        setSelectedIDFile(file);
       };
       reader.readAsDataURL(file);
     }
   };
   
 
-  const handleFileReasonDelete = () => {
-    setSelectedReasonFile(null);
+  const handleIDFileDelete = () => {
+    setSelectedIDFile(null);
   //  setfileExtension('');
   }
  
@@ -460,15 +399,11 @@ try {
 
   };
   const AddEKYCOwner = async () => {
-    
-    
 try {
-    
-    sessionStorage.setItem("OWNERTYPE", JSON.stringify("NEWOWNER"))
-    var response = await axiosInstance.post("E-KYCAPI/INS_NCL_OBJECTION_MAIN?ULBCODE=" + 555 +  "&Propertycode=" + JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')) + "&PropertyEID="+JSON.parse(sessionStorage.getItem('SETPROPERYID')) )
+    var response = await axiosInstance.post("E-KYCAPI/INS_NCL_SEARCH_MAIN")
 
 
-    window.location.href = response.data;
+    window.location.href = response.data; 
 }
     catch(error)
     {
@@ -484,22 +419,7 @@ try {
         toast.error(`${t("verifyOtp")}`)
         return
       }
-      if (formData.IDENTIFIERTYPEID === null || formData.IDENTIFIERTYPEID === undefined || formData.IDENTIFIERTYPEID === 0) {
-        toast.error(`${t("selectRelationshipType")}`)
-        return
-      }
-      if (formData.IDENTIFIERTYPEID.length === 0) {
-        toast.error(`${t("selectRelationshipType")}`)
-        return
-      }
-      if (formData.IDENTIFIERNAME === null || formData.IDENTIFIERNAME === undefined) {
-        toast.error(`${t("enterRelationName")}`)
-        return
-      }
-      if (formData.IDENTIFIERNAME.length <= 0) {
-        toast.error(`${t("enterRelationName")}`)
-        return
-      }
+    
      
       if (formData.MOBILENUMBER === null || formData.MOBILENUMBER === undefined) {
         toast.error(`${t("enterValidMobileNumber")}`)
@@ -514,26 +434,25 @@ try {
        if(Type === "EKYC"){
       
       const params = {
-        IDENTIFIERTYPE: formData.IDENTIFIERTYPEID || 0,
-        IdentifierName:formData.IDENTIFIERNAME,
-        NAMEMATCHSCORE:0,
+      
+      
         MOBILENUMBER: formData.MOBILENUMBER || "0",
         MOBILEVERIFY: formData.MOBILEVERIFY !== "" ? formData.MOBILEVERIFY : "NOT VERIFIED",
         loginId: JSON.parse(sessionStorage.getItem('SETLOGINID')),
-        EMAIL:formData.EMAIL,
-        PROPERTYID:JSON.parse(sessionStorage.getItem('SETPROPERYID')),
+        EMAIL:formData.EMAIL || "No Email Provided",
       };
 
       const queryString = new URLSearchParams(params).toString();
 
      
-      const response = await axiosInstance.post(`ObjectionAPI/INS_NCL_PROPERTY_OBJECTOR_TEMP_WITH_EKYCDATA?${queryString}`,EkycResponseData);
+      const response = await axiosInstance.post(`SearchAPI/INS_NCL_PROPERTY_SEARCH_TEMP_WITH_EKYCDATA?${queryString}`,EkycResponseData);
       console.log(response.data);
       
-      sessionStorage.setItem('OBJECTIONID',response.data.Table[0].OBJECTIONID)
+    debugger
       toast.success(`${t("ownerEditedSuccess")}`)
       setEkycResponseData(null);
-      await fetchData();
+      setTableData8(response.data.Table || [])
+      sessionStorage.setItem('SETSEARCHREQID',response.data.Table[0].SEARCH_REQ_ID)
     }
     } catch (error) {
       toast.error(`${t("errorSavingData")}`, error)
@@ -559,27 +478,22 @@ try {
   };
   const handleValidation = async () =>{ //change this
     debugger
-    let propertyDocumentName = "";
-    let PropertyDocumentReason = "";
+    let propertyDocumentID = "";
+  debugger
     try {
-    if ("selectedNameFile" !== null) {
-      propertyDocumentName = await getPropertyphoto("selectedNameFile");
+      if(formData.IsAAdharNumber === "Y"){
+    if (selectedIDFile !== null) {
+      propertyDocumentID = await getPropertyphoto(selectedIDFile);
     }
-    if(propertyDocumentName === "" || propertyDocumentName === undefined ||propertyDocumentName === null)
+    if(propertyDocumentID === "" || propertyDocumentID === undefined ||propertyDocumentID === null)
       {
         if(formData.NameDocument === "" || formData.NameDocument === undefined || formData.NameDocument === null){
-      toast.error("Please Upload the Name Document");
+      toast.error("Please Upload the ID Document");
       return false
         }
     }
     
-      debugger
-      if(formData.IsAAdharNumber === "" || formData.IsAAdharNumber === null|| formData.IsAAdharNumber === undefined){
-        toast.error("Please Select the Communication Address Option")
-        return false
-      }
-      if(formData.IsAAdharNumber === "Y"){
-        if(formData.doorno === null|| formData.doorno === undefined || formData.doorno === ""){
+        if(formData.DoorPlotNo === null|| formData.DoorPlotNo === undefined || formData.DoorPlotNo === ""){
           toast.error("Please Enter the Door No")
           return false
         }
@@ -594,64 +508,58 @@ try {
           toast.error("The Pincode must be 6 Digits")
           return false
         }
-      }
-      if(formData.IDCategory === 0 || formData.IDCategory === "" || formData.IDCategory === undefined || formData.IDCategory === null)
-        {
-        toast.error("Please Select the Reason ");
+      if(formData.SEARCHNAME === "" || formData.SEARCHNAME === undefined || formData.SEARCHNAME === null){
+        toast.error("Please enter the Owner Name")
         return false
       }
-      debugger
-      if(formData.IDCategory !== "3" && formData.IDCategory !== "5"){
-        if(selectedReasonFile !== null) {
-        PropertyDocumentReason = await getPropertyphoto(selectedReasonFile);
-        }
-        if(PropertyDocumentReason === "" || PropertyDocumentReason === undefined || PropertyDocumentReason === null)
-          {
-            if(formData.IDDocument.length === 0){
-          toast.error("Please Upload the Reason Document")
-          return false
-            }
-        }
-        }
-      if(formData.IDCategory === "5")
+      
+      if(formData.IDCategory === 0 || formData.IDCategory === "" || formData.IDCategory === undefined || formData.IDCategory === null)
         {
-        if(formData.IDDetails === "" || formData.IDDetails === undefined || formData.IDDetails === null){
-          toast.error("Please enter the Reason Details")
-          return false
-        }
+        toast.error("Please Select the ID Type ");
+        return false
       }
+      if(formData.IDDetails === null || formData.IDDetails === undefined || formData.IDDetails === ""){
+        toast.error("Please Enter the ID Number ");
+        return false
+      }
+      if (formData.MOBILENUMBER === null || formData.MOBILENUMBER === undefined) {
+        toast.error(`${t("enterValidMobileNumber")}`)
+        return false
+      }
+      if (formData.MOBILENUMBER.length <= 0 || formData.MOBILENUMBER.length < 10 || formData.MOBILENUMBER.length > 11) {
+        toast.error(`${t("enterValidMobileNumber")}`)
+        return false
+      }
+      if(formData.MOBILEVERIFY !== "VERIFIED"){
+        toast.error("Mobile Number not verified.")
+        return false
+      }
+    }
+    else if(formData.IsAAdharNumber === "N"){
       if(tablesdata8.length ===0){
         toast.error("Please Verify with Atleast one EKYC Owner")
         return false
       }
-      if(formData.IDCategory === "3"){
-      
-        
-      if(formData.TypeOfUpload === "" || formData.TypeOfUpload === undefined || formData.TypeOfUpload === null){
-        setTimeout(() => {
-        toast.error("Please Select the Type of Registration Document")
-      }, 100)
-        return false
-      }
-      else if(formData.TypeOfUpload === "SASNumber") {
-        let kaveridata =  await fetchData()
-        if(kaveridata.data.length === 0){
-          setTimeout(() => {
-          toast.error("Please Verify with the Registation No")
-        }, 100)
-          return false
-        }
-      }
-      else if(formData.TypeOfUpload === "OldSASNumber"){
-        let KaveriDcoumentdata =  await fetchData("KaveriDocument")
-        if(KaveriDcoumentdata.data.length === 0){
-          setTimeout(() => {
-        toast.error("Please Upload the Kaveri Document")
-      }, 100)
-        return false
-        }
-      }
     }
+    if(formData.IsSASNumber === "N")
+{
+if(formData.SASNumber === null || formData.SASNumber === undefined || formData.SASNumber === ""){
+  toast.error("Please Enter the SAS Application Number")
+  return false
+}
+if(SAStableData.length === 0){
+  toast.error("Please Verify with the SAS Application Number")
+  return false
+}
+}
+if(formData.ZoneName === "" || formData.ZoneName === null || formData.ZoneName === undefined){
+  toast.error("Please Select your Zone Name")
+  return false
+}
+if(formData.wardName === "" || formData.wardName === null || formData.wardName === undefined){
+  toast.error("Please Select your Ward Name")
+  return false
+}
       return true
     }
       catch(error){
@@ -659,14 +567,14 @@ toast.error(error)
 console.log(error)
       }
     }
-    const fetchAcknowedgeMentPdf = async () => {
+    const fetchAcknowedgeMentPdf = async (searchReqId) => {
       try {
         debugger
        
         
           setLoading(true)
         const response = await axiosInstance.get(
-          `Report/GetFinalObjectionAcknowledgementReport?propertycode=${JSON.parse(sessionStorage.getItem('SETPROPERTYCODE'))}&OBJECTIONID=${JSON.parse(sessionStorage.getItem('OBJECTIONID'))}&LoginId=${JSON.parse(sessionStorage.getItem('SETLOGINID'))}&WardId=${JSON.parse(sessionStorage.getItem('DraftWardId'))}`,
+          `Report/GetFinalSearchAcknowledgementReport?SearchReqID=${searchReqId}`,
           {
             responseType: 'blob',  
           }
@@ -678,7 +586,7 @@ console.log(error)
   
         setPdfUrl(pdfUrl);
         setLoading(false) 
-        toast.success(`${t("Please Download the Acknowlegement for Future Reference")}`)
+        toast.success(`${t("Your application has been successfully submitted. Please download the acknowledgment for your records. Avoid resubmitting the application multiple times, as it has already been received.")}`)
       // }
       // else {
       //   toast.error(response1.data)
@@ -695,54 +603,51 @@ console.log(error)
     if (e.key === 'Enter') {
       e.preventDefault();
     }
-       
-    let propertyDocumentName = "";
-    let PropertyDocumentReason = ""
-    if (isEditable) { 
-      
+       debugger
       let IsValidation = await handleValidation() 
-      
       if(IsValidation){ 
       setLoading(true);
       debugger
-    
-        if(selectedReasonFile !== null){
-        PropertyDocumentReason = await getPropertyphoto(selectedReasonFile);
-        }
-        if(formData.IDDocument.length > 0){
-          PropertyDocumentReason =  formData.IDDocument;
-        }
+      let propertyDocumentID = await getPropertyphoto(selectedIDFile);
+      let searchreqId = 0;
+      searchreqId = JSON.parse(sessionStorage.getItem("SETSEARCHREQID"))
+      if (searchreqId === "" || searchreqId === undefined || searchreqId === null){
+          searchreqId = 0
+      }
+      else{
+        searchreqId = JSON.parse(sessionStorage.getItem("SETSEARCHREQID"))
+      }
+      debugger
+      if(formData.IsAAdharNumber === "N"){
+        formData.SEARCHNAME = tablesdata8[0].SEARCHNAME_EN
+      }
       
-           if("selectedNameFile" !== null){
-        propertyDocumentName = await getPropertyphoto("selectedNameFile");
-        }
-        if(formData.NameDocument.length > 0){
-          propertyDocumentName = formData.NameDocument;
-        }
-        
       
       const data = {
-        objectionid: JSON.parse(sessionStorage.getItem('OBJECTIONID')),
-        propertycode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
-        scanneddocumentobjection: propertyDocumentName,
-        IDDocument: PropertyDocumentReason,
-        IsAAdhar: formData.IsAAdharNumber,
-        reasonid: formData.IDCategory,
-        IDDetails: formData.IDDetails ?? "",
-        ulbcode: 555,
-        namedocumentdetails: "selectedNameFile" !== null  ? "selectedNameFile".name : formData.NameExtension,
-        IDDocumentdetails: selectedReasonFile !== null ? selectedReasonFile.name : formData.IDExtension,
-        documentextension: "pdf",
-        doorno: formData.doorno,
-        buildingname: formData.buildingname,
-        arealocatlity: formData.areaorlocality,
-        pincode: formData.pincode,
-        createdby: JSON.parse(sessionStorage.getItem('SETLOGINID')).toString(),
-        typeofdocument:formData.TypeOfUpload
+        
+  search_Req_Id: searchreqId,
+  isHaveAAdhaarNumber: formData.IsAAdharNumber,
+  isHaveSASNumber: formData.IsSASNumber,
+  doorNo: formData.DoorPlotNo || null,
+  buildingName: formData.buildingname || null,
+  areaOrLocality: formData.areaorlocality || null,
+  pincode: formData.pincode || null,
+  idDocument: propertyDocumentID || null,
+  idCardType: formData.IDCategory || null,
+  idCardNumber: formData.IDDetails || null,
+  mobileNumber: formData.MOBILENUMBER || null,
+  mobiverify: formData.MOBILEVERIFY || null,
+  email: formData.EMAIL1 || null,
+  zoneId: formData.ZoneName || null,
+  wardId: formData.wardName || null,
+  searchName: formData.SEARCHNAME || null,
+  sasApplicationNumber: formData.SASNumber || null,
+  //loginId: JSON.parse(sessionStorage.getItem('SETLOGINID')).toString()
+  loginId:"crc"
       };
       
       try {
-        await axiosInstance.post('ObjectionAPI/INS_NCL_PROPERTY_OBJECTORS_FINAL_SUBMIT', data
+      let response3 =  await axiosInstance.post('SearchAPI/INS_NCL_PROPERTY_SEARCH_FINAL_SUBMIT', data
         )
         setTimeout(() => {
         toast.success(`${t("detailsSavedSuccess")}`, {
@@ -755,13 +660,12 @@ console.log(error)
           progress: undefined,
         });
       }, 100)
-       // setIsEditable(false);
- //   await   fetchData();
+   
  setLoading(false);
-    //handleBack();
-    await fetchAcknowedgeMentPdf();
+    
+    await fetchAcknowedgeMentPdf(response3.data.Table[0].SEARCHREQID);
     setLoading(false);
-        // sessionStorage.setItem("userProgress", 4);
+     
       } catch (error) {
         await toast.error(`${t("errorSavingData")}`, error, {
           position: "top-right",
@@ -778,13 +682,8 @@ console.log(error)
       }
     } else {
       setLoading(false);
-      sessionStorage.setItem("userProgress", 4);
-       
-    
     }
     setLoading(false);
-  }
-
   }
     
 
@@ -820,7 +719,7 @@ console.log(error)
 
   return (
     <Container maxWidth="xl">
-      <Box sx={{ backgroundColor: '#f0f0f0', padding: 4, borderRadius: 2, mt: 8 }}>
+      <Box sx={{ backgroundColor: '#f0f0f0', padding: 1, borderRadius: 2, mt: 2 }}>
         <ToastContainer />
         <Typography
   variant="body1"
@@ -937,42 +836,7 @@ Search Property Request
                    
                     <Grid item xs={12} sm={6}>
                       </Grid>
-                    <Grid item xs={12} sm={6}>
-                     
-                        <FormControl fullWidth sx={{ marginBottom: 3 }}>
-                          <InputLabel>< LabelWithAsterisk text={t("RelationshipType")} /></InputLabel>
-                          <Select
-                            name="IDENTIFIERTYPEID"
-                            value={formData.IDENTIFIERTYPEID}
-                            onChange={handleChange}
-                            sx={{backgroundColor: "#ffff" }}
-                          >
-                            <MenuItem value="">--Select--</MenuItem>
-                            {tableIdentifier.map((item) => (
-                              <MenuItem key={item.IDENTIFIERTYPEID} value={item.IDENTIFIERTYPEID}>
-                                {item.IDENTIFIERTYPE_EN}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                     
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      
-                        <TextField
-                          fullWidth
-                          label={< LabelWithAsterisk text={t("RelationName")} />}
-                          name="IDENTIFIERNAME"
-                          value={formData.IDENTIFIERNAME}
-                          onChange={handleChange}
-                          variant="outlined"
-                          InputProps={{
-                           
-                            style: { backgroundColor:  "#ffff" },
-                          }}
-                        />
-                      
-                    </Grid>
+                   
                     <Grid item xs={12} sm={6}>
                       <Typography sx={{ fontWeight: 'bold' }}>
                         {t("Gender")}
@@ -1131,7 +995,6 @@ Search Property Request
       <TableRow>
         {/* <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("Slno.")}</TableCell> */}
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("OwnerName")}</TableCell>
-        <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("Father/Mother/Husband/SpouseName")}</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("Address")}</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("MobileNumber")}</TableCell>
         <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>   {t("OwnerPhoto")}</TableCell>
@@ -1154,9 +1017,8 @@ Search Property Request
           return (
             <TableRow key={index}>
               {/* <TableCell>{row.OWNERNUMBER}</TableCell> */}
-              <TableCell>{row.OBJECTIONNAME_EN}</TableCell>
-              <TableCell>{row.IDENTIFIERNAME_EN}</TableCell>
-              <TableCell>{row.OBJECTIONADDRESS_EN}</TableCell>
+              <TableCell>{row.SEARCHNAME_EN}</TableCell>
+              <TableCell>{row.SEARCHADDRESS_EN}</TableCell>
               <TableCell>{MaskingValue({value:row.MOBILENUMBER,maskingLength:4}) || 'N/A'}</TableCell>
               <TableCell> <img
                 src={`data:image/png;base64,${row.OWNERPHOTO}`}
@@ -1214,8 +1076,8 @@ Search Property Request
                   <TextField
                     fullWidth
                     label={<LabelWithAsterisk text={t('doorPlotNo')} />}
-                    name="doorno"
-                    value={formData.doorno}
+                    name="DoorPlotNo"
+                    value={formData.DoorPlotNo}
                     onChange={handleChange}
                     variant={isEditable ? "outlined" : "filled"}
                     InputProps={{
@@ -1335,13 +1197,13 @@ Search Property Request
                     sx={{ mt: 2, mb: 2, px: 3, py: 1 }}
                   >
                     {t("Uploadfile")}
-                    <VisuallyHiddenInput type="file" accept=".pdf" onChange={handleReasonFileChange} />
+                    <VisuallyHiddenInput type="file" accept=".pdf" onChange={handleIDFileChange} />
                   </Button>
     
-                  {selectedReasonFile && (
+                  {selectedIDFile && (
                     <Box display="flex" alignItems="center" justifyContent="center" mt={2} sx={{ color: 'text.secondary' }}>
-                      <Typography variant="h6">{selectedReasonFile.name}</Typography>
-                      <Button color="error" onClick={handleFileReasonDelete} sx={{ ml: 2 }}>
+                      <Typography variant="h6">{selectedIDFile.name}</Typography>
+                      <Button color="error" onClick={handleIDFileDelete} sx={{ ml: 2 }}>
                         {t("Delete")}
                       </Button>
                     </Box>
@@ -1380,6 +1242,30 @@ Search Property Request
                     label={<LabelWithAsterisk text={"Enter ID Card Number"} />}
                     name="IDDetails"
                     value={formData.IDDetails}
+                    onChange={handleChange}
+                    sx={{ ml: 1, width: '50%' }} 
+                    variant={isEditable ? "outlined" : "filled"}
+                    InputProps={{
+                      readOnly: !isEditable,
+                      style: { backgroundColor: !isEditable ? '' : "#ffff" },
+                      
+                    }}
+                  />
+
+                  </Box>
+                  
+</Grid>
+<br></br>
+<Grid item xs={14} sm={7}>
+
+          <Box display="flex" alignItems="center">
+                  
+                    <TextField
+                    
+                    multiline 
+                    label={<LabelWithAsterisk text={"Enter Owner Name"} />}
+                    name="SEARCHNAME"
+                    value={formData.SEARCHNAME}
                     onChange={handleChange}
                     sx={{ ml: 1, width: '50%' }} 
                     variant={isEditable ? "outlined" : "filled"}
@@ -1549,37 +1435,76 @@ Search Property Request
           {IsAAdhar === true &&
             <>
 <Grid container spacing={6} alignItems="center">
-            <Grid item xs={8}>
-              <TextField
-                fullWidth
+<Grid item xs={12} sm={6}>
+                    
+                    <TextField
+                      fullWidth
+                      label={< LabelWithAsterisk text={t("MobileNumber")} />}
+                      name="MOBILENUMBER"
+                      value={formData.MOBILENUMBER || ''}
+                      onChange={handleChange}
+                      variant="outlined"
+                      InputProps={{
+                     
+                        style: { backgroundColor:  "#ffff" },
+                      }}
+                    />
+{otpFieldsVisible && (
+                      <Grid>
+                        <br></br>
+                        {!otpButtonDisabled && (
+                          <>
+                            <Button variant="contained" color="primary" onClick={() => handleGenerateOtp()}>
+                              {t("GenerateOTP")}
+                            </Button>
+                          </>
+                        )}
+                        {otpButtonDisabled && (
+                          <Typography >
+                            Resend OTP in {timer} seconds
+                          </Typography>
 
-                label={< LabelWithAsterisk text={t("Enter 10 Digit Mobile Number")} />}
-              
-                name="MOBILENO"
-                value={formData.MOBILENO}
-                onChange={handleChange}
-                InputProps={{
-                  style: { backgroundColor: "#ffff" },
-                  endAdornment: (
-                    <Tooltip title={t("propertyEIDInfo")}>
-                      <IconButton color="primary">
-                        <InfoIcon />
-                      </IconButton>
-                    </Tooltip>
-                  )
-                }}
-              />
-            </Grid>
-            <Grid item xs={3}>
+                        )}
+                        <br></br>
+                        <br></br>
+                        
+                        <TextField
+                          fullWidth
+                          label={t('Enter OTP')}
+                          name="OwnerOTP"
+                          value={formData.OwnerOTP}
+                          onChange={handleChange}
+                          variant="filled"
+                          InputProps={{
+                     
+                            style: { backgroundColor:  "#ffff" },
+                          }}
+                        />
+<br></br><br></br>
+                        <Button variant="contained" color="primary" onClick={() => handleVerifyOtp()}>
+                          Verify OTP
+                        </Button>
+                        <br></br>
+                      </Grid>
+                    )}
+                   
+                        </Grid>
+            <Grid item xs={5}>
   <Box display="flex" justifyContent="space-between" alignItems="center">
-    <Button
-      variant="contained"
-      color="success"
-      onClick={handleKaveriDocumentData}
-      style={{ height: '100%' }}
-    >
-      {t("Get OTP")}
-    </Button>
+    
+ 
+                    
+                    <Typography sx={{
+        fontWeight: 'bold',
+        fontFamily: "sans-serif",
+        marginTop: 2,
+        color: '#',
+        fontSize: {
+          xs: '1rem',
+          sm: '1rem',
+          md: '1.2rem',
+        }
+      }}>{t('MobileVerification')} : {formData.MOBILEVERIFY}</Typography>
   
   </Box>
 </Grid>
@@ -1592,8 +1517,8 @@ Search Property Request
 
                 label={t("Enter Email")}
               
-                name="SASNumber"
-                value={formData.SASNumber}
+                name="EMAIL1"
+                value={formData.EMAIL1}
                 onChange={handleChange}
                 InputProps={{
                   style: { backgroundColor: "#ffff" },

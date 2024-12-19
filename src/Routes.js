@@ -19,6 +19,7 @@ import OwnerDetails from './Pages/OwnerDetails';
 import LocationDetails from './Pages/LocationDetails';
 import ClassificationDocumentUploadPage from './Pages/ClassificationDocumentUploadPage';
 import EKYCResponse from './Pages/EKYCResponse';
+import EKYCSearchResponse from './Pages/EKYCSearchResponse';
 import ESignPage from './Pages/E-SignPage';
 import ErrorPage from './Pages/ErrorPage';
 import Header from './Header';
@@ -79,6 +80,9 @@ const AppRoutes = () => {
               <Route
               path="/EKYCResponse"
               element={<EKYCResponse />}  />
+                    <Route
+              path="/EKYCSearchResponse"
+              element={<EKYCSearchResponse />}  />
                <Route
               path="/UploadECPage"
               element={<UploadECPage />}  />

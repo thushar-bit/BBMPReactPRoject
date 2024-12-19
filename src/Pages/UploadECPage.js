@@ -425,7 +425,9 @@ console.log(error)
               progress: undefined,
             });
           }, 500)
+          setLoading(false);
           return
+         
         }
         setTimeout(() => {
         toast.success(`${t("Details Submitted Successfully")}`, {

@@ -231,7 +231,9 @@ const PropertyList = () => {
     });
   }
 
-
+const handleSearchNavigation = () => {
+  navigate("/SearchProperty")
+}
 
   // const handleNavigation = async (row) => {
   //   //  navigate('/AddressDetails')
@@ -810,7 +812,7 @@ console.log(txtDate); // Outputs: "20241018T13:44:09" (for example)
             />
           </Grid>
           
-          <Box display="flex" justifyContent="center" gap={2} mt={0.1} width="100%">
+          <Box display="flex" justifyContent="center" gap={2} mt={0.5} width="100%">
           <Button variant="contained" color="primary" onClick={handleBack}>
               {t("Previous")}
             </Button>
@@ -820,7 +822,9 @@ console.log(txtDate); // Outputs: "20241018T13:44:09" (for example)
             <Button variant="contained" color="primary" onClick={handleReset}>
               {t("Reset")}
             </Button>
-          
+            <Button variant="contained" color="primary" onClick={handleSearchNavigation}>
+              {t("Do not find my Property Draft eKhata")}
+            </Button>
           </Box>
         </Grid>
         <div>
