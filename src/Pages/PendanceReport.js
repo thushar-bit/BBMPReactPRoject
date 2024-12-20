@@ -64,6 +64,7 @@ const PendanceReport = () => {
 
 const handleChange = async (e) => {
   const { name, value } = e.target;
+  debugger
   if(name === "ZoneName" && formData.ReportType === "WardType" && value !== "All")
     {
   var response1 = await axiosInstance.get("BBMPCITZAPI/GetMasterWard?ZoneId=" + value)
@@ -78,6 +79,18 @@ const handleChange = async (e) => {
     {
   var response1 = await axiosInstance.get("Report/GET_WARD_BY_ARO?AROID=" + value)
   setWardData(response1.data.Table)
+  }
+  if(name === "ZoneName" && value === "All")
+    {
+      formData.AROName = ""
+      formData.WardName = ""
+      setAROData([])
+  setWardData([])
+  }
+  if(name === "AROName" && value === "All")
+    {
+     formData.WardName = ""
+  setWardData([])
   }
   
   setFormData({
@@ -97,44 +110,90 @@ const handleRadioChange = async (e) => {
   });
 }
 const handleValidation = (ZoneName,AROName,WardName) => {
+  debugger
+  if(formData.ReportType === "AROType"){
   if(ZoneName === "" || AROName === "" || WardName === "")
     {
     return "0";
   }
-  if(ZoneName === "All" && AROName === "All" && WardName === "All"){
+}
+else {
+  if(ZoneName === ""  || WardName === "")
+    {
+    return "0";
+  }
+}
+if(formData.ReportType === "AROType"){
+  if(ZoneName === "All" && AROName === "All" && WardName === "All" ){
     formData.ZoneName = 0;
     formData.AROName = 0;
     formData.WardName = 0;
     return "1"; //no condition
   }
   else if(AROName === "All" && WardName === "All")
-  {
-    formData.AROName = 0;
-    formData.WardName = 0;
-    return "2"; //based on zone
-  }
-  else if(WardName === "All")
     {
+      formData.AROName = 0;
       formData.WardName = 0;
+      return "2"; //based on zone
+    }
+    else if(WardName === "All"){
+      formData.WardName = 0;
+  
       return "3"; //based on zone and ARO
     }
     else {
       return "4" //based on 3 values
     }
+}
+else
+{
+   if(ZoneName === "All" && WardName === "All")
+    {
+      formData.ZoneName = 0;
+      formData.AROName = 0;
+      formData.WardName = 0;
+      return "1"; //no condition
+    }
+    else if(WardName === "All"){
+      formData.WardName = 0;
+      formData.AROName = 0;
+      return "2"; //based on zone 
+    }
+    else {
+      formData.AROName = 0;
+      return "5" //based on zone and ward
+    }
+}
+  
+  
+ 
+   
    
 } 
- const handleSearch = () => {
+ const handleSearch = async () => {
 
-    let valid = handleValidation(formData.ZoneName,formData.AROName,formData.ZoneName,formData.WardName);
+    let valid = handleValidation(formData.ZoneName,formData.AROName,formData.WardName);
     if(valid === "0"){
       toast.error("Please Select All fields");
       return
     }
-    const response = axiosInstance.get(`Report/GET_PENDENCE_REPORT?ZoneId=${formData.ZoneName}&AROId=${formData.AROName}&WARDID=${formData.WardName}&SEARCHTYPE=${valid}`);
+    debugger
+ setLoading(true)
+    const response = await axiosInstance.get(`Report/GET_PENDENCE_REPORT?ZoneId=${formData.ZoneName}&AROId=${formData.AROName}&WARDID=${formData.WardName}&SEARCHTYPE=${valid}`);
     setPropertyData(response.data.Table || [])
+  
+    
+    setFormData({
+      ...formData,
+      ZoneName: formData.ZoneName === 0 ? "All" : formData.ZoneName,
+      WardName:formData.WardName === 0 ? "All" : formData.WardName,
+      AROName:formData.AROName === 0 ? "All" : formData.AROName,
+    
+    });
+    setLoading(false)
  }
-const handleReset = () => {
-  const response = axiosInstance.get(`Report/GET_PENDENCE_REPORT?ZoneId=${0}&AROId=${0}&WARDID=${0}&SEARCHTYPE=${"1"}`);
+const handleReset = async () => {
+  const response =  await axiosInstance.get(`Report/GET_PENDENCE_REPORT?ZoneId=${0}&AROId=${0}&WARDID=${0}&SEARCHTYPE=${"1"}`);
   setPropertyData(response.data.Table || [])
   setFormData({
     ...formData,
@@ -298,10 +357,10 @@ const fetchDailyDetails = (row) => {
           
           <Box display="flex" justifyContent="center" gap={2} mt={0.1} width="100%">
          
-            <Button variant="contained" color="success" onClick={handleSearch}>
+            <Button variant="contained" color="success" onClick={async ()  =>handleSearch()}>
               {t("Search")}
             </Button>
-            <Button variant="contained" color="primary" onClick={handleReset}>
+            <Button variant="contained" color="primary" onClick={async ()  =>handleReset()}>
               {t("Reset")}
             </Button>
           
@@ -327,11 +386,11 @@ const fetchDailyDetails = (row) => {
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }} colSpan={1} align='center' >Case Worker</TableCell> 
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }} colSpan={1} align='center' >ARO</TableCell>
                 <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }} colSpan={1} align='center' >RO</TableCell>
-                <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}colSpan={1} align='center' >Total</TableCell>
+                {/* <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}colSpan={1} align='center' >Total</TableCell> */}
                 
               </TableRow>
             </TableHead>
-            {/* <TableBody>
+            <TableBody>
               {propertyData.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={12} align="center">
@@ -342,61 +401,26 @@ const fetchDailyDetails = (row) => {
                 propertyData
                   .map((row, index) => (
                     <TableRow key={index} style={{ height: '0.1em' }}>
-                      <TableCell>{(page * rowsPerPage) + index + 1}</TableCell> 
-                      <TableCell style={{ padding: '0.5em 1em' }} >23</TableCell>
-                      <TableCell style={{ padding: '0.5em 1em' }}>23</TableCell>
-                     
-                      
-                       
-                      <TableCell style={{ padding: '0.5em 1em' }}>223</TableCell>
-                      <TableCell style={{ width: '10rem',height:"0.1rem" }}>32</TableCell>
-                      <TableCell style={{ padding: '0.5em 1em' }}>23</TableCell>
-                     
+                    
+                
+                    
+                      <TableCell  style={{ padding: '0.5em 1em' }} colSpan={1} align='center' >{row.ZONENAME_EN}</TableCell>
+                      {formData.ReportType === "AROType" &&
+                      <TableCell  style={{ padding: '0.5em 1em' }} colSpan={1} align='center'>{row.WARDNAME_EN}</TableCell>
+}
+                      <TableCell  style={{ padding: '0.5em 1em' }} colSpan={1} align='center'>{row.WARDNAME_EN}</TableCell>
+                      <TableCell  style={{ padding: '0.5em 1em' }} colSpan={1} align='center'>{row.CW_PENDING_COUN}</TableCell>
+                      <TableCell  style={{ padding: '0.5em 1em' }} colSpan={1} align='center'>{row.ARO_PENDING_COUN}</TableCell>
+                      <TableCell  style={{ padding: '0.5em 1em' }} colSpan={1} align='center'>0</TableCell>
+                      {/* <TableCell  style={{ padding: '0.5em 1em' }} colSpan={1} align='center'>Total</TableCell> */}
                     </TableRow>
                   ))
               )}
-            </TableBody> */}
-            <TableBody>
-             
-                    <TableRow  style={{ height: '0.1em' }}>
-                    
-                      <TableCell style={{ padding: '0.5em 1em' }} colSpan={1} align='center' >RajarajeshwariNagar</TableCell>
-                      {formData.ReportType === "AROType" &&
-                      <TableCell style={{ padding: '0.5em 1em' }}colSpan={1} align='center' >RAJARAJESHWARINAGAR</TableCell>
-                     }
-{formData.ReportType === "AROType" ?
-                      <TableCell style={{ padding: '0.5em 1em' }}colSpan={1} align='center' >129 - Jnanabharathi ward</TableCell>
-                       :   <TableCell style={{ padding: '0.5em 1em' }}colSpan={1} align='center' > <Button color="primary"  onClick={() =>fetchDailyDetails("123")}>129 - Jnanabharathi ward</Button></TableCell>}
-                       
-                      <TableCell style={{ padding: '0.5em 1em' }}colSpan={1} align='center' >212312312312323</TableCell>
-                      <TableCell style={{ width: '10rem',height:"0.1rem" }}colSpan={1} align='center' >31231231232</TableCell>
-                      <TableCell style={{ padding: '0.5em 1em' }}colSpan={1} align='center' >21231231233</TableCell>
-                      <TableCell style={{ padding: '0.5em 1em' }}colSpan={1} align='center' >21231231233</TableCell>
-                    </TableRow>
-             
             </TableBody>
+            
           </Table>
         </TableContainer>
-        <TablePagination
-  rowsPerPageOptions={[10, 25, 50, 100]}
-  component="div"
-  count={propertyData.length > 0 ? propertyData[0].TOTAL_COUNT : 10} 
-  rowsPerPage={rowsPerPage}
-  page={page}
-  onPageChange={ async (event, newPage) => {
-    setPage(newPage);
-  await  getBBDRecord(newPage + 1, rowsPerPage); 
-  }}
-  onRowsPerPageChange={ async(event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-   await  getBBDRecord(1, parseInt(event.target.value, 10)); 
-  }}
-  labelRowsPerPage="Properties per Page:"
-  labelDisplayedRows={({ from, to, count }) => 
-    `Properties: ${from}–${to} of ${count !== -1 ? count : `more than ${to}`} `
-  }
-/>
+      
 
       </Box>
     </Container>

@@ -231,9 +231,61 @@ const PropertyList = () => {
     });
   }
 
-const handleSearchNavigation = () => {
-  navigate("/SearchProperty")
-}
+  const handleSearchNavigation = async () => {
+    debugger
+   
+             try{
+              let now = new Date();
+  let txtDate = now.getFullYear().toString() +
+                (now.getMonth() + 1).toString().padStart(2, '0') +
+                now.getDate().toString().padStart(2, '0') + 'T' +
+                now.getHours().toString().padStart(2, '0') + ':' +
+                now.getMinutes().toString().padStart(2, '0') + ':' +
+                now.getSeconds().toString().padStart(2, '0');
+             if(LoginData !== null && LoginData !== undefined){
+              const data = {
+                userId: LoginData.UserId,
+                propertyCode:"123",
+                propertyEPID:  "123" ,
+                sessionValues: "",
+                execTime: txtDate,
+                isLogin: true
+                }
+                
+                const response5 = await axiosInstance.post("Auth/EncryptJsons",data)
+                let re = response5.data;
+       
+                
+       sessionStorage.setItem('SETLOGINID', LoginData.UserId);
+             // window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_core/UploadECPage?BookDraft="+re;
+             window.location.href = "https://bbmpeaasthi.karnataka.gov.in/objection_form_test/SearchProperty?BookDraft="+re;
+            }
+            else {
+              alert("Please Log-In To Upload EC. Click On The File Objection Link After Logging In.")
+              const data = {
+                userId: "",
+                propertyCode: "123",
+                propertyEPID:  "123",
+                sessionValues: "",
+                execTime: txtDate,
+                isLogin: false
+                }
+               
+        
+        console.log(txtDate); // Outputs: "20241018T13:44:09" (for example)
+        
+              // let json = "{\"UserId\":\"" + Convert.ToString(Session["LoginId"]) + "\",\"PropertyCode\":\"\",\"PropertyEPID\":\"\",\"SessionValues\":[],\"ExecTime\":\"" + txtDate + "\"}";
+                
+                const response = await axiosInstance.post("Auth/EncryptJsons",data)
+           //   window.location.href = "https://bbmpeaasthi.karnataka.gov.in/CitzLogin.aspx?BookDraft="+response.data;
+             window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_test2/CitzLogin.aspx?BookDraft="+response.data;
+            }
+          }
+          catch(error){
+console.log(error)
+          }
+                    
+  }
 
   // const handleNavigation = async (row) => {
   //   //  navigate('/AddressDetails')
@@ -306,6 +358,7 @@ const handleSearchNavigation = () => {
                 sessionStorage.setItem('Reqid', JSON.stringify(row.REQID));
                 
        sessionStorage.setItem('SETLOGINID', LoginData.UserId);
+            //  window.location.href = "https://bbmpeaasthi.karnataka.gov.in/objection_form_test/UploadECPage?BookDraft="+re;
               window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_core/UploadECPage?BookDraft="+re;
             }
             else {
@@ -384,6 +437,7 @@ console.log(error)
        sessionStorage.setItem('OBJECTIONID', JSON.stringify(row.OBJECTIONID)); //should pass from the table.
        sessionStorage.setItem('SETPROPERYID', JSON.stringify(row.PROPERTYID));
        sessionStorage.setItem('SETLOGINID', JSON.stringify(LoginData.UserId));
+          //    window.location.href = "https://bbmpeaasthi.karnataka.gov.in/objection_form_test/ObjectorsPage?BookDraft="+re;
               window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_core/ObjectorsPage?BookDraft="+re;
             }
             else {
@@ -403,8 +457,8 @@ console.log(error)
                // let json = "{\"UserId\":\"" + Convert.ToString(Session["LoginId"]) + "\",\"PropertyCode\":\"\",\"PropertyEPID\":\"\",\"SessionValues\":[],\"ExecTime\":\"" + txtDate + "\"}";
                 
                 const response = await axiosInstance.post("Auth/EncryptJsons",data)
-              window.location.href = "https://bbmpeaasthi.karnataka.gov.in/CitzLogin.aspx?BookDraft="+response.data;
-            //  window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_test2/CitzLogin.aspx?BookDraft="+response.data;
+         //     window.location.href = "https://bbmpeaasthi.karnataka.gov.in/CitzLogin.aspx?BookDraft="+response.data;
+              window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_test2/CitzLogin.aspx?BookDraft="+response.data;
             }
           }
           catch(error){
@@ -822,9 +876,9 @@ console.log(txtDate); // Outputs: "20241018T13:44:09" (for example)
             <Button variant="contained" color="primary" onClick={handleReset}>
               {t("Reset")}
             </Button>
-            <Button variant="contained" color="primary" onClick={handleSearchNavigation}>
+            {/* <Button variant="contained" color="primary" onClick={handleSearchNavigation}>
               {t("Do not find my Property Draft eKhata")}
-            </Button>
+            </Button> */}
           </Box>
         </Grid>
         <div>

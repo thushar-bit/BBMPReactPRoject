@@ -362,7 +362,7 @@ try {
  
   
   const handleBack = () => {
-   
+   setPdfUrl('')
     navigate("/PropertyList");
   }
   const EditOwnerDetailsFromEKYCData = async (txno, ownerType) => {
@@ -642,8 +642,8 @@ console.log(error)
   wardId: formData.wardName || null,
   searchName: formData.SEARCHNAME || null,
   sasApplicationNumber: formData.SASNumber || null,
-  //loginId: JSON.parse(sessionStorage.getItem('SETLOGINID')).toString()
-  loginId:"crc"
+  loginId: JSON.parse(sessionStorage.getItem('SETLOGINID')).toString()
+ // loginId:"crc"
       };
       
       try {
@@ -755,7 +755,7 @@ Search Property Request
         Download PDF
       </Button>
 
-      <Button onClick={() => setPdfUrl('')} color="primary">
+      <Button onClick={() => handleBack()} color="primary">
         Close PDF
       </Button>
     </DialogActions>
