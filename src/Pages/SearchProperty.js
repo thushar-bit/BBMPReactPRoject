@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   TextField, Button, Grid, Box, Container, Typography, CircularProgress, Tooltip, IconButton, 
   FormControl,  MenuItem, Select, InputLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,Radio
-  ,FormControlLabel,RadioGroup, Card, Divider,Dialog, DialogContent, DialogActions
+  ,FormControlLabel,RadioGroup, Card, Divider,Dialog, DialogContent, DialogActions,Link
 } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import { toast, ToastContainer } from 'react-toastify';
@@ -76,8 +76,8 @@ const SearchProperty = () => {
   const [timer, setTimer] = useState(30); 
   const [countdownInterval, setCountdownInterval] = useState(null);
   const [pdfUrl, setPdfUrl] = useState('');
-  const [IsAAdhar,setIsAAdhar] = useState(false)
-  const [IsSASNumber,setIsSASNumber] = useState(false)
+  const [IsAAdhar,setIsAAdhar] = useState(true)
+  const [IsSASNumber,setIsSASNumber] = useState(true)
   
  
  
@@ -143,16 +143,22 @@ const SearchProperty = () => {
 debugger
     const { name, value } = e.target;
     if(name === "IsAAdharNumber"){
-        if(value === "Y"){
+        if(value === "N"){
             setIsAAdhar(true)
+           
         }
         else {
-            setIsAAdhar(false)
+          setIsAAdhar(false)
+          var response = await axiosInstance.post("E-KYCAPI/INS_NCL_SEARCH_MAIN")
+
+
+    window.location.href = response.data; 
+            
         }
       
     }
     if(name === "IsSASNumber"){
-        if(value === "Y"){
+        if(value === "N"){
             setIsSASNumber(true)
         }
         else {
@@ -270,14 +276,7 @@ debugger
         
 
         const response = await axiosInstance.get(
-          'BBMPCITZAPI/GetTaxDetails', {
-          params: {
-            applicationNo: formData.SASNumber,
-            propertycode: "123",
-            P_BOOKS_PROP_APPNO: "123",
-            loginId: 'crc'
-          }
-        }
+          `SearchAPI/SEL_OFFLINE_PTAX_BY_APPLICATION_SEARCH?ApplicationNo=${formData.SASNumber}`
         );
 
         const { Table = [] } = response.data;
@@ -307,6 +306,11 @@ try {
     if (txnno !== null && txnno !== undefined) {
      debugger
       console.log('E-KYC completed successfully with txnno:', txnno);
+      setFormData({
+        ...formData,
+        IsAAdharNumber: "Y"
+      });
+      setIsAAdhar(false)
       setTimeout(() => {
         toast.success("E-KYC completed successfully");
       }, 500);
@@ -329,17 +333,17 @@ try {
 
   const handleIDFileChange = (e) => {
     const file = e.target.files[0];
-    const maxSize = 5 * 1024 * 1024;
+    const maxSize = 200 * 1024;
     if (file && file.size > maxSize) {
-      toast.error(`${t('fileSizeExceeded')}`);
+      toast.error(`${t("File size exceeds 200 KB limit")}`);
       e.target.value = null;
       setSelectedIDFile(null);
       return;
     }
     const fileName = file.name;
     const fileExtension = fileName.split('.').pop().toLowerCase();
-    if (!['pdf'].includes(fileExtension)) {
-      toast.error(`${t("selectPdfFileOnly")}`);
+    if (!['jpg', 'jpeg',].includes(fileExtension)) {
+      toast.error(`${t("Please Select Only '.jpg','.jpeg' File")}`);
       e.target.value = null;
       setSelectedIDFile(null);
       return
@@ -363,7 +367,7 @@ try {
   
   const handleBack = () => {
    setPdfUrl('')
-    navigate("/PropertyList");
+   window.location.href = "https://bbmpeaasthi.karnataka.gov.in";
   }
   const EditOwnerDetailsFromEKYCData = async (txno, ownerType) => {
     
@@ -481,7 +485,7 @@ try {
     let propertyDocumentID = "";
   debugger
     try {
-      if(formData.IsAAdharNumber === "Y"){
+      if(formData.IsAAdharNumber === "N"){
     if (selectedIDFile !== null) {
       propertyDocumentID = await getPropertyphoto(selectedIDFile);
     }
@@ -535,14 +539,13 @@ try {
         return false
       }
     }
-    else if(formData.IsAAdharNumber === "N"){
+    else if(formData.IsAAdharNumber === "Y"){
       if(tablesdata8.length ===0){
         toast.error("Please Verify with Atleast one EKYC Owner")
         return false
       }
     }
-    if(formData.IsSASNumber === "N")
-{
+  
 if(formData.SASNumber === null || formData.SASNumber === undefined || formData.SASNumber === ""){
   toast.error("Please Enter the SAS Application Number")
   return false
@@ -551,15 +554,8 @@ if(SAStableData.length === 0){
   toast.error("Please Verify with the SAS Application Number")
   return false
 }
-}
-if(formData.ZoneName === "" || formData.ZoneName === null || formData.ZoneName === undefined){
-  toast.error("Please Select your Zone Name")
-  return false
-}
-if(formData.wardName === "" || formData.wardName === null || formData.wardName === undefined){
-  toast.error("Please Select your Ward Name")
-  return false
-}
+
+
       return true
     }
       catch(error){
@@ -618,7 +614,7 @@ console.log(error)
         searchreqId = JSON.parse(sessionStorage.getItem("SETSEARCHREQID"))
       }
       debugger
-      if(formData.IsAAdharNumber === "N"){
+      if(formData.IsAAdharNumber === "Y"){
         formData.SEARCHNAME = tablesdata8[0].SEARCHNAME_EN
       }
       
@@ -638,12 +634,12 @@ console.log(error)
   mobileNumber: formData.MOBILENUMBER || null,
   mobiverify: formData.MOBILEVERIFY || null,
   email: formData.EMAIL1 || null,
-  zoneId: formData.ZoneName || null,
-  wardId: formData.wardName || null,
+  zoneId: SAStableData[0].ZONEID || null,
+  wardId: SAStableData[0].WARDID || null,
   searchName: formData.SEARCHNAME || null,
   sasApplicationNumber: formData.SASNumber || null,
-  loginId: JSON.parse(sessionStorage.getItem('SETLOGINID')).toString()
- // loginId:"crc"
+ // loginId: JSON.parse(sessionStorage.getItem('SETLOGINID')).toString()
+  loginId:"crc"
       };
       
       try {
@@ -718,7 +714,7 @@ console.log(error)
   }
 
   return (
-    <Container maxWidth="xl">
+    <Container maxWidth="lg">
       <Box sx={{ backgroundColor: '#f0f0f0', padding: 1, borderRadius: 2, mt: 2 }}>
         <ToastContainer />
         <Typography
@@ -756,14 +752,32 @@ Search Property Request
       </Button>
 
       <Button onClick={() => handleBack()} color="primary">
-        Close PDF
+        Close PDF and Finish
       </Button>
     </DialogActions>
   </Dialog>
 )}
 
       
-
+<Grid item xs={12} sm={6}>
+  <Box display="flex" alignItems="center">
+    <Typography variant="body1" sx={{ ml: 1, mr: 2 }}>
+      AADHAR Available ?
+    </Typography>
+    <FormControl component="fieldset" sx={{ml: 1, mb: 0.5 }}>
+      <RadioGroup
+        row
+        name="IsAAdharNumber"
+        value={formData.IsAAdharNumber}
+        onChange={handleChange}
+        sx={{ display: 'flex', alignItems: 'center' }}
+      >
+        <FormControlLabel value="Y" control={<Radio disabled={!isEditable} />} label={t("Yes")} sx={{ mr: 4 }} />
+        <FormControlLabel value="N" control={<Radio disabled={!isEditable} />} label={t("No")} />
+      </RadioGroup>
+    </FormControl>
+  </Box>
+</Grid> 
              
 {IsAAdhar === false && 
 <>
@@ -775,7 +789,7 @@ Search Property Request
             sx={{
               fontWeight: 'bold',
               fontFamily: "sans-serif",
-              marginBottom: 3,
+              
               color: '#',
               fontSize: {
                 xs: '1.5rem',
@@ -786,22 +800,9 @@ Search Property Request
           >
            Aadhar Authentication  
           </Typography>
-          
-          <Grid item xs={12} sm={6}>
-  <Box display="flex" justifyContent="flex-end" alignItems="center">
-    {tablesdata8.length === 0 && (
-      <Button variant="contained" color="primary" onClick={() => AddEKYCOwner()}>
-        {t("VerifyE-KYC")}
-      </Button>
-    )}
-  </Box>
-</Grid>
-
 <br></br>
 <br></br>
-<br></br>
-        
-      <Grid container spacing={3}>
+      <Grid container >
       {EkycResponseData !== null &&
       <>
       <Grid item xs={12} sm={2}>
@@ -974,8 +975,10 @@ Search Property Request
                   </Grid>
                   
                   <br></br>
-                  <Grid item xs={12} sm={12}>
-                    <Box display="flex" justifyContent="center" gap={2}>
+                  <br></br>
+                  <br></br>
+                  <Grid item xs={15} sm={12}>
+                    <Box display="flex" justifyContent="center" gap={10}>
                         <Button variant="contained" color="primary" onClick={() => handleSave("EKYC")}>
                           {t("Save")}
                         </Button>
@@ -988,6 +991,8 @@ Search Property Request
                   
       }
         </Grid>
+        {tablesdata8.length > 0 && 
+        <>
         <Typography>E-Kyc Verifed Details</Typography>
 <TableContainer component={Paper} sx={{ mt: 4 }}>
   <Table>
@@ -1042,110 +1047,129 @@ Search Property Request
   </Table>
 </TableContainer>
 </>
+        }
+</>
+
 }
 <br></br>
-<Grid item xs={12} sm={6}>
-  <Box display="flex" alignItems="center">
-    <Typography variant="body1" sx={{ ml: 1, mr: 2 }}>
-      Do not Have Aadhar 
-    </Typography>
-    <FormControl component="fieldset" sx={{ml: 1, mb: 0.5 }}>
-      <RadioGroup
-        row
-        name="IsAAdharNumber"
-        value={formData.IsAAdharNumber}
-        onChange={handleChange}
-        sx={{ display: 'flex', alignItems: 'center' }}
-      >
-        <FormControlLabel value="Y" control={<Radio disabled={!isEditable} />} label={t("Yes")} sx={{ mr: 4 }} />
-        <FormControlLabel value="N" control={<Radio disabled={!isEditable} />} label={t("No")} />
-      </RadioGroup>
-    </FormControl>
-  </Box>
-</Grid>         
-
-
 <br></br>
 
 
 {IsAAdhar === true &&
 <>
-<Grid container spacing={2}>
- 
-<Grid item xs={4} sm={4}>
-                  <TextField
-                    fullWidth
-                    label={<LabelWithAsterisk text={t('doorPlotNo')} />}
-                    name="DoorPlotNo"
-                    value={formData.DoorPlotNo}
-                    onChange={handleChange}
-                    variant={isEditable ? "outlined" : "filled"}
-                    InputProps={{
-                      readOnly: !isEditable,
-                      style: { backgroundColor: !isEditable ? '' : "#ffff" },
+<Grid container spacing={2} >
+  {/* Door No */}
+  <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={1}>
+    <Grid item xs={12} sm={3.2} style={{ textAlign: "left" }} >
+      <span style={{ fontWeight: "bold" }}>{<LabelWithAsterisk text={t('Any one Owner Name of the Property')} />}</span>
+    </Grid>
+    <Grid item xs={12} sm={5.9}>
+    <TextField
                     
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={4} sm={4}>
-                  <TextField
-                    fullWidth
-                    label={t("buildingLandName")}
-                    name="buildingname"
-                    value={formData.buildingname}
+                    fullWidth 
+                    label={<LabelWithAsterisk text={"Enter Owner Name"} />}
+                    name="SEARCHNAME"
+                    value={formData.SEARCHNAME}
                     onChange={handleChange}
-                    variant={isEditable ? "outlined" : "filled"}
-                    InputProps={{
-                      readOnly: !isEditable,
-                      style: { backgroundColor: !isEditable ? '' : "#ffff" },
-                     
-                    }}
-                  />
-                </Grid>
-
-                <Grid item xs={4} sm={4}>
-                  <TextField
-                    fullWidth
-                   label={<LabelWithAsterisk text={t('areaLocality')} />}
-                    name="areaorlocality"
-                    value={formData.areaorlocality}
-                    onChange={handleChange}
-                 //   onBlur={handleBlur}
-                  
-                    variant={isEditable ? "outlined" : "filled"}
-                    InputProps={{
-                      readOnly: !isEditable,
-                      style: { backgroundColor: !isEditable ? '' : "#ffff" },
-                     
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={4} sm={4}>
-                  <TextField
-                    fullWidth
-                    label={<LabelWithAsterisk text={t('pincode')} />}
-
-                    name="pincode"
-                    type="number"
-                    value={formData.pincode}
-                    onChange={handleChange}
-                    variant={isEditable ? "outlined" : "filled"}
-                    InputProps={{
-                      readOnly: !isEditable,
-                      style: { backgroundColor: !isEditable ? '' : "#ffff" },
-                    
-                    }}
-                  />
-                </Grid>
                 
-                </Grid>
+                    variant={isEditable ? "outlined" : "filled"}
+                    InputProps={{
+                      readOnly: !isEditable,
+                      style: { backgroundColor: !isEditable ? '' : "#ffff" },
+                      
+                    }}
+                  />
+    </Grid>
+  </Grid>
+  <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={2}>
+    <Grid item xs={12} sm={3} style={{ textAlign: "right" }}>
+      <span style={{ fontWeight: "bold" }}>Door No</span>
+    </Grid>
+    <Grid item xs={12} sm={6}>
+      <TextField
+        fullWidth
+        label={<LabelWithAsterisk text={t('doorPlotNo')} />}
+        name="DoorPlotNo"
+        value={formData.DoorPlotNo}
+        onChange={handleChange}
+        variant={isEditable ? "outlined" : "filled"}
+        InputProps={{
+          readOnly: !isEditable,
+          style: { backgroundColor: !isEditable ? '' : "#ffff" },
+        }}
+      />
+    </Grid>
+  </Grid>
 
-              <br></br>
-              <br></br>
+  {/* Building/Land Name */}
+  <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={2}>
+    <Grid item xs={12} sm={3} style={{ textAlign: "right" }}>
+      <span style={{ fontWeight: "bold" }}>{t("buildingLandName")}</span>
+    </Grid>
+    <Grid item xs={12} sm={6}>
+      <TextField
+        fullWidth
+        label={t("buildingLandName")}
+        name="buildingname"
+        value={formData.buildingname}
+        onChange={handleChange}
+        variant={isEditable ? "outlined" : "filled"}
+        InputProps={{
+          readOnly: !isEditable,
+          style: { backgroundColor: !isEditable ? '' : "#ffff" },
+        }}
+      />
+    </Grid>
+  </Grid>
 
-              <Grid item xs={12} sm={6}>
-              <InputLabel>Alternate ID Type<span style={{ color: 'red' }}> *</span>
-              </InputLabel>
+  {/* Area/Locality */}
+  <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={2}>
+    <Grid item xs={12} sm={3} style={{ textAlign: "right" }}>
+      <span style={{ fontWeight: "bold" }}>{<LabelWithAsterisk text={t('areaLocality')} />}</span>
+    </Grid>
+    <Grid item xs={12} sm={6}>
+      <TextField
+        fullWidth
+        label={<LabelWithAsterisk text={t('areaLocality')} />}
+        name="areaorlocality"
+        value={formData.areaorlocality}
+        onChange={handleChange}
+        variant={isEditable ? "outlined" : "filled"}
+        InputProps={{
+          readOnly: !isEditable,
+          style: { backgroundColor: !isEditable ? '' : "#ffff" },
+        }}
+      />
+    </Grid>
+  </Grid>
+
+  {/* Pincode */}
+  <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={2}>
+    <Grid item xs={12} sm={3} style={{ textAlign: "right" }}>
+      <span style={{ fontWeight: "bold" }}>{<LabelWithAsterisk text={t('pincode')} />}</span>
+    </Grid>
+    <Grid item xs={12} sm={6}>
+      <TextField
+        fullWidth
+        label={<LabelWithAsterisk text={t('pincode')} />}
+        name="pincode"
+        type="number"
+        value={formData.pincode}
+        onChange={handleChange}
+        variant={isEditable ? "outlined" : "filled"}
+        InputProps={{
+          readOnly: !isEditable,
+          style: { backgroundColor: !isEditable ? '' : "#ffff" },
+        }}
+      />
+    </Grid>
+  </Grid>
+  <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={2}>
+    <Grid item xs={12} sm={3} style={{ textAlign: "right" }}>
+      <span style={{ fontWeight: "bold" }}>{<LabelWithAsterisk text={t('Select ID card')} />}</span>
+    </Grid>
+    <Grid item xs={12} sm={6}>
+    
                   <FormControl
                     fullWidth
 
@@ -1163,11 +1187,7 @@ Search Property Request
                       sx={{ backgroundColor: !isEditable ? '' : "#ffff" }}
                     >
                       <MenuItem value="">--Select--</MenuItem>
-                      {/* {tableData.map((item) => (
-                        <MenuItem key={item.STREETID} value={item.STREETID}>
-                          {item.STREETNAME1}
-                        </MenuItem>
-                      ))} */}
+                    
                        <MenuItem value="1">Voter ID</MenuItem>
                        <MenuItem value="2">Passport Number</MenuItem>
                        <MenuItem value="3">Driving License</MenuItem>
@@ -1175,18 +1195,37 @@ Search Property Request
                       
                     </Select>
                   </FormControl>
-                </Grid>
-               
+    </Grid>
+  </Grid>
+  <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={2}>
+    <Grid item xs={12} sm={3} style={{ textAlign: "right" }}>
+      <span style={{ fontWeight: "bold" }}>{<LabelWithAsterisk text={t('Id Card Number')} />}</span>
+    </Grid>
+    <Grid item xs={12} sm={6}>
       
-        
-      
-              <Grid item xs={12} sm={6}>
-              <Card sx={{ p: 3, boxShadow: 3, borderRadius: 2, border: '1px solid #e0e0e0' }}>
-                <Box display="flex" alignItems="center" flexDirection="column" textAlign="center" mb={2}>
-                  <Typography variant="h6" color="primary" gutterBottom>
-                  {t("Scan and Upload relevant ID")}
-                  </Typography>
-                  <Divider sx={{ width: '100%', mb: 2 }} />
+    <TextField
+    fullWidth
+                    label={<LabelWithAsterisk text={"Enter ID Card Number"} />}
+                    name="IDDetails"
+                    value={formData.IDDetails}
+                    onChange={handleChange}
+                    
+                    variant={isEditable ? "outlined" : "filled"}
+                    InputProps={{
+                      readOnly: !isEditable,
+                      style: { backgroundColor: !isEditable ? '' : "#ffff" },
+                      
+                    }}
+                  />
+    </Grid>
+  </Grid>
+  <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={2}>
+    <Grid item xs={12} sm={3} style={{ textAlign: "right" }}>
+      <span style={{ fontWeight: "bold" }}>{<LabelWithAsterisk text={t('Scan and Upload Relavant ID')} />}</span>
+    </Grid>
+    <Grid item xs={12} sm={6}>
+    <Box display="flex" alignItems="center" flexDirection="column" textAlign="center" mb={2}>
+                
     
                   
     
@@ -1194,10 +1233,10 @@ Search Property Request
                     component="label"
                     variant="contained"
                     startIcon={<CloudUploadIcon />}
-                    sx={{ mt: 2, mb: 2, px: 3, py: 1 }}
+                    sx={{ mt: 1, mb: 1, px: 1, py: 1 }}
                   >
                     {t("Uploadfile")}
-                    <VisuallyHiddenInput type="file" accept=".pdf" onChange={handleIDFileChange} />
+                    <VisuallyHiddenInput type="file" accept=".jpg,.jpeg" onChange={handleIDFileChange} />
                   </Button>
     
                   {selectedIDFile && (
@@ -1210,7 +1249,7 @@ Search Property Request
                   )}
     
                   <Typography variant="body2" sx={{ mt: 1, color: '#df1414',fontSize:'1rem' }}>
-                    {t("MaximumFileSizeMB")}
+                  Maximum File Size should not exceed 200 KB
                   </Typography>
                 </Box>
     
@@ -1227,219 +1266,17 @@ Search Property Request
                     </IconButton>
                   </Box>
                 )}
-              </Card>
-            </Grid>
-
-<br></br>
-
-<Grid item xs={14} sm={7}>
-
-          <Box display="flex" alignItems="center">
-                  
-                    <TextField
-                    
-                    multiline 
-                    label={<LabelWithAsterisk text={"Enter ID Card Number"} />}
-                    name="IDDetails"
-                    value={formData.IDDetails}
-                    onChange={handleChange}
-                    sx={{ ml: 1, width: '50%' }} 
-                    variant={isEditable ? "outlined" : "filled"}
-                    InputProps={{
-                      readOnly: !isEditable,
-                      style: { backgroundColor: !isEditable ? '' : "#ffff" },
-                      
-                    }}
-                  />
-
-                  </Box>
-                  
-</Grid>
-<br></br>
-<Grid item xs={14} sm={7}>
-
-          <Box display="flex" alignItems="center">
-                  
-                    <TextField
-                    
-                    multiline 
-                    label={<LabelWithAsterisk text={"Enter Owner Name"} />}
-                    name="SEARCHNAME"
-                    value={formData.SEARCHNAME}
-                    onChange={handleChange}
-                    sx={{ ml: 1, width: '50%' }} 
-                    variant={isEditable ? "outlined" : "filled"}
-                    InputProps={{
-                      readOnly: !isEditable,
-                      style: { backgroundColor: !isEditable ? '' : "#ffff" },
-                      
-                    }}
-                  />
-
-                  </Box>
-                  
-</Grid>
-</>
-}
-<br></br>
-{IsSASNumber  === false&& 
-<>
-<Grid container spacing={6} alignItems="center">
-            <Grid item xs={8}>
-              <TextField
-                fullWidth
-
-                label={< LabelWithAsterisk text={t("Enter 10 Digit SAS Application Number")} />}
-              
-                name="SASNumber"
-                value={formData.SASNumber}
-                onChange={handleChange}
-                InputProps={{
-                  style: { backgroundColor: "#ffff" },
-                  endAdornment: (
-                    <Tooltip title={t("propertyEIDInfo")}>
-                      <IconButton color="primary">
-                        <InfoIcon />
-                      </IconButton>
-                    </Tooltip>
-                  )
-                }}
-              />
-            </Grid>
-            <Grid item xs={3}>
-  <Box display="flex" justifyContent="space-between" alignItems="center">
-    <Button
-      variant="contained"
-      color="success"
-      onClick={handleSASClick}
-      style={{ height: '100%' }}
-    >
-     {t("VerifySASApplicationNumber")}
-    </Button>
-  
-  </Box>
-</Grid>
-</Grid>
-
-
-
-
-
-<TableContainer component={Paper} sx={{ mt: 3 ,alignItems:"center"}}>
-<Table>
-<TableHead>
-  <TableRow>
-    <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("ApplicationNumber")}</TableCell>
-    <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>PID</TableCell>
-    <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("KHATHASURVEYNO")}</TableCell>
-    <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("OwnerName")}</TableCell>
-    <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("PropertyAddress")}</TableCell>
-    <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("PropertyNature")}</TableCell>
-    <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("SiteArea")}</TableCell>
-    <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("BuiltUpArea")}</TableCell>
-    <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}></TableCell>
-  </TableRow>
-</TableHead>
-<TableBody>
-  {SAStableData.length === 0 ? (
-    <TableRow>
-      <TableCell colSpan={12} align="center">
-        {t("Nodataavailable")}
-      </TableCell>
-    </TableRow>
-  ) : (
-    SAStableData.map((row,index) => (
-      <TableRow key={index}>
-        <TableCell>{row.APPLICATIONNUMBER}</TableCell>
-        <TableCell>{row.PID}</TableCell>
-        <TableCell>{row.KHATHA_SURVEY_NO}</TableCell>
-        <TableCell>{row.OWNERNAME}</TableCell>
-        <TableCell>{row.PROPERTYADDRESS}</TableCell>
-        <TableCell>{row.NATUREOFPROPERTY}</TableCell>
-        <TableCell>{row.SITEAREA}</TableCell>
-        <TableCell>{row.BUILTUPAREA}</TableCell>
-        <TableCell><Button variant='outlined' color='error' onClick={handleSASDelete} disabled={!isEditable}>Delete</Button></TableCell>
-      </TableRow>
-    ))
-  )}
-</TableBody>
-</Table>
-</TableContainer>
-</>
-}
-<Grid item xs={12} sm={6}>
-  <Box display="flex" alignItems="center">
-    <Typography variant="body1" sx={{ ml: 1, mr: 2 }}>
-      Do not Have SAS Application Number 
-    </Typography>
-    <FormControl component="fieldset" sx={{ml: 1, mb: 0.5 }}>
-      <RadioGroup
-        row
-        name="IsSASNumber"
-        value={formData.IsSASNumber}
-        onChange={handleChange}
-        sx={{ display: 'flex', alignItems: 'center' }}
-      >
-        <FormControlLabel value="Y" control={<Radio disabled={!isEditable} />} label={t("Yes")} sx={{ mr: 4 }} />
-        <FormControlLabel value="N" control={<Radio disabled={!isEditable} />} label={t("No")} />
-      </RadioGroup>
-    </FormControl>
-  </Box>
-</Grid>    
-<br></br>
-<Grid 
-  container 
-  spacing={5} 
-  alignItems="center" 
-  justifyContent="center"
->
-  <Grid item xs={12} sm={5} md={4}>
-    <FormControl fullWidth sx={{ marginBottom: 3 }}>
-      <InputLabel>{t("Select Zone Name")}</InputLabel>
-      <Select
-        name="ZoneName"
-        value={formData.ZoneName}
-        onChange={handleChange}
-        sx={{ backgroundColor: "#ffff" }}
-      >
-        <MenuItem value="">--Select--</MenuItem>
-        {zoneData.map((item) => (
-          <MenuItem key={item.ZONEID} value={item.ZONEID}>
-            {item.ZONENAME}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
+   
+    </Grid>
   </Grid>
-
-  <Grid item xs={12} sm={3} md={4}>
-    <FormControl fullWidth sx={{ marginBottom: 3 }}>
-      <InputLabel>{t("Select Ward Name")}</InputLabel>
-      <Select
-        name="wardName"
-        value={formData.wardName}
-        onChange={handleChange}
-        sx={{ backgroundColor: "#ffff" }}
-      >
-        <MenuItem value="">--Select--</MenuItem>
-        {WardData.map((item) => (
-          <MenuItem key={item.WARDID} value={item.WARDID}>
-            {item.WARDNAME}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
-  </Grid>
-</Grid>
-
-          {IsAAdhar === true &&
-            <>
-<Grid container spacing={6} alignItems="center">
-<Grid item xs={12} sm={6}>
-                    
-                    <TextField
+  <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={2}>
+    <Grid item xs={12} sm={3} style={{ textAlign: "right" }}>
+      <span style={{ fontWeight: "bold" }}>{<LabelWithAsterisk text={t('Mobile Number')} />}</span>
+    </Grid>
+    <Grid item xs={12} sm={6}>
+    <TextField
                       fullWidth
-                      label={< LabelWithAsterisk text={t("MobileNumber")} />}
+                      label={< LabelWithAsterisk text={t("Enter Mobile Number")} />}
                       name="MOBILENUMBER"
                       value={formData.MOBILENUMBER || ''}
                       onChange={handleChange}
@@ -1488,31 +1325,32 @@ Search Property Request
                       </Grid>
                     )}
                    
-                        </Grid>
-            <Grid item xs={5}>
-  <Box display="flex" justifyContent="space-between" alignItems="center">
+                     <Box display="flex" justifyContent="space-between" alignItems="center">
     
  
                     
-                    <Typography sx={{
-        fontWeight: 'bold',
-        fontFamily: "sans-serif",
-        marginTop: 2,
-        color: '#',
-        fontSize: {
-          xs: '1rem',
-          sm: '1rem',
-          md: '1.2rem',
-        }
-      }}>{t('MobileVerification')} : {formData.MOBILEVERIFY}</Typography>
-  
-  </Box>
+    <Typography sx={{
+fontWeight: 'bold',
+fontFamily: "sans-serif",
+marginTop: 2,
+color: '#',
+fontSize: {
+xs: '1rem',
+sm: '1rem',
+md: '1.2rem',
+}
+}}>{t('MobileVerification')} : {formData.MOBILEVERIFY}</Typography>
+
+</Box>
 </Grid>
-</Grid>
-<br></br>
-<Grid container spacing={6} alignItems="center">
-            <Grid item xs={8}>
-              <TextField
+    
+  </Grid>
+  <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={2}>
+    <Grid item xs={12} sm={3} style={{ textAlign: "right" }}>
+      <span style={{ fontWeight: "bold" }}>Email</span>
+    </Grid>
+    <Grid item xs={12} sm={6}>
+    <TextField
                 fullWidth
 
                 label={t("Enter Email")}
@@ -1525,10 +1363,131 @@ Search Property Request
                 
                 }}
               />
-            </Grid>
-      
+    </Grid>
+  </Grid>
 </Grid>
-          </>}
+</>
+}
+<br></br>
+
+
+<Grid item xs={12} sm={6}>
+  <Box display="flex" alignItems="center">
+    <Typography variant="body1" sx={{ ml: 1, mr: 2 }}>
+       SAS Application Number Available ?
+    </Typography>
+    <FormControl component="fieldset" sx={{ml: 1, mb: 0.5 }}>
+      <RadioGroup
+        row
+        name="IsSASNumber"
+        value={formData.IsSASNumber}
+        onChange={handleChange}
+        sx={{ display: 'flex', alignItems: 'center' }}
+      >
+        <FormControlLabel value="Y" control={<Radio disabled={!isEditable} />} label={t("Yes")} sx={{ mr: 4 }} />
+        <FormControlLabel value="N" control={<Radio disabled={!isEditable} />} label={t("No")} />
+      </RadioGroup>
+    </FormControl>
+  </Box>
+</Grid>    
+<br></br>
+{IsSASNumber  === false&& 
+<>
+<Grid container spacing={6} alignItems="center">
+            <Grid item xs={8}>
+              <TextField
+                fullWidth
+
+                label={< LabelWithAsterisk text={t("Enter 10 Digit SAS Application Number")} />}
+              
+                name="SASNumber"
+                value={formData.SASNumber}
+                onChange={handleChange}
+                InputProps={{
+                  style: { backgroundColor: "#ffff" },
+                  endAdornment: (
+                    <Tooltip title={t("propertyEIDInfo")}>
+                      <IconButton color="primary">
+                        <InfoIcon />
+                      </IconButton>
+                    </Tooltip>
+                  )
+                }}
+              />
+            </Grid>
+            <Grid item xs={3}>
+  <Box display="flex" justifyContent="space-between" alignItems="center">
+    <Button
+      variant="contained"
+      color="success"
+      onClick={handleSASClick}
+      style={{ height: '100%' }}
+    >
+     {t("VerifySASApplicationNumber")}
+    </Button>
+  
+  </Box>
+</Grid>
+</Grid>
+
+
+
+
+{SAStableData.length > 0 && 
+<TableContainer component={Paper} sx={{ mt: 3 ,alignItems:"center"}}>
+<Table>
+<TableHead>
+  <TableRow>
+    <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("ApplicationNumber")}</TableCell>
+    <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>PID</TableCell>
+    <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("KHATHASURVEYNO")}</TableCell>
+    <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("OwnerName")}</TableCell>
+    <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("PropertyAddress")}</TableCell>
+    <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("PropertyNature")}</TableCell>
+    <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("SiteArea")}</TableCell>
+    <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("BuiltUpArea")}</TableCell>
+    <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Zone Number")}</TableCell>
+    <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Ward Number")}</TableCell>
+    <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}></TableCell>
+  </TableRow>
+</TableHead>
+<TableBody>
+  {SAStableData.length === 0 ? (
+    <TableRow>
+      <TableCell colSpan={12} align="center">
+        {t("Nodataavailable")}
+      </TableCell>
+    </TableRow>
+  ) : (
+    SAStableData.map((row,index) => (
+      <TableRow key={index}>
+        <TableCell>{row.APPLICATIONNUMBER}</TableCell>
+        <TableCell>{row.PID}</TableCell>
+        <TableCell>{row.KHATHA_SURVEY_NO}</TableCell>
+        <TableCell>{row.OWNERNAME}</TableCell>
+        <TableCell>{row.PROPERTYADDRESS}</TableCell>
+        <TableCell>{row.NATUREOFPROPERTY}</TableCell>
+        <TableCell>{row.SITEAREA}</TableCell>
+        <TableCell>{row.BUILTUPAREA}</TableCell>
+        <TableCell>{row.ZONENUMBER}</TableCell>
+        <TableCell>{row.WARDNUMBER}</TableCell>
+        <TableCell><Button variant='outlined' color='error' onClick={handleSASDelete} disabled={!isEditable}>Delete</Button></TableCell>
+      </TableRow>
+    ))
+  )}
+</TableBody>
+</Table>
+</TableContainer>
+}
+</>
+}
+{IsSASNumber  === true&& 
+  <>
+  <Typography>If SAS Application Number is Not Available .Please Apply on <Link></Link></Typography>
+  </>
+}
+
+
 <br></br>
               <Grid item xs={12}>
                 <Box display="flex" justifyContent="center" gap={2}>
