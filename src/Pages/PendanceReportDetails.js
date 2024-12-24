@@ -59,8 +59,8 @@ const PendanceReportDetails = () => {
             setWardNumber(WARDNUMBER)
             setTypeOfRole(TYPEOFROLE)
             let response = await axiosInstance.get(`Report/GET_PENDENCE_REPORT_DETAILS?WARDID=${WARDNUMBER}&PROPERTYID=${"0"}&TYPEOFROLE=${TYPEOFROLE}&PAGENO=${page}&PAGECOUNT=${rowsPerPage}`)
-        setPropertyData(response.data.Table1 || [])
-        setLoginDetails(response.data.Table || [])
+        setPropertyData(response.data.Table || [])
+        setLoginDetails(response.data.Table1 || [])
         }
 catch(error){
    

@@ -53,7 +53,7 @@ console.log(error)
           }}
         >
         
-        EC Daily Report as on - {formattedDate}
+        Mutation Daily Report as on - {formattedDate}
         </Typography>
     <TableContainer component={Paper} sx={{ mt: 4 }}>
         
