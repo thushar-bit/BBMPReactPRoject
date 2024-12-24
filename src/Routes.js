@@ -34,6 +34,8 @@ import PendanceReportDetails from './Pages/PendanceReportDetails';
 import ECDailyReport from './Pages/ECDailyReport';
 import SearchProperty from './Pages/SearchProperty';
 import MutationDailyReport from './Pages/MutationDailyReport';
+import PublicNoticesReport from './Pages/PublicNoticesReport';
+import MasterReportPage from './Pages/MasterReportPage';
 const AppRoutes = () => {
   return (
     <AuthProvider>
@@ -95,6 +97,12 @@ const AppRoutes = () => {
               <Route 
               path='/MutationDailyReport'
               element={<MutationDailyReport/>}/>
+                 <Route 
+              path='/PublicNoticesReport'
+              element={<PublicNoticesReport/>}/>
+                 <Route 
+              path='/MasterReportPage'
+              element={<MasterReportPage/>}/>
                 {/* <Route
               path="/EKYCResponse"
               element={<EKYCResponse />}  />
