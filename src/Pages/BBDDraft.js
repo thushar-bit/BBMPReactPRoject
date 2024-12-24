@@ -257,8 +257,8 @@ const PropertyList = () => {
        
                 
        sessionStorage.setItem('SETLOGINID', LoginData.UserId);
-             // window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_core/UploadECPage?BookDraft="+re;
-             window.location.href = "https://bbmpeaasthi.karnataka.gov.in/objection_form_test/SearchProperty?BookDraft="+re;
+              window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_core/UploadECPage?BookDraft="+re;
+           //  window.location.href = "https://bbmpeaasthi.karnataka.gov.in/objection_form_test/SearchProperty?BookDraft="+re;
             }
             else {
               alert("Please Log-In To Apply For Property Searching. Click On The Do not find my Property Draft eKhata After Logging In.")
@@ -277,8 +277,8 @@ const PropertyList = () => {
               // let json = "{\"UserId\":\"" + Convert.ToString(Session["LoginId"]) + "\",\"PropertyCode\":\"\",\"PropertyEPID\":\"\",\"SessionValues\":[],\"ExecTime\":\"" + txtDate + "\"}";
                 
                 const response = await axiosInstance.post("Auth/EncryptJsons",data)
-           //   window.location.href = "https://bbmpeaasthi.karnataka.gov.in/CitzLogin.aspx?BookDraft="+response.data;
-             window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_test2/CitzLogin.aspx?BookDraft="+response.data;
+             window.location.href = "https://bbmpeaasthi.karnataka.gov.in/CitzLogin.aspx?BookDraft="+response.data;
+          //   window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_test2/CitzLogin.aspx?BookDraft="+response.data;
             }
           }
           catch(error){
@@ -358,7 +358,7 @@ console.log(error)
                 sessionStorage.setItem('Reqid', JSON.stringify(row.REQID));
                 
        sessionStorage.setItem('SETLOGINID', LoginData.UserId);
-            //  window.location.href = "https://bbmpeaasthi.karnataka.gov.in/objection_form_test/UploadECPage?BookDraft="+re;
+          //    window.location.href = "https://bbmpeaasthi.karnataka.gov.in/objection_form_test/UploadECPage?BookDraft="+re;
               window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_core/UploadECPage?BookDraft="+re;
             }
             else {
@@ -378,8 +378,8 @@ console.log(error)
               // let json = "{\"UserId\":\"" + Convert.ToString(Session["LoginId"]) + "\",\"PropertyCode\":\"\",\"PropertyEPID\":\"\",\"SessionValues\":[],\"ExecTime\":\"" + txtDate + "\"}";
                 
                 const response = await axiosInstance.post("Auth/EncryptJsons",data)
-              window.location.href = "https://bbmpeaasthi.karnataka.gov.in/CitzLogin.aspx?BookDraft="+response.data;
-           //  window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_test2/CitzLogin.aspx?BookDraft="+response.data;
+             window.location.href = "https://bbmpeaasthi.karnataka.gov.in/CitzLogin.aspx?BookDraft="+response.data;
+          //   window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_test2/CitzLogin.aspx?BookDraft="+response.data;
             }
           }
           catch(error){
@@ -437,8 +437,8 @@ console.log(error)
        sessionStorage.setItem('OBJECTIONID', JSON.stringify(row.OBJECTIONID)); //should pass from the table.
        sessionStorage.setItem('SETPROPERYID', JSON.stringify(row.PROPERTYID));
        sessionStorage.setItem('SETLOGINID', JSON.stringify(LoginData.UserId));
-          //    window.location.href = "https://bbmpeaasthi.karnataka.gov.in/objection_form_test/ObjectorsPage?BookDraft="+re;
-              window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_core/ObjectorsPage?BookDraft="+re;
+           //   window.location.href = "https://bbmpeaasthi.karnataka.gov.in/objection_form_test/ObjectorsPage?BookDraft="+re;
+             window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_core/ObjectorsPage?BookDraft="+re;
             }
             else {
               alert("Please Log-In To File Objections. Click On The File Objection Link After Logging In.")
@@ -457,8 +457,8 @@ console.log(error)
                // let json = "{\"UserId\":\"" + Convert.ToString(Session["LoginId"]) + "\",\"PropertyCode\":\"\",\"PropertyEPID\":\"\",\"SessionValues\":[],\"ExecTime\":\"" + txtDate + "\"}";
                 
                 const response = await axiosInstance.post("Auth/EncryptJsons",data)
-         //     window.location.href = "https://bbmpeaasthi.karnataka.gov.in/CitzLogin.aspx?BookDraft="+response.data;
-              window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_test2/CitzLogin.aspx?BookDraft="+response.data;
+             window.location.href = "https://bbmpeaasthi.karnataka.gov.in/CitzLogin.aspx?BookDraft="+response.data;
+           //   window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_test2/CitzLogin.aspx?BookDraft="+response.data;
             }
           }
           catch(error){
@@ -656,7 +656,7 @@ if(row.PROPERTYID === null || row.PROPERTYID  === undefined|| row.PROPERTYID.len
       const response5 = await axiosInstance.post("Auth/EncryptJsons",data)
       let re = response5.data;
     window.location.href = "https://bbmpeaasthi.karnataka.gov.in/forms/CitzBookModuleHome.aspx?BookDraft="+re;
-  //  window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_test2/forms/CitzBookModuleHome.aspx?BookDraft="+re;
+ //   window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_test2/forms/CitzBookModuleHome.aspx?BookDraft="+re;
     }
     else {
       alert("Please Log-In To Update Property Information Or To File Objections. Click On The Get e-Khatha Link After Logging In.")
@@ -676,7 +676,7 @@ console.log(txtDate); // Outputs: "20241018T13:44:09" (for example)
         
         const response = await axiosInstance.post("Auth/EncryptJsons",data)
       window.location.href = "https://bbmpeaasthi.karnataka.gov.in/CitzLogin.aspx?BookDraft="+response.data;
-    //  window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_test2/CitzLogin.aspx?BookDraft="+response.data;
+ //    window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_test2/CitzLogin.aspx?BookDraft="+response.data;
     }
   }
     catch(error){
@@ -876,9 +876,9 @@ console.log(txtDate); // Outputs: "20241018T13:44:09" (for example)
             <Button variant="contained" color="primary" onClick={handleReset}>
               {t("Reset")}
             </Button>
-            <Button variant="contained" color="primary" onClick={handleSearchNavigation}>
+            {/* <Button variant="contained" color="primary" onClick={handleSearchNavigation}>
               {t("Do not find my Property Draft eKhata")}
-            </Button>
+            </Button> */}
           </Box>
         </Grid>
         <div>

@@ -180,7 +180,7 @@ else
     debugger
  setLoading(true)
     const response = await axiosInstance.get(`Report/GET_PENDENCE_REPORT?ZoneId=${formData.ZoneName}&AROId=${formData.AROName}&WARDID=${formData.WardName}&SEARCHTYPE=${valid}`);
-    setPropertyData(response.data.Table || [])
+    setPropertyData(response.data.Table1 || [])
   
     
     setFormData({
@@ -194,7 +194,7 @@ else
  }
 const handleReset = async () => {
   const response =  await axiosInstance.get(`Report/GET_PENDENCE_REPORT?ZoneId=${0}&AROId=${0}&WARDID=${0}&SEARCHTYPE=${"1"}`);
-  setPropertyData(response.data.Table || [])
+  setPropertyData(response.data.Table1 || [])
   setFormData({
     ...formData,
     ZoneName: "",
@@ -206,12 +206,12 @@ const handleReset = async () => {
 const getBBDRecord = () => {
 
 }
-const fetchDailyDetails = (row) => {
+const fetchDailyDetails = (row,role) => {
   debugger
   navigate("/PendanceReportDetails", {
     state: {
         WARDNUMBER: row,
-        
+        TYPEOFROLE:role
     }
 });
 
@@ -406,12 +406,14 @@ const fetchDailyDetails = (row) => {
                     
                       <TableCell  style={{ padding: '0.5em 1em' }} colSpan={1} align='center' >{row.ZONENAME_EN}</TableCell>
                       {formData.ReportType === "AROType" &&
-                      <TableCell  style={{ padding: '0.5em 1em' }} colSpan={1} align='center'>{row.WARDNAME_EN}</TableCell>
+                      <TableCell  style={{ padding: '0.5em 1em' }} colSpan={1} align='center'>{row.ARONAME_EN}</TableCell>
 }
                       <TableCell  style={{ padding: '0.5em 1em' }} colSpan={1} align='center'>{row.WARDNAME_EN}</TableCell>
-                      <TableCell  style={{ padding: '0.5em 1em' }} colSpan={1} align='center'>{row.CW_PENDING_COUN}</TableCell>
-                      <TableCell  style={{ padding: '0.5em 1em' }} colSpan={1} align='center'>{row.ARO_PENDING_COUN}</TableCell>
-                      <TableCell  style={{ padding: '0.5em 1em' }} colSpan={1} align='center'>0</TableCell>
+                      <TableCell  style={{ padding: '0.5em 1em' }} colSpan={1} align='center'>   <Button color="primary" style={{ width: '2rem',height:"0.1rem" }} onClick={() =>fetchDailyDetails(row.WARDNUMBER,"CASE WORKER")}>{row.CW_PENDING_COUN}</Button></TableCell>
+                     <TableCell  style={{ padding: '0.5em 1em' }} colSpan={1} align='center'>  <Button color="primary" style={{ width: '2rem',height:"0.1rem" }} onClick={() =>fetchDailyDetails(row.WARDNUMBER,"ARO")}>{row.ARO_PENDING_COUN}</Button></TableCell>
+                      {/* <TableCell  style={{ padding: '0.5em 1em' }} colSpan={1} align='center'>{row.CW_PENDING_COUN}
+                      <TableCell  style={{ padding: '0.5em 1em' }} colSpan={1} align='center'>{row.ARO_PENDING_COUN}</TableCell> */}
+                      <TableCell  style={{ padding: '0.5em 1em' }} colSpan={1} align='center'>{row.RI_PENDING_COUN}</TableCell>
                       {/* <TableCell  style={{ padding: '0.5em 1em' }} colSpan={1} align='center'>Total</TableCell> */}
                     </TableRow>
                   ))

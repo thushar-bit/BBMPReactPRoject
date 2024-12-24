@@ -50,9 +50,12 @@ const SearchProperty = () => {
     EMAIL:"",
     IsAAdharNumber:"N",
     IsSASNumber:"N",
+    ISHaveOLDEkhata:"N",
     SASNumber:"",
     IDExtension:"",
     IDDocument:"",
+    OLDEkhataExtension:"",
+    OldEkhataDocument:"",
     SEARCHNAME:"",
     MOBILEVERIFY1:"",
     EMAIL1:""
@@ -71,6 +74,7 @@ const SearchProperty = () => {
   const [WardData, setWardData] = useState([]);
   const [otpFieldsVisible, setOtpFieldsVisible] = useState(false);
   const [selectedIDFile, setSelectedIDFile] = useState(null);
+  const [selectedOldEkhataFile, setSelectedOldEkhataFile] = useState(null);
   const [EkycResponseData,setEkycResponseData] = useState(null);
   const [otpButtonDisabled, setOtpButtonDisabled] = useState(false);
   const [timer, setTimer] = useState(30); 
@@ -78,7 +82,7 @@ const SearchProperty = () => {
   const [pdfUrl, setPdfUrl] = useState('');
   const [IsAAdhar,setIsAAdhar] = useState(true)
   const [IsSASNumber,setIsSASNumber] = useState(true)
-  
+  const [IsOldEkhata,setIsOldEkhata] = useState(true)
  
  
   const handleDownload = (base64Data, documentdescription) => {
@@ -124,6 +128,13 @@ const SearchProperty = () => {
     setLoading(true);
     try {
       debugger
+      const params = new URLSearchParams(location.search);
+      const LoginData = params.get('LoginData');
+      if (LoginData !== null && LoginData !== undefined) {
+        let response4 = await axiosInstance.get("Auth/DecryptJson?encryptedXML="+LoginData)
+        sessionStorage.setItem('SETLOGINID', JSON.stringify(response4.data.UserId));
+        sessionStorage.setItem("LoginData", JSON.stringify(response4.data)); 
+      }
         let response = await axiosInstance.get("BBMPCITZAPI/GetMasterZone")
         setZoneData(response.data.Table || [])
       setLoading(false);
@@ -165,6 +176,14 @@ debugger
             setIsSASNumber(false)
         }
       
+    }
+    if(name === "ISHaveOLDEkhata"){
+      if(value === "N"){
+        setIsOldEkhata(true)
+    }
+    else {
+        setIsOldEkhata(false)
+    }
     }
     if(name === "ZoneName" && value !== ""){
         var response1 = await axiosInstance.get("BBMPCITZAPI/GetMasterWard?ZoneId=" + value)
@@ -332,6 +351,7 @@ try {
   }, [location.search,fetchData]);
 
   const handleIDFileChange = (e) => {
+    debugger
     const file = e.target.files[0];
     const maxSize = 200 * 1024;
     if (file && file.size > maxSize) {
@@ -339,6 +359,9 @@ try {
       e.target.value = null;
       setSelectedIDFile(null);
       return;
+    }
+    if(file === undefined){
+      return
     }
     const fileName = file.name;
     const fileExtension = fileName.split('.').pop().toLowerCase();
@@ -364,10 +387,48 @@ try {
   //  setfileExtension('');
   }
  
+  const handleOLDEkhataFileChange = (e) => {
+    const file = e.target.files[0];
+    const maxSize = 5 * 1024 * 1024;
+    if (file && file.size > maxSize) {
+      toast.error(`${t("File size exceeds 500 MB limit")}`);
+      e.target.value = null;
+      setSelectedOldEkhataFile(null);
+      return;
+    }
+    if(file === undefined){
+      return
+    }
+    const fileName = file.name;
+    const fileExtension = fileName.split('.').pop().toLowerCase();
+    if (!['pdf'].includes(fileExtension)) {
+      toast.error(`${t("Please Select Only '.pdf' File")}`);
+      e.target.value = null;
+      setSelectedOldEkhataFile(null);
+      return
+    }
+ //   setfileExtension(fileExtension);
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSelectedOldEkhataFile(file);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
   
+
+  const handleOldEkhataFileDelete = () => {
+    setSelectedOldEkhataFile(null);
+  //  setfileExtension('');
+  }
+
+
+
+
   const handleBack = () => {
    setPdfUrl('')
-   window.location.href = "https://bbmpeaasthi.karnataka.gov.in";
+   window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_test2/";
   }
   const EditOwnerDetailsFromEKYCData = async (txno, ownerType) => {
     
@@ -483,6 +544,7 @@ try {
   const handleValidation = async () =>{ //change this
     debugger
     let propertyDocumentID = "";
+    let propertyOldEkhatha = "";
   debugger
     try {
       if(formData.IsAAdharNumber === "N"){
@@ -491,10 +553,10 @@ try {
     }
     if(propertyDocumentID === "" || propertyDocumentID === undefined ||propertyDocumentID === null)
       {
-        if(formData.NameDocument === "" || formData.NameDocument === undefined || formData.NameDocument === null){
+        
       toast.error("Please Upload the ID Document");
       return false
-        }
+      
     }
     
         if(formData.DoorPlotNo === null|| formData.DoorPlotNo === undefined || formData.DoorPlotNo === ""){
@@ -555,6 +617,16 @@ if(SAStableData.length === 0){
   return false
 }
 
+if (selectedOldEkhataFile !== null) {
+  propertyOldEkhatha = await getPropertyphoto(selectedIDFile);
+}
+if(propertyOldEkhatha === "" || propertyOldEkhatha === undefined ||propertyOldEkhatha === null)
+  {
+    
+  toast.error("Please Upload the Old Khata Document");
+  return false
+    
+}
 
       return true
     }
@@ -605,6 +677,7 @@ console.log(error)
       setLoading(true);
       debugger
       let propertyDocumentID = await getPropertyphoto(selectedIDFile);
+      let propertyOldEkhatha = await getPropertyphoto(selectedOldEkhataFile);
       let searchreqId = 0;
       searchreqId = JSON.parse(sessionStorage.getItem("SETSEARCHREQID"))
       if (searchreqId === "" || searchreqId === undefined || searchreqId === null){
@@ -638,7 +711,9 @@ console.log(error)
   wardId: SAStableData[0].WARDID || null,
   searchName: formData.SEARCHNAME || null,
   sasApplicationNumber: formData.SASNumber || null,
- // loginId: JSON.parse(sessionStorage.getItem('SETLOGINID')).toString()
+ // loginId: JSON.parse(sessionStorage.getItem('SETLOGINID')).toString(),
+  isHaveOldEkhata:formData.ISHaveOLDEkhata,
+  oldEkhataDocument:propertyOldEkhatha || null,
   loginId:"crc"
       };
       
@@ -1083,7 +1158,7 @@ Search Property Request
   </Grid>
   <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={2}>
     <Grid item xs={12} sm={3} style={{ textAlign: "right" }}>
-      <span style={{ fontWeight: "bold" }}>Door No</span>
+      <span style={{ fontWeight: "bold" }}>{<LabelWithAsterisk text={t('Door No')} />}</span>
     </Grid>
     <Grid item xs={12} sm={6}>
       <TextField
@@ -1483,11 +1558,72 @@ md: '1.2rem',
 }
 {IsSASNumber  === true&& 
   <>
-  <Typography>If SAS Application Number is Not Available .Please Apply on <Link></Link></Typography>
+  <Typography>If SAS Application Number is Not Available .Please Apply on <Link href="https://bbmpeaasthi.karnataka.gov.in/citizen_test2/">https://bbmpeaasthi.karnataka.gov.in/citizen_test2/</Link></Typography>
   </>
 }
-
-
+<br></br>
+<Grid item xs={12} sm={6}>
+  <Box display="flex" alignItems="center">
+    <Typography variant="body1" sx={{ ml: 1, mr: 2 }}>
+      Do you have Old khata ?
+    </Typography>
+    <FormControl component="fieldset" sx={{ml: 1, mb: 0.5 }}>
+      <RadioGroup
+        row
+        name="ISHaveOLDEkhata"
+        value={formData.ISHaveOLDEkhata}
+        onChange={handleChange}
+        sx={{ display: 'flex', alignItems: 'center' }}
+      >
+        <FormControlLabel value="Y" control={<Radio disabled={!isEditable} />} label={t("Yes")} sx={{ mr: 4 }} />
+        <FormControlLabel value="N" control={<Radio disabled={!isEditable} />} label={t("No")} />
+      </RadioGroup>
+    </FormControl>
+  </Box>
+</Grid>   
+{IsOldEkhata === false &&
+  <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={2}>
+    <Grid item xs={12} sm={3} style={{ textAlign: "right" }}>
+      <span style={{ fontWeight: "bold" }}>{<LabelWithAsterisk text={t('Scan and Upload OLD Khata')} />}</span>
+    </Grid>
+    <Grid item xs={12} sm={6}>
+    <Box display="flex" alignItems="center" flexDirection="column" textAlign="center" mb={2}>
+                
+    
+                  
+    
+                  <Button
+                    component="label"
+                    variant="contained"
+                    startIcon={<CloudUploadIcon />}
+                    sx={{ mt: 1, mb: 1, px: 1, py: 1 }}
+                  >
+                    {t("Uploadfile")}
+                    <VisuallyHiddenInput type="file" accept=".pdf" onChange={handleOLDEkhataFileChange} />
+                  </Button>
+    
+                  {selectedOldEkhataFile && (
+                    <Box display="flex" alignItems="center" justifyContent="center" mt={2} sx={{ color: 'text.secondary' }}>
+                      <Typography variant="h6">{selectedOldEkhataFile.name}</Typography>
+                      <Button color="error" onClick={handleOldEkhataFileDelete} sx={{ ml: 2 }}>
+                        {t("Delete")}
+                      </Button>
+                    </Box>
+                  )}
+    
+                  <Typography variant="body2" sx={{ mt: 1, color: '#df1414',fontSize:'1rem' }}>
+                  Maximum File Size should not exceed 5 MB
+                  </Typography>
+                </Box>
+                
+                </Grid></Grid>
+}
+<br></br>
+{IsOldEkhata  === true&& 
+  <>
+  <Typography>If Old Ekhata is Not Available .Please Apply on <Link href="https://bbmpeaasthi.karnataka.gov.in/citizen_test2/">https://bbmpeaasthi.karnataka.gov.in/citizen_test2/</Link></Typography>
+  </>
+}
 <br></br>
               <Grid item xs={12}>
                 <Box display="flex" justifyContent="center" gap={2}>

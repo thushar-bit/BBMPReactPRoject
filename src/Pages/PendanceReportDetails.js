@@ -22,6 +22,8 @@ const PendanceReportDetails = () => {
     const [formattedDate,setFormattedDate] = useState("")
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [wardNumber,setWardNumber] = useState("")
+    const [TypeOfRole,setTypeOfRole] = useState("");
+    const [LoginDetails ,setLoginDetails] = useState([])
     const navigate = useNavigate();
     const handleChange = async (e) => {
         const { name, value } = e.target;
@@ -36,11 +38,11 @@ const PendanceReportDetails = () => {
             toast.error("Please Enter the EPID")
             return
         }
-        let response = await axiosInstance.get(`Report/GET_PENDENCE_REPORT_DETAILS?WARDID=${wardNumber}&PROPERTYID=${formData.Search}&PAGENO=${page}&PAGECOUNT=${rowsPerPage}`)
+        let response = await axiosInstance.get(`Report/GET_PENDENCE_REPORT_DETAILS?WARDID=${wardNumber}&PROPERTYID=${formData.Search}&TYPEOFROLE=${TypeOfRole}&PAGENO=${1}&PAGECOUNT=${10}`)
         setPropertyData(response.data.Table || [])
       }
      const handleReset = async () => {
-        let response = await axiosInstance.get(`Report/GET_PENDENCE_REPORT_DETAILS?WARDID=${wardNumber}&PROPERTYID=${"0"}&PAGENO=${page}&PAGECOUNT=${rowsPerPage}`)
+        let response = await axiosInstance.get(`Report/GET_PENDENCE_REPORT_DETAILS?WARDID=${wardNumber}&PROPERTYID=${"0"}&TYPEOFROLE=${TypeOfRole}&PAGENO=${1}&PAGECOUNT=${10}`)
         setPropertyData(response.data.Table || [])
      }
     const fetchData = async (page = 1, rowsPerPage = 10) => {
@@ -53,11 +55,12 @@ const PendanceReportDetails = () => {
             setFormattedDate(`${String(today.getDate()).padStart(2, "0")}-${String(
             today.getMonth() + 1
         ).padStart(2, "0")}-${today.getFullYear()}`)
-            const { WARDNUMBER } = location.state || {};
+            const { WARDNUMBER,TYPEOFROLE } = location.state || {};
             setWardNumber(WARDNUMBER)
-            let response = await axiosInstance.get(`Report/GET_PENDENCE_REPORT_DETAILS?WARDID=${WARDNUMBER}&PROPERTYID=${"0"}&PAGENO=${page}&PAGECOUNT=${rowsPerPage}`)
-        setPropertyData(response.data.Table || [])
-      
+            setTypeOfRole(TYPEOFROLE)
+            let response = await axiosInstance.get(`Report/GET_PENDENCE_REPORT_DETAILS?WARDID=${WARDNUMBER}&PROPERTYID=${"0"}&TYPEOFROLE=${TYPEOFROLE}&PAGENO=${page}&PAGECOUNT=${rowsPerPage}`)
+        setPropertyData(response.data.Table1 || [])
+        setLoginDetails(response.data.Table || [])
         }
 catch(error){
    
@@ -73,7 +76,7 @@ console.log(error)
         fetchData();
       }, []);
     return (
-        <Container maxWidth="xl">
+        <Container maxWidth="lg">
        <Box sx={{ backgroundColor: '#f0f0f0', padding: 1, borderRadius: 2, mt: 1 }}>
        <Typography
           variant="h6"
@@ -122,42 +125,76 @@ console.log(error)
       {"Previous"}
             </Button>
             </Box>
-    <TableContainer component={Paper} sx={{ mt: 4 }}>
-        
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4, mt: 3 }}>
+  {/* Table for LoginDetails */}
+  <TableContainer component={Paper} sx={{ maxWidth: '80%', margin: '0 auto' }}>
     <Table>
       <TableHead>
         <TableRow>
-          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>EPID</TableCell>
-          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>Pending With </TableCell>
-          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>Name of Person with whom pending </TableCell>
-          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>Move number of person with whom pending</TableCell>
-          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>Recieve Date</TableCell> 
+          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF', padding: '0.6em' }}>
+            Pending With {TypeOfRole}
+          </TableCell>
+          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF', padding: '0.6em' }}>
+            Name of Person with whom pending
+          </TableCell>
+          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF', padding: '0.6em' }}>
+            Mobile number of person with whom pending
+          </TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {LoginDetails.length === 0 ? (
+          <TableRow>
+            <TableCell colSpan={3} align="center">
+              No Data Available
+            </TableCell>
+          </TableRow>
+        ) : (
+          LoginDetails.map((row, index) => (
+            <TableRow key={index} style={{ height: '0.1em' }}>
+              <TableCell style={{ padding: '0.5em 1em' }}>{row.LOGINID}</TableCell>
+              <TableCell style={{ padding: '0.5em 1em' }}>{row.OFFICERNAME}</TableCell>
+              <TableCell style={{ padding: '0.5em 1em' }}>{row.MOBILENO}</TableCell>
+            </TableRow>
+          ))
+        )}
+      </TableBody>
+    </Table>
+  </TableContainer>
 
-
+  {/* Table for propertyData */}
+  <TableContainer component={Paper} sx={{ maxWidth: '30%', margin: '0 auto' }}>
+    <Table>
+      <TableHead>
+        <TableRow>
+          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>
+            EPID
+          </TableCell>
+          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>
+            Receive Date
+          </TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
         {propertyData.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={12} align="center">
-         No Data Available 
+            <TableCell colSpan={2} align="center">
+              No Data Available
             </TableCell>
           </TableRow>
         ) : (
-          propertyData
-            .map((row, index) => (
-              <TableRow key={index} style={{ height: '0.1em' }}>
-                <TableCell style={{ padding: '0.5em 1em' }}>{row.WARDNAME}</TableCell>
-                <TableCell style={{ padding: '0.5em 1em' }}>{row.STREETNAME}</TableCell>
-                <TableCell style={{ padding: '0.5em 1em' }}>{row.PROPERTYID}</TableCell>
-                <TableCell style={{ padding: '0.5em 1em' }}>{row.ASSESMENTNUMBER}</TableCell>
-                <TableCell style={{ padding: '0.5em 1em' }} >{row.CITIZEN_SUBMITTED_DATE}</TableCell>
-              </TableRow>
-            ))
+          propertyData.map((row, index) => (
+            <TableRow key={index} style={{ height: '0.1em' }}>
+              <TableCell style={{ padding: '0.5em 1em' }}>{row.PROPERTYID}</TableCell>
+              <TableCell style={{ padding: '0.5em 1em' }}>{row.RECEIVEDDATE}</TableCell>
+            </TableRow>
+          ))
         )}
       </TableBody>
     </Table>
   </TableContainer>
+</Box>
+
   <TablePagination
   rowsPerPageOptions={[10, 25, 50, 100]}
   component="div"

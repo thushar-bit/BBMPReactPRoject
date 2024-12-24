@@ -33,7 +33,7 @@ import BBDDraftGenerated from './Pages/BBDDraftGenerated';
 import PendanceReportDetails from './Pages/PendanceReportDetails';
 import ECDailyReport from './Pages/ECDailyReport';
 import SearchProperty from './Pages/SearchProperty';
-
+import MutationDailyReport from './Pages/MutationDailyReport';
 const AppRoutes = () => {
   return (
     <AuthProvider>
@@ -92,6 +92,9 @@ const AppRoutes = () => {
                  <Route 
               path='/SearchProperty'
               element={<SearchProperty/>}/>
+              <Route 
+              path='/MutationDailyReport'
+              element={<MutationDailyReport/>}/>
                 {/* <Route
               path="/EKYCResponse"
               element={<EKYCResponse />}  />
