@@ -62,6 +62,7 @@ console.log(error)
         <TableRow>
           <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>ZONE NAME</TableCell>
           <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>WARD NAME</TableCell>
+          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>APPROVED / REJECTED</TableCell>
           <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>TOTAL APPLICATION RECIEVED</TableCell>
           <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>RI PENDING</TableCell>
           <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF',padding: '0.6em' }}>ARO PENDING</TableCell> 
@@ -85,6 +86,7 @@ console.log(error)
               <TableRow key={index} style={{ height: '0.1em' }}>
                 <TableCell style={{ padding: '0.5em 1em' }}>{row.ZONENAME_EN}</TableCell>
                 <TableCell style={{ padding: '0.5em 1em' }}>{row.WARDNAME_EN}</TableCell>
+                <TableCell style={{ padding: '0.5em 1em' }}>{row.APR_OR_REJ}</TableCell>
                 <TableCell style={{ padding: '0.5em 1em' }}>{row.TTL_REC}</TableCell>
                 <TableCell style={{ padding: '0.5em 1em' }}>{row.RI_PENDING}</TableCell>
                 <TableCell style={{ padding: '0.5em 1em' }} >{row.ARO_PENDING}</TableCell>

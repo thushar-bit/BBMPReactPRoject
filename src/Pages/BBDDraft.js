@@ -257,7 +257,7 @@ const PropertyList = () => {
        
                 
        sessionStorage.setItem('SETLOGINID', LoginData.UserId);
-              window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_core/UploadECPage?BookDraft="+re;
+              window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_core/SearchProperty?BookDraft="+re;
            //  window.location.href = "https://bbmpeaasthi.karnataka.gov.in/objection_form_test/SearchProperty?BookDraft="+re;
             }
             else {
@@ -876,9 +876,9 @@ console.log(txtDate); // Outputs: "20241018T13:44:09" (for example)
             <Button variant="contained" color="primary" onClick={handleReset}>
               {t("Reset")}
             </Button>
-            {/* <Button variant="contained" color="primary" onClick={handleSearchNavigation}>
+            <Button variant="contained" color="primary" onClick={handleSearchNavigation}>
               {t("Do not find my Property Draft eKhata")}
-            </Button> */}
+            </Button>
           </Box>
         </Grid>
         <div>
