@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   TextField, Button, Grid, Box, Container, Typography, CircularProgress, Tooltip, IconButton, 
   FormControl,  MenuItem, Select, InputLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,Radio
-  ,FormControlLabel,RadioGroup, Card, Divider,Dialog, DialogContent, DialogActions,Link
+  ,FormControlLabel,RadioGroup, Card, Divider,Dialog, DialogContent, DialogActions,Checkbox
 } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import { toast, ToastContainer } from 'react-toastify';
@@ -48,7 +48,7 @@ const SearchProperty = () => {
     MOBILENUMBER:"",
     MOBILENO:"",
     EMAIL:"",
-    IsAAdharNumber:"N",
+    IsAAdharNumber:"Y",
     IsSASNumber:"N",
     ISHaveOLDEkhata:"N",
     SASNumber:"",
@@ -80,7 +80,7 @@ const SearchProperty = () => {
   const [timer, setTimer] = useState(30); 
   const [countdownInterval, setCountdownInterval] = useState(null);
   const [pdfUrl, setPdfUrl] = useState('');
-  const [IsAAdhar,setIsAAdhar] = useState(true)
+  const [IsAAdhar,setIsAAdhar] = useState(false)
   const [IsSASNumber,setIsSASNumber] = useState(true)
   const [IsOldEkhata,setIsOldEkhata] = useState(true)
  
@@ -160,20 +160,17 @@ debugger
         }
         else {
           setIsAAdhar(false)
-          var response = await axiosInstance.post("E-KYCAPI/INS_NCL_SEARCH_MAIN")
-
-
-    window.location.href = response.data; 
+         
             
         }
       
     }
     if(name === "IsSASNumber"){
-        if(value === "N"){
-            setIsSASNumber(true)
+        if(value === "Y"){
+            setIsSASNumber(false)
         }
         else {
-            setIsSASNumber(false)
+            setIsSASNumber(true)
         }
       
     }
@@ -428,7 +425,7 @@ try {
 
   const handleBack = () => {
    setPdfUrl('')
-   window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_test2/";
+   window.location.href = "https://bbmpeaasthi.karnataka.gov.in";
   }
   const EditOwnerDetailsFromEKYCData = async (txno, ownerType) => {
     
@@ -607,23 +604,36 @@ try {
         return false
       }
     }
-  
+    if(formData.IsSASNumber === "N")
+      {
 if(formData.SASNumber === null || formData.SASNumber === undefined || formData.SASNumber === ""){
-  toast.error("Please Enter the SAS Application Number")
+  toast.error("Please Enter 10 Digit SAS Property Tax ID ")
   return false
 }
 if(SAStableData.length === 0){
-  toast.error("Please Verify with the SAS Application Number")
+  toast.error("Please Fetch with the SAS Property Tax ID ")
   return false
 }
-
+      }
+if(formData.IsSASNumber === "Y")
+  {
+    if(formData.ZoneName === "" || formData.ZoneName === null || formData.ZoneName === undefined){
+      toast.error("Please Select your Zone Name")
+      return false
+    }
+    if(formData.wardName === "" || formData.wardName === null || formData.wardName === undefined){
+      toast.error("Please Select your Ward Name")
+      return false
+    }
+  }
+  
 if (selectedOldEkhataFile !== null) {
-  propertyOldEkhatha = await getPropertyphoto(selectedIDFile);
+  propertyOldEkhatha = await getPropertyphoto(selectedOldEkhataFile);
 }
 if(propertyOldEkhatha === "" || propertyOldEkhatha === undefined ||propertyOldEkhatha === null)
   {
     
-  toast.error("Please Upload the Old Khata Document");
+  toast.error("Please Scan and Upload your manual BBMP Khata");
   return false
     
 }
@@ -707,14 +717,14 @@ console.log(error)
   mobileNumber: formData.MOBILENUMBER || null,
   mobiverify: formData.MOBILEVERIFY || null,
   email: formData.EMAIL1 || null,
-  zoneId: SAStableData[0].ZONEID || null,
-  wardId: SAStableData[0].WARDID || null,
+  zoneId: formData.IsSASNumber === "N" ? SAStableData[0].ZONEID || null : formData.ZoneName || null,
+  wardId:   formData.IsSASNumber === "N" ? SAStableData[0].WARDID || null  : formData.wardName  || null,
   searchName: formData.SEARCHNAME || null,
   sasApplicationNumber: formData.SASNumber || null,
- // loginId: JSON.parse(sessionStorage.getItem('SETLOGINID')).toString(),
+  loginId: JSON.parse(sessionStorage.getItem('SETLOGINID')).toString(),
   isHaveOldEkhata:formData.ISHaveOLDEkhata,
   oldEkhataDocument:propertyOldEkhatha || null,
-  loginId:"crc"
+  //loginId:"crc"
       };
       
       try {
@@ -839,7 +849,7 @@ Search Property Request
     <Typography variant="body1" sx={{ ml: 1, mr: 2 }}>
       AADHAR Available ?
     </Typography>
-    <FormControl component="fieldset" sx={{ml: 1, mb: 0.5 }}>
+    <FormControl component="fieldset" sx={{ ml: 1, mb: 0.5 }}>
       <RadioGroup
         row
         name="IsAAdharNumber"
@@ -851,32 +861,27 @@ Search Property Request
         <FormControlLabel value="N" control={<Radio disabled={!isEditable} />} label={t("No")} />
       </RadioGroup>
     </FormControl>
+    {tablesdata8.length === 0 && IsAAdhar === false&& (
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => AddEKYCOwner()}
+        sx={{ ml: 2 }}
+      >
+        {t("VerifyE-KYC")}
+      </Button>
+    )}
   </Box>
-</Grid> 
+</Grid>
+
+
              
 {IsAAdhar === false && 
 <>
       <br></br>
-     <Typography
-            variant="h3"
-            align="center"
-            gutterBottom
-            sx={{
-              fontWeight: 'bold',
-              fontFamily: "sans-serif",
-              
-              color: '#',
-              fontSize: {
-                xs: '1.5rem',
-                sm: '2rem',
-                md: '2rem',
-              }
-            }}
-          >
-           Aadhar Authentication  
-          </Typography>
-<br></br>
-<br></br>
+     
+          
+
       <Grid container >
       {EkycResponseData !== null &&
       <>
@@ -1127,8 +1132,25 @@ Search Property Request
 
 }
 <br></br>
-<br></br>
-
+{/* <Grid item xs={12} sm={6}>
+  <Box display="flex" alignItems="center">
+    <Typography variant="body1" sx={{ ml: 1, mr: 2 }}>
+      Do you have Old khata ?
+    </Typography>
+    <FormControl component="fieldset" sx={{ml: 1, mb: 0.5 }}>
+      <RadioGroup
+        row
+        name="ISHaveOLDEkhata"
+        value={formData.ISHaveOLDEkhata}
+        onChange={handleChange}
+        sx={{ display: 'flex', alignItems: 'center' }}
+      >
+        <FormControlLabel value="Y" control={<Radio disabled={!isEditable} />} label={t("Yes")} sx={{ mr: 4 }} />
+        <FormControlLabel value="N" control={<Radio disabled={!isEditable} />} label={t("No")} />
+      </RadioGroup>
+    </FormControl>
+  </Box>
+</Grid>    */}
 
 {IsAAdhar === true &&
 <>
@@ -1444,36 +1466,61 @@ md: '1.2rem',
 </>
 }
 <br></br>
-
-
-<Grid item xs={12} sm={6}>
-  <Box display="flex" alignItems="center">
-    <Typography variant="body1" sx={{ ml: 1, mr: 2 }}>
-       SAS Application Number Available ?
-    </Typography>
-    <FormControl component="fieldset" sx={{ml: 1, mb: 0.5 }}>
-      <RadioGroup
-        row
-        name="IsSASNumber"
-        value={formData.IsSASNumber}
-        onChange={handleChange}
-        sx={{ display: 'flex', alignItems: 'center' }}
-      >
-        <FormControlLabel value="Y" control={<Radio disabled={!isEditable} />} label={t("Yes")} sx={{ mr: 4 }} />
-        <FormControlLabel value="N" control={<Radio disabled={!isEditable} />} label={t("No")} />
-      </RadioGroup>
-    </FormControl>
-  </Box>
-</Grid>    
+{IsOldEkhata === true &&
+  <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={2}>
+    <Grid item xs={12} sm={4} style={{ textAlign: "right" }}>
+      <span style={{ fontWeight: "bold" }}>{<LabelWithAsterisk text={t('Scan and Upload your manual BBMP Khata')} />}</span>
+    </Grid>
+    <Grid item xs={12} sm={6}>
+    <Box display="flex" alignItems="center" flexDirection="column" textAlign="center" mb={2}>
+                  <Button
+                    component="label"
+                    variant="contained"
+                    startIcon={<CloudUploadIcon />}
+                    sx={{ mt: 1, mb: 1, px: 1, py: 1 }}
+                  >
+                    {t("Uploadfile")}
+                    <VisuallyHiddenInput type="file" accept=".pdf" onChange={handleOLDEkhataFileChange} />
+                  </Button>
+    
+                  {selectedOldEkhataFile && (
+                    <Box display="flex" alignItems="center" justifyContent="center" mt={2} sx={{ color: 'text.secondary' }}>
+                      <Typography variant="h6">{selectedOldEkhataFile.name}</Typography>
+                      <Button color="error" onClick={handleOldEkhataFileDelete} sx={{ ml: 2 }}>
+                        {t("Delete")}
+                      </Button>
+                    </Box>
+                  )}
+    
+                  <Typography variant="body2" sx={{ mt: 1, color: '#df1414',fontSize:'1rem' }}>
+                  Maximum File Size should not exceed 5 MB
+                  </Typography>
+                </Box>
+                
+                </Grid></Grid>
+}
 <br></br>
-{IsSASNumber  === false&& 
+{IsOldEkhata  === true&& 
+  <>
+  <Typography  variant="body2" 
+        sx={{ color: 'red', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '1.1rem' }}>Note :- If you do not have BBMP Khata ,then wait and apply online at BBMP New Khata system which will be rolled out soon.</Typography>
+  </>
+}
+<br></br>
+
+
+<br></br>
+{IsSASNumber  === true&& 
 <>
 <Grid container spacing={6} alignItems="center">
-            <Grid item xs={8}>
+<Grid item xs={12} sm={4} style={{ textAlign: "right" }}>
+      <span style={{ fontWeight: "bold" }}>< LabelWithAsterisk text={t("Enter 10 Digit SAS Property Tax ID ")} /></span>
+    </Grid>
+            <Grid item xs={5}>
               <TextField
                 fullWidth
 
-                label={< LabelWithAsterisk text={t("Enter 10 Digit SAS Application Number")} />}
+                label={< LabelWithAsterisk text={t("Enter 10 Digit SAS Property Tax ID ")} />}
               
                 name="SASNumber"
                 value={formData.SASNumber}
@@ -1498,7 +1545,7 @@ md: '1.2rem',
       onClick={handleSASClick}
       style={{ height: '100%' }}
     >
-     {t("VerifySASApplicationNumber")}
+     {t("Fetch")}
     </Button>
   
   </Box>
@@ -1556,74 +1603,88 @@ md: '1.2rem',
 }
 </>
 }
-{IsSASNumber  === true&& 
-  <>
-  <Typography>If SAS Application Number is Not Available .Please Apply on <Link href="https://bbmpeaasthi.karnataka.gov.in/citizen_test2/">https://bbmpeaasthi.karnataka.gov.in/citizen_test2/</Link></Typography>
-  </>
-}
-<br></br>
 <Grid item xs={12} sm={6}>
   <Box display="flex" alignItems="center">
     <Typography variant="body1" sx={{ ml: 1, mr: 2 }}>
-      Do you have Old khata ?
+      Do not have Property Tax ID ?
     </Typography>
-    <FormControl component="fieldset" sx={{ml: 1, mb: 0.5 }}>
-      <RadioGroup
-        row
-        name="ISHaveOLDEkhata"
-        value={formData.ISHaveOLDEkhata}
-        onChange={handleChange}
-        sx={{ display: 'flex', alignItems: 'center' }}
-      >
-        <FormControlLabel value="Y" control={<Radio disabled={!isEditable} />} label={t("Yes")} sx={{ mr: 4 }} />
-        <FormControlLabel value="N" control={<Radio disabled={!isEditable} />} label={t("No")} />
-      </RadioGroup>
+    <FormControl component="fieldset" sx={{ ml: 1, mb: 0.5 }}>
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={formData.IsSASNumber === "Y"}
+            onChange={(event) =>
+              handleChange({
+                target: {
+                  name: "IsSASNumber",
+                  value: event.target.checked ? "Y" : "N",
+                },
+              })
+            }
+            disabled={!isEditable}
+          />
+        }
+        label={t("Yes")}
+      />
     </FormControl>
   </Box>
-</Grid>   
-{IsOldEkhata === false &&
-  <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={2}>
-    <Grid item xs={12} sm={3} style={{ textAlign: "right" }}>
-      <span style={{ fontWeight: "bold" }}>{<LabelWithAsterisk text={t('Scan and Upload OLD Khata')} />}</span>
-    </Grid>
-    <Grid item xs={12} sm={6}>
-    <Box display="flex" alignItems="center" flexDirection="column" textAlign="center" mb={2}>
-                
-    
-                  
-    
-                  <Button
-                    component="label"
-                    variant="contained"
-                    startIcon={<CloudUploadIcon />}
-                    sx={{ mt: 1, mb: 1, px: 1, py: 1 }}
-                  >
-                    {t("Uploadfile")}
-                    <VisuallyHiddenInput type="file" accept=".pdf" onChange={handleOLDEkhataFileChange} />
-                  </Button>
-    
-                  {selectedOldEkhataFile && (
-                    <Box display="flex" alignItems="center" justifyContent="center" mt={2} sx={{ color: 'text.secondary' }}>
-                      <Typography variant="h6">{selectedOldEkhataFile.name}</Typography>
-                      <Button color="error" onClick={handleOldEkhataFileDelete} sx={{ ml: 2 }}>
-                        {t("Delete")}
-                      </Button>
-                    </Box>
-                  )}
-    
-                  <Typography variant="body2" sx={{ mt: 1, color: '#df1414',fontSize:'1rem' }}>
-                  Maximum File Size should not exceed 5 MB
-                  </Typography>
-                </Box>
-                
-                </Grid></Grid>
+</Grid>
+
+{IsSASNumber  === false&& 
+  <>
+  <Typography  variant="body2" 
+        sx={{ color: 'red', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '1.1rem' }}>Note :- If you do not have Property Tax ID the search will be delayed.</Typography>
+  </>
+  
 }
 <br></br>
-{IsOldEkhata  === true&& 
-  <>
-  <Typography>If Old Ekhata is Not Available .Please Apply on <Link href="https://bbmpeaasthi.karnataka.gov.in/citizen_test2/">https://bbmpeaasthi.karnataka.gov.in/citizen_test2/</Link></Typography>
-  </>
+{IsSASNumber  === false&& 
+<Grid 
+  container 
+  spacing={5} 
+  alignItems="center" 
+  justifyContent="center"
+>
+  <Grid item xs={12} sm={5} md={4}>
+    <FormControl fullWidth sx={{ marginBottom: 3 }}>
+      <InputLabel>{t("Select Zone Name")}</InputLabel>
+      <Select
+        name="ZoneName"
+        value={formData.ZoneName}
+        onChange={handleChange}
+        sx={{ backgroundColor: "#ffff" }}
+      >
+        <MenuItem value="">--Select--</MenuItem>
+        {zoneData.map((item) => (
+          <MenuItem key={item.ZONEID} value={item.ZONEID}>
+            {item.ZONENAME}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+  </Grid>
+  <Grid item xs={12} sm={3} md={4}>
+    <FormControl fullWidth sx={{ marginBottom: 3 }}>
+      <InputLabel>{t("Select Ward Name")}</InputLabel>
+      <Select
+        name="wardName"
+        value={formData.wardName}
+        onChange={handleChange}
+        sx={{ backgroundColor: "#ffff" }}
+      >
+        <MenuItem value="">--Select--</MenuItem>
+        {WardData.map((item) => (
+          <MenuItem key={item.WARDID} value={item.WARDID}>
+            {item.WARDNAME}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+  </Grid>
+</Grid>
 }
+<br></br>
+
 <br></br>
               <Grid item xs={12}>
                 <Box display="flex" justifyContent="center" gap={2}>
