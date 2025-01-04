@@ -163,12 +163,34 @@ console.log(error)
   </TableContainer>
 
   {/* Table for propertyData */}
-  <TableContainer component={Paper} sx={{ maxWidth: '30%', margin: '0 auto' }}>
+  <TableContainer component={Paper} sx={{ maxWidth: '100%', margin: '0 auto' }}>
     <Table>
       <TableHead>
         <TableRow>
           <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>
             EPID
+          </TableCell>
+          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>
+            PROPERTY TYPE
+          </TableCell>
+          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>
+          ASSESMENTNUMBER
+          </TableCell>
+          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>
+          ADDRESS
+          </TableCell>
+          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>
+          CHECKBANDI NORTH
+          </TableCell>
+          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>
+          CHECKBANDI SOUTH
+          </TableCell>
+          
+          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>
+          CHECKBANDI EAST
+          </TableCell>
+          <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>
+          CHECKBANDI WEST
           </TableCell>
           <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>
             Receive Date
@@ -186,6 +208,13 @@ console.log(error)
           propertyData.map((row, index) => (
             <TableRow key={index} style={{ height: '0.1em' }}>
               <TableCell style={{ padding: '0.5em 1em' }}>{row.PROPERTYID}</TableCell>
+              <TableCell style={{ padding: '0.5em 1em' }}>{row.PROPERTYCATEGORYID === 1 ? "Vacant Site" : row.PROPERTYCATEGORYID === 2? "Site with Building" :row.PROPERTYCATEGORYID === 3 ? "Multistorey Flats" :row.PROPERTYCATEGORYID === 4 ? "MULTI-OWNERSHIP BUILDING": "" }</TableCell>
+              <TableCell style={{ padding: '0.5em 1em' }}>{row.ASSESMENTNUMBER}</TableCell>
+              <TableCell style={{ padding: '0.5em 1em' }}>{row.ADDRESS}</TableCell>
+              <TableCell style={{ padding: '0.5em 1em' }}>{row.CHECKBANDI_NORTH}</TableCell>
+              <TableCell style={{ padding: '0.5em 1em' }}>{row.CHECKBANDI_SOUTH}</TableCell>
+              <TableCell style={{ padding: '0.5em 1em' }}>{row.CHECKBANDI_EAST}</TableCell>
+              <TableCell style={{ padding: '0.5em 1em' }}>{row.CHECKBANDI_WEST}</TableCell>
               <TableCell style={{ padding: '0.5em 1em' }}>{row.RECEIVEDDATE}</TableCell>
             </TableRow>
           ))
