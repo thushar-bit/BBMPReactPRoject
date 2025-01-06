@@ -36,6 +36,9 @@ import SearchProperty from './Pages/SearchProperty';
 import MutationDailyReport from './Pages/MutationDailyReport';
 import PublicNoticesReport from './Pages/PublicNoticesReport';
 import MasterReportPage from './Pages/MasterReportPage';
+import PendingMutationReport from './Pages/PendingMutationReport';
+import MutationObjection from './Pages/MutationObjection';
+import EKYCMutationObjectionResponse from './Pages/EKYCMutationObjectionResponse';
 const AppRoutes = () => {
   return (
     <AuthProvider>
@@ -103,6 +106,15 @@ const AppRoutes = () => {
                  <Route 
               path='/MasterReportPage'
               element={<MasterReportPage/>}/>
+                <Route 
+              path='/PendingMutationReport'
+              element={<PendingMutationReport/>}/>
+               <Route 
+              path='/MutationObjection'
+              element={<MutationObjection/>}/>
+               <Route 
+              path='/EKYCMutationObjectionResponse'
+              element={<EKYCMutationObjectionResponse/>}/>
                 {/* <Route
               path="/EKYCResponse"
               element={<EKYCResponse />}  />
