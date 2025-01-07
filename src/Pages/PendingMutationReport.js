@@ -1,34 +1,48 @@
 import React, { useState, useEffect ,useCallback} from 'react';
 import {
   Button,  Box, Container, Typography,
- Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
+ Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,TablePagination,
  CircularProgress
 } from '@mui/material';
 import 'react-toastify/dist/ReactToastify.css';
 import axiosInstance from '../components/Axios';
-import { useNavigate } from 'react-router-dom';
+import {  useNavigate ,useLocation} from 'react-router-dom';
 
 const PendingMutationReport = () => {
     const [propertyData, setPropertyData] = useState([]);
     const [loading,setLoading] = useState(false);
-    const [formattedDate,setFormattedDate] = useState("")
+      const location = useLocation();
+        const [LoginData,setLoginData] = useState("")
+     const [page, setPage] = useState(0);
+    const [formattedDate,setFormattedDate] = useState("");
+     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [totals1,settotals] = useState([]);
     const navigate = useNavigate();
-    const fetchDailyDetails = (row,reportType) => {
+    const fetchDailyDetails = (row) => {
       debugger
-      navigate("/MutationObjection", {
-        state: {
-            WARDNUMBER: row,
-            REPORTTYPE: reportType
-        }
-    });
+      //sessionStorage.setItem("SETPROPERTYMUTATIONEPID",row.PROPERTYEPID)
+      sessionStorage.setItem("SETPROPERTYMUTATIONEPID", JSON.stringify("123123"))
+      if(LoginData !== null && LoginData !== undefined){
+        alert("Please Log-In To File Mutation Objections. Click On The File Mutation Objection Link After Logging In.")
+        navigate("/MutationObjection")
+      }else {
+        window.location.href = "https://bbmpeaasthi.karnataka.gov.in/CitzLogin.aspx";
+      }
+    
 
     }
     const fetchData = async () => {
         debugger
         try {
           setLoading(true)
-            let response = await axiosInstance.get("Report/GetEAASTHIDailyReport")
+          const params = new URLSearchParams(location.search);
+      const LoginData = params.get('LoginData');
+      if (LoginData !== null && LoginData !== undefined) {
+        let response4 = await axiosInstance.get("Auth/DecryptJson?encryptedXML="+LoginData)
+        sessionStorage.setItem('SETLOGINID', JSON.stringify(response4.data.UserId));
+        sessionStorage.setItem("LoginData", JSON.stringify(response4.data)); 
+      }
+            let response = await axiosInstance.get("MutationObjectionAPI/Get_Pending_Mutation_Details?TypeOfSearch=12&PageNo=23&PageCount=32")
         setPropertyData(response.data.Table || [])
       
    
@@ -58,7 +72,7 @@ console.log(error)
         borderBottom: '1px solid #ddd',
       };
       const bodyCellStyle = {
-        padding: '8px',
+        padding: '15px',
         textAlign: 'center',
         borderRight: '1px solid #ddd',
         borderBottom: '1px solid #ddd',
@@ -135,7 +149,7 @@ console.log(error)
          rowSpan={2}
           style={{ ...cellStyle, borderRight: '4px solid #ddd' }}
         >
-          Property EPID and view eKhata
+          Property EPID 
         </TableCell>
         <TableCell
           rowSpan={2}
@@ -191,10 +205,10 @@ console.log(error)
             {row.WARDNUMBER} - {row.WARDNAME_EN}
             </TableCell>
             <TableCell style={bodyCellStyle}>
-            <Button color="primary" style={{ width: '2rem',height:"0.1rem" }} onClick={() =>fetchDailyDetails(row.WARDNUMBER,"TOTAL_RECEIVED")}>{row.TOTAL_RECEIVED}</Button>
+            {row.AUTO_APPROVED}
             </TableCell>
             <TableCell style={bodyCellStyle}>
-            <Button color="primary" style={{ width: '2rem',height:"0.1rem" }} onClick={() =>fetchDailyDetails(row.WARDNUMBER,"YEST_RECEIVED")}>{row.YEST_RECEIVED}</Button> 
+            {row.AUTO_APPROVED} 
             </TableCell>
             <TableCell style={bodyCellStyle}>
             {row.ACTIVE_CW}
@@ -212,13 +226,13 @@ console.log(error)
               {row.ARO_APPROVED + row.AUTO_APPROVED}
             </TableCell> */}
             <TableCell style={bodyCellStyle}>
-            <Button color="primary" style={{ width: '2rem',height:"0.1rem" }} onClick={() =>fetchDailyDetails(row.WARDNUMBER,"YEST_CW_DISPOSED_COUNT")}>{row.YEST_CW_DISPOSED_COUNT}</Button> 
+            {row.AUTO_APPROVED} 
             </TableCell>
             <TableCell style={bodyCellStyle}>
-            <Button color="primary" style={{ width: '2rem',height:"0.1rem" }} onClick={() =>fetchDailyDetails(row.WARDNUMBER,"YEST_RI_DISPOSED_COUNT")}>{row.YEST_RI_DISPOSED_COUNT}</Button> 
+            {row.AUTO_APPROVED}
             </TableCell>
             <TableCell style={bodyCellStyle}>
-            <Button color="primary" style={{ width: '2rem',height:"0.1rem" }} onClick={() =>fetchDailyDetails(row.WARDNUMBER,"YEST_RI_DISPOSED_COUNT")}>{row.YEST_RI_DISPOSED_COUNT}</Button> 
+            <Button color="primary" style={{ width: '2rem',height:"0.5rem" }} onClick={() =>fetchDailyDetails(row.ZONENUMBER)}>Click Here</Button> 
             </TableCell>
            
           </TableRow>
@@ -231,6 +245,26 @@ console.log(error)
   </Table>
 </TableContainer>
             </Box>
+            <TablePagination
+  rowsPerPageOptions={[10, 25, 50, 100]}
+  component="div"
+  count={propertyData.length > 0 ? propertyData[0].TOTAL_COUNT : 10} 
+  rowsPerPage={rowsPerPage}
+  page={page}
+  onPageChange={ async (event, newPage) => {
+    setPage(newPage);
+  await  fetchData(newPage + 1, rowsPerPage); 
+  }}
+  onRowsPerPageChange={ async(event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+   await  fetchData(1, parseInt(event.target.value, 10)); 
+  }}
+  labelRowsPerPage="Properties per Page:"
+  labelDisplayedRows={({ from, to, count }) => 
+    `Properties: ${from}–${to} of ${count !== -1 ? count : `more than ${to}`} `
+  }
+/>
   </Container>
    );
 };

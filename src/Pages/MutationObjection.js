@@ -98,25 +98,7 @@ const MutationObjection = () => {
   
  
  
-  const fetchData = React.useCallback(async () => {
-    setLoading(true);
- 
-    try {
-      
-        setLoading(false);  
-    }
-      
-     catch (error) {
-      setLoading(false);
-      console.error('There was an error!', error);
-      return <ErrorPage errorMessage={error} />;
-    }
-    setLoading(false);
-  }, []);
   
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
 
   const handleChange = (e) => {
 
@@ -234,13 +216,11 @@ try {
       }
       callEditEYCDate();
     }
-
-    fetchData();
   }
   catch(error){
     console.log(error)
   }  
-  }, [location.search,fetchData]);
+  }, [location.search]);
 
   const handleReasonFileChange = (e) => {
     const file = e.target.files[0];
@@ -305,6 +285,7 @@ try {
  
   
   const handleBack = () => {
+    sessionStorage.removeItem('SETPROPERTYMUTATIONEPID');
     sessionStorage.removeItem('SETMUTATATIONREQID');
     navigate("/PendingMutationReport");
   }
@@ -461,14 +442,14 @@ toast.error(error)
 console.log(error)
       }
     }
-    const fetchAcknowedgeMentPdf = async () => {
+    const fetchAcknowedgeMentPdf = async (MUTATIONOBJREQID) => {
       try {
         debugger
         
         
           setLoading(true)
         const response = await axiosInstance.get(
-          `Report/GetFinalMutationAcknowledgementReport?propertycode=${123}`,
+          `Report/GetFinalMutationAcknowledgementReport?mutationRequestId=${MUTATIONOBJREQID}`,
           {
             responseType: 'blob',  
           }
@@ -518,6 +499,7 @@ console.log(error)
       
       const data = {
         mutatation_Req_Id: JSON.parse(sessionStorage.getItem('SETMUTATATIONREQID')),
+        propertyEpid: JSON.parse(sessionStorage.getItem("SETPROPERTYMUTATIONEPID")),
         objectionDocument: propertyDocumentName,
         reasondetails: formData.ReasonDetails || null,
         objectionDocumentName: selectedNameFile.name,
@@ -529,7 +511,7 @@ console.log(error)
       };
       
       try {
-        await axiosInstance.post('MutationObjectionAPI/INS_NCL_MUTATION_OBJECTION_FINAL_SUBMIT', data
+       let response3 = await axiosInstance.post('MutationObjectionAPI/INS_NCL_MUTATION_OBJECTION_FINAL_SUBMIT', data
         )
         setTimeout(() => {
         toast.success(`${t("detailsSavedSuccess")}`, {
@@ -543,7 +525,7 @@ console.log(error)
         });
       }, 100)
  setLoading(false);
-    await fetchAcknowedgeMentPdf();
+    await fetchAcknowedgeMentPdf(response3.data.Table[0].MUTATIONOBJECTIONREQID);
     setLoading(false);
       } catch (error) {
         await toast.error(`${t("errorSavingData")}`, error, {
