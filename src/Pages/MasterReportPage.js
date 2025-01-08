@@ -37,6 +37,7 @@ const MasterReportPage = () => {
     { id: 4, name: 'MUTATION DAILY ', path: '/MutationDailyReport' },
     { id: 5, name: 'PENDANCY REPORT', path: '/PendanceReport' },
     { id: 6, name: 'PUBLIC NOTICES ', path: '/PublicNoticesReport' },
+    { id: 7, name: 'PENDING MUTATION ', path: '/PendingMutationReport' },
   ];
 
   // Upcoming report announcement
