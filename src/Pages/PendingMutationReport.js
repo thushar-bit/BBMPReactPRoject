@@ -2,7 +2,7 @@ import React, { useState, useEffect ,useCallback} from 'react';
 import {
   Button,  Box, Container, Typography,
  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,TablePagination,
- CircularProgress
+ CircularProgress,Dialog, DialogContent,DialogActions,
 } from '@mui/material';
 import 'react-toastify/dist/ReactToastify.css';
 import axiosInstance from '../components/Axios';
@@ -16,25 +16,55 @@ const PendingMutationReport = () => {
      const [page, setPage] = useState(0);
     const [formattedDate,setFormattedDate] = useState("");
      const [rowsPerPage, setRowsPerPage] = useState(10);
+     
+            const [pdfUrl, setPdfUrl] = useState('');
     const [totals1,settotals] = useState([]);
     const navigate = useNavigate();
     const fetchDailyDetails = (row) => {
       debugger
       //sessionStorage.setItem("SETPROPERTYMUTATIONEPID",row.PROPERTYEPID)
-      sessionStorage.setItem("SETPROPERTYMUTATIONEPID", JSON.stringify("123123"))
+    
       if(LoginData !== null && LoginData !== undefined){
         alert("Please Log-In To File Mutation Objections. Click On The File Mutation Objection Link After Logging In.")
-        navigate("/MutationObjection")
-      }else {
+     //   window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_test2/CitzLogin.aspx";
         window.location.href = "https://bbmpeaasthi.karnataka.gov.in/CitzLogin.aspx";
+      }else {
+        sessionStorage.setItem("SETPROPERTYMUTATIONEPID", JSON.stringify(row.PROPERTYID))
+        navigate("/MutationObjection")
+      
       }
     
 
     }
-    const fetchData = async () => {
+    const handlePageDownload = async (row) => {
+      debugger
+      setLoading(true)
+     try {
+   const response = await axiosInstance.post(
+    `Report/DownloadNoticePDF?MutApplId=${row.MUTAPPLID}&Propcode=${row.PROPERTYCODE}`,
+    null,
+    {
+      responseType: 'blob', 
+    }
+  );
+  debugger
+ const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
+const pdfUrl = URL.createObjectURL(pdfBlob);
+  
+  setPdfUrl(pdfUrl);
+  setLoading(false)
+ 
+}catch(error){
+  setLoading(false)
+console.log(error)
+ }
+}  
+    const fetchData = async (page = 1, rowsPerPage = 10) => {
         debugger
         try {
           setLoading(true)
+          let response = await axiosInstance.get(`MutationObjectionAPI/Get_Pending_Mutation_Details?TypeOfSearch=12&PageNo=${page}&PageCount=${rowsPerPage}`)
+        setPropertyData(response.data.Table || [])
           const params = new URLSearchParams(location.search);
       const LoginData = params.get('LoginData');
       if (LoginData !== null && LoginData !== undefined) {
@@ -42,8 +72,7 @@ const PendingMutationReport = () => {
         sessionStorage.setItem('SETLOGINID', JSON.stringify(response4.data.UserId));
         sessionStorage.setItem("LoginData", JSON.stringify(response4.data)); 
       }
-            let response = await axiosInstance.get("MutationObjectionAPI/Get_Pending_Mutation_Details?TypeOfSearch=12&PageNo=23&PageCount=32")
-        setPropertyData(response.data.Table || [])
+            
       
    
         setLoading(false)
@@ -128,6 +157,31 @@ console.log(error)
         
         Pending Mutations
         </Typography>
+        {pdfUrl && (
+          <Dialog open={Boolean(pdfUrl)} onClose={() => setPdfUrl('')} maxWidth="md" fullWidth>
+            <DialogContent>
+              <iframe src={pdfUrl} width="100%" height="600px" title="PDF Viewer"></iframe>
+            </DialogContent>
+            <DialogActions>
+              {/* Button to download the PDF with a custom filename */}
+              <Button
+                onClick={() => {
+                  const link = document.createElement('a');
+                  link.href = pdfUrl;
+                  link.download = 'Public Notice.pdf'; // Set your desired filename here
+                  link.click();
+                }}
+                color="primary"
+              >
+                Download PDF
+              </Button>
+        
+              <Button  onClick={() => setPdfUrl("")} color="primary">
+              Close PDF 
+              </Button>
+            </DialogActions>
+          </Dialog>
+        )}
         <TableContainer component={Paper} sx={{ mt: 4, border: '1px solid #ddd' }}>
   <Table sx={{ borderCollapse: 'collapse' }}>
     <TableHead>
@@ -169,8 +223,14 @@ console.log(error)
         >
           Date of Issuance of Public Notice
         </TableCell>
-        <TableCell colSpan={4} style={{...cellStyle ,borderRight: '4px solid #ddd' }}>
+        {/* <TableCell colSpan={4} style={{...cellStyle ,borderRight: '4px solid #ddd' }}>
           Pending with whom
+        </TableCell> */}
+         <TableCell
+         rowSpan={2}
+          style={{ ...cellStyle, borderRight: '4px solid #ddd' }}
+        >
+           Pending with whom
         </TableCell>
         <TableCell
          rowSpan={2}
@@ -180,13 +240,13 @@ console.log(error)
         </TableCell>
       </TableRow>
       {/* Subheaders */}
-      <TableRow>
+      {/* <TableRow>
         
         <TableCell  style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>Name</TableCell>
         <TableCell  style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>Designation</TableCell>
         <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>Mobile Number</TableCell>
         <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>In - Date</TableCell>
-      </TableRow>
+      </TableRow> */}
     </TableHead>
     <TableBody>
       {propertyData.length === 0 ? (
@@ -199,38 +259,37 @@ console.log(error)
         propertyData.map((row, index) => (
           <TableRow key={index}>
             <TableCell style={bodyCellStyle}>
-            {row.ZONENAME_EN}
+            {row.REGISTRATIONNUMBER}
             </TableCell>
             <TableCell style={bodyCellStyle}>
-            {row.WARDNUMBER} - {row.WARDNAME_EN}
+            {row.MUTATIONTYPE_EN}
             </TableCell>
             <TableCell style={bodyCellStyle}>
+            {row.PROPERTYID}
+            </TableCell>
+            <TableCell style={bodyCellStyle}>
+            {row.SELLER} 
+            </TableCell>
+            <TableCell style={bodyCellStyle}>
+            {row.RECEIVER}
+            </TableCell>
+            <TableCell style={bodyCellStyle}>
+            {/* {row.NOTICEGENERATEDON} */}
+            <Button color="primary" style={{ width: '2rem',height:"0.5rem" }} onClick={() =>handlePageDownload(row)}>{row.NOTICEGENERATEDON}</Button>
+            </TableCell>
+            <TableCell style={bodyCellStyle}>
+            {row.LOGIN_DETAILS}
+            </TableCell>
+           {/*  <TableCell style={bodyCellStyle}>
             {row.AUTO_APPROVED}
             </TableCell>
+          
             <TableCell style={bodyCellStyle}>
             {row.AUTO_APPROVED} 
             </TableCell>
             <TableCell style={bodyCellStyle}>
-            {row.ACTIVE_CW}
-            </TableCell>
-            <TableCell style={bodyCellStyle}>
-            {row.ACTIVE_ARO}
-            </TableCell>
-            <TableCell style={bodyCellStyle}>
-            {row.ARO_APPROVED}
-            </TableCell>
-            <TableCell style={bodyCellStyle}>
             {row.AUTO_APPROVED}
-            </TableCell>
-            {/* <TableCell style={bodyCellStyle}>
-              {row.ARO_APPROVED + row.AUTO_APPROVED}
             </TableCell> */}
-            <TableCell style={bodyCellStyle}>
-            {row.AUTO_APPROVED} 
-            </TableCell>
-            <TableCell style={bodyCellStyle}>
-            {row.AUTO_APPROVED}
-            </TableCell>
             <TableCell style={bodyCellStyle}>
             <Button color="primary" style={{ width: '2rem',height:"0.5rem" }} onClick={() =>fetchDailyDetails(row.ZONENUMBER)}>Click Here</Button> 
             </TableCell>

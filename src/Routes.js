@@ -39,6 +39,7 @@ import MasterReportPage from './Pages/MasterReportPage';
 import PendingMutationReport from './Pages/PendingMutationReport';
 import MutationObjection from './Pages/MutationObjection';
 import EKYCMutationObjectionResponse from './Pages/EKYCMutationObjectionResponse';
+import DraftDownloadedReport from './Pages/DraftDownloadedReport';
 const AppRoutes = () => {
   return (
     <AuthProvider>
@@ -115,6 +116,9 @@ const AppRoutes = () => {
                <Route 
               path='/EKYCMutationObjectionResponse'
               element={<EKYCMutationObjectionResponse/>}/>
+               <Route 
+              path='/DraftDownloadedReport'
+              element={<DraftDownloadedReport/>}/>
                 {/* <Route
               path="/EKYCResponse"
               element={<EKYCResponse />}  />

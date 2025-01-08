@@ -104,7 +104,16 @@ const MutationObjection = () => {
 
     const { name, value } = e.target;
     
-   
+    if (name === "ReasonDetails") {
+      if (/^[a-zA-Z0-9\s]{0,4000}$/.test(value)) { 
+        setFormData(prevFormData => ({
+          ...prevFormData,
+          [name]: value
+        })); 
+      }
+      
+      return
+    }
   
    
     debugger
@@ -139,6 +148,7 @@ const MutationObjection = () => {
         }
         return
       }
+      
     }
     
     setFormData({
@@ -983,6 +993,7 @@ Mutation Objection
                     <TextField
                     
                     multiline 
+                    rows={4}
                     label={<LabelWithAsterisk text={"Remarks / Objection in Brief"} />}
                     name="ReasonDetails"
                     value={formData.ReasonDetails}
