@@ -24,18 +24,18 @@ const PendingMutationReport = () => {
       debugger
       //sessionStorage.setItem("SETPROPERTYMUTATIONEPID",row.PROPERTYEPID)
     
-    //   if(LoginData !== null && LoginData !== undefined){
-    //     alert("Please Log-In To File Mutation Objections. Click On The File Mutation Objection Link After Logging In.")
-    //     window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_test2/CitzLogin.aspx";
-    // //    window.location.href = "https://bbmpeaasthi.karnataka.gov.in/CitzLogin.aspx";
-    //   }else {
-    //     sessionStorage.setItem("SETPROPERTYMUTATIONEPID", JSON.stringify(row.PROPERTYID))
-    //     navigate("/MutationObjection")
+      if(LoginData !== null && LoginData !== undefined){
+        alert("Please Log-In To File Mutation Objections. Click On The File Mutation Objection Link After Logging In.")
+     //   window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_test2/CitzLogin.aspx";
+        window.location.href = "https://bbmpeaasthi.karnataka.gov.in/CitzLogin.aspx";
+      }else {
+        sessionStorage.setItem("SETPROPERTYMUTATIONEPID", JSON.stringify(row.PROPERTYID))
+        navigate("/MutationObjection")
       
-    //   }
+      }
 
-      sessionStorage.setItem("SETPROPERTYMUTATIONEPID", JSON.stringify(row.PROPERTYID))
-      navigate("/MutationObjection")
+      // sessionStorage.setItem("SETPROPERTYMUTATIONEPID", JSON.stringify(row.PROPERTYID))
+      // navigate("/MutationObjection")
 
     }
     const handlePageDownload = async (row) => {
@@ -277,7 +277,7 @@ console.log(error)
             </TableCell>
             <TableCell style={bodyCellStyle}>
             {/* {row.NOTICEGENERATEDON} */}
-            <Button color="primary" style={{ width: '2rem',height:"1rem" }} onClick={() =>handlePageDownload(row)}>{row.NOTICEGENERATEDON}</Button>
+            {(row.NOTICE_STATUS === "2" || row.NOTICE_STATUS === "3") ?  <Button color="primary" style={{ width: '2rem',height:"1rem" }} onClick={() =>handlePageDownload(row)}>{row.NOTICEGENERATEDON}</Button>:"Notice Not Generated"}
             </TableCell>
             <TableCell style={bodyCellStyle}>
             {row.LOGIN_DETAILS}
@@ -293,7 +293,7 @@ console.log(error)
             {row.AUTO_APPROVED}
             </TableCell> */}
             <TableCell style={bodyCellStyle}>
-            <Button color="primary" style={{ width: '2rem',height:"5rem" }} onClick={() =>fetchDailyDetails(row)}>Click Here</Button> 
+            {row.NOTICE_STATUS === "2" ?  <Button color="primary" style={{ width: '2rem',height:"5rem" }} onClick={() =>fetchDailyDetails(row)}>Click Here</Button> : ""}
             </TableCell>
            
           </TableRow>
