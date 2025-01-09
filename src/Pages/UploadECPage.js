@@ -484,6 +484,45 @@ console.log(error)
     }
     setIsDialogOpen(true);
   }
+  const handleEcDownload = async () => {
+    if (formData.ECDocumentNumber.length === 0) {
+      setTimeout(() => {
+        toast.error(`${t("enterEcDocumentNumber")}`)
+      }, 100)
+      return
+    }
+    try {
+      const response = await axiosInstance.post(
+        `KaveriAPI/GetKavBase64?RegistrationNoECNumber=${formData.ECDocumentNumber}`,
+        null,
+        { responseType: 'blob' } // Specify response type as blob
+      );
+  
+      // Create a blob from the response
+      const fileBlob = new Blob([response.data], { type: response.headers['content-type'] });
+  
+      // Create a URL for the blob
+      const fileUrl = URL.createObjectURL(fileBlob);
+  
+      // Create a temporary link element
+      const link = document.createElement('a');
+      link.href = fileUrl;
+  
+      // Set the file name for download (you can customize this)
+      link.download = `${formData.ECDocumentNumber}.pdf`; // Change to desired file name and extension
+  
+      // Append the link to the document, trigger click, and remove the link
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+  
+      // Revoke the blob URL after download
+      URL.revokeObjectURL(fileUrl);
+    } catch (error) {
+      console.error('Error downloading the file:', error);
+    }
+
+  }
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
   };
@@ -880,7 +919,7 @@ Upload EC Document
 </>
 }
         <Grid container spacing={2} alignItems="center">
-          <Grid item xs={9}>
+          <Grid item xs={6}>
             <TextField
               fullWidth
 
@@ -902,7 +941,7 @@ Upload EC Document
             />
           </Grid>
 
-          <Grid item xs={3} style={{ display: 'flex', alignItems: 'center' }}>
+          <Grid item xs={6} style={{ display: 'flex', alignItems: 'center' }}>
           <Box display="flex" justifyContent="space-between" alignItems="center">
           {IsAllowECDocumnet === false &&
             <Button
@@ -916,6 +955,9 @@ Upload EC Document
 }
             <Button color="primary" onClick={()=>viewSample("EC")}>
             {t("View Sample")}
+    </Button>
+    <Button color="primary" onClick={()=>handleEcDownload()}>
+         Download Physical EC Document
     </Button>
   </Box>
           </Grid>

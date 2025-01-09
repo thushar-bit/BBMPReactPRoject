@@ -297,6 +297,8 @@ try {
   const handleBack = () => {
     sessionStorage.removeItem('SETPROPERTYMUTATIONEPID');
     sessionStorage.removeItem('SETMUTATATIONREQID');
+    sessionStorage.removeItem('SETPROPERTYMUTATIONAPPLID');
+    sessionStorage.removeItem('SETPROPERTYMUTATIONPRORPERTYCODE');
     navigate("/PendingMutationReport");
   }
   const EditOwnerDetailsFromEKYCData = async (txno, ownerType) => {
@@ -513,9 +515,8 @@ console.log(error)
         objectionDocument: propertyDocumentName,
         reasondetails: formData.ReasonDetails || null,
         objectionDocumentName: selectedNameFile.name,
-        mobileNumber:null, 
-        mobiverify:null,
-        email:null,
+        mutationApplId:JSON.parse(sessionStorage.getItem("SETPROPERTYMUTATIONAPPLID")), 
+        propertycode:JSON.parse(sessionStorage.getItem("SETPROPERTYMUTATIONPRORPERTYCODE")),
      //   loginId: JSON.parse(sessionStorage.getItem('SETLOGINID')).toString(),
          loginId: "crc",
       };

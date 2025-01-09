@@ -2,13 +2,17 @@ import React, { useState, useEffect ,useCallback} from 'react';
 import {
   Button,  Box, Container, Typography,
  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,TablePagination,
- CircularProgress,Dialog, DialogContent,DialogActions,
+ CircularProgress,Dialog, DialogContent,DialogActions,Grid,TextField
 } from '@mui/material';
 import 'react-toastify/dist/ReactToastify.css';
 import axiosInstance from '../components/Axios';
 import {  useNavigate ,useLocation} from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const PendingMutationReport = () => {
+   const [formData, setFormData] = useState({
+    PropertyEPID:""
+    });
     const [propertyData, setPropertyData] = useState([]);
     const [loading,setLoading] = useState(false);
       const location = useLocation();
@@ -29,6 +33,8 @@ const PendingMutationReport = () => {
      //   window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_test2/CitzLogin.aspx";
         window.location.href = "https://bbmpeaasthi.karnataka.gov.in/CitzLogin.aspx";
       }else {
+        sessionStorage.setItem("SETPROPERTYMUTATIONAPPLID", JSON.stringify(row.MUTAPPLID))
+        sessionStorage.setItem("SETPROPERTYMUTATIONPRORPERTYCODE", JSON.stringify(row.PROPERTYCODE))
         sessionStorage.setItem("SETPROPERTYMUTATIONEPID", JSON.stringify(row.PROPERTYID))
         navigate("/MutationObjection")
       
@@ -61,11 +67,51 @@ const pdfUrl = URL.createObjectURL(pdfBlob);
 console.log(error)
  }
 }  
+
+const handleChange = (e) =>{
+  const { name, value } = e.target;
+     
+  setFormData({
+    ...formData,
+    [name]: value
+  });
+}
+const handleSearch = async () =>{
+  if(formData.PropertyEPID.length === 0){
+    toast.error("Please Enter the Property EPID")
+    return
+  }
+  try {
+    setLoading(true)
+    let response = await axiosInstance.get(`MutationObjectionAPI/Get_Pending_Mutation_Details?TypeOfSearch=${2}&PropertyEPID=${formData.PropertyEPID}&PageNo=${1}&PageCount=${10}`)
+  setPropertyData(response.data.Table || [])
+  setLoading(false)
+  }
+  catch(ex){
+    setLoading(false)
+    console.log(ex)
+  }
+}
+const handleBack = () => {
+window.location.href = "https://bbmpeaasthi.karnataka.gov.in";
+}
+const handleReset = async () => {
+  try {
+    setLoading(true)
+    let response = await axiosInstance.get(`MutationObjectionAPI/Get_Pending_Mutation_Details?TypeOfSearch=${1}&PropertyEPID=${0}&PageNo=${1}&PageCount=${10}`)
+  setPropertyData(response.data.Table || [])
+  setLoading(false)
+  }
+  catch(ex){
+    setLoading(false)
+    console.log(ex)
+  }
+}
     const fetchData = async (page = 1, rowsPerPage = 10) => {
         debugger
         try {
           setLoading(true)
-          let response = await axiosInstance.get(`MutationObjectionAPI/Get_Pending_Mutation_Details?TypeOfSearch=12&PageNo=${page}&PageCount=${rowsPerPage}`)
+          let response = await axiosInstance.get(`MutationObjectionAPI/Get_Pending_Mutation_Details?TypeOfSearch=${1}&PropertyEPID=${0}&PageNo=${page}&PageCount=${rowsPerPage}`)
         setPropertyData(response.data.Table || [])
           const params = new URLSearchParams(location.search);
       const LoginData = params.get('LoginData');
@@ -74,7 +120,10 @@ console.log(error)
         sessionStorage.setItem('SETLOGINID', JSON.stringify(response4.data.UserId));
         sessionStorage.setItem("LoginData", JSON.stringify(response4.data)); 
       }
-            
+      sessionStorage.removeItem('SETPROPERTYMUTATIONEPID');
+      sessionStorage.removeItem('SETMUTATATIONREQID');
+      sessionStorage.removeItem('SETPROPERTYMUTATIONAPPLID');
+      sessionStorage.removeItem('SETPROPERTYMUTATIONPRORPERTYCODE');    
       
    
         setLoading(false)
@@ -159,6 +208,34 @@ console.log(error)
         
         Pending Mutations
         </Typography>
+        <Grid container spacing={2} alignItems={"center"} justifyContent="center">
+         
+         
+          <Grid item xs={12} sm={6} >
+            <TextField
+              label={("Search Property EPID")}
+              name="PropertyEPID"
+              value={formData.PropertyEPID}
+              onChange={handleChange}
+              fullWidth
+              
+              sx={{ marginBottom: 3,backgroundColor:"#ffff"  }}
+            />
+          </Grid>
+          
+          <Box display="flex" justifyContent="center" gap={2} mt={0.5} width="100%">
+          <Button variant="contained" color="primary" onClick={handleBack}>
+              {("Previous")}
+            </Button>
+            <Button variant="contained" color="success" onClick={handleSearch}>
+              {("Search")}
+            </Button>
+            <Button variant="contained" color="primary" onClick={handleReset}>
+              {("Reset")}
+            </Button>
+          
+          </Box>
+        </Grid>
         {pdfUrl && (
           <Dialog open={Boolean(pdfUrl)} onClose={() => setPdfUrl('')} maxWidth="md" fullWidth>
             <DialogContent>
