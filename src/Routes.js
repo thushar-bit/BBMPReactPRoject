@@ -40,6 +40,7 @@ import PendingMutationReport from './Pages/PendingMutationReport';
 import MutationObjection from './Pages/MutationObjection';
 import EKYCMutationObjectionResponse from './Pages/EKYCMutationObjectionResponse';
 import DraftDownloadedReport from './Pages/DraftDownloadedReport';
+import Final_eKhatha_Status_based_on_ePID from './Pages/Final_eKhatha_Status_based_on_ePID';
 const AppRoutes = () => {
   return (
     <AuthProvider>
@@ -119,6 +120,9 @@ const AppRoutes = () => {
                <Route 
               path='/DraftDownloadedReport'
               element={<DraftDownloadedReport/>}/>
+              <Route
+              path='/Final_eKhatha_Status_based_on_ePID'
+              element={<Final_eKhatha_Status_based_on_ePID/>}/>
                 {/* <Route
               path="/EKYCResponse"
               element={<EKYCResponse />}  />
