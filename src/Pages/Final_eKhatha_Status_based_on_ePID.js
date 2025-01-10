@@ -96,7 +96,7 @@ console.log(error)
           }}
         >
         
-          Pending Report Details -  {formattedDate} 
+        Final eKhatha Status
         </Typography>
         <Grid container spacing={5} alignItems={"center"}  justifyContent="center">
           <Grid item xs={12} sm={5} md={4}>

@@ -45,9 +45,14 @@ const PendanceReport = () => {
      
       setPropertyData([])
       const today = new Date(); // Get current date
-      setFormattedDate(`${String(today.getDate()).padStart(2, "0")}-${String(
-      today.getMonth() + 1
-  ).padStart(2, "0")}-${today.getFullYear()}`)
+      const formattedDate = `${String(today.getDate()).padStart(2, "0")}-${String(
+        today.getMonth() + 1
+      ).padStart(2, "0")}-${today.getFullYear()} ${String(
+        today.getHours()
+      ).padStart(2, "0")}:${String(today.getMinutes()).padStart(2, "0")}:${String(
+        today.getSeconds()
+      ).padStart(2, "0")}`;
+      setFormattedDate(formattedDate)
       setLoading(false)
       
      
