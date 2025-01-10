@@ -16,7 +16,7 @@ const PendingMutationReport = () => {
     const [propertyData, setPropertyData] = useState([]);
     const [loading,setLoading] = useState(false);
       const location = useLocation();
-        const [LoginData,setLoginData] = useState("")
+        const [LoginData,setLoginData] = useState(null)
      const [page, setPage] = useState(0);
     const [formattedDate,setFormattedDate] = useState("");
      const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -29,19 +29,23 @@ const PendingMutationReport = () => {
       //sessionStorage.setItem("SETPROPERTYMUTATIONEPID",row.PROPERTYEPID)
     
       if(LoginData !== null && LoginData !== undefined){
-        alert("Please Log-In To File Mutation Objections. Click On The File Mutation Objection Link After Logging In.")
-     //   window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_test2/CitzLogin.aspx";
-        window.location.href = "https://bbmpeaasthi.karnataka.gov.in/CitzLogin.aspx";
-      }else {
+
         sessionStorage.setItem("SETPROPERTYMUTATIONAPPLID", JSON.stringify(row.MUTAPPLID))
         sessionStorage.setItem("SETPROPERTYMUTATIONPRORPERTYCODE", JSON.stringify(row.PROPERTYCODE))
         sessionStorage.setItem("SETPROPERTYMUTATIONEPID", JSON.stringify(row.PROPERTYID))
         navigate("/MutationObjection")
-      
+       
+      }else {
+       
+        alert("Please Log-In To File Mutation Objections. Click On The File Mutation Objection Link After Logging In.")
+        //   window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_test2/CitzLogin.aspx";
+           window.location.href = "https://bbmpeaasthi.karnataka.gov.in/CitzLogin.aspx";
       }
 
+      // sessionStorage.setItem("SETPROPERTYMUTATIONAPPLID", JSON.stringify(row.MUTAPPLID))
+      // sessionStorage.setItem("SETPROPERTYMUTATIONPRORPERTYCODE", JSON.stringify(row.PROPERTYCODE))
       // sessionStorage.setItem("SETPROPERTYMUTATIONEPID", JSON.stringify(row.PROPERTYID))
-      // navigate("/MutationObjection")
+      //  navigate("/MutationObjection")
 
     }
     const handlePageDownload = async (row) => {
@@ -119,6 +123,7 @@ const handleReset = async () => {
         let response4 = await axiosInstance.get("Auth/DecryptJson?encryptedXML="+LoginData)
         sessionStorage.setItem('SETLOGINID', JSON.stringify(response4.data.UserId));
         sessionStorage.setItem("LoginData", JSON.stringify(response4.data)); 
+        setLoginData(JSON.parse(sessionStorage.getItem('LoginData')))
       }
       sessionStorage.removeItem('SETPROPERTYMUTATIONEPID');
       sessionStorage.removeItem('SETMUTATATIONREQID');
@@ -324,7 +329,7 @@ console.log(error)
         <TableCell  style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>Name</TableCell>
         <TableCell  style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>Designation</TableCell>
         <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>Mobile Number</TableCell>
-        <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>In - Date</TableCell>
+        <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>In - Date</TableCell> 
       </TableRow> */}
     </TableHead>
     <TableBody>
@@ -357,7 +362,7 @@ console.log(error)
             {(row.NOTICE_STATUS === "2" || row.NOTICE_STATUS === "3") ?  <Button color="primary" style={{ width: '2rem',height:"1rem" }} onClick={() =>handlePageDownload(row)}>{row.NOTICEGENERATEDON}</Button>:"Notice Not Generated"}
             </TableCell>
             <TableCell style={bodyCellStyle}>
-            {row.LOGIN_DETAILS}
+            {row.LOGIN_DETAILS} 
             </TableCell>
            {/*  <TableCell style={bodyCellStyle}>
             {row.AUTO_APPROVED}
@@ -365,7 +370,7 @@ console.log(error)
           
             <TableCell style={bodyCellStyle}>
             {row.AUTO_APPROVED} 
-            </TableCell>
+            </TableCell> 
             <TableCell style={bodyCellStyle}>
             {row.AUTO_APPROVED}
             </TableCell> */}
