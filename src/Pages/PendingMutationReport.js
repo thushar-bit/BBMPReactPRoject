@@ -362,7 +362,7 @@ console.log(error)
             {(row.NOTICE_STATUS === "2" || row.NOTICE_STATUS === "3") ?  <Button color="primary" style={{ width: '2rem',height:"1rem" }} onClick={() =>handlePageDownload(row)}>{row.NOTICEGENERATEDON}</Button>:"Notice Not Generated"}
             </TableCell>
             <TableCell style={bodyCellStyle}>
-            {row.LOGIN_DETAILS} 
+            {row.NOTICE_STATUS !== "2" ? row.LOGIN_DETAILS : ""}
             </TableCell>
            {/*  <TableCell style={bodyCellStyle}>
             {row.AUTO_APPROVED}

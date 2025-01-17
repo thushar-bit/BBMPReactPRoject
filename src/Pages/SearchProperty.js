@@ -170,9 +170,15 @@ debugger
             setIsSASNumber(false)
         }
         else {
+          setSASTableData([])
             setIsSASNumber(true)
         }
       
+    }
+    if(name === "SASNumber"){
+      if(formData.IsSASNumber === "N"){
+        setSASTableData([])
+      }
     }
     if(name === "ISHaveOLDEkhata"){
       if(value === "N"){
@@ -481,7 +487,7 @@ try {
         toast.error(`${t("verifyOtp")}`)
         return
       }
-    
+   
      
       if (formData.MOBILENUMBER === null || formData.MOBILENUMBER === undefined) {
         toast.error(`${t("enterValidMobileNumber")}`)
@@ -730,6 +736,21 @@ console.log(error)
       try {
       let response3 =  await axiosInstance.post('SearchAPI/INS_NCL_PROPERTY_SEARCH_FINAL_SUBMIT', data
         )
+        if(response3.data.Table[0].STATUS === "DUPLICATE ENTRY"){
+          setTimeout(() => {
+            toast.error(`An Application has Already Been Submitted for this Mobile Number.Please Wait until Search For Current Property is Completed.You will Recieve an Acknoweledgement to Your Given Mobile Number Once Completed.`, {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+          }, 100)
+          setLoading(false);
+          return
+        }
         setTimeout(() => {
         toast.success(`${t("detailsSavedSuccess")}`, {
           position: "top-right",
@@ -743,7 +764,7 @@ console.log(error)
       }, 100)
    
  setLoading(false);
-    
+
     await fetchAcknowedgeMentPdf(response3.data.Table[0].SEARCHREQID);
     setLoading(false);
      
@@ -757,6 +778,7 @@ console.log(error)
           draggable: true,
           progress: undefined,
         });
+        setLoading(false);
         setTimeout(() => {
           navigate('/ErrorPage', { state: { errorMessage: error.message, errorLocation: window.location.pathname } });
         }, 500);
