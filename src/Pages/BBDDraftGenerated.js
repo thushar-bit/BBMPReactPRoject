@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Button, Box, Container, Typography, CircularProgress,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-  
+  Link
 } from '@mui/material';
 
 import { toast, ToastContainer } from 'react-toastify';
@@ -56,6 +56,62 @@ const BBDDraftGenerated = () => {
 const handleWardGooglemap = (row) => {
   sessionStorage.setItem('DraftZoneId', JSON.stringify(row.ZONEID));
   navigate("/GoogleMapsWardCoordinates")
+}
+
+const handleSearchNavigation = async () => {
+  debugger
+ 
+           try{
+            let now = new Date();
+let txtDate = now.getFullYear().toString() +
+              (now.getMonth() + 1).toString().padStart(2, '0') +
+              now.getDate().toString().padStart(2, '0') + 'T' +
+              now.getHours().toString().padStart(2, '0') + ':' +
+              now.getMinutes().toString().padStart(2, '0') + ':' +
+              now.getSeconds().toString().padStart(2, '0');
+           if(LoginDetails !== null && LoginDetails !== undefined && LoginDetails !== ""){
+            const data = {
+              userId: LoginDetails.UserId,
+              propertyCode:"123",
+              propertyEPID:  "123" ,
+              sessionValues: "",
+              execTime: txtDate,
+              isLogin: true
+              }
+              
+              const response5 = await axiosInstance.post("Auth/EncryptJsons",data)
+              let re = response5.data;
+     
+              
+     sessionStorage.setItem('SETLOGINID', LoginDetails.UserId);
+            window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_core/SearchProperty?BookDraft="+re;
+         //  window.location.href = "https://bbmpeaasthi.karnataka.gov.in/objection_form_test/SearchProperty?BookDraft="+re;
+          }
+          else {
+            alert("Please Log-In To Apply For Property Searching. Click On The Do not find my Property Draft eKhata After Logging In.")
+            const data = {
+              userId: "",
+              propertyCode: "123",
+              propertyEPID:  "123",
+              sessionValues: "",
+              execTime: txtDate,
+              isLogin: false
+              }
+             
+      
+      console.log(txtDate); // Outputs: "20241018T13:44:09" (for example)
+      
+            // let json = "{\"UserId\":\"" + Convert.ToString(Session["LoginId"]) + "\",\"PropertyCode\":\"\",\"PropertyEPID\":\"\",\"SessionValues\":[],\"ExecTime\":\"" + txtDate + "\"}";
+              
+              const response = await axiosInstance.post("Auth/EncryptJsons",data)
+           window.location.href = "https://bbmpeaasthi.karnataka.gov.in/CitzLogin.aspx?BookDraft="+response.data;
+        //   window.location.href = "https://bbmpeaasthi.karnataka.gov.in/citizen_test2/CitzLogin.aspx?BookDraft="+response.data;
+          }
+        }
+        catch(error){
+console.log(error)
+        }
+                  
 }
 const handleBack =() => {
   sessionStorage.clear();
@@ -155,7 +211,7 @@ try {
         sx={{ color: 'red', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '0.9rem' }}
       >
 
-NOTE 1: IF YOU DON'T FIND YOUR PROPERTY IN THE WARD LIST, TRY AFTER FEW DAYS AS ABOUT 1-LAKH PROPERTIES eKHATA IS BEING DIGITIZED(21 Lakh have been released at present).
+NOTE 1: IF YOU DON'T FIND YOUR PROPERTY IN THE WARD LIST. PLEASE CLICK ON <Link  sx={{ color: 'red', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '0.9rem',cursor: 'pointer' }} onClick={() =>handleSearchNavigation()}>"DO NOT FIND MY PROPERTY DRAFT EKHATA"</Link> OPTION AND SUBMIT THE DETAILS.BBMP WILL REVERT WITH SOLUTION/REPLY.
 </Typography>
 <Typography 
         variant="body1" 

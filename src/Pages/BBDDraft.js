@@ -242,7 +242,7 @@ const PropertyList = () => {
                 now.getHours().toString().padStart(2, '0') + ':' +
                 now.getMinutes().toString().padStart(2, '0') + ':' +
                 now.getSeconds().toString().padStart(2, '0');
-             if(LoginData !== null && LoginData !== undefined){
+             if(LoginData !== null && LoginData !== undefined && LoginData !== ""){
               const data = {
                 userId: LoginData.UserId,
                 propertyCode:"123",
@@ -490,6 +490,24 @@ console.log(error)
 //       }
     const finalEktha =  () => {
       window.location.href = "https://bbmpeaasthi.karnataka.gov.in/office/frmKhathaDownload.aspx";
+    }
+    const finalPreviousEkhata = async (row) =>{
+      if(row.PROPERTYID === null || row.PROPERTYID  === undefined|| row.PROPERTYID.length === 0){
+        alert("Property ePID is not Generated . Please Click on Draft Ekatha to Generate the Property ePID And Click Here")
+          return
+        }
+        const data = {
+          userId: null,
+          propertyCode: null,
+          propertyEPID:  row.PROPERTYID ? row.PROPERTYID.toString() : "",
+          sessionValues: "",
+          execTime: null,
+          isLogin: true
+          }
+          
+          const response5 = await axiosInstance.post("Auth/EncryptJsons",data)
+          let re = response5.data;
+      window.location.href = `https://bbmpeaasthi.karnataka.gov.in/office/frmForm3_2View.aspx?formid=report&Data=${re}`;
     }
   const viewDraftEkatha = async (row) => {
     debugger
@@ -954,7 +972,9 @@ console.log(txtDate); // Outputs: "20241018T13:44:09" (for example)
                       <TableCell>{(page * rowsPerPage) + index + 1}</TableCell> 
                       <TableCell style={{ padding: '0.5em 1em' }} >{row.PROPERTYID}</TableCell>
                       <TableCell style={{ padding: '0.5em 1em' }}>{row.OWNERNAME}</TableCell>
-                      <TableCell style={{ padding: '0.5em 1em' }}>{row.PROPERTYSTATUS === "APR" ? <Button color="primary" style={{ width: '8rem',height:"0.1rem" }}   onClick={() => finalEktha()} >Final eKhata</Button>  : <Button color="primary" style={{ width: '8rem',height:"0.1rem" }}  onClick={() => viewDraftEkatha(row) } >Draft Ekhata</Button>} </TableCell>
+                      <TableCell style={{ padding: '0.5em 1em' }}>{row.PROPERTYSTATUS === "APR" ? 
+                      <>  <Button color="primary" style={{ width: '10rem',height:"0.1rem" }}   onClick={() => finalPreviousEkhata(row)} >Previous Print /</Button>  
+                       <Button color="primary" style={{ width: '10rem',height:"0.1rem" }}   onClick={() => finalEktha()} >Latest Print</Button> </>: <Button color="primary" style={{ width: '8rem',height:"0.1rem" }}  onClick={() => viewDraftEkatha(row) } >Draft Ekhata</Button>} </TableCell>
                       <TableCell style={{ padding: '0.5em 1em' }}>{row.PROPERTYSTATUS === "APR" ? "": <Button color="primary" style={{ width: '8rem',height:"0.1rem" }}  onClick={() => handleBBMPRedirection(row)}>{t("ClickHere")}</Button>}</TableCell>
                          <TableCell style={{ padding: '0.5em 0.5em' }}><Button color="primary" style={{ width: '8rem',height:"0.1rem" }}  onClick={() => handleObjectionNavigation(row)}>{t("ClickHere")}</Button></TableCell> 
                          <TableCell style={{ padding: '0.5em 0.5em' }}>
