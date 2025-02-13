@@ -198,8 +198,8 @@ console.log(error)
           ARO
         </TableCell>
         <TableCell  style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>Case Worker</TableCell>
-        <TableCell  style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>ARO</TableCell>
-        <TableCell style={subCellStyle}>RI</TableCell>
+        <TableCell  style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>RI</TableCell>
+        <TableCell style={subCellStyle}>ARO</TableCell>
       </TableRow>
     </TableHead>
     <TableBody>
@@ -219,10 +219,10 @@ console.log(error)
             {row.WARDNUMBER} - {row.WARDNAME_EN}
             </TableCell>
             <TableCell style={bodyCellStyle}>
-            <Button color="primary" style={{ width: '2rem',height:"0.1rem" }} onClick={() =>fetchDailyDetails(row.WARDNUMBER,"TOTAL_RECEIVED")}>{row.TOTAL_RECEIVED}</Button>
+            {row.TOTAL_RECEIVED}
             </TableCell>
             <TableCell style={bodyCellStyle}>
-            <Button color="primary" style={{ width: '2rem',height:"0.1rem" }} onClick={() =>fetchDailyDetails(row.WARDNUMBER,"YEST_RECEIVED")}>{row.YEST_RECEIVED}</Button> 
+          {row.YEST_RECEIVED}
             </TableCell>
             <TableCell style={bodyCellStyle}>
             {row.ACTIVE_CW}
@@ -240,22 +240,22 @@ console.log(error)
               {row.ARO_APPROVED + row.AUTO_APPROVED}
             </TableCell> */}
             <TableCell style={bodyCellStyle}>
-            <Button color="primary" style={{ width: '2rem',height:"0.1rem" }} onClick={() =>fetchDailyDetails(row.WARDNUMBER,"YEST_CW_DISPOSED_COUNT")}>{row.YEST_CW_DISPOSED_COUNT}</Button> 
+            {row.YEST_CW_DISPOSED_COUNT}
             </TableCell>
             <TableCell style={bodyCellStyle}>
-            <Button color="primary" style={{ width: '2rem',height:"0.1rem" }} onClick={() =>fetchDailyDetails(row.WARDNUMBER,"YEST_RI_DISPOSED_COUNT")}>{row.YEST_RI_DISPOSED_COUNT}</Button> 
+           {0}
             </TableCell>
             <TableCell style={bodyCellStyle}>
-            <Button color="primary" style={{ width: '2rem',height:"0.1rem" }} onClick={() =>fetchDailyDetails(row.WARDNUMBER,"YEST_AR0_DISPOSED_COUNT")}> {row.YEST_AR0_DISPOSED_COUNT}</Button> 
+           {row.YEST_AR0_DISPOSED_COUNT}
             </TableCell>
             <TableCell style={bodyCellStyle}>
-            <Button color="primary" style={{ width: '2rem',height:"0.1rem" }} onClick={() =>fetchDailyDetails(row.WARDNUMBER,"CW_PENDING_COUNT")}>{row.CW_PENDING_COUNT}</Button> 
+           {row.CW_PENDING_COUNT}
             </TableCell>
             <TableCell style={bodyCellStyle}>
-            <Button color="primary" style={{ width: '2rem',height:"0.1rem" }} onClick={() =>fetchDailyDetails(row.WARDNUMBER,"ARO_PENDING_COUNT")}>{row.ARO_PENDING_COUNT}</Button> 
+            {0}
             </TableCell>
             <TableCell style={bodyCellStyle}>
-            <Button color="primary" style={{ width: '2rem',height:"0.1rem" }} onClick={() =>fetchDailyDetails(row.WARDNUMBER,"RI_PENDING_COUNT")}>{row.RI_PENDING_COUNT}</Button>
+            {row.ARO_PENDING_COUNT}
             </TableCell>
           </TableRow>
           
@@ -272,11 +272,11 @@ console.log(error)
                 <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>{totals1.ARO_APPROVED}</TableCell>
                 <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>{totals1.AUTO_APPROVED}</TableCell>
                 <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>{totals1.YEST_CW_DISPOSED_COUNT}</TableCell>
-                <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>{totals1.YEST_RI_DISPOSED_COUNT}</TableCell>
+                <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>{0}</TableCell>
                 <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>{totals1.YEST_AR0_DISPOSED_COUNT}</TableCell>
                 <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>{totals1.CW_PENDING_COUNT}</TableCell>
+                <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>{0}</TableCell>
                 <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>{totals1.ARO_PENDING_COUNT}</TableCell>
-                <TableCell style={{ ...subCellStyle, borderRight: '4px solid #ddd' }}>{totals1.RI_PENDING_COUNT}</TableCell>
             </TableRow>
     </TableBody>
     
