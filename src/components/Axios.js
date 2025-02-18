@@ -9,7 +9,7 @@ const ENVIRONMENTS = {
 };
 
 // Select the environment
-const baseURL = ENVIRONMENTS.local; // Change this to .test or .live as needed
+const baseURL = ENVIRONMENTS.live; // Change this to .test or .live as needed
 const APP_SECRET = "$343145dsfsdf-3241^&+&!^&*@#-asd23";
 // Create axios instance
 const instance = axios.create({
