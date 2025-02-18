@@ -41,6 +41,9 @@ import MutationObjection from './Pages/MutationObjection';
 import EKYCMutationObjectionResponse from './Pages/EKYCMutationObjectionResponse';
 import DraftDownloadedReport from './Pages/DraftDownloadedReport';
 import Final_eKhatha_Status_based_on_ePID from './Pages/Final_eKhatha_Status_based_on_ePID';
+import Amalgamation from './Pages/Amalgamation';
+import EKYCAmalgamationResponse from "./Pages/EKYCAmalgamationResponse";
+import GetNewKhataReport from './Pages/NewKhataReport';
 const AppRoutes = () => {
   return (
     <AuthProvider>
@@ -123,6 +126,15 @@ const AppRoutes = () => {
               <Route
               path='/Final_eKhatha_Status_based_on_ePID'
               element={<Final_eKhatha_Status_based_on_ePID/>}/>
+              <Route
+              path='/Amalgamation'
+              element={<Amalgamation />}/>
+                <Route
+              path='/EKYCAmalgamationResponse'
+              element={<EKYCAmalgamationResponse />}/>
+              <Route
+              path='/GetNewKhataReport'
+              element={<GetNewKhataReport />}/>
                 {/* <Route
               path="/EKYCResponse"
               element={<EKYCResponse />}  />

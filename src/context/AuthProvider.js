@@ -7,7 +7,7 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(sessionStorage.getItem('token') || '');
 
   const saveToken = (userToken) => {
-    sessionStorage.setItem('token', userToken);
+    
     setToken(userToken);
   };
 
