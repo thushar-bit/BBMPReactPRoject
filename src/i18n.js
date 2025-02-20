@@ -115,7 +115,7 @@ const resources = {
        "Download":"Download",
         "AssessmentNo":"Assessment No",
         "SASApplicationNo":"SAS ApplicationNo",
-        "OpenProperty": "Submit Information for Final EKhata",
+        "OpenProperty": "Submit Information for FINAL ekhata & for corrections in ekhata",
         "ClickHere":"Click Here",
         "Reset":"Reset",
 

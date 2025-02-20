@@ -4,8 +4,8 @@ import CryptoJS from 'crypto-js';
 // API URLs
 const ENVIRONMENTS = {
   local: "https://localhost:44368/v1/",
-  test: "https://bbmpeaasthi.karnataka.gov.in/objection_api_test/v1",
-  live: "https://bbmpeaasthi.karnataka.gov.in/BBMPCoreAPI/v1"
+  test: "https://bbmpeaasthi.karnataka.gov.in/objection_api_test/v1/",
+  live: "https://bbmpeaasthi.karnataka.gov.in/BBMPCoreAPI/v1/"
 };
 
 // Select the environment

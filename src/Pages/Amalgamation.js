@@ -10,18 +10,47 @@ import axiosInstance from '../components/Axios';
 import { toast, ToastContainer } from 'react-toastify';
 import LabelWithAsterisk from '../components/LabelWithAsterisk'
 import MaskingValue from '../components/MaskingValue';
-
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { styled } from '@mui/material/styles';
+import GetAppIcon from '@mui/icons-material/GetApp';
+import AmalgamationDocumentUploadPage from './AmalgamationDocumentUploadPage';
+const VisuallyHiddenInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1,
+});
 const Amalgamation = () => {
   const [formData, setFormData] = useState({
- 
+    AmalgamationOrderNo: "",
+    AmalgamationOrderDate: "",
+    CHECKBANDI_EAST: "",
+    CHECKBANDI_NORTH : "",
+    CHECKBANDI_SOUTH: "",
+    CHECKBANDI_WEST: "",
+    cornerSite: "N",
+    UGD:"N",
+    ulbCode: "",
+    ASSESMENTNUMBER:"",
+    Oddsite:"",
+    SiteArea:"",
+    SurveyNo:"",
+    PropertyPhoto:"",
+    loginId:"",
     MOBILEVERIFY: "",
 
   });
   const [tableData, setTableData] = useState([
   ]);
   const navigate = useNavigate();
+   const [selectedIDFile, setSelectedIDFile] = useState(null);
   const location = useLocation();
-
+  const [isEditable,setIsEditable] = useState(true);
   const [searchFields, setSearchFields] = useState([{ id: 1, value: "" }]);
   const [tablesdata8, setTableData8] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -37,7 +66,74 @@ const Amalgamation = () => {
    const handleAddField = () => {
     setSearchFields([...searchFields, { id: searchFields.length + 1, value: "" }]);
   };
+  const handleDownload = (base64Data, documentdescription) => {
+    try {
+    const filename = `${documentdescription}`;
 
+    const mimeTypes = {
+      jpg: 'image/jpeg',
+      jpeg: 'image/jpeg',
+      png: 'image/png',
+      pdf: 'application/pdf',
+      doc: 'application/msword',
+      docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    };
+
+    const mimeType = mimeTypes[".pdf"] || 'application/octet-stream';
+
+
+    const byteCharacters = atob(base64Data);
+    const byteNumbers = new Array(byteCharacters.length).fill().map((_, i) => byteCharacters.charCodeAt(i));
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: mimeType });
+
+
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    link.click();
+
+
+    URL.revokeObjectURL(link.href);
+  }
+  catch(error){
+    console.log(error)
+  }
+  };
+  const handleIDFileChange = (e) => {
+      debugger
+      const file = e.target.files[0];
+      const maxSize = 200 * 1024;
+      if (file && file.size > maxSize) {
+        toast.error(`${t("File size exceeds 200 KB limit")}`);
+        e.target.value = null;
+        setSelectedIDFile(null);
+        return;
+      }
+      if(file === undefined){
+        return
+      }
+      const fileName = file.name;
+      const fileExtension = fileName.split('.').pop().toLowerCase();
+      if (!['jpg', 'jpeg',].includes(fileExtension)) {
+        toast.error(`${t("Please Select Only '.jpg','.jpeg' File")}`);
+        e.target.value = null;
+        setSelectedIDFile(null);
+        return
+      }
+   //   setfileExtension(fileExtension);
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setSelectedIDFile(file);
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+    const handleIDFileDelete = () => {
+      setSelectedIDFile(null);
+    //  setfileExtension('');
+    }
   const handleSearch = async () => {
     
     if (searchFields.some(field => field.value.trim() === "")) {
@@ -53,10 +149,7 @@ const Amalgamation = () => {
   debugger
     const searchValues = searchFields.map(field => field.value);
     const response = await axiosInstance.post("AmalgamationAPI/GetAmalgamationProperty" , searchValues);
-    if(response.data.Table.length <  searchValues.length){
-      toast.error("Property Data Not Found For all the Properties");
-      return;
-    }
+    
     setTableData(response.data.Table || []);
   };
   
@@ -224,7 +317,7 @@ debugger
       debugger
       setEkycResponseData(null);
       setTableData8(response.data.Table || [])
-      sessionStorage.setItem('SETSEARCHREQID',response.data.Table[0].SEARCH_REQ_ID)
+      sessionStorage.setItem('SETMUTATIONID',response.data.Table[0].P_MUTAPPLID)
     }
     } catch (error) {
       toast.error(`${t("errorSavingData")}`, error)
@@ -344,7 +437,7 @@ debugger
     );
   }
   return (
-    <Container maxWidth="xl">
+    <Container maxWidth="lg">
       <ToastContainer />
       <Box sx={{ backgroundColor: '#f0f0f0', padding: 1, borderRadius: 2, mt: 2 }}>
         <form onSubmit={handleSubmit}>
@@ -706,6 +799,305 @@ debugger
               </TableBody>
             </Table>
           </TableContainer>
+          <Grid container spacing={2} >
+  {/* Door No */}
+  <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={1}>
+    <Grid item xs={12} sm={3.2} style={{ textAlign: "left" }} >
+      <span style={{ fontWeight: "bold" }}>{<LabelWithAsterisk text={t('Amalgamation Order No')} />}</span>
+    </Grid>
+    <Grid item xs={12} sm={5.9}>
+    <TextField
+                    
+                    fullWidth 
+                    label={<LabelWithAsterisk text={"Enter Amalgamation Order No"} />}
+                    name="AmalgamationOrderNo"
+                    value={formData.AmalgamationOrderNo}
+                    onChange={handleChange}
+                
+                    variant={isEditable ? "outlined" : "filled"}
+                    InputProps={{
+                      readOnly: !isEditable,
+                      style: { backgroundColor: !isEditable ? '' : "#ffff" },
+                      
+                    }}
+                  />
+    </Grid>
+  </Grid>
+  <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={2}>
+    <Grid item xs={12} sm={3} style={{ textAlign: "right" }}>
+      <span style={{ fontWeight: "bold" }}>{<LabelWithAsterisk text={t('Amalgamation Order Date')} />}</span>
+    </Grid>
+    <Grid item xs={12} sm={6}>
+      <TextField
+        fullWidth
+        label={<LabelWithAsterisk text={t('Amalgamation Order Date')} />}
+        name="amaslamationOrderDate"
+        value={formData.AmalgamationOrderDate}
+        onChange={handleChange}
+        variant={isEditable ? "outlined" : "filled"}
+        InputProps={{
+          readOnly: !isEditable,
+          style: { backgroundColor: !isEditable ? '' : "#ffff" },
+        }}
+      />
+    </Grid>
+  </Grid>
+
+  {/* Building/Land Name */}
+  <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={2}>
+    <Grid item xs={12} sm={3} style={{ textAlign: "right" }}>
+      <span style={{ fontWeight: "bold" }}>{t("CheckBandhi EAST")}</span>
+    </Grid>
+    <Grid item xs={12} sm={6}>
+      <TextField
+        fullWidth
+        label={t("CheckBandhi EAST")}
+        name="CHECKBANDI_EAST"
+        value={formData.CHECKBANDI_EAST}
+        onChange={handleChange}
+        variant={isEditable ? "outlined" : "filled"}
+        InputProps={{
+          readOnly: !isEditable,
+          style: { backgroundColor: !isEditable ? '' : "#ffff" },
+        }}
+      />
+    </Grid>
+  </Grid>
+
+  {/* Area/Locality */}
+  <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={2}>
+    <Grid item xs={12} sm={3} style={{ textAlign: "right" }}>
+      <span style={{ fontWeight: "bold" }}>{<LabelWithAsterisk text={t('CheckBandhi West')} />}</span>
+    </Grid>
+    <Grid item xs={12} sm={6}>
+      <TextField
+        fullWidth
+        label={<LabelWithAsterisk text={t('CheckBandhi West')} />}
+        name="CHECKBANDI_WEST"
+        value={formData.CHECKBANDI_WEST}
+        onChange={handleChange}
+        variant={isEditable ? "outlined" : "filled"}
+        InputProps={{
+          readOnly: !isEditable,
+          style: { backgroundColor: !isEditable ? '' : "#ffff" },
+        }}
+      />
+    </Grid>
+  </Grid>
+
+  {/* Pincode */}
+  <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={2}>
+    <Grid item xs={12} sm={3} style={{ textAlign: "right" }}>
+      <span style={{ fontWeight: "bold" }}>{<LabelWithAsterisk text={t('CHECKBANDI NORTH')} />}</span>
+    </Grid>
+    <Grid item xs={12} sm={6}>
+    <TextField
+        fullWidth
+        label={<LabelWithAsterisk text={t('CHECKBANDI NORTH')} />}
+        name="CHECKBANDI NORTH"
+        value={formData.CHECKBANDI_NORTH}
+        onChange={handleChange}
+        variant={isEditable ? "outlined" : "filled"}
+        InputProps={{
+          readOnly: !isEditable,
+          style: { backgroundColor: !isEditable ? '' : "#ffff" },
+        }}
+      />
+    </Grid>
+  </Grid>
+  <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={2}>
+    <Grid item xs={12} sm={3} style={{ textAlign: "right" }}>
+      <span style={{ fontWeight: "bold" }}>{<LabelWithAsterisk text={t('CHECKBANDI SOUTH')} />}</span>
+    </Grid>
+    <Grid item xs={12} sm={6}>
+    <TextField
+        fullWidth
+        label={<LabelWithAsterisk text={t('CHECKBANDI SOUTH')} />}
+        name="CHECKBANDI SOUTH"
+        value={formData.CHECKBANDI_SOUTH}
+        onChange={handleChange}
+        variant={isEditable ? "outlined" : "filled"}
+        InputProps={{
+          readOnly: !isEditable,
+          style: { backgroundColor: !isEditable ? '' : "#ffff" },
+        }}
+      />
+    </Grid>
+  </Grid>
+ 
+  <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={2}>
+    <Grid item xs={12} sm={3} style={{ textAlign: "right" }}>
+      <span style={{ fontWeight: "bold" }}>{<LabelWithAsterisk text={t('Assesment Number')} />}</span>
+    </Grid>
+    <Grid item xs={12} sm={6}>
+      
+    <TextField
+    fullWidth
+                    label={<LabelWithAsterisk text={"Assesment Number"} />}
+                    name="ASSESMENTNUMBER"
+                    value={formData.ASSESMENTNUMBER}
+                    onChange={handleChange}
+                    
+                    variant={isEditable ? "outlined" : "filled"}
+                    InputProps={{
+                      readOnly: !isEditable,
+                      style: { backgroundColor: !isEditable ? '' : "#ffff" },
+                      
+                    }}
+                  />
+    </Grid>
+  </Grid>
+  <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={2}>
+    <Grid item xs={12} sm={3} style={{ textAlign: "right" }}>
+      <span style={{ fontWeight: "bold" }}>{<LabelWithAsterisk text={t('Upload Property Photo')} />}</span>
+    </Grid>
+    <Grid item xs={12} sm={6}>
+    <Box display="flex" alignItems="center" flexDirection="column" textAlign="center" mb={2}>
+                
+    
+                  
+    
+                  <Button
+                    component="label"
+                    variant="contained"
+                    startIcon={<CloudUploadIcon />}
+                    sx={{ mt: 1, mb: 1, px: 1, py: 1 }}
+                  >
+                    {t("Uploadfile")}
+                    <VisuallyHiddenInput type="file" accept=".jpg,.jpeg" onChange={handleIDFileChange} />
+                  </Button>
+    
+                  {selectedIDFile && (
+                    <Box display="flex" alignItems="center" justifyContent="center" mt={2} sx={{ color: 'text.secondary' }}>
+                      <Typography variant="h6">{selectedIDFile.name}</Typography>
+                      <Button color="error" onClick={handleIDFileDelete} sx={{ ml: 2 }}>
+                        {t("Delete")}
+                      </Button>
+                    </Box>
+                  )}
+    
+                  <Typography variant="body2" sx={{ mt: 1, color: '#df1414',fontSize:'1rem' }}>
+                  Maximum File Size should not exceed 200 KB
+                  </Typography>
+                </Box>
+    
+                {formData.IDExtension && (
+                  <Box display="flex" alignItems="center" justifyContent="center" mt={2} sx={{ p: 1, backgroundColor: '#f9f9f9', borderRadius: 1 }}>
+                    <Typography variant="h6" color="textSecondary" sx={{ mr: 1 }}>
+                      {t("Uploaded Document:")}
+                    </Typography>
+                    <Typography variant="h6" color="primary" sx={{ mr: 2 }}>
+                      {formData.IDExtension}
+                    </Typography>
+                    <IconButton onClick={() => handleDownload(formData.IDDocument, formData.IDExtension)}>
+                      <GetAppIcon color="primary" />
+                    </IconButton>
+                  </Box>
+                )}
+   
+    </Grid>
+  </Grid>
+  <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={2}>
+    <Grid item xs={12} sm={3} style={{ textAlign: "right" }}>
+      <span style={{ fontWeight: "bold" }}>{<LabelWithAsterisk text={t('Site Area (mt)')} />}</span>
+    </Grid>
+    <Grid item xs={12} sm={6}>
+    <TextField
+                      fullWidth
+                      label={< LabelWithAsterisk text={t("Site Area (mt)")} />}
+                      name="SiteArea"
+                      value={formData.SiteArea || ''}
+                      onChange={handleChange}
+                      variant="outlined"
+                      InputProps={{
+                     
+                        style: { backgroundColor:  "#ffff" },
+                      }}
+                    />
+                    </Grid>
+                    </Grid>
+                    <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={2}>
+    <Grid item xs={12} sm={3} style={{ textAlign: "right" }}>
+      <span style={{ fontWeight: "bold" }}>{<LabelWithAsterisk text={t('Survey No')} />}</span>
+    </Grid>
+    <Grid item xs={12} sm={6}>
+    <TextField
+                      fullWidth
+                      label={< LabelWithAsterisk text={t("Survey No")} />}
+                      name="SiteArea"
+                      value={formData.SiteArea || ''}
+                      onChange={handleChange}
+                      variant="outlined"
+                      InputProps={{
+                     
+                        style: { backgroundColor:  "#ffff" },
+                      }}
+                    />
+                    </Grid>
+                    </Grid>
+                    <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={2}>
+                    <Grid item xs={12} sm={3} style={{ textAlign: "right" }}>
+                    <span style={{ fontWeight: "bold" }}>{<LabelWithAsterisk text={t('Odd Site ?')} />}</span>
+                       
+                      </Grid>
+                        <Grid item xs={12} sm={6}>
+                        <FormControl component="fieldset" sx={{ ml: 1, mb: 0.5 }}>
+                          <RadioGroup
+                            row
+                            name="Oddsite"
+                            value={formData.Oddsite}
+                            onChange={handleChange}
+                            sx={{ display: 'flex', alignItems: 'center' }}
+                          >
+                            <FormControlLabel value="Y" control={<Radio disabled={!isEditable} />} label={t("Yes")} sx={{ mr: 4 }} />
+                            <FormControlLabel value="N" control={<Radio disabled={!isEditable} />} label={t("No")} />
+                          </RadioGroup>
+                        </FormControl>
+                        </Grid>
+                        </Grid>
+                     
+                        <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={2}>
+                    <Grid item xs={12} sm={3} style={{ textAlign: "right" }}>
+                    <span style={{ fontWeight: "bold" }}>{<LabelWithAsterisk text={t('Corner Site ?')} />}</span>
+                       
+                      </Grid>
+                        <Grid item xs={12} sm={6}>
+                        <FormControl component="fieldset" sx={{ ml: 1, mb: 0.5 }}>
+                          <RadioGroup
+                            row
+                            name="cornerSite"
+                            value={formData.cornerSite}
+                            onChange={handleChange}
+                            sx={{ display: 'flex', alignItems: 'center' }}
+                          >
+                            <FormControlLabel value="Y" control={<Radio disabled={!isEditable} />} label={t("Yes")} sx={{ mr: 4 }} />
+                            <FormControlLabel value="N" control={<Radio disabled={!isEditable} />} label={t("No")} />
+                          </RadioGroup>
+                        </FormControl>
+                        </Grid>
+                        </Grid>
+                        <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={2}>
+                    <Grid item xs={12} sm={3} style={{ textAlign: "right" }}>
+                    <span style={{ fontWeight: "bold" }}>{<LabelWithAsterisk text={t('UGD ?')} />}</span>
+                       
+                      </Grid>
+                        <Grid item xs={12} sm={6}>
+                        <FormControl component="fieldset" sx={{ ml: 1, mb: 0.5 }}>
+                          <RadioGroup
+                            row
+                            name="UGD"
+                            value={formData.UGD}
+                            onChange={handleChange}
+                            sx={{ display: 'flex', alignItems: 'center' }}
+                          >
+                            <FormControlLabel value="Y" control={<Radio disabled={!isEditable} />} label={t("Yes")} sx={{ mr: 4 }} />
+                            <FormControlLabel value="N" control={<Radio disabled={!isEditable} />} label={t("No")} />
+                          </RadioGroup>
+                        </FormControl>
+                        </Grid>
+                        </Grid>
+                        </Grid>
+                    {/* <AmalgamationDocumentUploadPage /> */}
           <Box display="flex" justifyContent="center" gap={2} mt={3}>
             <Button variant="contained" color="primary" onClick={back}>
               {t("Previous")}
