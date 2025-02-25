@@ -14,6 +14,10 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { styled } from '@mui/material/styles';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import AmalgamationDocumentUploadPage from './AmalgamationDocumentUploadPage';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import 'dayjs/locale/en-gb';
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
   clipPath: 'inset(50%)',
@@ -37,13 +41,14 @@ const Amalgamation = () => {
     UGD:"N",
     ulbCode: "",
     ASSESMENTNUMBER:"",
-    Oddsite:"",
+    Oddsite:"N",
     SiteArea:"",
     SurveyNo:"",
     PropertyPhoto:"",
     loginId:"",
     MOBILEVERIFY: "",
-
+    EASTWEST: "",
+    NORTHSOUTH: "",
   });
   const [tableData, setTableData] = useState([
   ]);
@@ -55,13 +60,16 @@ const Amalgamation = () => {
   const [tablesdata8, setTableData8] = useState([]);
   const [loading, setLoading] = useState(false);
   const [editableIndex, setEditableIndex] = useState(-1);
+  const [IsDocumentAdded, setIsDocumentAdded] = useState(false);
   const [otpFieldsVisible, setOtpFieldsVisible] = useState(false);
+  const [IsPropertyEditableDetailsVisible , setIsPropertyEditableDetailsVisible] = useState(false);
   const [alertShown, setAlertShown] = useState(false);
   const [EkycResponseData,setEkycResponseData] = useState(null)
   const [otpNumber, setOtpNumber] = useState(0)
   const { t } = useTranslation();
   const [otpButtonDisabled, setOtpButtonDisabled] = useState(false);
   const [timer, setTimer] = useState(30); 
+    const [selectedDate, setSelectedDate] = useState(null);
   const [countdownInterval, setCountdownInterval] = useState(null);
    const handleAddField = () => {
     setSearchFields([...searchFields, { id: searchFields.length + 1, value: "" }]);
@@ -99,6 +107,9 @@ const Amalgamation = () => {
   catch(error){
     console.log(error)
   }
+  };
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
   };
   const handleIDFileChange = (e) => {
       debugger
@@ -142,16 +153,103 @@ const Amalgamation = () => {
     }
   
     
-    if (searchFields.length < 2) {
-      toast.error("Please add at least two search fields.");
-      return;
+    // if (searchFields.length < 2) {
+    //   toast.error("Please add at least two search fields.");
+    //   return;
+    // }
+    if(tablesdata8.length === 0){
+      toast.error(`${t("Verify E-KYC First")}`)
+      return
     }
   debugger
     const searchValues = searchFields.map(field => field.value);
-    const response = await axiosInstance.post("AmalgamationAPI/GetAmalgamationProperty" , searchValues);
+    let data = [];
+    let MutatioAppl = 0;
+
     
-    setTableData(response.data.Table || []);
+   
+    for(let i=0;i<searchValues.length;i++){
+      MutatioAppl = sessionStorage.getItem('SETMUTATIONID');
+   
+      if(MutatioAppl === undefined || MutatioAppl === null || MutatioAppl === "" || MutatioAppl === "undefined" || MutatioAppl === "null"){
+        MutatioAppl = 0;
+      }
+    const response = await axiosInstance.get(`AmalgamationAPI/GET_NCL_MUTATION_AMALGAMATION_MAIN?PropertyId=${searchValues[i]}&ulbcode=205&MutatioAppl=${parseInt(MutatioAppl)}&IsAdd=${false}` );
+    console.log(response.data);
+    if(response.data.success === false){
+      toast.error(`${t(response.data.message)}`)
+      return
+    }
+    debugger
+    const parsedDetails = JSON.parse(response.data.details);
+    console.log(parsedDetails.Table); 
+    data.push(parsedDetails.Table[0])
+    sessionStorage.setItem('SETMUTATIONID',response.data.mutationApplicationId)
+  }
+    setTableData(data || []);
+    // sessionStorage.setItem('SETMUTATIONID',response.data.mutationApplicationId)
   };
+
+  const handleAddProperty = async () => {
+    if(tableData.length === 0 ){
+      toast.error(`${t("Search Property First")}`)
+      return
+    }
+    if(tableData.length < 2){
+        toast.error(`${t("Minimum 2 Properties Required")}`)
+        return
+    }
+    if(tablesdata8.length === 0){
+        toast.error(`${t("Verify E-KYC First")}`)
+        return
+    }
+    debugger
+    const ekycVaultRef = tablesdata8[0].VAULTREFNUMBER;
+    const propertyIds = [...new Set(tableData.map(row => row.PROPERTYID))];
+
+    for (const propertyId of propertyIds) {
+        const propertyVaultRefs = tableData
+            .filter(row => row.PROPERTYID === propertyId)
+            .map(row => row.VAULTREFNUMBER);
+
+        if (!propertyVaultRefs.includes(ekycVaultRef)) {
+            toast.error(`${t("Aadhar does not match for property ID")} ${propertyId}`);
+            return;
+        }
+    }
+  debugger
+    const searchValues = searchFields.map(field => field.value);
+    let data = [];
+    let MutatioAppl = 0;
+
+    
+   
+    for(let i=0;i<searchValues.length;i++){
+      MutatioAppl = sessionStorage.getItem('SETMUTATIONID');
+   
+      if(MutatioAppl === undefined || MutatioAppl === null || MutatioAppl === "" || MutatioAppl === "undefined" || MutatioAppl === "null"){
+        MutatioAppl = 0;
+      }
+    const response = await axiosInstance.get(`AmalgamationAPI/GET_NCL_MUTATION_AMALGAMATION_MAIN?PropertyId=${searchValues[i]}&ulbcode=205&MutatioAppl=${parseInt(MutatioAppl)}&IsAdd=${true}` );
+    console.log(response.data);
+    if(response.data.success === false){
+      toast.error(`${t(response.data.message)}`)
+      return
+    }
+    debugger
+    const parsedDetails = JSON.parse(response.data.details);
+    console.log(parsedDetails.Table); 
+    data.push(parsedDetails.Table[0])
+    sessionStorage.setItem('SETMUTATIONID',response.data.mutationApplicationId)
+    setIsPropertyEditableDetailsVisible(true);
+  }
+    setTableData(data || []);
+    // sessionStorage.setItem('SETMUTATIONID',response.data.mutationApplicationId)
+
+
+
+  }
+
   
 
   const handleReset = () => {
@@ -262,38 +360,13 @@ debugger
         toast.error(`${t("enterValidMobileNumber")}`)
         return
       }
-    if(tableData.length === 0){
-      toast.error(`${t("Search Property First")}`)
-      return
-
-    }
-    if(tableData.length < 2){
-        toast.error(`${t("Minimum 2 Properties Required")}`)
-        return
-    }
-    if(tableData.length !== searchFields.length){
-        toast.error(`${t("The Number of Properties Searched and Added are not same")}`) 
-        return
-    }
     if(EkycResponseData === null){
         toast.error(`${t("EKYC Data is EMPTY")}`)
         return
         }
     
 debugger
-    const ekycVaultRef = EkycResponseData.vaultRefNumber;
-    const propertyIds = [...new Set(tableData.map(row => row.PROPERTYID))];
-
-    for (const propertyId of propertyIds) {
-        const propertyVaultRefs = tableData
-            .filter(row => row.PROPERTYID === propertyId)
-            .map(row => row.VAULTREFNUMBER);
-
-        if (!propertyVaultRefs.includes(ekycVaultRef)) {
-            toast.error(`${t("Aadhar does not match for property ID")} ${propertyId}`);
-            return;
-        }
-    }
+    
 
        if(Type === "EKYC"){
       
@@ -309,7 +382,7 @@ debugger
       const queryString = new URLSearchParams(params).toString();
 
      
-      const response = await axiosInstance.post(`SearchAPI/INS_NCL_PROPERTY_SEARCH_TEMP_WITH_EKYCDATA?${queryString}`,EkycResponseData);
+      const response = await axiosInstance.post(`AmalgamationAPI/INS_NCL_PROPERTY_AMAL_TEMP_WITH_EKYCDATA?${queryString}`,EkycResponseData);
       console.log(response.data);
       
     debugger
@@ -317,7 +390,7 @@ debugger
       debugger
       setEkycResponseData(null);
       setTableData8(response.data.Table || [])
-      sessionStorage.setItem('SETMUTATIONID',response.data.Table[0].P_MUTAPPLID)
+    //  sessionStorage.setItem('SETMUTATIONID',response.data.Table[0].P_MUTAPPLID)
     }
     } catch (error) {
       toast.error(`${t("errorSavingData")}`, error)
@@ -348,21 +421,146 @@ debugger
 
    // fetchData();
   }, [location.search]);
-  const handleSubmit = (e) => {
-    if(tableData.length === 0 ){
-      toast.error(`${t("Search Property First")}`)
-      return
+  const getPropertyphoto = (selectedFile) => {
+    return new Promise((resolve, reject) => {
+      if (!selectedFile) {
+        resolve(''); // Return an empty string if no file is selected
+        return "";
+      }
+      const reader = new FileReader();
+      reader.readAsDataURL(selectedFile);
+      reader.onloadend = () => {
+        const propertyphoto = reader.result.split(',')[1];
+        resolve(propertyphoto);
+      };
+      reader.onerror = (error) => {
+        reject(error);
+      };
+    });
+  };
+  const handleValidation = async () => {  
+    debugger
+    let propertyDocumentID = "";
+if (selectedIDFile !== null) {
+      propertyDocumentID = await getPropertyphoto(selectedIDFile);
     }
-    if(tableData.length < 2){
-        toast.error(`${t("Minimum 2 Properties Required")}`)
-        return
+    if(propertyDocumentID === "" || propertyDocumentID === undefined ||propertyDocumentID === null)
+      {
+        
+      toast.error("Please Upload the Property Photo");
+      return false
+      
     }
-    if(tablesdata8.length === 0){
-        toast.error(`${t("Verify E-KYC First")}`)
-        return
+     if(formData.CHECKBANDI_EAST === null|| formData.CHECKBANDI_EAST === undefined || formData.CHECKBANDI_EAST === ""){
+              toast.error("Please Enter the CheckBandi East")
+              return false
+            }
+            if(formData.CHECKBANDI_NORTH === null || formData.CHECKBANDI_NORTH === undefined || formData.CHECKBANDI_NORTH === ""){
+              toast.error("Please Enter the CheckBandi North")
+              return false
+            }
+            if(formData.CHECKBANDI_SOUTH === null|| formData.CHECKBANDI_SOUTH === undefined || formData.CHECKBANDI_SOUTH === ""){
+              toast.error("Please Enter the CheckBandi South")
+              return false
+            }
+            if(formData.CHECKBANDI_WEST === null|| formData.CHECKBANDI_WEST === undefined || formData.CHECKBANDI_WEST === ""){
+              toast.error("Please Enter the CheckBandi West")
+              return false
+            }
+            if(formData.ASSESMENTNUMBER === null|| formData.ASSESMENTNUMBER === undefined || formData.ASSESMENTNUMBER === ""){
+              toast.error("Please Enter the Assesment Number")
+              return false
+            }
+            if(formData.SurveyNo === null|| formData.SurveyNo === undefined || formData.SurveyNo === ""){
+              toast.error("Please Enter the survey No")
+              return false
+            }
+            if(formData.EASTWEST === null|| formData.EASTWEST === undefined || formData.EASTWEST === ""){
+              toast.error("Please Enter the East West Dimensions")
+              return false
+            }
+            if(formData.NORTHSOUTH === null|| formData.NORTHSOUTH === undefined || formData.NORTHSOUTH === ""){
+              toast.error("Please Enter the North South Dimensions")
+              return false
+            }
+            if(formData.SiteArea === null|| formData.SiteArea === undefined || formData.SiteArea === ""){
+              toast.error("Please Enter the Site Area")
+              return false
+            }
+            if(formData.AmalgamationOrderNo === null|| formData.AmalgamationOrderNo === undefined || formData.AmalgamationOrderNo === ""){
+              toast.error("Please Enter the Amalgamation Order No")
+              return false
+            }
+            if (selectedDate === null) {
+                  toast.error(`${t("Please Provide Amalgamation Order Date")}`);
+                  return
+                }
+                const today = new Date();
+                if (new Date(selectedDate) > today) {
+                  toast.error(`${t("Amalgamation Order Date cannot be greater than today")}`);
+                  return;
+                }
+           return true
+
+
+  }
+  const handleSubmit = async (e) => {
+    // if(tableData.length === 0 ){
+    //   toast.error(`${t("Search Property First")}`)
+    //   return
+    // }
+    // if(tableData.length < 2){
+    //     toast.error(`${t("Minimum 2 Properties Required")}`)
+    //     return
+    // }
+    // if(tablesdata8.length === 0){
+    //     toast.error(`${t("Verify E-KYC First")}`)
+    //     return
+    // }
+   
+  let mut =  sessionStorage.getItem('SETMUTATIONID');
+let s = await handleValidation();
+if(s === true){
+    try {
+      let propertyDocumentID = "";
+      if (selectedIDFile !== null) {
+        propertyDocumentID = await getPropertyphoto(selectedIDFile);
+      }
+      e.preventDefault();
+    const data = {
+      propertycode: 0,
+      mutapplid: parseInt(mut), 
+    // mutapplid:  123,
+      ugd: formData.UGD,
+      cornersite: formData.cornerSite,
+      checkbandI_NORTH: formData.CHECKBANDI_NORTH,
+      checkbandI_SOUTH: formData.CHECKBANDI_SOUTH,
+      checkbandI_EAST: formData.CHECKBANDI_EAST,
+      checkbandI_WEST: formData.CHECKBANDI_WEST,
+      eastwest: formData.EASTWEST,
+      northsouth: formData.NORTHSOUTH,
+      oddsite: formData.Oddsite,
+      sitearea: formData.SiteArea,
+      propertycategoryid: 1,
+      surveyno: formData.SurveyNo,
+      assesmentnumber: formData.ASSESMENTNUMBER,
+      loginId: 'crc',
+      propertyphoto: propertyDocumentID,
+      amalOrderNumber: formData.AmalgamationOrderNo,
+      amalOrderDate: selectedDate,
+      ulbCode: 205,
+      vaultRefNumber:tablesdata8[0].VAULTREFNUMBER
     }
-    
-    // Submit form data logic here
+    const finalResponse =  await axiosInstance.post("AmalgamationAPI/INS_NCL_PROPERTY_SEARCH_FINAL_SUBMIT", data);
+      
+        toast.success(`${t("Data Saved Successfully")}`)
+       
+     
+  } catch (error) {
+    console.log("error", error)
+    toast.error(`${t("errorSavingData")}`, error)
+  } 
+}
   };
  
   const EditOwnerDetailsFromEKYCData = async (txno) => {
@@ -459,97 +657,7 @@ debugger
           >
            Amalgamation
           </Typography>
- <Grid container spacing={2} alignItems={"center"} justifyContent="center">
-         
-         
- {searchFields.map((field, index) => (
-        <Grid item xs={12} sm={3} key={field.id}>
-          <TextField
-            label="Property EPID"
-            value={field.value}
-            onChange={(e) => handleSearchFieldChange(index, e)}
-            fullWidth
-            sx={{ marginBottom: 2, backgroundColor: "#fff" }}
-          />
-        </Grid>
-      ))}
-
-      <Grid item>
-        <IconButton color="primary" onClick={handleAddField}>
-        <Button variant="contained" color="success">
-              Add PropertyId +
-            </Button>
-        </IconButton>
-      </Grid>
-          
-          <Box display="flex" justifyContent="center" gap={2} mt={0.5} width="100%">
-          <Button variant="contained" color="primary" onClick={handleBack}>
-              {("Previous")}
-            </Button>
-            <Button variant="contained" color="success" onClick={handleSearch}>
-              {("Search")}
-            </Button>
-            <Button variant="contained" color="primary" onClick={handleReset}>
-              {("Reset")}
-            </Button>
-          
-          </Box>
-        </Grid>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-            Existing Owners As Per E-Khata
-            </Typography>
-            {tablesdata8.length === 0 && (
-            <Button variant="contained" color="warning" onClick={AddEKYCOwner}>
-            {t("VerifyE-KYC")}
-            </Button>
-        )}
-          </Box>
-          <TableContainer component={Paper} sx={{ mt: 4 }}>
-            <Table>
-              <TableHead>
-                <TableRow>
-
-                 
-                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Property Id")}</TableCell>
-                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Owner Name")}</TableCell>
-                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Owner Address")}</TableCell>
-                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Property Type")}</TableCell>
-                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("ASSESMENT NUMBER")}</TableCell>
-                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Mobile Number")}</TableCell>
-                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("CheckBandhi North")}</TableCell>
-                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("CheckBandhi South")}</TableCell>
-                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("CheckBandhi East")}</TableCell>
-                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("CheckBandhi West")}</TableCell>
-
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {tableData.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={12} align="center">
-                      {t("Nodataavailable")}
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  tableData.map((row,index) => (
-                    <TableRow key={index}>
-                            <TableCell>{row.PROPERTYID}</TableCell>
-                            <TableCell>{row.OWNERNAME}</TableCell>
-                            <TableCell>{row.OWNERADDRESS}</TableCell>
-                            <TableCell>{row.PROPERTYCATEGORYID}</TableCell>
-                            <TableCell>{row.ASSESMENTNUMBER}</TableCell>
-                            <TableCell>{MaskingValue({value:row.MOBILENUMBER,maskingLength:4})}</TableCell>
-                            <TableCell>{row.CHECKBANDI_NORTH}</TableCell>
-                            <TableCell>{row.CHECKBANDI_SOUTH}</TableCell>
-                            <TableCell>{row.CHECKBANDI_EAST}</TableCell>
-                            <TableCell>{row.CHECKBANDI_WEST}</TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
+ 
           <br></br>
           <Grid container >
       {EkycResponseData !== null &&
@@ -744,9 +852,16 @@ debugger
 
 
 
-          <br></br>
-          <Typography>{t("Actual Owners Applying For Amalgamation")}</Typography>
-
+         
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          
+          <Typography variant="h6" sx={{ fontWeight: 'bold' }}>{t("Actual Owners Applying For Amalgamation")}</Typography>
+          {tablesdata8.length === 0 && (
+            <Button variant="contained" color="warning" onClick={AddEKYCOwner}>
+            {t("VerifyE-KYC")}
+            </Button>
+        )}
+          </Box>
           <TableContainer component={Paper} sx={{ mt: 4 }}>
             <Table>
               <TableHead>
@@ -799,13 +914,135 @@ debugger
               </TableBody>
             </Table>
           </TableContainer>
+          <br></br>
+          <Grid container spacing={2} alignItems={"center"} justifyContent="center">
+         
+         
+ {searchFields.map((field, index) => (
+        <Grid item xs={12} sm={3} key={field.id}>
+          <TextField
+            label="Property EPID"
+            value={field.value}
+            onChange={(e) => handleSearchFieldChange(index, e)}
+            fullWidth
+            sx={{ marginBottom: 2, backgroundColor: "#fff" }}
+          />
+        </Grid>
+      ))}
+
+      <Grid item>
+        <IconButton color="primary" onClick={handleAddField}>
+        <Button variant="contained" color="success">
+              Add PropertyId +
+            </Button>
+        </IconButton>
+      </Grid>
+          
+          <Box display="flex" justifyContent="center" gap={2} mt={0.5} width="100%">
+         
+            <Button variant="contained" color="success" onClick={handleSearch}>
+              {("Search")}
+            </Button>
+            <Button variant="contained" color="primary" onClick={handleReset}>
+              {("Reset")}
+            </Button>
+          
+          </Box>
+        </Grid>
+          
+            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+            Existing Owners As Per E-Khata
+            </Typography>
+            
+          <TableContainer component={Paper} sx={{ mt: 4 }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+
+                 
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Property Id")}</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Owner Name")}</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Owner Address")}</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Property Type")}</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("ASSESMENT NUMBER")}</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Mobile Number")}</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("CheckBandhi North")}</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("CheckBandhi South")}</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("CheckBandhi East")}</TableCell>
+                  <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("CheckBandhi West")}</TableCell>
+
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {tableData.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={12} align="center">
+                      {t("Nodataavailable")}
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  tableData.map((row,index) => (
+                    <TableRow key={index}>
+                            <TableCell>{row.PROPERTYID}</TableCell>
+                            <TableCell>{row.OWNERNAME}</TableCell>
+                            <TableCell>{row.OWNERADDRESS}</TableCell>
+                            <TableCell>{row.PROPERTYCATEGORYID}</TableCell>
+                            <TableCell>{row.ASSESMENTNUMBER}</TableCell>
+                            <TableCell>{MaskingValue({value:row.MOBILENUMBER,maskingLength:4})}</TableCell>
+                            <TableCell>{row.CHECKBANDI_NORTH}</TableCell>
+                            <TableCell>{row.CHECKBANDI_SOUTH}</TableCell>
+                            <TableCell>{row.CHECKBANDI_EAST}</TableCell>
+                            <TableCell>{row.CHECKBANDI_WEST}</TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <br></br>
+          {IsPropertyEditableDetailsVisible === false && (
+          <Grid item >
+            
+        <IconButton color="primary" onClick={handleAddProperty} >
+        <Button variant="contained" color="success">
+              Finalise The Above Property To Amalgamate
+            </Button>
+        </IconButton>
+      </Grid>
+          )}
+          <br></br>
+          {IsPropertyEditableDetailsVisible && (
+          <>
+           <Typography
+            variant="h6"
+            align="center"
+            gutterBottom
+            sx={{
+              fontWeight: 'bold',
+              fontFamily: "sans-serif",
+              marginBottom: 3,
+              color: '#',
+              fontSize: {
+                xs: '1rem',
+                sm: '1rem',
+                md: '1rem',
+              }
+            }}
+          >
+          Enter Amalgamating Property Details
+          </Typography>
+          </>
+          )}
+          {IsPropertyEditableDetailsVisible && (
+          
           <Grid container spacing={2} >
-  {/* Door No */}
+  
   <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={1}>
-    <Grid item xs={12} sm={3.2} style={{ textAlign: "left" }} >
+    
+    <Grid item xs={12} sm={3} style={{ textAlign: "right" }} >
       <span style={{ fontWeight: "bold" }}>{<LabelWithAsterisk text={t('Amalgamation Order No')} />}</span>
     </Grid>
-    <Grid item xs={12} sm={5.9}>
+    <Grid item xs={12} sm={6}>
     <TextField
                     
                     fullWidth 
@@ -828,25 +1065,29 @@ debugger
       <span style={{ fontWeight: "bold" }}>{<LabelWithAsterisk text={t('Amalgamation Order Date')} />}</span>
     </Grid>
     <Grid item xs={12} sm={6}>
-      <TextField
-        fullWidth
-        label={<LabelWithAsterisk text={t('Amalgamation Order Date')} />}
-        name="amaslamationOrderDate"
-        value={formData.AmalgamationOrderDate}
-        onChange={handleChange}
-        variant={isEditable ? "outlined" : "filled"}
-        InputProps={{
-          readOnly: !isEditable,
-          style: { backgroundColor: !isEditable ? '' : "#ffff" },
-        }}
-      />
+     
+
+<LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
+                    <DatePicker
+
+                      // label={t("DocumentRegisteredDate")}
+                      label={<LabelWithAsterisk text={t("Amalgamation Order Date")} />}
+                      name='amaslamationOrderDate'
+                      placeholder='dd-mm-yyyy'
+                      value={selectedDate}
+                      onChange={date => handleDateChange(date)}
+                      disableFuture
+                      sx={{ width: '100%', backgroundColor: '#ffff' }}
+                    />
+                  </LocalizationProvider>
+
     </Grid>
   </Grid>
 
   {/* Building/Land Name */}
   <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={2}>
     <Grid item xs={12} sm={3} style={{ textAlign: "right" }}>
-      <span style={{ fontWeight: "bold" }}>{t("CheckBandhi EAST")}</span>
+    <span style={{ fontWeight: "bold" }}>{<LabelWithAsterisk text={t('CheckBandhi EAST')} />}</span>
     </Grid>
     <Grid item xs={12} sm={6}>
       <TextField
@@ -888,13 +1129,13 @@ debugger
   {/* Pincode */}
   <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={2}>
     <Grid item xs={12} sm={3} style={{ textAlign: "right" }}>
-      <span style={{ fontWeight: "bold" }}>{<LabelWithAsterisk text={t('CHECKBANDI NORTH')} />}</span>
+      <span style={{ fontWeight: "bold" }}>{<LabelWithAsterisk text={t('CheckBandhi North')} />}</span>
     </Grid>
     <Grid item xs={12} sm={6}>
     <TextField
         fullWidth
-        label={<LabelWithAsterisk text={t('CHECKBANDI NORTH')} />}
-        name="CHECKBANDI NORTH"
+        label={<LabelWithAsterisk text={t('CheckBandhi North')} />}
+        name="CHECKBANDI_NORTH"
         value={formData.CHECKBANDI_NORTH}
         onChange={handleChange}
         variant={isEditable ? "outlined" : "filled"}
@@ -907,13 +1148,13 @@ debugger
   </Grid>
   <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={2}>
     <Grid item xs={12} sm={3} style={{ textAlign: "right" }}>
-      <span style={{ fontWeight: "bold" }}>{<LabelWithAsterisk text={t('CHECKBANDI SOUTH')} />}</span>
+      <span style={{ fontWeight: "bold" }}>{<LabelWithAsterisk text={t('CheckBandhi South')} />}</span>
     </Grid>
     <Grid item xs={12} sm={6}>
     <TextField
         fullWidth
-        label={<LabelWithAsterisk text={t('CHECKBANDI SOUTH')} />}
-        name="CHECKBANDI SOUTH"
+        label={<LabelWithAsterisk text={t('CheckBandhi South')} />}
+        name="CHECKBANDI_SOUTH"
         value={formData.CHECKBANDI_SOUTH}
         onChange={handleChange}
         variant={isEditable ? "outlined" : "filled"}
@@ -997,6 +1238,51 @@ debugger
    
     </Grid>
   </Grid>
+  <Grid container item xs={6} sm={12} alignItems="center" justifyContent="flex-end" spacing={2}>
+  
+  {/* EAST WEST Field */}
+  <Grid item xs={6} sm={6} style={{ textAlign: "center" }}>
+    <span style={{ fontWeight: "bold" }}>
+      <LabelWithAsterisk text={t('EAST WEST (mt)')} />
+    </span>
+    <TextField
+      fullWidth
+      type="number" 
+      label={<LabelWithAsterisk text={t("EAST WEST (mt)")} />}
+      name="EASTWEST"
+      value={formData.EASTWEST || ''}
+      onChange={handleChange}
+      variant="outlined"
+      InputProps={{
+        style: { backgroundColor: "#ffff" },
+      }}
+    />
+  </Grid>
+
+  {/* NORTH SOUTH Field */}
+  <Grid item xs={6} sm={6} style={{ textAlign: "center" }}>
+    <span style={{ fontWeight: "bold" }}>
+      <LabelWithAsterisk text={t('NORTH SOUTH (mt)')} />
+    </span>
+    <TextField
+      fullWidth
+      type="number"  
+      label={<LabelWithAsterisk text={t("NORTH SOUTH (mt)")} />}
+      name="NORTHSOUTH"
+      value={formData.NORTHSOUTH || ''}
+      onChange={handleChange}
+      variant="outlined"
+      InputProps={{
+        style: { backgroundColor: "#ffff" },
+      }}
+    />
+  </Grid>
+
+</Grid>
+
+
+
+
   <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={2}>
     <Grid item xs={12} sm={3} style={{ textAlign: "right" }}>
       <span style={{ fontWeight: "bold" }}>{<LabelWithAsterisk text={t('Site Area (mt)')} />}</span>
@@ -1009,6 +1295,7 @@ debugger
                       value={formData.SiteArea || ''}
                       onChange={handleChange}
                       variant="outlined"
+                      type='number'
                       InputProps={{
                      
                         style: { backgroundColor:  "#ffff" },
@@ -1016,6 +1303,13 @@ debugger
                     />
                     </Grid>
                     </Grid>
+
+                    
+
+
+
+
+
                     <Grid container item xs={12} sm={12} alignItems="center" justifyContent="center" gap={2}>
     <Grid item xs={12} sm={3} style={{ textAlign: "right" }}>
       <span style={{ fontWeight: "bold" }}>{<LabelWithAsterisk text={t('Survey No')} />}</span>
@@ -1024,8 +1318,8 @@ debugger
     <TextField
                       fullWidth
                       label={< LabelWithAsterisk text={t("Survey No")} />}
-                      name="SiteArea"
-                      value={formData.SiteArea || ''}
+                      name="SurveyNo"
+                      value={formData.SurveyNo || ''}
                       onChange={handleChange}
                       variant="outlined"
                       InputProps={{
@@ -1097,14 +1391,25 @@ debugger
                         </Grid>
                         </Grid>
                         </Grid>
-                    {/* <AmalgamationDocumentUploadPage /> */}
+                        )}
+                        {/* {isDocumentVisible && (
+                          //  get the document added status from the child component
+                       
+                          )} */}
+
+{IsPropertyEditableDetailsVisible && (
+<AmalgamationDocumentUploadPage setIsDocumentAdded1={setIsDocumentAdded}  />
+         )}
+  
           <Box display="flex" justifyContent="center" gap={2} mt={3}>
             <Button variant="contained" color="primary" onClick={back}>
               {t("Previous")}
             </Button>
+            {IsDocumentAdded === true && (
             <Button variant="contained" color="success" onClick={handleSubmit}>
               {t("submit")}
             </Button>
+            )}
           </Box>
         </form>
       </Box>

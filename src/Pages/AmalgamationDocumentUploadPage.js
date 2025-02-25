@@ -18,8 +18,6 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import 'dayjs/locale/en-gb';
-import { Formik, Form } from 'formik';
-import * as Yup from 'yup';
 import '../components/Shake.css';
 import LabelWithAsterisk from '../components/LabelWithAsterisk'
 const VisuallyHiddenInput = styled('input')({
@@ -34,7 +32,7 @@ const VisuallyHiddenInput = styled('input')({
   width: 1,
 });
 
-const AmalgamationDocumentUploadPage = () => {
+const AmalgamationDocumentUploadPage = ({ setIsDocumentAdded1 }) => {
 
   const [formData, setFormData] = useState({
     DocumentType: '',
@@ -43,10 +41,7 @@ const AmalgamationDocumentUploadPage = () => {
     DocumentNumber: '',
   });
   const { t } = useTranslation();
-  const validationSchema = Yup.object().shape({
-    DocumentType: Yup.string().required(`${t('documentNumberRequired')}`),
-    DocumentNumber: Yup.string().required(`${t('documentNumberRequired')}`),
-  });
+  
   const [tableData, setTableData] = useState([
   ]);
   const navigate = useNavigate();
@@ -152,7 +147,7 @@ const AmalgamationDocumentUploadPage = () => {
     setfileExtension('');
   }
   const handleSubmit = async (e) => {
-
+debugger
     var propertyphoto2 = "";
     if (isEditable) {
       if (formData.DocumentDetails.length === 0) {
@@ -177,14 +172,16 @@ const AmalgamationDocumentUploadPage = () => {
       toast.error(`${t("Document Registered Date cannot be greater than today")}`);
       return;
     }
+    debugger
+    let mut =  sessionStorage.getItem('SETMUTATIONID');
     const data = {
       ordernumber: formData.DocumentNumber,
-      createdby: "crc",
+      createdby: "crc", //pass from the session
       documentextension: fileExtension,
-      propertycode: JSON.parse(sessionStorage.getItem('SETPROPERTYCODE')),
+      propertycode: 0,
       documentdetails: formData.DocumentDetails,
       scanneddocument: propertyphoto2, //bytes
-
+      mutapplid:  parseInt(mut), //pass from the session
       orderdate: selectedDate,
       documenttypeid: formData.DocumentType,
       ulbcode: 555,
@@ -194,7 +191,7 @@ const AmalgamationDocumentUploadPage = () => {
     }
 
     try {
-      await axiosInstance.post('ObjectionAPI/NCL_OBJECTION_OBJECTION_DOCUMENTS_TEMP_INS?ID_BASIC_PROPERTY=0', data
+    let response =  await axiosInstance.post('AmalgamationAPI/NCL_AMALGAMATION_DOCUMENTS_TEMP_INS?ID_BASIC_PROPERTY=0', data
       )
    
       
@@ -208,7 +205,24 @@ const AmalgamationDocumentUploadPage = () => {
         progress: undefined,
       });
       setTimeout(async () => {
-        await fetchData();
+       // await fetchData();
+       debugger
+       setTableData(response.data.Table);
+       if(response.data.Table.length > 0){
+        if (typeof setIsDocumentAdded1 === "function") {
+          setIsDocumentAdded1(true); 
+        } else {
+          console.error("setIsDocumentAdded is not a function");
+        }
+       // setIsDocumentAdded(true);
+     //  }
+     //  else{
+     //   setIsDocumentAdded(false);
+       }
+       else {
+        setIsDocumentAdded1(false); 
+       }
+    
         //    handleNavigation()
       }, 500);
     } catch (error) {
@@ -260,14 +274,9 @@ const AmalgamationDocumentUploadPage = () => {
   };
   const handleDelete = async (row) => {
 
-    const data = {
-      
-      documentid: row.DOCUMENTID,
-    
-   
-    }
+    let mut =  sessionStorage.getItem('SETMUTATIONID');
     try {
-      await axiosInstance.post('ObjectionAPI/NCL_PROPERTY_OBJECTION_DOCUMENT_TEMP_DEL', data
+    let response =  await axiosInstance.post(`AmalgamationAPI/NCL_AMALGAMATION_DOCUMENT_TEMP_DEL?MutationApplicatioId=${parseInt(mut)}&DocumentId=${row.DOCUMENTID}`
       )
       
       await toast.success(`${t("detailsDeletedSuccess")}`, {
@@ -280,8 +289,22 @@ const AmalgamationDocumentUploadPage = () => {
         progress: undefined,
       });
       setTimeout(async () => {
-        await fetchData();
-        //    handleNavigation()
+      //  await fetchData();
+      setTableData(response.data.Table);
+      if(response.data.Table.length > 0){
+        if (typeof setIsDocumentAdded1 === "function") {
+          setIsDocumentAdded1(true); 
+        } else {
+          console.error("setIsDocumentAdded is not a function");
+        }
+       // setIsDocumentAdded(true);
+     //  }
+     //  else{
+     //   setIsDocumentAdded(false);
+       }
+       else {
+        setIsDocumentAdded1(false); 
+       }
       }, 500);
     } catch (error) {
       await toast.error(`${t("Error Deleting data!")}` + error, {
@@ -309,20 +332,14 @@ const AmalgamationDocumentUploadPage = () => {
 console.log("Component is rendered")
     fetchData();
 
-  }, [fetchData]);
+  }, []);
   return (
     
      
       <Box sx={{ backgroundColor: '#f0f0f0',  borderRadius: 2,  }}>
-        <Formik
-          initialValues={formData}
-          validationSchema={validationSchema}
-          onSubmit={handleSubmit}
-          validateOnChange={handleChange}
-          enableReinitialize
-        >
-          {({ errors, touched, handleBlur }) => (
-            <Form onKeyDown={handleKeyDown}>
+        
+         
+            
              
               <Typography variant="h6"
                 align="center"
@@ -346,16 +363,16 @@ console.log("Component is rendered")
                 <Grid item xs={12} sm={4}>
                   <FormControl
                     fullWidth
-                    error={touched.DocumentType && !!errors.DocumentType}
+                 
                     sx={{ marginBottom: 3 }}
-                    className={touched.DocumentType && !!errors.DocumentType ? 'shake' : ''}
+                  
                   >
                     <InputLabel>  <LabelWithAsterisk text={t("DocumentType")} /></InputLabel>
                     <Select
                       name="DocumentType"
                       value={formData.DocumentType}
                       onChange={handleChange}
-                      onBlur={handleBlur}
+                     
                       sx={{ backgroundColor: "#ffff" }}
                     >
                       <MenuItem value="">--Select--</MenuItem>
@@ -365,9 +382,7 @@ console.log("Component is rendered")
                         </MenuItem>
                       ))}
                     </Select>
-                    <FormHelperText>
-                      {touched.DocumentType && errors.DocumentType ? errors.DocumentType : ''}
-                    </FormHelperText>
+                  
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={3.5}>
@@ -425,10 +440,8 @@ console.log("Component is rendered")
                     name="DocumentNumber"
                     value={formData.DocumentNumber}
                     onChange={handleChange}
-                    onBlur={handleBlur}
-                    className={touched.DocumentNumber && !!errors.DocumentNumber ? 'shake' : ''}
-                    error={touched.DocumentNumber && !!errors.DocumentNumber}
-                    helperText={touched.DocumentNumber && errors.DocumentNumber}
+                    
+                  
                     InputProps={{
                       style: { backgroundColor: "#ffff" },
                       endAdornment: (
@@ -472,7 +485,7 @@ console.log("Component is rendered")
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sm={4}>
-                  <Button variant="contained" color="success" type="submit">
+                  <Button variant="contained" color="success" onClick={handleSubmit}>
                     {t("Save+")}
                   </Button>
                 </Grid>
@@ -534,9 +547,7 @@ console.log("Component is rendered")
               <Box display="flex" justifyContent="center" gap={2} mt={3}>
               
               </Box>
-            </Form>
-          )}
-        </Formik>
+       
       </Box>
    
   );
