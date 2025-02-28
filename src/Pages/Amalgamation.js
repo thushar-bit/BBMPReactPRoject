@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   Button, Box, Container, Typography, Grid, TextField, Radio, RadioGroup, FormControlLabel, FormControl,
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, MenuItem, Select, InputLabel, CircularProgress,IconButton 
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, MenuItem, Select, InputLabel, CircularProgress,IconButton ,Dialog, DialogContent, DialogActions
 } from '@mui/material';
 //import InfoIcon from '@mui/icons-material/Info';
 import { useTranslation } from 'react-i18next';
@@ -70,6 +70,7 @@ const Amalgamation = () => {
   const [otpButtonDisabled, setOtpButtonDisabled] = useState(false);
   const [timer, setTimer] = useState(30); 
     const [selectedDate, setSelectedDate] = useState(null);
+    const [pdfUrl, setPdfUrl] = useState('');
   const [countdownInterval, setCountdownInterval] = useState(null);
    const handleAddField = () => {
     setSearchFields([...searchFields, { id: searchFields.length + 1, value: "" }]);
@@ -145,6 +146,35 @@ const Amalgamation = () => {
       setSelectedIDFile(null);
     //  setfileExtension('');
     }
+    const fetchAcknowedgeMentPdf = async (AmalMutReqId) => {
+      try {
+        debugger
+       
+        
+          setLoading(true)
+        const response = await axiosInstance.get(
+          `Report/GetFinalAmalgamationAcknowledgementReport?MuttationApplicationId=${AmalMutReqId}`,
+          {
+            responseType: 'blob',  
+          }
+        );
+  
+        
+        const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+  
+        setPdfUrl(pdfUrl);
+        setLoading(false) 
+        toast.success(`${t("Your application has been successfully submitted. Please download the acknowledgment for your records. Avoid resubmitting the application multiple times, as it has already been received.")}`)
+      // }
+      // else {
+      //   toast.error(response1.data)
+      // }
+      } catch (error) {
+        console.error("Error fetching PDF: ", error);
+        setLoading(false)
+      }
+    };
   const handleSearch = async () => {
     
     if (searchFields.some(field => field.value.trim() === "")) {
@@ -157,10 +187,10 @@ const Amalgamation = () => {
     //   toast.error("Please add at least two search fields.");
     //   return;
     // }
-    if(tablesdata8.length === 0){
-      toast.error(`${t("Verify E-KYC First")}`)
-      return
-    }
+    // if(tablesdata8.length === 0){
+    //   toast.error(`${t("Verify E-KYC First")}`)
+    //   return
+    // }
   debugger
     const searchValues = searchFields.map(field => field.value);
     let data = [];
@@ -174,7 +204,7 @@ const Amalgamation = () => {
       if(MutatioAppl === undefined || MutatioAppl === null || MutatioAppl === "" || MutatioAppl === "undefined" || MutatioAppl === "null"){
         MutatioAppl = 0;
       }
-    const response = await axiosInstance.get(`AmalgamationAPI/GET_NCL_MUTATION_AMALGAMATION_MAIN?PropertyId=${searchValues[i]}&ulbcode=205&MutatioAppl=${parseInt(MutatioAppl)}&IsAdd=${false}` );
+    const response = await axiosInstance.get(`AmalgamationAPI/GET_NCL_MUTATION_AMALGAMATION_MAIN?PropertyId=${searchValues[i]}&ulbcode=555&MutatioAppl=${parseInt(MutatioAppl)}&IsAdd=${false}` );
     console.log(response.data);
     if(response.data.success === false){
       toast.error(`${t(response.data.message)}`)
@@ -199,24 +229,24 @@ const Amalgamation = () => {
         toast.error(`${t("Minimum 2 Properties Required")}`)
         return
     }
-    if(tablesdata8.length === 0){
-        toast.error(`${t("Verify E-KYC First")}`)
-        return
-    }
-    debugger
-    const ekycVaultRef = tablesdata8[0].VAULTREFNUMBER;
-    const propertyIds = [...new Set(tableData.map(row => row.PROPERTYID))];
+    // if(tablesdata8.length === 0){
+    //     toast.error(`${t("Verify E-KYC First")}`)
+    //     return
+    // }
+    // debugger
+    // const ekycVaultRef = tablesdata8[0].VAULTREFNUMBER;
+    // const propertyIds = [...new Set(tableData.map(row => row.PROPERTYID))];
 
-    for (const propertyId of propertyIds) {
-        const propertyVaultRefs = tableData
-            .filter(row => row.PROPERTYID === propertyId)
-            .map(row => row.VAULTREFNUMBER);
+    // for (const propertyId of propertyIds) {
+    //     const propertyVaultRefs = tableData
+    //         .filter(row => row.PROPERTYID === propertyId)
+    //         .map(row => row.VAULTREFNUMBER);
 
-        if (!propertyVaultRefs.includes(ekycVaultRef)) {
-            toast.error(`${t("Aadhar does not match for property ID")} ${propertyId}`);
-            return;
-        }
-    }
+    //     if (!propertyVaultRefs.includes(ekycVaultRef)) {
+    //         toast.error(`${t("Aadhar does not match for property ID")} ${propertyId}`);
+    //         return;
+    //     }
+    // } //enable for live
   debugger
     const searchValues = searchFields.map(field => field.value);
     let data = [];
@@ -230,7 +260,7 @@ const Amalgamation = () => {
       if(MutatioAppl === undefined || MutatioAppl === null || MutatioAppl === "" || MutatioAppl === "undefined" || MutatioAppl === "null"){
         MutatioAppl = 0;
       }
-    const response = await axiosInstance.get(`AmalgamationAPI/GET_NCL_MUTATION_AMALGAMATION_MAIN?PropertyId=${searchValues[i]}&ulbcode=205&MutatioAppl=${parseInt(MutatioAppl)}&IsAdd=${true}` );
+    const response = await axiosInstance.get(`AmalgamationAPI/GET_NCL_MUTATION_AMALGAMATION_MAIN?PropertyId=${searchValues[i]}&ulbcode=555&MutatioAppl=${parseInt(MutatioAppl)}&IsAdd=${true}` );
     console.log(response.data);
     if(response.data.success === false){
       toast.error(`${t(response.data.message)}`)
@@ -331,7 +361,10 @@ debugger
     }
 
   };
-
+const handleBack = () => {
+    setPdfUrl('')
+      window.location.href = 'https://bbmpeaasthi.karnataka.gov.in';
+}
   const handleVerifyOtp = () => {
     if (formData.OwnerOTP === otpNumber.toString()) {
       toast.success(`${t("otpVerifiedSuccess")}`);
@@ -530,7 +563,6 @@ if(s === true){
     const data = {
       propertycode: 0,
       mutapplid: parseInt(mut), 
-    // mutapplid:  123,
       ugd: formData.UGD,
       cornersite: formData.cornerSite,
       checkbandI_NORTH: formData.CHECKBANDI_NORTH,
@@ -548,14 +580,13 @@ if(s === true){
       propertyphoto: propertyDocumentID,
       amalOrderNumber: formData.AmalgamationOrderNo,
       amalOrderDate: selectedDate,
-      ulbCode: 205,
-      vaultRefNumber:tablesdata8[0].VAULTREFNUMBER
+      ulbCode: 555,
+     // vaultRefNumber:tablesdata8[0].VAULTREFNUMBER
+     vaultRefNumber:"123123"
     }
     const finalResponse =  await axiosInstance.post("AmalgamationAPI/INS_NCL_PROPERTY_SEARCH_FINAL_SUBMIT", data);
-      
         toast.success(`${t("Data Saved Successfully")}`)
-       
-     
+         // await fetchAcknowedgeMentPdf(parseInt(mut));
   } catch (error) {
     console.log("error", error)
     toast.error(`${t("errorSavingData")}`, error)
@@ -564,16 +595,10 @@ if(s === true){
   };
  
   const EditOwnerDetailsFromEKYCData = async (txno) => {
-    
     let ownerType = "NEWOWNER"
     try {
      const ekycResponse =  await axiosInstance.get("Name_Match/GET_BBD_NCL_OWNER_BYEKYCTRANSACTION?transactionNumber=" + txno + "&OwnerType=" + ownerType)
-   
-       
-      
         setEkycResponseData(ekycResponse.data);
-   
-    
        return ""
     } catch (error) {
       console.log("EditOwnerDetailsFromEKYCData", error)
@@ -581,20 +606,13 @@ if(s === true){
 
   };
   const back = () => {
-   
+   setPdfUrl('')
      window.location.href = 'https://bbmpeaasthi.karnataka.gov.in';
     
   };
   const AddEKYCOwner = async () => {
     try {
-        if(tableData.length === 0){
-            toast.error(`${t("Search Property First")}`)
-            return
-      
-          }
-        var response = await axiosInstance.post("E-KYCAPI/INS_NCL_SEARCH_MAIN")
-    
-    
+        var response = await axiosInstance.post("E-KYCAPI/INS_NCL_MUTATION_AMALGAMATION_MAIN")   
         window.location.href = response.data; 
     }
         catch(error)
@@ -603,14 +621,6 @@ if(s === true){
         }
       };
   
- 
-  const handleBack = () => {
-    window.location.href = "https://bbmpeaasthi.karnataka.gov.in";
-    }
-    
-    
-   
-
   function GradientCircularProgress() {
     return (
       <React.Fragment>
@@ -657,7 +667,31 @@ if(s === true){
           >
            Amalgamation
           </Typography>
+  {pdfUrl && (
+   <Dialog open={Boolean(pdfUrl)} onClose={() => setPdfUrl('')} maxWidth="md" fullWidth>
+     <DialogContent>
+       <iframe src={pdfUrl} width="100%" height="600px" title="PDF Viewer"></iframe>
+     </DialogContent>
+     <DialogActions>
+       {/* Button to download the PDF with a custom filename */}
+       <Button
+         onClick={() => {
+           const link = document.createElement('a');
+           link.href = pdfUrl;
+           link.download = 'AMALGAMATION REQUEST ACKNOWLEDGMENT.pdf'; // Set your desired filename here
+           link.click();
+         }}
+         color="primary"
+       >
+         Download PDF
+       </Button>
  
+       <Button onClick={() => handleBack()} color="primary">
+         Close PDF and Finish
+       </Button>
+     </DialogActions>
+   </Dialog>
+ )}
           <br></br>
           <Grid container >
       {EkycResponseData !== null &&
