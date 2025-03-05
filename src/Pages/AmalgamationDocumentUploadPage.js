@@ -497,7 +497,7 @@ console.log("Component is rendered")
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>Sl No.</TableCell>
+                      
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("Document")}</TableCell>
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("DocumentDetails")}</TableCell>
                       <TableCell style={{ backgroundColor: '#0276aa', fontWeight: 'bold', color: '#FFFFFF' }}>{t("DocumentNumber :")}</TableCell>
@@ -516,7 +516,7 @@ console.log("Component is rendered")
                     ) : (
                       tableData.map((row,index) => (
                         <TableRow key={index}>
-                          <TableCell>{row.DOC_SCAN_ID}</TableCell>
+                         
                           <TableCell>{row.DOCUMENTTYPEDESCRIPTION}</TableCell>
                           <TableCell>{row.DOCUMENTDETAILS}</TableCell>
                           <TableCell>{row.ORDERNUMBER}</TableCell>

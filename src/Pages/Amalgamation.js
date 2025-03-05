@@ -64,7 +64,8 @@ const Amalgamation = () => {
   const [otpFieldsVisible, setOtpFieldsVisible] = useState(false);
   const [IsPropertyEditableDetailsVisible , setIsPropertyEditableDetailsVisible] = useState(false);
   const [alertShown, setAlertShown] = useState(false);
-  const [EkycResponseData,setEkycResponseData] = useState(null)
+  const [EkycResponseData,setEkycResponseData] = useState(null);
+  const [totalSiteArea,setTotalSiteArea] = useState(null);
   const [otpNumber, setOtpNumber] = useState(0)
   const { t } = useTranslation();
   const [otpButtonDisabled, setOtpButtonDisabled] = useState(false);
@@ -270,7 +271,8 @@ const Amalgamation = () => {
     const parsedDetails = JSON.parse(response.data.details);
     console.log(parsedDetails.Table); 
     data.push(parsedDetails.Table[0])
-    sessionStorage.setItem('SETMUTATIONID',response.data.mutationApplicationId)
+    sessionStorage.setItem('SETMUTATIONID',response.data.mutationApplicationId);
+    setTotalSiteArea(response.data.totalArea)
     setIsPropertyEditableDetailsVisible(true);
   }
     setTableData(data || []);
@@ -516,8 +518,8 @@ if (selectedIDFile !== null) {
               toast.error("Please Enter the North South Dimensions")
               return false
             }
-            if(formData.SiteArea === null|| formData.SiteArea === undefined || formData.SiteArea === ""){
-              toast.error("Please Enter the Site Area")
+            if(totalSiteArea === null|| totalSiteArea === undefined || totalSiteArea === "" || totalSiteArea === 0){
+              toast.error("Site Area Cannot be Empty or Zero")
               return false
             }
             if(formData.AmalgamationOrderNo === null|| formData.AmalgamationOrderNo === undefined || formData.AmalgamationOrderNo === ""){
@@ -572,7 +574,7 @@ if(s === true){
       eastwest: formData.EASTWEST,
       northsouth: formData.NORTHSOUTH,
       oddsite: formData.Oddsite,
-      sitearea: formData.SiteArea,
+      sitearea: totalSiteArea,
       propertycategoryid: 1,
       surveyno: formData.SurveyNo,
       assesmentnumber: formData.ASSESMENTNUMBER,
@@ -585,7 +587,13 @@ if(s === true){
      vaultRefNumber:"123123"
     }
     const finalResponse =  await axiosInstance.post("AmalgamationAPI/INS_NCL_PROPERTY_SEARCH_FINAL_SUBMIT", data);
+    if(finalResponse.data === "Application Already Submitted"){
+      toast.error(`${t(finalResponse.data + "Please Contact Your Respective ARO.")}`)
+  
+    }
+    else{
         toast.success(`${t("Data Saved Successfully")}`)
+    }
          // await fetchAcknowedgeMentPdf(parseInt(mut));
   } catch (error) {
     console.log("error", error)
@@ -1020,7 +1028,7 @@ if(s === true){
                             <TableCell>{row.PROPERTYID}</TableCell>
                             <TableCell>{row.OWNERNAME}</TableCell>
                             <TableCell>{row.OWNERADDRESS}</TableCell>
-                            <TableCell>{row.PROPERTYCATEGORYID}</TableCell>
+                            <TableCell>{row.PROPERTYCATEGORYID === 1 ? "Site" : row.PROPERTYCATEGORYID === 2 ? "Site With Building" : row.PROPERTYCATEGORYID}</TableCell>
                             <TableCell>{row.ASSESMENTNUMBER}</TableCell>
                             <TableCell>{MaskingValue({value:row.MOBILENUMBER,maskingLength:4})}</TableCell>
                             <TableCell>{row.CHECKBANDI_NORTH}</TableCell>
@@ -1326,13 +1334,13 @@ if(s === true){
                       fullWidth
                       label={< LabelWithAsterisk text={t("Site Area (mt)")} />}
                       name="SiteArea"
-                      value={formData.SiteArea || ''}
+                      value={totalSiteArea || ''}
                       onChange={handleChange}
                       variant="outlined"
                       type='number'
                       InputProps={{
-                     
-                        style: { backgroundColor:  "#ffff" },
+                        readOnly:true,
+                     //   style: { backgroundColor:  "#ffff" },
                       }}
                     />
                     </Grid>
